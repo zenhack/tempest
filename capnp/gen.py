@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from glob import glob
 from os.path import basename, dirname, join
 from subprocess import check_call
