@@ -1,4 +1,4 @@
-package web_session
+package websession
 
 // AUTO GENERATED - DO NOT EDIT
 

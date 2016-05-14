@@ -35,5 +35,5 @@ interface ApiSession @0xc879e379c625cdc7 extends(WebSession.WebSession) {
   }
 }
 using Go = import "/zombiezen.com/go/capnproto2/go.capnp";
-$Go.package("api_session");
-$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/api_session");
+$Go.package("apisession");
+$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/apisession");

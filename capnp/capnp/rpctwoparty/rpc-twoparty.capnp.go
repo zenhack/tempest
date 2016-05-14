@@ -1,4 +1,4 @@
-package rpc_twoparty
+package rpctwoparty
 
 // AUTO GENERATED - DO NOT EDIT
 

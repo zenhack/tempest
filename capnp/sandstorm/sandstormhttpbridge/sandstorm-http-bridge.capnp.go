@@ -1,4 +1,4 @@
-package sandstorm_http_bridge
+package sandstormhttpbridge
 
 // AUTO GENERATED - DO NOT EDIT
 

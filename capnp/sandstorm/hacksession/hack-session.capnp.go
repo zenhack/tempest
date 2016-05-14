@@ -1,4 +1,4 @@
-package hack_session
+package hacksession
 
 // AUTO GENERATED - DO NOT EDIT
 

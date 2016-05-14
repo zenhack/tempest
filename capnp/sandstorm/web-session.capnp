@@ -445,5 +445,5 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
   #   * Proxy-Authenticate
 }
 using Go = import "/zombiezen.com/go/capnproto2/go.capnp";
-$Go.package("web_session");
-$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/web_session");
+$Go.package("websession");
+$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/websession");

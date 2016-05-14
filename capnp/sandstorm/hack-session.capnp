@@ -139,5 +139,5 @@ interface HackEmailSession @0xc3b5ced7344b04a6 extends(Grain.UiSession, Email.Em
   # channels -- i.e. persistent capabilities and Powerbox interactions -- is not implemented.
 }
 using Go = import "/zombiezen.com/go/capnproto2/go.capnp";
-$Go.package("hack_session");
-$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/hack_session");
+$Go.package("hacksession");
+$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/hacksession");

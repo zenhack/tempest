@@ -1,20 +1,20 @@
-package api_session
+package apisession
 
 // AUTO GENERATED - DO NOT EDIT
 
 import (
 	context "golang.org/x/net/context"
 	ip "zenhack.net/go/sandstorm/capnp/sandstorm/ip"
-	web_session "zenhack.net/go/sandstorm/capnp/sandstorm/web_session"
+	websession "zenhack.net/go/sandstorm/capnp/sandstorm/websession"
 	capnp "zombiezen.com/go/capnproto2"
 	server "zombiezen.com/go/capnproto2/server"
 )
 
 type ApiSession struct{ Client capnp.Client }
 
-func (c ApiSession) Get(ctx context.Context, params func(web_session.WebSession_get_Params) error, opts ...capnp.CallOption) web_session.WebSession_Response_Promise {
+func (c ApiSession) Get(ctx context.Context, params func(websession.WebSession_get_Params) error, opts ...capnp.CallOption) websession.WebSession_Response_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -29,14 +29,14 @@ func (c ApiSession) Get(ctx context.Context, params func(web_session.WebSession_
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_get_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_get_Params{Struct: s}) }
 	}
-	return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) Post(ctx context.Context, params func(web_session.WebSession_post_Params) error, opts ...capnp.CallOption) web_session.WebSession_Response_Promise {
+func (c ApiSession) Post(ctx context.Context, params func(websession.WebSession_post_Params) error, opts ...capnp.CallOption) websession.WebSession_Response_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -51,14 +51,14 @@ func (c ApiSession) Post(ctx context.Context, params func(web_session.WebSession
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_post_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_post_Params{Struct: s}) }
 	}
-	return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) OpenWebSocket(ctx context.Context, params func(web_session.WebSession_openWebSocket_Params) error, opts ...capnp.CallOption) web_session.WebSession_openWebSocket_Results_Promise {
+func (c ApiSession) OpenWebSocket(ctx context.Context, params func(websession.WebSession_openWebSocket_Params) error, opts ...capnp.CallOption) websession.WebSession_openWebSocket_Results_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -73,14 +73,14 @@ func (c ApiSession) OpenWebSocket(ctx context.Context, params func(web_session.W
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_openWebSocket_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params{Struct: s}) }
 	}
-	return web_session.WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) Put(ctx context.Context, params func(web_session.WebSession_put_Params) error, opts ...capnp.CallOption) web_session.WebSession_Response_Promise {
+func (c ApiSession) Put(ctx context.Context, params func(websession.WebSession_put_Params) error, opts ...capnp.CallOption) websession.WebSession_Response_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -95,14 +95,14 @@ func (c ApiSession) Put(ctx context.Context, params func(web_session.WebSession_
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_put_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_put_Params{Struct: s}) }
 	}
-	return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) Delete(ctx context.Context, params func(web_session.WebSession_delete_Params) error, opts ...capnp.CallOption) web_session.WebSession_Response_Promise {
+func (c ApiSession) Delete(ctx context.Context, params func(websession.WebSession_delete_Params) error, opts ...capnp.CallOption) websession.WebSession_Response_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -117,14 +117,14 @@ func (c ApiSession) Delete(ctx context.Context, params func(web_session.WebSessi
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_delete_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params{Struct: s}) }
 	}
-	return web_session.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) PostStreaming(ctx context.Context, params func(web_session.WebSession_postStreaming_Params) error, opts ...capnp.CallOption) web_session.WebSession_postStreaming_Results_Promise {
+func (c ApiSession) PostStreaming(ctx context.Context, params func(websession.WebSession_postStreaming_Params) error, opts ...capnp.CallOption) websession.WebSession_postStreaming_Results_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -139,14 +139,14 @@ func (c ApiSession) PostStreaming(ctx context.Context, params func(web_session.W
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_postStreaming_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params{Struct: s}) }
 	}
-	return web_session.WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
-func (c ApiSession) PutStreaming(ctx context.Context, params func(web_session.WebSession_putStreaming_Params) error, opts ...capnp.CallOption) web_session.WebSession_putStreaming_Results_Promise {
+func (c ApiSession) PutStreaming(ctx context.Context, params func(websession.WebSession_putStreaming_Params) error, opts ...capnp.CallOption) websession.WebSession_putStreaming_Results_Promise {
 	if c.Client == nil {
-		return web_session.WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return websession.WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -161,25 +161,25 @@ func (c ApiSession) PutStreaming(ctx context.Context, params func(web_session.We
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(web_session.WebSession_putStreaming_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params{Struct: s}) }
 	}
-	return web_session.WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return websession.WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 
 type ApiSession_Server interface {
-	Get(web_session.WebSession_get) error
+	Get(websession.WebSession_get) error
 
-	Post(web_session.WebSession_post) error
+	Post(websession.WebSession_post) error
 
-	OpenWebSocket(web_session.WebSession_openWebSocket) error
+	OpenWebSocket(websession.WebSession_openWebSocket) error
 
-	Put(web_session.WebSession_put) error
+	Put(websession.WebSession_put) error
 
-	Delete(web_session.WebSession_delete) error
+	Delete(websession.WebSession_delete) error
 
-	PostStreaming(web_session.WebSession_postStreaming) error
+	PostStreaming(websession.WebSession_postStreaming) error
 
-	PutStreaming(web_session.WebSession_putStreaming) error
+	PutStreaming(websession.WebSession_putStreaming) error
 }
 
 func ApiSession_ServerToClient(s ApiSession_Server) ApiSession {
@@ -201,7 +201,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "get",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_get{c, opts, web_session.WebSession_get_Params{Struct: p}, web_session.WebSession_Response{Struct: r}}
+			call := websession.WebSession_get{c, opts, websession.WebSession_get_Params{Struct: p}, websession.WebSession_Response{Struct: r}}
 			return s.Get(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 7},
@@ -216,7 +216,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "post",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_post{c, opts, web_session.WebSession_post_Params{Struct: p}, web_session.WebSession_Response{Struct: r}}
+			call := websession.WebSession_post{c, opts, websession.WebSession_post_Params{Struct: p}, websession.WebSession_Response{Struct: r}}
 			return s.Post(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 7},
@@ -231,7 +231,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "openWebSocket",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_openWebSocket{c, opts, web_session.WebSession_openWebSocket_Params{Struct: p}, web_session.WebSession_openWebSocket_Results{Struct: r}}
+			call := websession.WebSession_openWebSocket{c, opts, websession.WebSession_openWebSocket_Params{Struct: p}, websession.WebSession_openWebSocket_Results{Struct: r}}
 			return s.OpenWebSocket(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
@@ -246,7 +246,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "put",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_put{c, opts, web_session.WebSession_put_Params{Struct: p}, web_session.WebSession_Response{Struct: r}}
+			call := websession.WebSession_put{c, opts, websession.WebSession_put_Params{Struct: p}, websession.WebSession_Response{Struct: r}}
 			return s.Put(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 7},
@@ -261,7 +261,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "delete",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_delete{c, opts, web_session.WebSession_delete_Params{Struct: p}, web_session.WebSession_Response{Struct: r}}
+			call := websession.WebSession_delete{c, opts, websession.WebSession_delete_Params{Struct: p}, websession.WebSession_Response{Struct: r}}
 			return s.Delete(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 7},
@@ -276,7 +276,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "postStreaming",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_postStreaming{c, opts, web_session.WebSession_postStreaming_Params{Struct: p}, web_session.WebSession_postStreaming_Results{Struct: r}}
+			call := websession.WebSession_postStreaming{c, opts, websession.WebSession_postStreaming_Params{Struct: p}, websession.WebSession_postStreaming_Results{Struct: r}}
 			return s.PostStreaming(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
@@ -291,7 +291,7 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 			MethodName:    "putStreaming",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := web_session.WebSession_putStreaming{c, opts, web_session.WebSession_putStreaming_Params{Struct: p}, web_session.WebSession_putStreaming_Results{Struct: r}}
+			call := websession.WebSession_putStreaming{c, opts, websession.WebSession_putStreaming_Params{Struct: p}, websession.WebSession_putStreaming_Results{Struct: r}}
 			return s.PutStreaming(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},

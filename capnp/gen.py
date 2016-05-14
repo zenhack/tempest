@@ -11,7 +11,7 @@ def get_package_name(src_file):
     if package == 'package':
         package = 'spk'
     package = package\
-        .replace('-', '_')\
+        .replace('-', '')\
         .replace('+', 'x')
     return package
 

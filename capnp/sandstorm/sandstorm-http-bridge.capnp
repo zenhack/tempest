@@ -32,5 +32,5 @@ interface SandstormHttpBridge {
   # from the X-Sandstorm-Session-Id header inserted by sandstorm-http-bridge.
 }
 using Go = import "/zombiezen.com/go/capnproto2/go.capnp";
-$Go.package("sandstorm_http_bridge");
-$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/sandstorm_http_bridge");
+$Go.package("sandstormhttpbridge");
+$Go.import("zenhack.net/go/sandstorm/capnp/sandstorm/sandstormhttpbridge");
