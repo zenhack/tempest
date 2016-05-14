@@ -6,6 +6,16 @@ with capnproto and all of the sandstorm schemas.
 * `capnp/capnp` contains the base capnproto schema
 * `capnp/sandstorm` contains the sandstorm APIs.
 
+Since the schema names are not all legal package names, the following
+changes have been made:
+
+* Schema with dashes in their names have had the dashes removed.
+* The schema `package` has been mapped to the package `spk` (since
+  `package` is a go reserved word).
+* The schema `c++` has been mapped to the package `cxx`. Direct use of
+  this is unlikely, but some of the other schema include it, so it needs
+  to be present.
+
 # Licensing
 
 Everything is licensed under the MIT license (Both my work and that of
