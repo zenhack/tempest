@@ -13,7 +13,9 @@ import (
 	capnp "zenhack.net/go/sandstorm/capnp/sandstorm/websession"
 )
 
-func FromHandler(h http.Handler) capnp.WebSession_Server
+func FromHandler(h http.Handler) capnp.WebSession_Server {
+	return HandlerWebSession{h}
+}
 
 type responseWriter struct {
 	status   int
@@ -33,10 +35,12 @@ func (r *responseWriter) WriteHeader(status int) {
 		r.response.SetContent()
 		// TODO: the subtraction is breaking an abstraction boundary just a bit.
 		// should be safe in this case, but let's think about the implications.
-		r.response.Content().SetStatusCode(status - 200)
+		capnpStatus := capnp.WebSession_Response_SuccessCode(status - 200)
+		r.response.Content().SetStatusCode(capnpStatus)
 		// TODO: Figure out what we should be passing here; do we actually need to do
-		// anything? Handle is just interface{}, but is nil ok?
-		r.response.Body().SetStream(nil)
+		// anything? Handle_Server is just interface{}, so we're passing in 0, since it's
+		// handy.
+		r.response.Content().Body().SetStream(util.Handle_ServerToClient(0))
 		// TODO: actually set headers, and handle non-200 responses.
 	}
 }
@@ -46,9 +50,12 @@ func (r *responseWriter) Write(p []byte) (int, error) {
 		r.WriteHeader(200)
 	}
 	// TODO: actually implement
+	return 0, nil
 }
 
-type HandlerWebSession http.Handler
+type HandlerWebSession struct {
+	http.Handler
+}
 
 func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	var firstErr error
@@ -61,16 +68,16 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 
 	// TODO: some of these have a HasFoo() method; should look into the exact semantics of all
 	// this and see what the right way to do this is.
-	path, err := args.Path()
+	path, err := args.Params.Path()
 	checkErr()
-	ctx, err := args.Context()
+	ctx, err := args.Params.Context()
 	checkErr()
 	// TODO: pull these out, and add them to request below:
 	//cookies, err := ctx.Cookies()
 	//checkErr()
 	//accept, err := ctx.Accept()
 	//checkErr()
-	responseStream := args.ResponseStream()
+	responseStream := ctx.ResponseStream()
 	if firstErr != nil {
 		return firstErr
 	}
