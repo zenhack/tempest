@@ -114,3 +114,7 @@ func (h HandlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
 func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 	return nil
 }
+
+func (h HandlerWebSession) OpenWebSocket(capnp.WebSession_openWebSocket) error {
+	return nil
+}
