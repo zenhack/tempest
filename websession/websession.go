@@ -9,8 +9,8 @@ package websession
 import (
 	"net/http"
 	"net/url"
-	"zenhack.net/go/sandstorm/capnp/sandstorm/util"
-	capnp "zenhack.net/go/sandstorm/capnp/sandstorm/websession"
+	"zenhack.net/go/sandstorm/capnp/util"
+	capnp "zenhack.net/go/sandstorm/capnp/websession"
 )
 
 func FromHandler(h http.Handler) capnp.WebSession_Server {

@@ -18,7 +18,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from glob import glob
-from os.path import basename, dirname, join
+from os.path import basename, join
 from subprocess import check_call
 import os
 import sys
@@ -35,50 +35,44 @@ def get_package_name(src_file):
 
 
 def go(capnp_file, package):
-    destdir = join(dirname(capnp_file), package)
-    os.mkdir(destdir)
-    os.chdir(dirname(destdir))
+    os.mkdir(package)
     check_call([
         'capnp', 'compile',
-        '-I', join(os.getenv('GOPATH'), 'src'),
-        '-I', '..',
+        '-I', join(os.getenv('GOPATH'), 'src/zombiezen.com/go/capnproto2'),
+        '-I', '.',
         '-ogo:' + package,
         basename(capnp_file),
     ])
-    os.chdir('..')
 
 
-def capnp_1(src_file, dst_file, package, import_path):
+def capnp_1(src_file, dst_file, package):
     with open(src_file) as f:
         src = f.read()
     with open(dst_file, 'w') as f:
         f.write(src)
-        f.write('using Go = import "/zombiezen.com/go/capnproto2/go.capnp";\n')
+        f.write('using Go = import "/go.capnp";\n')
         f.write('$Go.package("%s");\n' % package)
-        f.write('$Go.import("zenhack.net/go/sandstorm/capnp/%s");\n' % import_path)
+        f.write('$Go.import("zenhack.net/go/sandstorm/capnp/%s");\n' % package)
 
 
-def capnp_many(srcdir, destdir):
+def capnp_many(srcdir):
     src_files = glob(join(srcdir, '*.capnp'))
 
     for src_file in src_files:
-        dst_file = join(destdir, basename(src_file))
+        dst_file = basename(src_file)
         package = get_package_name(src_file)
-        capnp_1(src_file, dst_file, package, join(destdir, package))
+        capnp_1(src_file, dst_file, package)
 
     for src_file in src_files:
-        dst_file = join(destdir, basename(src_file))
+        dst_file = basename(src_file)
         package = get_package_name(src_file)
         go(dst_file, package)
 
 
 def main():
-    if len(sys.argv) != 3:
-        sys.exit("usage: ./gen.py <capnp-include> <sandstorm-include>")
-    os.mkdir('capnp')
-    os.mkdir('sandstorm')
-    capnp_many(sys.argv[1], 'capnp')
-    capnp_many(sys.argv[2], 'sandstorm')
+    if len(sys.argv) != 2:
+        sys.exit("usage: ./gen.py <sandstorm-include>")
+    capnp_many(sys.argv[1])
 
 
 if __name__ == '__main__':
