@@ -18,7 +18,6 @@ func (c SandstormHttpBridge) GetSandstormApi(ctx context.Context, params func(Sa
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      0,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
@@ -32,7 +31,6 @@ func (c SandstormHttpBridge) GetSandstormApi(ctx context.Context, params func(Sa
 	}
 	return SandstormHttpBridge_getSandstormApi_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(SandstormHttpBridge_getSessionContext_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_getSessionContext_Results_Promise {
 	if c.Client == nil {
 		return SandstormHttpBridge_getSessionContext_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -40,7 +38,6 @@ func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      1,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
@@ -73,7 +70,6 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      0,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
@@ -88,7 +84,6 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      1,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
@@ -139,12 +134,11 @@ func NewRootSandstormHttpBridge_getSandstormApi_Params(s *capnp.Segment) (Sandst
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Params(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormHttpBridge_getSandstormApi_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormHttpBridge_getSandstormApi_Params{st}, nil
+	return SandstormHttpBridge_getSandstormApi_Params{root.Struct()}, nil
 }
 
 // SandstormHttpBridge_getSandstormApi_Params_List is a list of SandstormHttpBridge_getSandstormApi_Params.
@@ -193,26 +187,27 @@ func NewRootSandstormHttpBridge_getSandstormApi_Results(s *capnp.Segment) (Sands
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Results(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormHttpBridge_getSandstormApi_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormHttpBridge_getSandstormApi_Results{st}, nil
+	return SandstormHttpBridge_getSandstormApi_Results{root.Struct()}, nil
 }
-
 func (s SandstormHttpBridge_getSandstormApi_Results) Api() grain.SandstormApi {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return grain.SandstormApi{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return grain.SandstormApi{Client: c}
+	return grain.SandstormApi{Client: p.Interface().Client()}
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Results) HasApi() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) SetApi(v grain.SandstormApi) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -222,7 +217,7 @@ func (s SandstormHttpBridge_getSandstormApi_Results) SetApi(v grain.SandstormApi
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_getSandstormApi_Results_List is a list of SandstormHttpBridge_getSandstormApi_Results.
@@ -275,31 +270,43 @@ func NewRootSandstormHttpBridge_getSessionContext_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormHttpBridge_getSessionContext_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormHttpBridge_getSessionContext_Params{st}, nil
+	return SandstormHttpBridge_getSessionContext_Params{root.Struct()}, nil
 }
-
 func (s SandstormHttpBridge_getSessionContext_Params) Id() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s SandstormHttpBridge_getSessionContext_Params) HasId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s SandstormHttpBridge_getSessionContext_Params) IdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) SetId(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 // SandstormHttpBridge_getSessionContext_Params_List is a list of SandstormHttpBridge_getSessionContext_Params.
@@ -348,26 +355,27 @@ func NewRootSandstormHttpBridge_getSessionContext_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormHttpBridge_getSessionContext_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormHttpBridge_getSessionContext_Results{st}, nil
+	return SandstormHttpBridge_getSessionContext_Results{root.Struct()}, nil
 }
-
 func (s SandstormHttpBridge_getSessionContext_Results) Context() grain.SessionContext {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return grain.SessionContext{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return grain.SessionContext{Client: c}
+	return grain.SessionContext{Client: p.Interface().Client()}
+}
+
+func (s SandstormHttpBridge_getSessionContext_Results) HasContext() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) SetContext(v grain.SessionContext) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -377,7 +385,7 @@ func (s SandstormHttpBridge_getSessionContext_Results) SetContext(v grain.Sessio
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_getSessionContext_Results_List is a list of SandstormHttpBridge_getSessionContext_Results.

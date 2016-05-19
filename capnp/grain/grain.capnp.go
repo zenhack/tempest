@@ -29,28 +29,38 @@ func NewRootPowerboxDescriptor(s *capnp.Segment) (PowerboxDescriptor, error) {
 }
 
 func ReadRootPowerboxDescriptor(msg *capnp.Message) (PowerboxDescriptor, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-	st := capnp.ToStruct(root)
-	return PowerboxDescriptor{st}, nil
+	return PowerboxDescriptor{root.Struct()}, nil
 }
-
 func (s PowerboxDescriptor) Tags() (PowerboxDescriptor_Tag_List, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return PowerboxDescriptor_Tag_List{}, err
 	}
+	return PowerboxDescriptor_Tag_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return PowerboxDescriptor_Tag_List{List: l}, nil
+func (s PowerboxDescriptor) HasTags() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s PowerboxDescriptor) SetTags(v PowerboxDescriptor_Tag_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(0, v.List)
+// NewTags sets the tags field to a newly
+// allocated PowerboxDescriptor_Tag_List, preferring placement in s's segment.
+func (s PowerboxDescriptor) NewTags(n int32) (PowerboxDescriptor_Tag_List, error) {
+	l, err := NewPowerboxDescriptor_Tag_List(s.Struct.Segment(), n)
+	if err != nil {
+		return PowerboxDescriptor_Tag_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
 }
 
 func (s PowerboxDescriptor) Quality() PowerboxDescriptor_MatchQuality {
@@ -58,7 +68,6 @@ func (s PowerboxDescriptor) Quality() PowerboxDescriptor_MatchQuality {
 }
 
 func (s PowerboxDescriptor) SetQuality(v PowerboxDescriptor_MatchQuality) {
-
 	s.Struct.SetUint16(0, uint16(v))
 }
 
@@ -108,32 +117,39 @@ func NewRootPowerboxDescriptor_Tag(s *capnp.Segment) (PowerboxDescriptor_Tag, er
 }
 
 func ReadRootPowerboxDescriptor_Tag(msg *capnp.Message) (PowerboxDescriptor_Tag, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return PowerboxDescriptor_Tag{}, err
 	}
-	st := capnp.ToStruct(root)
-	return PowerboxDescriptor_Tag{st}, nil
+	return PowerboxDescriptor_Tag{root.Struct()}, nil
 }
-
 func (s PowerboxDescriptor_Tag) Id() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s PowerboxDescriptor_Tag) SetId(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
 func (s PowerboxDescriptor_Tag) Value() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(0)
+}
 
+func (s PowerboxDescriptor_Tag) HasValue() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s PowerboxDescriptor_Tag) ValuePtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s PowerboxDescriptor_Tag) SetValue(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s PowerboxDescriptor_Tag) SetValuePtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // PowerboxDescriptor_Tag_List is a list of PowerboxDescriptor_Tag.
@@ -246,95 +262,93 @@ func NewRootPowerboxDisplayInfo(s *capnp.Segment) (PowerboxDisplayInfo, error) {
 }
 
 func ReadRootPowerboxDisplayInfo(msg *capnp.Message) (PowerboxDisplayInfo, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-	st := capnp.ToStruct(root)
-	return PowerboxDisplayInfo{st}, nil
+	return PowerboxDisplayInfo{root.Struct()}, nil
 }
-
 func (s PowerboxDisplayInfo) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s PowerboxDisplayInfo) HasTitle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s PowerboxDisplayInfo) SetTitle(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PowerboxDisplayInfo) NewTitle() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s PowerboxDisplayInfo) VerbPhrase() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s PowerboxDisplayInfo) HasVerbPhrase() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s PowerboxDisplayInfo) SetVerbPhrase(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewVerbPhrase sets the verbPhrase field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PowerboxDisplayInfo) NewVerbPhrase() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s PowerboxDisplayInfo) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s PowerboxDisplayInfo) HasDescription() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s PowerboxDisplayInfo) SetDescription(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(2, v.Struct)
+	return s.Struct.SetPtr(2, v.Struct.ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PowerboxDisplayInfo) NewDescription() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(2, ss)
+	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -386,7 +400,6 @@ func (c SandstormApi) DeprecatedPublish(ctx context.Context, params func(Sandsto
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -400,7 +413,6 @@ func (c SandstormApi) DeprecatedPublish(ctx context.Context, params func(Sandsto
 	}
 	return SandstormApi_deprecatedPublish_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) DeprecatedRegisterAction(ctx context.Context, params func(SandstormApi_deprecatedRegisterAction_Params) error, opts ...capnp.CallOption) SandstormApi_deprecatedRegisterAction_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_deprecatedRegisterAction_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -408,7 +420,6 @@ func (c SandstormApi) DeprecatedRegisterAction(ctx context.Context, params func(
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -422,7 +433,6 @@ func (c SandstormApi) DeprecatedRegisterAction(ctx context.Context, params func(
 	}
 	return SandstormApi_deprecatedRegisterAction_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) ShareCap(ctx context.Context, params func(SandstormApi_shareCap_Params) error, opts ...capnp.CallOption) SandstormApi_shareCap_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_shareCap_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -430,7 +440,6 @@ func (c SandstormApi) ShareCap(ctx context.Context, params func(SandstormApi_sha
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -444,7 +453,6 @@ func (c SandstormApi) ShareCap(ctx context.Context, params func(SandstormApi_sha
 	}
 	return SandstormApi_shareCap_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) ShareView(ctx context.Context, params func(SandstormApi_shareView_Params) error, opts ...capnp.CallOption) SandstormApi_shareView_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_shareView_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -452,7 +460,6 @@ func (c SandstormApi) ShareView(ctx context.Context, params func(SandstormApi_sh
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -466,7 +473,6 @@ func (c SandstormApi) ShareView(ctx context.Context, params func(SandstormApi_sh
 	}
 	return SandstormApi_shareView_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) Restore(ctx context.Context, params func(SandstormApi_restore_Params) error, opts ...capnp.CallOption) SandstormApi_restore_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_restore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -474,7 +480,6 @@ func (c SandstormApi) Restore(ctx context.Context, params func(SandstormApi_rest
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -488,7 +493,6 @@ func (c SandstormApi) Restore(ctx context.Context, params func(SandstormApi_rest
 	}
 	return SandstormApi_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) Drop(ctx context.Context, params func(SandstormApi_drop_Params) error, opts ...capnp.CallOption) SandstormApi_drop_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -496,7 +500,6 @@ func (c SandstormApi) Drop(ctx context.Context, params func(SandstormApi_drop_Pa
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -510,7 +513,6 @@ func (c SandstormApi) Drop(ctx context.Context, params func(SandstormApi_drop_Pa
 	}
 	return SandstormApi_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) Deleted(ctx context.Context, params func(SandstormApi_deleted_Params) error, opts ...capnp.CallOption) SandstormApi_deleted_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_deleted_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -518,7 +520,6 @@ func (c SandstormApi) Deleted(ctx context.Context, params func(SandstormApi_dele
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -532,7 +533,6 @@ func (c SandstormApi) Deleted(ctx context.Context, params func(SandstormApi_dele
 	}
 	return SandstormApi_deleted_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) StayAwake(ctx context.Context, params func(SandstormApi_stayAwake_Params) error, opts ...capnp.CallOption) SandstormApi_stayAwake_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_stayAwake_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -540,7 +540,6 @@ func (c SandstormApi) StayAwake(ctx context.Context, params func(SandstormApi_st
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      7,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -554,7 +553,6 @@ func (c SandstormApi) StayAwake(ctx context.Context, params func(SandstormApi_st
 	}
 	return SandstormApi_stayAwake_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormApi) Save(ctx context.Context, params func(SandstormApi_save_Params) error, opts ...capnp.CallOption) SandstormApi_save_Results_Promise {
 	if c.Client == nil {
 		return SandstormApi_save_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -562,7 +560,6 @@ func (c SandstormApi) Save(ctx context.Context, params func(SandstormApi_save_Pa
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      8,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -609,7 +606,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -624,7 +620,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -639,7 +634,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -654,7 +648,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -669,7 +662,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -684,7 +676,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -699,7 +690,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -714,7 +704,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      7,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -729,7 +718,6 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      8,
 			InterfaceName: "grain.capnp:SandstormApi",
@@ -836,12 +824,11 @@ func NewRootSandstormApi_deprecatedPublish_Params(s *capnp.Segment) (SandstormAp
 }
 
 func ReadRootSandstormApi_deprecatedPublish_Params(msg *capnp.Message) (SandstormApi_deprecatedPublish_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deprecatedPublish_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deprecatedPublish_Params{st}, nil
+	return SandstormApi_deprecatedPublish_Params{root.Struct()}, nil
 }
 
 // SandstormApi_deprecatedPublish_Params_List is a list of SandstormApi_deprecatedPublish_Params.
@@ -890,12 +877,11 @@ func NewRootSandstormApi_deprecatedPublish_Results(s *capnp.Segment) (SandstormA
 }
 
 func ReadRootSandstormApi_deprecatedPublish_Results(msg *capnp.Message) (SandstormApi_deprecatedPublish_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deprecatedPublish_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deprecatedPublish_Results{st}, nil
+	return SandstormApi_deprecatedPublish_Results{root.Struct()}, nil
 }
 
 // SandstormApi_deprecatedPublish_Results_List is a list of SandstormApi_deprecatedPublish_Results.
@@ -944,12 +930,11 @@ func NewRootSandstormApi_deprecatedRegisterAction_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormApi_deprecatedRegisterAction_Params(msg *capnp.Message) (SandstormApi_deprecatedRegisterAction_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deprecatedRegisterAction_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deprecatedRegisterAction_Params{st}, nil
+	return SandstormApi_deprecatedRegisterAction_Params{root.Struct()}, nil
 }
 
 // SandstormApi_deprecatedRegisterAction_Params_List is a list of SandstormApi_deprecatedRegisterAction_Params.
@@ -998,12 +983,11 @@ func NewRootSandstormApi_deprecatedRegisterAction_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormApi_deprecatedRegisterAction_Results(msg *capnp.Message) (SandstormApi_deprecatedRegisterAction_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deprecatedRegisterAction_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deprecatedRegisterAction_Results{st}, nil
+	return SandstormApi_deprecatedRegisterAction_Results{root.Struct()}, nil
 }
 
 // SandstormApi_deprecatedRegisterAction_Results_List is a list of SandstormApi_deprecatedRegisterAction_Results.
@@ -1052,50 +1036,58 @@ func NewRootSandstormApi_shareCap_Params(s *capnp.Segment) (SandstormApi_shareCa
 }
 
 func ReadRootSandstormApi_shareCap_Params(msg *capnp.Message) (SandstormApi_shareCap_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_shareCap_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_shareCap_Params{st}, nil
+	return SandstormApi_shareCap_Params{root.Struct()}, nil
+}
+func (s SandstormApi_shareCap_Params) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormApi_shareCap_Params) Cap() (capnp.Pointer, error) {
+func (s SandstormApi_shareCap_Params) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormApi_shareCap_Params) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormApi_shareCap_Params) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SandstormApi_shareCap_Params) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SandstormApi_shareCap_Params) DisplayInfo() (PowerboxDisplayInfo, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
+	return PowerboxDisplayInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDisplayInfo{Struct: ss}, nil
+func (s SandstormApi_shareCap_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_shareCap_Params) SetDisplayInfo(v PowerboxDisplayInfo) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated PowerboxDisplayInfo struct, preferring placement in s's segment.
 func (s SandstormApi_shareCap_Params) NewDisplayInfo() (PowerboxDisplayInfo, error) {
-
 	ss, err := NewPowerboxDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -1153,37 +1145,48 @@ func NewRootSandstormApi_shareCap_Results(s *capnp.Segment) (SandstormApi_shareC
 }
 
 func ReadRootSandstormApi_shareCap_Results(msg *capnp.Message) (SandstormApi_shareCap_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_shareCap_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_shareCap_Results{st}, nil
+	return SandstormApi_shareCap_Results{root.Struct()}, nil
+}
+func (s SandstormApi_shareCap_Results) SharedCap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormApi_shareCap_Results) SharedCap() (capnp.Pointer, error) {
+func (s SandstormApi_shareCap_Results) HasSharedCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormApi_shareCap_Results) SharedCapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormApi_shareCap_Results) SetSharedCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SandstormApi_shareCap_Results) SetSharedCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SandstormApi_shareCap_Results) Link() SharingLink {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return SharingLink{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SharingLink{Client: c}
+	return SharingLink{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_shareCap_Results) HasLink() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_shareCap_Results) SetLink(v SharingLink) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1193,7 +1196,7 @@ func (s SandstormApi_shareCap_Results) SetLink(v SharingLink) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // SandstormApi_shareCap_Results_List is a list of SandstormApi_shareCap_Results.
@@ -1250,26 +1253,27 @@ func NewRootSandstormApi_shareView_Params(s *capnp.Segment) (SandstormApi_shareV
 }
 
 func ReadRootSandstormApi_shareView_Params(msg *capnp.Message) (SandstormApi_shareView_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_shareView_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_shareView_Params{st}, nil
+	return SandstormApi_shareView_Params{root.Struct()}, nil
 }
-
 func (s SandstormApi_shareView_Params) View() UiView {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiView{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiView{Client: c}
+	return UiView{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_shareView_Params) HasView() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_shareView_Params) SetView(v UiView) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1279,7 +1283,7 @@ func (s SandstormApi_shareView_Params) SetView(v UiView) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormApi_shareView_Params_List is a list of SandstormApi_shareView_Params.
@@ -1332,26 +1336,27 @@ func NewRootSandstormApi_shareView_Results(s *capnp.Segment) (SandstormApi_share
 }
 
 func ReadRootSandstormApi_shareView_Results(msg *capnp.Message) (SandstormApi_shareView_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_shareView_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_shareView_Results{st}, nil
+	return SandstormApi_shareView_Results{root.Struct()}, nil
 }
-
 func (s SandstormApi_shareView_Results) SharedView() UiView {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiView{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiView{Client: c}
+	return UiView{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_shareView_Results) HasSharedView() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_shareView_Results) SetSharedView(v UiView) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1361,21 +1366,24 @@ func (s SandstormApi_shareView_Results) SetSharedView(v UiView) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 func (s SandstormApi_shareView_Results) Link() ViewSharingLink {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return ViewSharingLink{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return ViewSharingLink{Client: c}
+	return ViewSharingLink{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_shareView_Results) HasLink() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_shareView_Results) SetLink(v ViewSharingLink) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1385,7 +1393,7 @@ func (s SandstormApi_shareView_Results) SetLink(v ViewSharingLink) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // SandstormApi_shareView_Results_List is a list of SandstormApi_shareView_Results.
@@ -1442,47 +1450,59 @@ func NewRootSandstormApi_restore_Params(s *capnp.Segment) (SandstormApi_restore_
 }
 
 func ReadRootSandstormApi_restore_Params(msg *capnp.Message) (SandstormApi_restore_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_restore_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_restore_Params{st}, nil
+	return SandstormApi_restore_Params{root.Struct()}, nil
 }
-
 func (s SandstormApi_restore_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormApi_restore_Params) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_restore_Params) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 func (s SandstormApi_restore_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s SandstormApi_restore_Params) HasRequiredPermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_restore_Params) SetRequiredPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRequiredPermissions sets the requiredPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s SandstormApi_restore_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 // SandstormApi_restore_Params_List is a list of SandstormApi_restore_Params.
@@ -1531,23 +1551,31 @@ func NewRootSandstormApi_restore_Results(s *capnp.Segment) (SandstormApi_restore
 }
 
 func ReadRootSandstormApi_restore_Results(msg *capnp.Message) (SandstormApi_restore_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_restore_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_restore_Results{st}, nil
+	return SandstormApi_restore_Results{root.Struct()}, nil
+}
+func (s SandstormApi_restore_Results) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormApi_restore_Results) Cap() (capnp.Pointer, error) {
+func (s SandstormApi_restore_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormApi_restore_Results) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormApi_restore_Results) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s SandstormApi_restore_Results) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // SandstormApi_restore_Results_List is a list of SandstormApi_restore_Results.
@@ -1600,31 +1628,31 @@ func NewRootSandstormApi_drop_Params(s *capnp.Segment) (SandstormApi_drop_Params
 }
 
 func ReadRootSandstormApi_drop_Params(msg *capnp.Message) (SandstormApi_drop_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_drop_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_drop_Params{st}, nil
+	return SandstormApi_drop_Params{root.Struct()}, nil
 }
-
 func (s SandstormApi_drop_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormApi_drop_Params) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_drop_Params) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // SandstormApi_drop_Params_List is a list of SandstormApi_drop_Params.
@@ -1673,12 +1701,11 @@ func NewRootSandstormApi_drop_Results(s *capnp.Segment) (SandstormApi_drop_Resul
 }
 
 func ReadRootSandstormApi_drop_Results(msg *capnp.Message) (SandstormApi_drop_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_drop_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_drop_Results{st}, nil
+	return SandstormApi_drop_Results{root.Struct()}, nil
 }
 
 // SandstormApi_drop_Results_List is a list of SandstormApi_drop_Results.
@@ -1727,23 +1754,31 @@ func NewRootSandstormApi_deleted_Params(s *capnp.Segment) (SandstormApi_deleted_
 }
 
 func ReadRootSandstormApi_deleted_Params(msg *capnp.Message) (SandstormApi_deleted_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deleted_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deleted_Params{st}, nil
+	return SandstormApi_deleted_Params{root.Struct()}, nil
+}
+func (s SandstormApi_deleted_Params) Ref() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormApi_deleted_Params) Ref() (capnp.Pointer, error) {
+func (s SandstormApi_deleted_Params) HasRef() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormApi_deleted_Params) RefPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormApi_deleted_Params) SetRef(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s SandstormApi_deleted_Params) SetRefPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // SandstormApi_deleted_Params_List is a list of SandstormApi_deleted_Params.
@@ -1796,12 +1831,11 @@ func NewRootSandstormApi_deleted_Results(s *capnp.Segment) (SandstormApi_deleted
 }
 
 func ReadRootSandstormApi_deleted_Results(msg *capnp.Message) (SandstormApi_deleted_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_deleted_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_deleted_Results{st}, nil
+	return SandstormApi_deleted_Results{root.Struct()}, nil
 }
 
 // SandstormApi_deleted_Results_List is a list of SandstormApi_deleted_Results.
@@ -1850,54 +1884,55 @@ func NewRootSandstormApi_stayAwake_Params(s *capnp.Segment) (SandstormApi_stayAw
 }
 
 func ReadRootSandstormApi_stayAwake_Params(msg *capnp.Message) (SandstormApi_stayAwake_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_stayAwake_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_stayAwake_Params{st}, nil
+	return SandstormApi_stayAwake_Params{root.Struct()}, nil
 }
-
 func (s SandstormApi_stayAwake_Params) DisplayInfo() (NotificationDisplayInfo, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
+	return NotificationDisplayInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return NotificationDisplayInfo{Struct: ss}, nil
+func (s SandstormApi_stayAwake_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_stayAwake_Params) SetDisplayInfo(v NotificationDisplayInfo) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated NotificationDisplayInfo struct, preferring placement in s's segment.
 func (s SandstormApi_stayAwake_Params) NewDisplayInfo() (NotificationDisplayInfo, error) {
-
 	ss, err := NewNotificationDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s SandstormApi_stayAwake_Params) Notification() OngoingNotification {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return OngoingNotification{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return OngoingNotification{Client: c}
+	return OngoingNotification{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_stayAwake_Params) HasNotification() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_stayAwake_Params) SetNotification(v OngoingNotification) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1907,7 +1942,7 @@ func (s SandstormApi_stayAwake_Params) SetNotification(v OngoingNotification) er
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // SandstormApi_stayAwake_Params_List is a list of SandstormApi_stayAwake_Params.
@@ -1964,26 +1999,27 @@ func NewRootSandstormApi_stayAwake_Results(s *capnp.Segment) (SandstormApi_stayA
 }
 
 func ReadRootSandstormApi_stayAwake_Results(msg *capnp.Message) (SandstormApi_stayAwake_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_stayAwake_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_stayAwake_Results{st}, nil
+	return SandstormApi_stayAwake_Results{root.Struct()}, nil
 }
-
 func (s SandstormApi_stayAwake_Results) Handle() util.Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Handle{Client: c}
+	return util.Handle{Client: p.Interface().Client()}
+}
+
+func (s SandstormApi_stayAwake_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_stayAwake_Results) SetHandle(v util.Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1993,7 +2029,7 @@ func (s SandstormApi_stayAwake_Results) SetHandle(v util.Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormApi_stayAwake_Results_List is a list of SandstormApi_stayAwake_Results.
@@ -2046,50 +2082,58 @@ func NewRootSandstormApi_save_Params(s *capnp.Segment) (SandstormApi_save_Params
 }
 
 func ReadRootSandstormApi_save_Params(msg *capnp.Message) (SandstormApi_save_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_save_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_save_Params{st}, nil
+	return SandstormApi_save_Params{root.Struct()}, nil
+}
+func (s SandstormApi_save_Params) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormApi_save_Params) Cap() (capnp.Pointer, error) {
+func (s SandstormApi_save_Params) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormApi_save_Params) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormApi_save_Params) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SandstormApi_save_Params) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SandstormApi_save_Params) Label() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s SandstormApi_save_Params) HasLabel() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_save_Params) SetLabel(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewLabel sets the label field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s SandstormApi_save_Params) NewLabel() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -2147,31 +2191,31 @@ func NewRootSandstormApi_save_Results(s *capnp.Segment) (SandstormApi_save_Resul
 }
 
 func ReadRootSandstormApi_save_Results(msg *capnp.Message) (SandstormApi_save_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormApi_save_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormApi_save_Results{st}, nil
+	return SandstormApi_save_Results{root.Struct()}, nil
 }
-
 func (s SandstormApi_save_Results) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormApi_save_Results) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormApi_save_Results) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // SandstormApi_save_Results_List is a list of SandstormApi_save_Results.
@@ -2210,7 +2254,6 @@ func (c UiView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
@@ -2224,7 +2267,6 @@ func (c UiView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_
 	}
 	return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c UiView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error, opts ...capnp.CallOption) UiView_newSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2232,7 +2274,6 @@ func (c UiView) NewSession(ctx context.Context, params func(UiView_newSession_Pa
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
@@ -2241,12 +2282,11 @@ func (c UiView) NewSession(ctx context.Context, params func(UiView_newSession_Pa
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
 	}
 	return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c UiView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error, opts ...capnp.CallOption) UiView_newRequestSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2254,7 +2294,6 @@ func (c UiView) NewRequestSession(ctx context.Context, params func(UiView_newReq
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
@@ -2263,12 +2302,11 @@ func (c UiView) NewRequestSession(ctx context.Context, params func(UiView_newReq
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
 	}
 	return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error, opts ...capnp.CallOption) UiView_newOfferSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2276,7 +2314,6 @@ func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOffer
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
@@ -2285,7 +2322,7 @@ func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOffer
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
 	}
 	return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
@@ -2313,7 +2350,6 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
@@ -2328,7 +2364,6 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
@@ -2343,7 +2378,6 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
@@ -2358,7 +2392,6 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
@@ -2425,92 +2458,150 @@ func NewRootUiView_ViewInfo(s *capnp.Segment) (UiView_ViewInfo, error) {
 }
 
 func ReadRootUiView_ViewInfo(msg *capnp.Message) (UiView_ViewInfo, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_ViewInfo{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_ViewInfo{st}, nil
+	return UiView_ViewInfo{root.Struct()}, nil
 }
-
 func (s UiView_ViewInfo) Permissions() (PermissionDef_List, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return PermissionDef_List{}, err
 	}
+	return PermissionDef_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return PermissionDef_List{List: l}, nil
+func (s UiView_ViewInfo) HasPermissions() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_ViewInfo) SetPermissions(v PermissionDef_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(0, v.List)
+// NewPermissions sets the permissions field to a newly
+// allocated PermissionDef_List, preferring placement in s's segment.
+func (s UiView_ViewInfo) NewPermissions(n int32) (PermissionDef_List, error) {
+	l, err := NewPermissionDef_List(s.Struct.Segment(), n)
+	if err != nil {
+		return PermissionDef_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
 }
 
 func (s UiView_ViewInfo) Roles() (RoleDef_List, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return RoleDef_List{}, err
 	}
+	return RoleDef_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return RoleDef_List{List: l}, nil
+func (s UiView_ViewInfo) HasRoles() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_ViewInfo) SetRoles(v RoleDef_List) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRoles sets the roles field to a newly
+// allocated RoleDef_List, preferring placement in s's segment.
+func (s UiView_ViewInfo) NewRoles(n int32) (RoleDef_List, error) {
+	l, err := NewRoleDef_List(s.Struct.Segment(), n)
+	if err != nil {
+		return RoleDef_List{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 func (s UiView_ViewInfo) DeniedPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s UiView_ViewInfo) HasDeniedPermissions() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_ViewInfo) SetDeniedPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(2, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(2, v.List)
+// NewDeniedPermissions sets the deniedPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s UiView_ViewInfo) NewDeniedPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	return l, err
 }
 
 func (s UiView_ViewInfo) MatchRequests() (PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Pointer(3)
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return PowerboxDescriptor_List{}, err
 	}
+	return PowerboxDescriptor_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return PowerboxDescriptor_List{List: l}, nil
+func (s UiView_ViewInfo) HasMatchRequests() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_ViewInfo) SetMatchRequests(v PowerboxDescriptor_List) error {
-
-	return s.Struct.SetPointer(3, v.List)
+	return s.Struct.SetPtr(3, v.List.ToPtr())
 }
 
-func (s UiView_ViewInfo) MatchOffers() (PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Pointer(4)
+// NewMatchRequests sets the matchRequests field to a newly
+// allocated PowerboxDescriptor_List, preferring placement in s's segment.
+func (s UiView_ViewInfo) NewMatchRequests(n int32) (PowerboxDescriptor_List, error) {
+	l, err := NewPowerboxDescriptor_List(s.Struct.Segment(), n)
 	if err != nil {
 		return PowerboxDescriptor_List{}, err
 	}
+	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	return l, err
+}
 
-	l := capnp.ToList(p)
+func (s UiView_ViewInfo) MatchOffers() (PowerboxDescriptor_List, error) {
+	p, err := s.Struct.Ptr(4)
+	if err != nil {
+		return PowerboxDescriptor_List{}, err
+	}
+	return PowerboxDescriptor_List{List: p.List()}, nil
+}
 
-	return PowerboxDescriptor_List{List: l}, nil
+func (s UiView_ViewInfo) HasMatchOffers() bool {
+	p, err := s.Struct.Ptr(4)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_ViewInfo) SetMatchOffers(v PowerboxDescriptor_List) error {
+	return s.Struct.SetPtr(4, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(4, v.List)
+// NewMatchOffers sets the matchOffers field to a newly
+// allocated PowerboxDescriptor_List, preferring placement in s's segment.
+func (s UiView_ViewInfo) NewMatchOffers(n int32) (PowerboxDescriptor_List, error) {
+	l, err := NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	if err != nil {
+		return PowerboxDescriptor_List{}, err
+	}
+	err = s.Struct.SetPtr(4, l.List.ToPtr())
+	return l, err
 }
 
 // UiView_ViewInfo_List is a list of UiView_ViewInfo.
@@ -2557,12 +2648,11 @@ func NewRootUiView_getViewInfo_Params(s *capnp.Segment) (UiView_getViewInfo_Para
 }
 
 func ReadRootUiView_getViewInfo_Params(msg *capnp.Message) (UiView_getViewInfo_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_getViewInfo_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_getViewInfo_Params{st}, nil
+	return UiView_getViewInfo_Params{root.Struct()}, nil
 }
 
 // UiView_getViewInfo_Params_List is a list of UiView_getViewInfo_Params.
@@ -2595,7 +2685,7 @@ func (p UiView_getViewInfo_Params_Promise) Struct() (UiView_getViewInfo_Params, 
 type UiView_newSession_Params struct{ capnp.Struct }
 
 func NewUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return UiView_newSession_Params{}, err
 	}
@@ -2603,7 +2693,7 @@ func NewUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params, er
 }
 
 func NewRootUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return UiView_newSession_Params{}, err
 	}
@@ -2611,54 +2701,55 @@ func NewRootUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params
 }
 
 func ReadRootUiView_newSession_Params(msg *capnp.Message) (UiView_newSession_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newSession_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newSession_Params{st}, nil
+	return UiView_newSession_Params{root.Struct()}, nil
 }
-
 func (s UiView_newSession_Params) UserInfo() (UserInfo, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return UserInfo{}, err
 	}
+	return UserInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return UserInfo{Struct: ss}, nil
+func (s UiView_newSession_Params) HasUserInfo() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newSession_Params) SetUserInfo(v UserInfo) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewUserInfo sets the userInfo field to a newly
 // allocated UserInfo struct, preferring placement in s's segment.
 func (s UiView_newSession_Params) NewUserInfo() (UserInfo, error) {
-
 	ss, err := NewUserInfo(s.Struct.Segment())
 	if err != nil {
 		return UserInfo{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s UiView_newSession_Params) Context() SessionContext {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return SessionContext{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SessionContext{Client: c}
+	return SessionContext{Client: p.Interface().Client()}
+}
+
+func (s UiView_newSession_Params) HasContext() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newSession_Params) SetContext(v SessionContext) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2668,7 +2759,7 @@ func (s UiView_newSession_Params) SetContext(v SessionContext) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 func (s UiView_newSession_Params) SessionType() uint64 {
@@ -2676,38 +2767,28 @@ func (s UiView_newSession_Params) SessionType() uint64 {
 }
 
 func (s UiView_newSession_Params) SetSessionType(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
 func (s UiView_newSession_Params) SessionParams() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(2)
+}
 
+func (s UiView_newSession_Params) HasSessionParams() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
+
+func (s UiView_newSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(2)
 }
 
 func (s UiView_newSession_Params) SetSessionParams(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(2, v)
 }
 
-func (s UiView_newSession_Params) TabId() ([]byte, error) {
-	p, err := s.Struct.Pointer(3)
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(capnp.ToData(p)), nil
-
-}
-
-func (s UiView_newSession_Params) SetTabId(v []byte) error {
-
-	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(3, d)
+func (s UiView_newSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(2, v)
 }
 
 // UiView_newSession_Params_List is a list of UiView_newSession_Params.
@@ -2715,7 +2796,7 @@ type UiView_newSession_Params_List struct{ capnp.List }
 
 // NewUiView_newSession_Params creates a new list of UiView_newSession_Params.
 func NewUiView_newSession_Params_List(s *capnp.Segment, sz int32) (UiView_newSession_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
 	if err != nil {
 		return UiView_newSession_Params_List{}, err
 	}
@@ -2768,26 +2849,27 @@ func NewRootUiView_newSession_Results(s *capnp.Segment) (UiView_newSession_Resul
 }
 
 func ReadRootUiView_newSession_Results(msg *capnp.Message) (UiView_newSession_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newSession_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newSession_Results{st}, nil
+	return UiView_newSession_Results{root.Struct()}, nil
 }
-
 func (s UiView_newSession_Results) Session() UiSession {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiSession{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiSession{Client: c}
+	return UiSession{Client: p.Interface().Client()}
+}
+
+func (s UiView_newSession_Results) HasSession() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newSession_Results) SetSession(v UiSession) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2797,7 +2879,7 @@ func (s UiView_newSession_Results) SetSession(v UiSession) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // UiView_newSession_Results_List is a list of UiView_newSession_Results.
@@ -2834,7 +2916,7 @@ func (p UiView_newSession_Results_Promise) Session() UiSession {
 type UiView_newRequestSession_Params struct{ capnp.Struct }
 
 func NewUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequestSession_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
 	if err != nil {
 		return UiView_newRequestSession_Params{}, err
 	}
@@ -2842,7 +2924,7 @@ func NewUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequestSess
 }
 
 func NewRootUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequestSession_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
 	if err != nil {
 		return UiView_newRequestSession_Params{}, err
 	}
@@ -2850,54 +2932,55 @@ func NewRootUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequest
 }
 
 func ReadRootUiView_newRequestSession_Params(msg *capnp.Message) (UiView_newRequestSession_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newRequestSession_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newRequestSession_Params{st}, nil
+	return UiView_newRequestSession_Params{root.Struct()}, nil
 }
-
 func (s UiView_newRequestSession_Params) UserInfo() (UserInfo, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return UserInfo{}, err
 	}
+	return UserInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return UserInfo{Struct: ss}, nil
+func (s UiView_newRequestSession_Params) HasUserInfo() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newRequestSession_Params) SetUserInfo(v UserInfo) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewUserInfo sets the userInfo field to a newly
 // allocated UserInfo struct, preferring placement in s's segment.
 func (s UiView_newRequestSession_Params) NewUserInfo() (UserInfo, error) {
-
 	ss, err := NewUserInfo(s.Struct.Segment())
 	if err != nil {
 		return UserInfo{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s UiView_newRequestSession_Params) Context() SessionContext {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return SessionContext{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SessionContext{Client: c}
+	return SessionContext{Client: p.Interface().Client()}
+}
+
+func (s UiView_newRequestSession_Params) HasContext() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newRequestSession_Params) SetContext(v SessionContext) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2907,7 +2990,7 @@ func (s UiView_newRequestSession_Params) SetContext(v SessionContext) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 func (s UiView_newRequestSession_Params) SessionType() uint64 {
@@ -2915,54 +2998,56 @@ func (s UiView_newRequestSession_Params) SessionType() uint64 {
 }
 
 func (s UiView_newRequestSession_Params) SetSessionType(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
 func (s UiView_newRequestSession_Params) SessionParams() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(2)
+}
 
+func (s UiView_newRequestSession_Params) HasSessionParams() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
+
+func (s UiView_newRequestSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(2)
 }
 
 func (s UiView_newRequestSession_Params) SetSessionParams(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(2, v)
 }
 
+func (s UiView_newRequestSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(2, v)
+}
+
 func (s UiView_newRequestSession_Params) RequestInfo() (PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Pointer(3)
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return PowerboxDescriptor_List{}, err
 	}
+	return PowerboxDescriptor_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return PowerboxDescriptor_List{List: l}, nil
+func (s UiView_newRequestSession_Params) HasRequestInfo() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newRequestSession_Params) SetRequestInfo(v PowerboxDescriptor_List) error {
-
-	return s.Struct.SetPointer(3, v.List)
+	return s.Struct.SetPtr(3, v.List.ToPtr())
 }
 
-func (s UiView_newRequestSession_Params) TabId() ([]byte, error) {
-	p, err := s.Struct.Pointer(4)
+// NewRequestInfo sets the requestInfo field to a newly
+// allocated PowerboxDescriptor_List, preferring placement in s's segment.
+func (s UiView_newRequestSession_Params) NewRequestInfo(n int32) (PowerboxDescriptor_List, error) {
+	l, err := NewPowerboxDescriptor_List(s.Struct.Segment(), n)
 	if err != nil {
-		return nil, err
+		return PowerboxDescriptor_List{}, err
 	}
-
-	return []byte(capnp.ToData(p)), nil
-
-}
-
-func (s UiView_newRequestSession_Params) SetTabId(v []byte) error {
-
-	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(4, d)
+	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	return l, err
 }
 
 // UiView_newRequestSession_Params_List is a list of UiView_newRequestSession_Params.
@@ -2970,7 +3055,7 @@ type UiView_newRequestSession_Params_List struct{ capnp.List }
 
 // NewUiView_newRequestSession_Params creates a new list of UiView_newRequestSession_Params.
 func NewUiView_newRequestSession_Params_List(s *capnp.Segment, sz int32) (UiView_newRequestSession_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
 	if err != nil {
 		return UiView_newRequestSession_Params_List{}, err
 	}
@@ -3023,26 +3108,27 @@ func NewRootUiView_newRequestSession_Results(s *capnp.Segment) (UiView_newReques
 }
 
 func ReadRootUiView_newRequestSession_Results(msg *capnp.Message) (UiView_newRequestSession_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newRequestSession_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newRequestSession_Results{st}, nil
+	return UiView_newRequestSession_Results{root.Struct()}, nil
 }
-
 func (s UiView_newRequestSession_Results) Session() UiSession {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiSession{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiSession{Client: c}
+	return UiSession{Client: p.Interface().Client()}
+}
+
+func (s UiView_newRequestSession_Results) HasSession() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newRequestSession_Results) SetSession(v UiSession) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -3052,7 +3138,7 @@ func (s UiView_newRequestSession_Results) SetSession(v UiSession) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // UiView_newRequestSession_Results_List is a list of UiView_newRequestSession_Results.
@@ -3089,7 +3175,7 @@ func (p UiView_newRequestSession_Results_Promise) Session() UiSession {
 type UiView_newOfferSession_Params struct{ capnp.Struct }
 
 func NewUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSession_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
 	if err != nil {
 		return UiView_newOfferSession_Params{}, err
 	}
@@ -3097,7 +3183,7 @@ func NewUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSession_
 }
 
 func NewRootUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSession_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
 	if err != nil {
 		return UiView_newOfferSession_Params{}, err
 	}
@@ -3105,54 +3191,55 @@ func NewRootUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSess
 }
 
 func ReadRootUiView_newOfferSession_Params(msg *capnp.Message) (UiView_newOfferSession_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newOfferSession_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newOfferSession_Params{st}, nil
+	return UiView_newOfferSession_Params{root.Struct()}, nil
 }
-
 func (s UiView_newOfferSession_Params) UserInfo() (UserInfo, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return UserInfo{}, err
 	}
+	return UserInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return UserInfo{Struct: ss}, nil
+func (s UiView_newOfferSession_Params) HasUserInfo() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newOfferSession_Params) SetUserInfo(v UserInfo) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewUserInfo sets the userInfo field to a newly
 // allocated UserInfo struct, preferring placement in s's segment.
 func (s UiView_newOfferSession_Params) NewUserInfo() (UserInfo, error) {
-
 	ss, err := NewUserInfo(s.Struct.Segment())
 	if err != nil {
 		return UserInfo{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s UiView_newOfferSession_Params) Context() SessionContext {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return SessionContext{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SessionContext{Client: c}
+	return SessionContext{Client: p.Interface().Client()}
+}
+
+func (s UiView_newOfferSession_Params) HasContext() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newOfferSession_Params) SetContext(v SessionContext) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -3162,7 +3249,7 @@ func (s UiView_newOfferSession_Params) SetContext(v SessionContext) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 func (s UiView_newOfferSession_Params) SessionType() uint64 {
@@ -3170,77 +3257,77 @@ func (s UiView_newOfferSession_Params) SessionType() uint64 {
 }
 
 func (s UiView_newOfferSession_Params) SetSessionType(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
 func (s UiView_newOfferSession_Params) SessionParams() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(2)
+}
 
+func (s UiView_newOfferSession_Params) HasSessionParams() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
+
+func (s UiView_newOfferSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(2)
 }
 
 func (s UiView_newOfferSession_Params) SetSessionParams(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(2, v)
 }
 
+func (s UiView_newOfferSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(2, v)
+}
+
 func (s UiView_newOfferSession_Params) Offer() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(3)
+}
 
+func (s UiView_newOfferSession_Params) HasOffer() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
+}
+
+func (s UiView_newOfferSession_Params) OfferPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(3)
 }
 
 func (s UiView_newOfferSession_Params) SetOffer(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(3, v)
 }
 
+func (s UiView_newOfferSession_Params) SetOfferPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(3, v)
+}
+
 func (s UiView_newOfferSession_Params) Descriptor() (PowerboxDescriptor, error) {
-	p, err := s.Struct.Pointer(4)
+	p, err := s.Struct.Ptr(4)
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
+	return PowerboxDescriptor{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDescriptor{Struct: ss}, nil
+func (s UiView_newOfferSession_Params) HasDescriptor() bool {
+	p, err := s.Struct.Ptr(4)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newOfferSession_Params) SetDescriptor(v PowerboxDescriptor) error {
-
-	return s.Struct.SetPointer(4, v.Struct)
+	return s.Struct.SetPtr(4, v.Struct.ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated PowerboxDescriptor struct, preferring placement in s's segment.
 func (s UiView_newOfferSession_Params) NewDescriptor() (PowerboxDescriptor, error) {
-
 	ss, err := NewPowerboxDescriptor(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPointer(4, ss)
+	err = s.Struct.SetPtr(4, ss.Struct.ToPtr())
 	return ss, err
-}
-
-func (s UiView_newOfferSession_Params) TabId() ([]byte, error) {
-	p, err := s.Struct.Pointer(5)
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(capnp.ToData(p)), nil
-
-}
-
-func (s UiView_newOfferSession_Params) SetTabId(v []byte) error {
-
-	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(5, d)
 }
 
 // UiView_newOfferSession_Params_List is a list of UiView_newOfferSession_Params.
@@ -3248,7 +3335,7 @@ type UiView_newOfferSession_Params_List struct{ capnp.List }
 
 // NewUiView_newOfferSession_Params creates a new list of UiView_newOfferSession_Params.
 func NewUiView_newOfferSession_Params_List(s *capnp.Segment, sz int32) (UiView_newOfferSession_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
 	if err != nil {
 		return UiView_newOfferSession_Params_List{}, err
 	}
@@ -3309,26 +3396,27 @@ func NewRootUiView_newOfferSession_Results(s *capnp.Segment) (UiView_newOfferSes
 }
 
 func ReadRootUiView_newOfferSession_Results(msg *capnp.Message) (UiView_newOfferSession_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UiView_newOfferSession_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UiView_newOfferSession_Results{st}, nil
+	return UiView_newOfferSession_Results{root.Struct()}, nil
 }
-
 func (s UiView_newOfferSession_Results) Session() UiSession {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiSession{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiSession{Client: c}
+	return UiSession{Client: p.Interface().Client()}
+}
+
+func (s UiView_newOfferSession_Results) HasSession() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UiView_newOfferSession_Results) SetSession(v UiSession) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -3338,7 +3426,7 @@ func (s UiView_newOfferSession_Results) SetSession(v UiSession) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // UiView_newOfferSession_Results_List is a list of UiView_newOfferSession_Results.
@@ -3393,7 +3481,7 @@ func UiSession_Methods(methods []server.Method, s UiSession_Server) []server.Met
 type UserInfo struct{ capnp.Struct }
 
 func NewUserInfo(s *capnp.Segment) (UserInfo, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
 	if err != nil {
 		return UserInfo{}, err
 	}
@@ -3401,7 +3489,7 @@ func NewUserInfo(s *capnp.Segment) (UserInfo, error) {
 }
 
 func NewRootUserInfo(s *capnp.Segment) (UserInfo, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
 	if err != nil {
 		return UserInfo{}, err
 	}
@@ -3409,141 +3497,108 @@ func NewRootUserInfo(s *capnp.Segment) (UserInfo, error) {
 }
 
 func ReadRootUserInfo(msg *capnp.Message) (UserInfo, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UserInfo{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UserInfo{st}, nil
+	return UserInfo{root.Struct()}, nil
 }
-
 func (s UserInfo) DisplayName() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s UserInfo) HasDisplayName() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UserInfo) SetDisplayName(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewDisplayName sets the displayName field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s UserInfo) NewDisplayName() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
-func (s UserInfo) PreferredHandle() (string, error) {
-	p, err := s.Struct.Pointer(4)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s UserInfo) SetPreferredHandle(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(4, t)
-}
-
-func (s UserInfo) PictureUrl() (string, error) {
-	p, err := s.Struct.Pointer(5)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s UserInfo) SetPictureUrl(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(5, t)
-}
-
-func (s UserInfo) Pronouns() UserInfo_Pronouns {
-	return UserInfo_Pronouns(s.Struct.Uint16(0))
-}
-
-func (s UserInfo) SetPronouns(v UserInfo_Pronouns) {
-
-	s.Struct.SetUint16(0, uint16(v))
-}
-
 func (s UserInfo) DeprecatedPermissionsBlob() ([]byte, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s UserInfo) HasDeprecatedPermissionsBlob() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UserInfo) SetDeprecatedPermissionsBlob(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(1, d)
+	return s.Struct.SetPtr(1, d.List.ToPtr())
 }
 
 func (s UserInfo) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(3)
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s UserInfo) HasPermissions() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
 }
 
 func (s UserInfo) SetPermissions(v capnp.BitList) error {
-
-	return s.Struct.SetPointer(3, v.List)
+	return s.Struct.SetPtr(3, v.List.ToPtr())
 }
 
-func (s UserInfo) IdentityId() ([]byte, error) {
-	p, err := s.Struct.Pointer(2)
+// NewPermissions sets the permissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s UserInfo) NewPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	return l, err
+}
+
+func (s UserInfo) UserId() ([]byte, error) {
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return nil, err
 	}
-
-	return []byte(capnp.ToData(p)), nil
-
+	return []byte(p.Data()), nil
 }
 
-func (s UserInfo) SetIdentityId(v []byte) error {
+func (s UserInfo) HasUserId() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
 
+func (s UserInfo) SetUserId(v []byte) error {
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(2, d)
+	return s.Struct.SetPtr(2, d.List.ToPtr())
 }
 
 // UserInfo_List is a list of UserInfo.
@@ -3551,7 +3606,7 @@ type UserInfo_List struct{ capnp.List }
 
 // NewUserInfo creates a new list of UserInfo.
 func NewUserInfo_List(s *capnp.Segment, sz int32) (UserInfo_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
 	if err != nil {
 		return UserInfo_List{}, err
 	}
@@ -3573,71 +3628,6 @@ func (p UserInfo_Promise) DisplayName() util.LocalizedText_Promise {
 	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
 }
 
-type UserInfo_Pronouns uint16
-
-// Values of UserInfo_Pronouns.
-const (
-	UserInfo_Pronouns_neutral UserInfo_Pronouns = 0
-	UserInfo_Pronouns_male    UserInfo_Pronouns = 1
-	UserInfo_Pronouns_female  UserInfo_Pronouns = 2
-	UserInfo_Pronouns_robot   UserInfo_Pronouns = 3
-)
-
-// String returns the enum's constant name.
-func (c UserInfo_Pronouns) String() string {
-	switch c {
-	case UserInfo_Pronouns_neutral:
-		return "neutral"
-	case UserInfo_Pronouns_male:
-		return "male"
-	case UserInfo_Pronouns_female:
-		return "female"
-	case UserInfo_Pronouns_robot:
-		return "robot"
-
-	default:
-		return ""
-	}
-}
-
-// UserInfo_PronounsFromString returns the enum value with a name,
-// or the zero value if there's no such value.
-func UserInfo_PronounsFromString(c string) UserInfo_Pronouns {
-	switch c {
-	case "neutral":
-		return UserInfo_Pronouns_neutral
-	case "male":
-		return UserInfo_Pronouns_male
-	case "female":
-		return UserInfo_Pronouns_female
-	case "robot":
-		return UserInfo_Pronouns_robot
-
-	default:
-		return 0
-	}
-}
-
-type UserInfo_Pronouns_List struct{ capnp.List }
-
-func NewUserInfo_Pronouns_List(s *capnp.Segment, sz int32) (UserInfo_Pronouns_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	if err != nil {
-		return UserInfo_Pronouns_List{}, err
-	}
-	return UserInfo_Pronouns_List{l.List}, nil
-}
-
-func (l UserInfo_Pronouns_List) At(i int) UserInfo_Pronouns {
-	ul := capnp.UInt16List{List: l.List}
-	return UserInfo_Pronouns(ul.At(i))
-}
-
-func (l UserInfo_Pronouns_List) Set(i int, v UserInfo_Pronouns) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
 type SessionContext struct{ Client capnp.Client }
 
 func (c SessionContext) GetSharedPermissions(ctx context.Context, params func(SessionContext_getSharedPermissions_Params) error, opts ...capnp.CallOption) SessionContext_getSharedPermissions_Results_Promise {
@@ -3647,7 +3637,6 @@ func (c SessionContext) GetSharedPermissions(ctx context.Context, params func(Se
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3661,7 +3650,6 @@ func (c SessionContext) GetSharedPermissions(ctx context.Context, params func(Se
 	}
 	return SessionContext_getSharedPermissions_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SessionContext) TieToUser(ctx context.Context, params func(SessionContext_tieToUser_Params) error, opts ...capnp.CallOption) SessionContext_tieToUser_Results_Promise {
 	if c.Client == nil {
 		return SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3669,7 +3657,6 @@ func (c SessionContext) TieToUser(ctx context.Context, params func(SessionContex
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3683,7 +3670,6 @@ func (c SessionContext) TieToUser(ctx context.Context, params func(SessionContex
 	}
 	return SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SessionContext) Offer(ctx context.Context, params func(SessionContext_offer_Params) error, opts ...capnp.CallOption) SessionContext_offer_Results_Promise {
 	if c.Client == nil {
 		return SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3691,7 +3677,6 @@ func (c SessionContext) Offer(ctx context.Context, params func(SessionContext_of
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3705,7 +3690,6 @@ func (c SessionContext) Offer(ctx context.Context, params func(SessionContext_of
 	}
 	return SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SessionContext) Request(ctx context.Context, params func(SessionContext_request_Params) error, opts ...capnp.CallOption) SessionContext_request_Results_Promise {
 	if c.Client == nil {
 		return SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3713,7 +3697,6 @@ func (c SessionContext) Request(ctx context.Context, params func(SessionContext_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3727,29 +3710,26 @@ func (c SessionContext) Request(ctx context.Context, params func(SessionContext_
 	}
 	return SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
-func (c SessionContext) FulfillRequest(ctx context.Context, params func(SessionContext_fulfillRequest_Params) error, opts ...capnp.CallOption) SessionContext_fulfillRequest_Results_Promise {
+func (c SessionContext) Provide(ctx context.Context, params func(SessionContext_provide_Params) error, opts ...capnp.CallOption) SessionContext_provide_Results_Promise {
 	if c.Client == nil {
-		return SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return SessionContext_provide_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SessionContext",
-			MethodName:    "fulfillRequest",
+			MethodName:    "provide",
 		},
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_fulfillRequest_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_provide_Params{Struct: s}) }
 	}
-	return SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return SessionContext_provide_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SessionContext) Close(ctx context.Context, params func(SessionContext_close_Params) error, opts ...capnp.CallOption) SessionContext_close_Results_Promise {
 	if c.Client == nil {
 		return SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3757,7 +3737,6 @@ func (c SessionContext) Close(ctx context.Context, params func(SessionContext_cl
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3771,7 +3750,6 @@ func (c SessionContext) Close(ctx context.Context, params func(SessionContext_cl
 	}
 	return SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SessionContext) OpenView(ctx context.Context, params func(SessionContext_openView_Params) error, opts ...capnp.CallOption) SessionContext_openView_Results_Promise {
 	if c.Client == nil {
 		return SessionContext_openView_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3779,7 +3757,6 @@ func (c SessionContext) OpenView(ctx context.Context, params func(SessionContext
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3803,7 +3780,7 @@ type SessionContext_Server interface {
 
 	Request(SessionContext_request) error
 
-	FulfillRequest(SessionContext_fulfillRequest) error
+	Provide(SessionContext_provide) error
 
 	Close(SessionContext_close) error
 
@@ -3822,7 +3799,6 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3837,7 +3813,6 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3852,7 +3827,6 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3867,7 +3841,6 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3882,22 +3855,20 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SessionContext",
-			MethodName:    "fulfillRequest",
+			MethodName:    "provide",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_fulfillRequest{c, opts, SessionContext_fulfillRequest_Params{Struct: p}, SessionContext_fulfillRequest_Results{Struct: r}}
-			return s.FulfillRequest(call)
+			call := SessionContext_provide{c, opts, SessionContext_provide_Params{Struct: p}, SessionContext_provide_Results{Struct: r}}
+			return s.Provide(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3912,7 +3883,6 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SessionContext",
@@ -3960,12 +3930,12 @@ type SessionContext_request struct {
 	Results SessionContext_request_Results
 }
 
-// SessionContext_fulfillRequest holds the arguments for a server call to SessionContext.fulfillRequest.
-type SessionContext_fulfillRequest struct {
+// SessionContext_provide holds the arguments for a server call to SessionContext.provide.
+type SessionContext_provide struct {
 	Ctx     context.Context
 	Options capnp.CallOptions
-	Params  SessionContext_fulfillRequest_Params
-	Results SessionContext_fulfillRequest_Results
+	Params  SessionContext_provide_Params
+	Results SessionContext_provide_Results
 }
 
 // SessionContext_close holds the arguments for a server call to SessionContext.close.
@@ -4003,12 +3973,11 @@ func NewRootSessionContext_getSharedPermissions_Params(s *capnp.Segment) (Sessio
 }
 
 func ReadRootSessionContext_getSharedPermissions_Params(msg *capnp.Message) (SessionContext_getSharedPermissions_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_getSharedPermissions_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_getSharedPermissions_Params{st}, nil
+	return SessionContext_getSharedPermissions_Params{root.Struct()}, nil
 }
 
 // SessionContext_getSharedPermissions_Params_List is a list of SessionContext_getSharedPermissions_Params.
@@ -4057,26 +4026,27 @@ func NewRootSessionContext_getSharedPermissions_Results(s *capnp.Segment) (Sessi
 }
 
 func ReadRootSessionContext_getSharedPermissions_Results(msg *capnp.Message) (SessionContext_getSharedPermissions_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_getSharedPermissions_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_getSharedPermissions_Results{st}, nil
+	return SessionContext_getSharedPermissions_Results{root.Struct()}, nil
 }
-
 func (s SessionContext_getSharedPermissions_Results) Var() util.Assignable_Getter {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Assignable_Getter{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Assignable_Getter{Client: c}
+	return util.Assignable_Getter{Client: p.Interface().Client()}
+}
+
+func (s SessionContext_getSharedPermissions_Results) HasVar() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_getSharedPermissions_Results) SetVar(v util.Assignable_Getter) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -4086,7 +4056,7 @@ func (s SessionContext_getSharedPermissions_Results) SetVar(v util.Assignable_Ge
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SessionContext_getSharedPermissions_Results_List is a list of SessionContext_getSharedPermissions_Results.
@@ -4139,66 +4109,86 @@ func NewRootSessionContext_tieToUser_Params(s *capnp.Segment) (SessionContext_ti
 }
 
 func ReadRootSessionContext_tieToUser_Params(msg *capnp.Message) (SessionContext_tieToUser_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_tieToUser_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_tieToUser_Params{st}, nil
+	return SessionContext_tieToUser_Params{root.Struct()}, nil
+}
+func (s SessionContext_tieToUser_Params) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SessionContext_tieToUser_Params) Cap() (capnp.Pointer, error) {
+func (s SessionContext_tieToUser_Params) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SessionContext_tieToUser_Params) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SessionContext_tieToUser_Params) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SessionContext_tieToUser_Params) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SessionContext_tieToUser_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s SessionContext_tieToUser_Params) HasRequiredPermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_tieToUser_Params) SetRequiredPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRequiredPermissions sets the requiredPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s SessionContext_tieToUser_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 func (s SessionContext_tieToUser_Params) DisplayInfo() (PowerboxDisplayInfo, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
+	return PowerboxDisplayInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDisplayInfo{Struct: ss}, nil
+func (s SessionContext_tieToUser_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_tieToUser_Params) SetDisplayInfo(v PowerboxDisplayInfo) error {
-
-	return s.Struct.SetPointer(2, v.Struct)
+	return s.Struct.SetPtr(2, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated PowerboxDisplayInfo struct, preferring placement in s's segment.
 func (s SessionContext_tieToUser_Params) NewDisplayInfo() (PowerboxDisplayInfo, error) {
-
 	ss, err := NewPowerboxDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(2, ss)
+	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -4256,23 +4246,31 @@ func NewRootSessionContext_tieToUser_Results(s *capnp.Segment) (SessionContext_t
 }
 
 func ReadRootSessionContext_tieToUser_Results(msg *capnp.Message) (SessionContext_tieToUser_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_tieToUser_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_tieToUser_Results{st}, nil
+	return SessionContext_tieToUser_Results{root.Struct()}, nil
+}
+func (s SessionContext_tieToUser_Results) TiedCap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SessionContext_tieToUser_Results) TiedCap() (capnp.Pointer, error) {
+func (s SessionContext_tieToUser_Results) HasTiedCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SessionContext_tieToUser_Results) TiedCapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SessionContext_tieToUser_Results) SetTiedCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s SessionContext_tieToUser_Results) SetTiedCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // SessionContext_tieToUser_Results_List is a list of SessionContext_tieToUser_Results.
@@ -4325,94 +4323,114 @@ func NewRootSessionContext_offer_Params(s *capnp.Segment) (SessionContext_offer_
 }
 
 func ReadRootSessionContext_offer_Params(msg *capnp.Message) (SessionContext_offer_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_offer_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_offer_Params{st}, nil
+	return SessionContext_offer_Params{root.Struct()}, nil
+}
+func (s SessionContext_offer_Params) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SessionContext_offer_Params) Cap() (capnp.Pointer, error) {
+func (s SessionContext_offer_Params) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SessionContext_offer_Params) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SessionContext_offer_Params) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SessionContext_offer_Params) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SessionContext_offer_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s SessionContext_offer_Params) HasRequiredPermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_offer_Params) SetRequiredPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRequiredPermissions sets the requiredPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s SessionContext_offer_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 func (s SessionContext_offer_Params) Descriptor() (PowerboxDescriptor, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
+	return PowerboxDescriptor{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDescriptor{Struct: ss}, nil
+func (s SessionContext_offer_Params) HasDescriptor() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_offer_Params) SetDescriptor(v PowerboxDescriptor) error {
-
-	return s.Struct.SetPointer(2, v.Struct)
+	return s.Struct.SetPtr(2, v.Struct.ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated PowerboxDescriptor struct, preferring placement in s's segment.
 func (s SessionContext_offer_Params) NewDescriptor() (PowerboxDescriptor, error) {
-
 	ss, err := NewPowerboxDescriptor(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPointer(2, ss)
+	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s SessionContext_offer_Params) DisplayInfo() (PowerboxDisplayInfo, error) {
-	p, err := s.Struct.Pointer(3)
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
+	return PowerboxDisplayInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDisplayInfo{Struct: ss}, nil
+func (s SessionContext_offer_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_offer_Params) SetDisplayInfo(v PowerboxDisplayInfo) error {
-
-	return s.Struct.SetPointer(3, v.Struct)
+	return s.Struct.SetPtr(3, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated PowerboxDisplayInfo struct, preferring placement in s's segment.
 func (s SessionContext_offer_Params) NewDisplayInfo() (PowerboxDisplayInfo, error) {
-
 	ss, err := NewPowerboxDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(3, ss)
+	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -4474,12 +4492,11 @@ func NewRootSessionContext_offer_Results(s *capnp.Segment) (SessionContext_offer
 }
 
 func ReadRootSessionContext_offer_Results(msg *capnp.Message) (SessionContext_offer_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_offer_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_offer_Results{st}, nil
+	return SessionContext_offer_Results{root.Struct()}, nil
 }
 
 // SessionContext_offer_Results_List is a list of SessionContext_offer_Results.
@@ -4528,28 +4545,38 @@ func NewRootSessionContext_request_Params(s *capnp.Segment) (SessionContext_requ
 }
 
 func ReadRootSessionContext_request_Params(msg *capnp.Message) (SessionContext_request_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_request_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_request_Params{st}, nil
+	return SessionContext_request_Params{root.Struct()}, nil
 }
-
 func (s SessionContext_request_Params) Query() (PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return PowerboxDescriptor_List{}, err
 	}
+	return PowerboxDescriptor_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return PowerboxDescriptor_List{List: l}, nil
+func (s SessionContext_request_Params) HasQuery() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_request_Params) SetQuery(v PowerboxDescriptor_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(0, v.List)
+// NewQuery sets the query field to a newly
+// allocated PowerboxDescriptor_List, preferring placement in s's segment.
+func (s SessionContext_request_Params) NewQuery(n int32) (PowerboxDescriptor_List, error) {
+	l, err := NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	if err != nil {
+		return PowerboxDescriptor_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
 }
 
 // SessionContext_request_Params_List is a list of SessionContext_request_Params.
@@ -4598,50 +4625,58 @@ func NewRootSessionContext_request_Results(s *capnp.Segment) (SessionContext_req
 }
 
 func ReadRootSessionContext_request_Results(msg *capnp.Message) (SessionContext_request_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_request_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_request_Results{st}, nil
+	return SessionContext_request_Results{root.Struct()}, nil
+}
+func (s SessionContext_request_Results) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SessionContext_request_Results) Cap() (capnp.Pointer, error) {
+func (s SessionContext_request_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SessionContext_request_Results) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SessionContext_request_Results) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s SessionContext_request_Results) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s SessionContext_request_Results) Descriptor() (PowerboxDescriptor, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
+	return PowerboxDescriptor{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDescriptor{Struct: ss}, nil
+func (s SessionContext_request_Results) HasDescriptor() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_request_Results) SetDescriptor(v PowerboxDescriptor) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated PowerboxDescriptor struct, preferring placement in s's segment.
 func (s SessionContext_request_Results) NewDescriptor() (PowerboxDescriptor, error) {
-
 	ss, err := NewPowerboxDescriptor(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -4680,207 +4715,226 @@ func (p SessionContext_request_Results_Promise) Descriptor() PowerboxDescriptor_
 	return PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
 }
 
-type SessionContext_fulfillRequest_Params struct{ capnp.Struct }
+type SessionContext_provide_Params struct{ capnp.Struct }
 
-func NewSessionContext_fulfillRequest_Params(s *capnp.Segment) (SessionContext_fulfillRequest_Params, error) {
+func NewSessionContext_provide_Params(s *capnp.Segment) (SessionContext_provide_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
 	if err != nil {
-		return SessionContext_fulfillRequest_Params{}, err
+		return SessionContext_provide_Params{}, err
 	}
-	return SessionContext_fulfillRequest_Params{st}, nil
+	return SessionContext_provide_Params{st}, nil
 }
 
-func NewRootSessionContext_fulfillRequest_Params(s *capnp.Segment) (SessionContext_fulfillRequest_Params, error) {
+func NewRootSessionContext_provide_Params(s *capnp.Segment) (SessionContext_provide_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
 	if err != nil {
-		return SessionContext_fulfillRequest_Params{}, err
+		return SessionContext_provide_Params{}, err
 	}
-	return SessionContext_fulfillRequest_Params{st}, nil
+	return SessionContext_provide_Params{st}, nil
 }
 
-func ReadRootSessionContext_fulfillRequest_Params(msg *capnp.Message) (SessionContext_fulfillRequest_Params, error) {
-	root, err := msg.Root()
+func ReadRootSessionContext_provide_Params(msg *capnp.Message) (SessionContext_provide_Params, error) {
+	root, err := msg.RootPtr()
 	if err != nil {
-		return SessionContext_fulfillRequest_Params{}, err
+		return SessionContext_provide_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_fulfillRequest_Params{st}, nil
+	return SessionContext_provide_Params{root.Struct()}, nil
 }
-
-func (s SessionContext_fulfillRequest_Params) Cap() (capnp.Pointer, error) {
-
+func (s SessionContext_provide_Params) Cap() (capnp.Pointer, error) {
 	return s.Struct.Pointer(0)
-
 }
 
-func (s SessionContext_fulfillRequest_Params) SetCap(v capnp.Pointer) error {
+func (s SessionContext_provide_Params) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s SessionContext_provide_Params) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
+}
+
+func (s SessionContext_provide_Params) SetCap(v capnp.Pointer) error {
 	return s.Struct.SetPointer(0, v)
 }
 
-func (s SessionContext_fulfillRequest_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+func (s SessionContext_provide_Params) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
+func (s SessionContext_provide_Params) RequiredPermissions() (capnp.BitList, error) {
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+	return capnp.BitList{List: p.List()}, nil
 }
 
-func (s SessionContext_fulfillRequest_Params) SetRequiredPermissions(v capnp.BitList) error {
-
-	return s.Struct.SetPointer(1, v.List)
+func (s SessionContext_provide_Params) HasRequiredPermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
-func (s SessionContext_fulfillRequest_Params) Descriptor() (PowerboxDescriptor, error) {
-	p, err := s.Struct.Pointer(2)
+func (s SessionContext_provide_Params) SetRequiredPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
+
+// NewRequiredPermissions sets the requiredPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s SessionContext_provide_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
+}
+
+func (s SessionContext_provide_Params) Descriptor() (PowerboxDescriptor, error) {
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDescriptor{Struct: ss}, nil
+	return PowerboxDescriptor{Struct: p.Struct()}, nil
 }
 
-func (s SessionContext_fulfillRequest_Params) SetDescriptor(v PowerboxDescriptor) error {
+func (s SessionContext_provide_Params) HasDescriptor() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.SetPointer(2, v.Struct)
+func (s SessionContext_provide_Params) SetDescriptor(v PowerboxDescriptor) error {
+	return s.Struct.SetPtr(2, v.Struct.ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated PowerboxDescriptor struct, preferring placement in s's segment.
-func (s SessionContext_fulfillRequest_Params) NewDescriptor() (PowerboxDescriptor, error) {
-
+func (s SessionContext_provide_Params) NewDescriptor() (PowerboxDescriptor, error) {
 	ss, err := NewPowerboxDescriptor(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPointer(2, ss)
+	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
 	return ss, err
 }
 
-func (s SessionContext_fulfillRequest_Params) DisplayInfo() (PowerboxDisplayInfo, error) {
-	p, err := s.Struct.Pointer(3)
+func (s SessionContext_provide_Params) DisplayInfo() (PowerboxDisplayInfo, error) {
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-
-	ss := capnp.ToStruct(p)
-
-	return PowerboxDisplayInfo{Struct: ss}, nil
+	return PowerboxDisplayInfo{Struct: p.Struct()}, nil
 }
 
-func (s SessionContext_fulfillRequest_Params) SetDisplayInfo(v PowerboxDisplayInfo) error {
+func (s SessionContext_provide_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.SetPointer(3, v.Struct)
+func (s SessionContext_provide_Params) SetDisplayInfo(v PowerboxDisplayInfo) error {
+	return s.Struct.SetPtr(3, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated PowerboxDisplayInfo struct, preferring placement in s's segment.
-func (s SessionContext_fulfillRequest_Params) NewDisplayInfo() (PowerboxDisplayInfo, error) {
-
+func (s SessionContext_provide_Params) NewDisplayInfo() (PowerboxDisplayInfo, error) {
 	ss, err := NewPowerboxDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return PowerboxDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(3, ss)
+	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
 	return ss, err
 }
 
-// SessionContext_fulfillRequest_Params_List is a list of SessionContext_fulfillRequest_Params.
-type SessionContext_fulfillRequest_Params_List struct{ capnp.List }
+// SessionContext_provide_Params_List is a list of SessionContext_provide_Params.
+type SessionContext_provide_Params_List struct{ capnp.List }
 
-// NewSessionContext_fulfillRequest_Params creates a new list of SessionContext_fulfillRequest_Params.
-func NewSessionContext_fulfillRequest_Params_List(s *capnp.Segment, sz int32) (SessionContext_fulfillRequest_Params_List, error) {
+// NewSessionContext_provide_Params creates a new list of SessionContext_provide_Params.
+func NewSessionContext_provide_Params_List(s *capnp.Segment, sz int32) (SessionContext_provide_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
 	if err != nil {
-		return SessionContext_fulfillRequest_Params_List{}, err
+		return SessionContext_provide_Params_List{}, err
 	}
-	return SessionContext_fulfillRequest_Params_List{l}, nil
+	return SessionContext_provide_Params_List{l}, nil
 }
 
-func (s SessionContext_fulfillRequest_Params_List) At(i int) SessionContext_fulfillRequest_Params {
-	return SessionContext_fulfillRequest_Params{s.List.Struct(i)}
+func (s SessionContext_provide_Params_List) At(i int) SessionContext_provide_Params {
+	return SessionContext_provide_Params{s.List.Struct(i)}
 }
-func (s SessionContext_fulfillRequest_Params_List) Set(i int, v SessionContext_fulfillRequest_Params) error {
+func (s SessionContext_provide_Params_List) Set(i int, v SessionContext_provide_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// SessionContext_fulfillRequest_Params_Promise is a wrapper for a SessionContext_fulfillRequest_Params promised by a client call.
-type SessionContext_fulfillRequest_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_provide_Params_Promise is a wrapper for a SessionContext_provide_Params promised by a client call.
+type SessionContext_provide_Params_Promise struct{ *capnp.Pipeline }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Struct() (SessionContext_fulfillRequest_Params, error) {
+func (p SessionContext_provide_Params_Promise) Struct() (SessionContext_provide_Params, error) {
 	s, err := p.Pipeline.Struct()
-	return SessionContext_fulfillRequest_Params{s}, err
+	return SessionContext_provide_Params{s}, err
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Cap() *capnp.Pipeline {
+func (p SessionContext_provide_Params_Promise) Cap() *capnp.Pipeline {
 	return p.Pipeline.GetPipeline(0)
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Descriptor() PowerboxDescriptor_Promise {
+func (p SessionContext_provide_Params_Promise) Descriptor() PowerboxDescriptor_Promise {
 	return PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) DisplayInfo() PowerboxDisplayInfo_Promise {
+func (p SessionContext_provide_Params_Promise) DisplayInfo() PowerboxDisplayInfo_Promise {
 	return PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
 }
 
-type SessionContext_fulfillRequest_Results struct{ capnp.Struct }
+type SessionContext_provide_Results struct{ capnp.Struct }
 
-func NewSessionContext_fulfillRequest_Results(s *capnp.Segment) (SessionContext_fulfillRequest_Results, error) {
+func NewSessionContext_provide_Results(s *capnp.Segment) (SessionContext_provide_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	if err != nil {
-		return SessionContext_fulfillRequest_Results{}, err
+		return SessionContext_provide_Results{}, err
 	}
-	return SessionContext_fulfillRequest_Results{st}, nil
+	return SessionContext_provide_Results{st}, nil
 }
 
-func NewRootSessionContext_fulfillRequest_Results(s *capnp.Segment) (SessionContext_fulfillRequest_Results, error) {
+func NewRootSessionContext_provide_Results(s *capnp.Segment) (SessionContext_provide_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	if err != nil {
-		return SessionContext_fulfillRequest_Results{}, err
+		return SessionContext_provide_Results{}, err
 	}
-	return SessionContext_fulfillRequest_Results{st}, nil
+	return SessionContext_provide_Results{st}, nil
 }
 
-func ReadRootSessionContext_fulfillRequest_Results(msg *capnp.Message) (SessionContext_fulfillRequest_Results, error) {
-	root, err := msg.Root()
+func ReadRootSessionContext_provide_Results(msg *capnp.Message) (SessionContext_provide_Results, error) {
+	root, err := msg.RootPtr()
 	if err != nil {
-		return SessionContext_fulfillRequest_Results{}, err
+		return SessionContext_provide_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_fulfillRequest_Results{st}, nil
+	return SessionContext_provide_Results{root.Struct()}, nil
 }
 
-// SessionContext_fulfillRequest_Results_List is a list of SessionContext_fulfillRequest_Results.
-type SessionContext_fulfillRequest_Results_List struct{ capnp.List }
+// SessionContext_provide_Results_List is a list of SessionContext_provide_Results.
+type SessionContext_provide_Results_List struct{ capnp.List }
 
-// NewSessionContext_fulfillRequest_Results creates a new list of SessionContext_fulfillRequest_Results.
-func NewSessionContext_fulfillRequest_Results_List(s *capnp.Segment, sz int32) (SessionContext_fulfillRequest_Results_List, error) {
+// NewSessionContext_provide_Results creates a new list of SessionContext_provide_Results.
+func NewSessionContext_provide_Results_List(s *capnp.Segment, sz int32) (SessionContext_provide_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
 	if err != nil {
-		return SessionContext_fulfillRequest_Results_List{}, err
+		return SessionContext_provide_Results_List{}, err
 	}
-	return SessionContext_fulfillRequest_Results_List{l}, nil
+	return SessionContext_provide_Results_List{l}, nil
 }
 
-func (s SessionContext_fulfillRequest_Results_List) At(i int) SessionContext_fulfillRequest_Results {
-	return SessionContext_fulfillRequest_Results{s.List.Struct(i)}
+func (s SessionContext_provide_Results_List) At(i int) SessionContext_provide_Results {
+	return SessionContext_provide_Results{s.List.Struct(i)}
 }
-func (s SessionContext_fulfillRequest_Results_List) Set(i int, v SessionContext_fulfillRequest_Results) error {
+func (s SessionContext_provide_Results_List) Set(i int, v SessionContext_provide_Results) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// SessionContext_fulfillRequest_Results_Promise is a wrapper for a SessionContext_fulfillRequest_Results promised by a client call.
-type SessionContext_fulfillRequest_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_provide_Results_Promise is a wrapper for a SessionContext_provide_Results promised by a client call.
+type SessionContext_provide_Results_Promise struct{ *capnp.Pipeline }
 
-func (p SessionContext_fulfillRequest_Results_Promise) Struct() (SessionContext_fulfillRequest_Results, error) {
+func (p SessionContext_provide_Results_Promise) Struct() (SessionContext_provide_Results, error) {
 	s, err := p.Pipeline.Struct()
-	return SessionContext_fulfillRequest_Results{s}, err
+	return SessionContext_provide_Results{s}, err
 }
 
 type SessionContext_close_Params struct{ capnp.Struct }
@@ -4902,12 +4956,11 @@ func NewRootSessionContext_close_Params(s *capnp.Segment) (SessionContext_close_
 }
 
 func ReadRootSessionContext_close_Params(msg *capnp.Message) (SessionContext_close_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_close_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_close_Params{st}, nil
+	return SessionContext_close_Params{root.Struct()}, nil
 }
 
 // SessionContext_close_Params_List is a list of SessionContext_close_Params.
@@ -4956,12 +5009,11 @@ func NewRootSessionContext_close_Results(s *capnp.Segment) (SessionContext_close
 }
 
 func ReadRootSessionContext_close_Results(msg *capnp.Message) (SessionContext_close_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_close_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_close_Results{st}, nil
+	return SessionContext_close_Results{root.Struct()}, nil
 }
 
 // SessionContext_close_Results_List is a list of SessionContext_close_Results.
@@ -5010,26 +5062,27 @@ func NewRootSessionContext_openView_Params(s *capnp.Segment) (SessionContext_ope
 }
 
 func ReadRootSessionContext_openView_Params(msg *capnp.Message) (SessionContext_openView_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_openView_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_openView_Params{st}, nil
+	return SessionContext_openView_Params{root.Struct()}, nil
 }
-
 func (s SessionContext_openView_Params) View() UiView {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UiView{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UiView{Client: c}
+	return UiView{Client: p.Interface().Client()}
+}
+
+func (s SessionContext_openView_Params) HasView() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SessionContext_openView_Params) SetView(v UiView) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -5039,26 +5092,40 @@ func (s SessionContext_openView_Params) SetView(v UiView) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 func (s SessionContext_openView_Params) Path() (string, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s SessionContext_openView_Params) HasPath() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s SessionContext_openView_Params) PathBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s SessionContext_openView_Params) SetPath(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(1, t)
+	return s.Struct.SetPtr(1, t.List.ToPtr())
 }
 
 func (s SessionContext_openView_Params) NewTab() bool {
@@ -5066,7 +5133,6 @@ func (s SessionContext_openView_Params) NewTab() bool {
 }
 
 func (s SessionContext_openView_Params) SetNewTab(v bool) {
-
 	s.Struct.SetBit(0, v)
 }
 
@@ -5120,12 +5186,11 @@ func NewRootSessionContext_openView_Results(s *capnp.Segment) (SessionContext_op
 }
 
 func ReadRootSessionContext_openView_Results(msg *capnp.Message) (SessionContext_openView_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SessionContext_openView_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SessionContext_openView_Results{st}, nil
+	return SessionContext_openView_Results{root.Struct()}, nil
 }
 
 // SessionContext_openView_Results_List is a list of SessionContext_openView_Results.
@@ -5174,86 +5239,98 @@ func NewRootPermissionDef(s *capnp.Segment) (PermissionDef, error) {
 }
 
 func ReadRootPermissionDef(msg *capnp.Message) (PermissionDef, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return PermissionDef{}, err
 	}
-	st := capnp.ToStruct(root)
-	return PermissionDef{st}, nil
+	return PermissionDef{root.Struct()}, nil
 }
-
 func (s PermissionDef) Name() (string, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s PermissionDef) HasName() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
 
+func (s PermissionDef) NameBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(2)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s PermissionDef) SetName(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(2, t)
+	return s.Struct.SetPtr(2, t.List.ToPtr())
 }
 
 func (s PermissionDef) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s PermissionDef) HasTitle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s PermissionDef) SetTitle(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PermissionDef) NewTitle() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s PermissionDef) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s PermissionDef) HasDescription() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s PermissionDef) SetDescription(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PermissionDef) NewDescription() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -5262,7 +5339,6 @@ func (s PermissionDef) Obsolete() bool {
 }
 
 func (s PermissionDef) SetObsolete(v bool) {
-
 	s.Struct.SetBit(0, v)
 }
 
@@ -5316,112 +5392,122 @@ func NewRootRoleDef(s *capnp.Segment) (RoleDef, error) {
 }
 
 func ReadRootRoleDef(msg *capnp.Message) (RoleDef, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return RoleDef{}, err
 	}
-	st := capnp.ToStruct(root)
-	return RoleDef{st}, nil
+	return RoleDef{root.Struct()}, nil
 }
-
 func (s RoleDef) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s RoleDef) HasTitle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s RoleDef) SetTitle(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s RoleDef) NewTitle() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s RoleDef) VerbPhrase() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s RoleDef) HasVerbPhrase() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s RoleDef) SetVerbPhrase(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewVerbPhrase sets the verbPhrase field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s RoleDef) NewVerbPhrase() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s RoleDef) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s RoleDef) HasDescription() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s RoleDef) SetDescription(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(2, v.Struct)
+	return s.Struct.SetPtr(2, v.Struct.ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s RoleDef) NewDescription() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(2, ss)
+	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s RoleDef) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(3)
+	p, err := s.Struct.Ptr(3)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s RoleDef) HasPermissions() bool {
+	p, err := s.Struct.Ptr(3)
+	return p.IsValid() || err != nil
 }
 
 func (s RoleDef) SetPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(3, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(3, v.List)
+// NewPermissions sets the permissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s RoleDef) NewPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	return l, err
 }
 
 func (s RoleDef) Obsolete() bool {
@@ -5429,7 +5515,6 @@ func (s RoleDef) Obsolete() bool {
 }
 
 func (s RoleDef) SetObsolete(v bool) {
-
 	s.Struct.SetBit(0, v)
 }
 
@@ -5438,7 +5523,6 @@ func (s RoleDef) Default() bool {
 }
 
 func (s RoleDef) SetDefault(v bool) {
-
 	s.Struct.SetBit(1, v)
 }
 
@@ -5486,7 +5570,6 @@ func (c SharingLink) GetPetname(ctx context.Context, params func(SharingLink_get
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
@@ -5517,7 +5600,6 @@ func SharingLink_Methods(methods []server.Method, s SharingLink_Server) []server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
@@ -5560,12 +5642,11 @@ func NewRootSharingLink_getPetname_Params(s *capnp.Segment) (SharingLink_getPetn
 }
 
 func ReadRootSharingLink_getPetname_Params(msg *capnp.Message) (SharingLink_getPetname_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SharingLink_getPetname_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SharingLink_getPetname_Params{st}, nil
+	return SharingLink_getPetname_Params{root.Struct()}, nil
 }
 
 // SharingLink_getPetname_Params_List is a list of SharingLink_getPetname_Params.
@@ -5614,26 +5695,27 @@ func NewRootSharingLink_getPetname_Results(s *capnp.Segment) (SharingLink_getPet
 }
 
 func ReadRootSharingLink_getPetname_Results(msg *capnp.Message) (SharingLink_getPetname_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SharingLink_getPetname_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SharingLink_getPetname_Results{st}, nil
+	return SharingLink_getPetname_Results{root.Struct()}, nil
 }
-
 func (s SharingLink_getPetname_Results) Name() util.Assignable {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Assignable{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Assignable{Client: c}
+	return util.Assignable{Client: p.Interface().Client()}
+}
+
+func (s SharingLink_getPetname_Results) HasName() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SharingLink_getPetname_Results) SetName(v util.Assignable) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -5643,7 +5725,7 @@ func (s SharingLink_getPetname_Results) SetName(v util.Assignable) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SharingLink_getPetname_Results_List is a list of SharingLink_getPetname_Results.
@@ -5686,7 +5768,6 @@ func (c ViewSharingLink) GetRoleAssignment(ctx context.Context, params func(View
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa4f82f764dc3fee8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:ViewSharingLink",
@@ -5700,7 +5781,6 @@ func (c ViewSharingLink) GetRoleAssignment(ctx context.Context, params func(View
 	}
 	return ViewSharingLink_getRoleAssignment_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c ViewSharingLink) GetPetname(ctx context.Context, params func(SharingLink_getPetname_Params) error, opts ...capnp.CallOption) SharingLink_getPetname_Results_Promise {
 	if c.Client == nil {
 		return SharingLink_getPetname_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -5708,7 +5788,6 @@ func (c ViewSharingLink) GetPetname(ctx context.Context, params func(SharingLink
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
@@ -5741,7 +5820,6 @@ func ViewSharingLink_Methods(methods []server.Method, s ViewSharingLink_Server) 
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa4f82f764dc3fee8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:ViewSharingLink",
@@ -5756,7 +5834,6 @@ func ViewSharingLink_Methods(methods []server.Method, s ViewSharingLink_Server) 
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
@@ -5820,24 +5897,24 @@ func NewRootViewSharingLink_RoleAssignment(s *capnp.Segment) (ViewSharingLink_Ro
 }
 
 func ReadRootViewSharingLink_RoleAssignment(msg *capnp.Message) (ViewSharingLink_RoleAssignment, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ViewSharingLink_RoleAssignment{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ViewSharingLink_RoleAssignment{st}, nil
+	return ViewSharingLink_RoleAssignment{root.Struct()}, nil
 }
 
 func (s ViewSharingLink_RoleAssignment) Which() ViewSharingLink_RoleAssignment_Which {
 	return ViewSharingLink_RoleAssignment_Which(s.Struct.Uint16(0))
 }
-
 func (s ViewSharingLink_RoleAssignment) SetNone() {
 	s.Struct.SetUint16(0, 0)
+
 }
 
 func (s ViewSharingLink_RoleAssignment) SetAllAccess() {
 	s.Struct.SetUint16(0, 1)
+
 }
 
 func (s ViewSharingLink_RoleAssignment) RoleId() uint16 {
@@ -5850,35 +5927,59 @@ func (s ViewSharingLink_RoleAssignment) SetRoleId(v uint16) {
 }
 
 func (s ViewSharingLink_RoleAssignment) AddPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s ViewSharingLink_RoleAssignment) HasAddPermissions() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s ViewSharingLink_RoleAssignment) SetAddPermissions(v capnp.BitList) error {
-
-	return s.Struct.SetPointer(0, v.List)
+	return s.Struct.SetPtr(0, v.List.ToPtr())
 }
 
-func (s ViewSharingLink_RoleAssignment) RemovePermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+// NewAddPermissions sets the addPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s ViewSharingLink_RoleAssignment) NewAddPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
+}
 
-	l := capnp.ToList(p)
+func (s ViewSharingLink_RoleAssignment) RemovePermissions() (capnp.BitList, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	return capnp.BitList{List: l}, nil
+func (s ViewSharingLink_RoleAssignment) HasRemovePermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s ViewSharingLink_RoleAssignment) SetRemovePermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRemovePermissions sets the removePermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s ViewSharingLink_RoleAssignment) NewRemovePermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 // ViewSharingLink_RoleAssignment_List is a list of ViewSharingLink_RoleAssignment.
@@ -5927,12 +6028,11 @@ func NewRootViewSharingLink_getRoleAssignment_Params(s *capnp.Segment) (ViewShar
 }
 
 func ReadRootViewSharingLink_getRoleAssignment_Params(msg *capnp.Message) (ViewSharingLink_getRoleAssignment_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ViewSharingLink_getRoleAssignment_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ViewSharingLink_getRoleAssignment_Params{st}, nil
+	return ViewSharingLink_getRoleAssignment_Params{root.Struct()}, nil
 }
 
 // ViewSharingLink_getRoleAssignment_Params_List is a list of ViewSharingLink_getRoleAssignment_Params.
@@ -5981,26 +6081,27 @@ func NewRootViewSharingLink_getRoleAssignment_Results(s *capnp.Segment) (ViewSha
 }
 
 func ReadRootViewSharingLink_getRoleAssignment_Results(msg *capnp.Message) (ViewSharingLink_getRoleAssignment_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ViewSharingLink_getRoleAssignment_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ViewSharingLink_getRoleAssignment_Results{st}, nil
+	return ViewSharingLink_getRoleAssignment_Results{root.Struct()}, nil
 }
-
 func (s ViewSharingLink_getRoleAssignment_Results) Var() util.Assignable {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Assignable{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Assignable{Client: c}
+	return util.Assignable{Client: p.Interface().Client()}
+}
+
+func (s ViewSharingLink_getRoleAssignment_Results) HasVar() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s ViewSharingLink_getRoleAssignment_Results) SetVar(v util.Assignable) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -6010,7 +6111,7 @@ func (s ViewSharingLink_getRoleAssignment_Results) SetVar(v util.Assignable) err
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // ViewSharingLink_getRoleAssignment_Results_List is a list of ViewSharingLink_getRoleAssignment_Results.
@@ -6063,39 +6164,37 @@ func NewRootNotificationDisplayInfo(s *capnp.Segment) (NotificationDisplayInfo, 
 }
 
 func ReadRootNotificationDisplayInfo(msg *capnp.Message) (NotificationDisplayInfo, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
-	st := capnp.ToStruct(root)
-	return NotificationDisplayInfo{st}, nil
+	return NotificationDisplayInfo{root.Struct()}, nil
 }
-
 func (s NotificationDisplayInfo) Caption() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s NotificationDisplayInfo) HasCaption() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s NotificationDisplayInfo) SetCaption(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewCaption sets the caption field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s NotificationDisplayInfo) NewCaption() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -6139,7 +6238,6 @@ func (c NotificationTarget) AddOngoing(ctx context.Context, params func(Notifica
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xf0f87337d73020f0,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:NotificationTarget",
@@ -6170,7 +6268,6 @@ func NotificationTarget_Methods(methods []server.Method, s NotificationTarget_Se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xf0f87337d73020f0,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:NotificationTarget",
@@ -6213,54 +6310,55 @@ func NewRootNotificationTarget_addOngoing_Params(s *capnp.Segment) (Notification
 }
 
 func ReadRootNotificationTarget_addOngoing_Params(msg *capnp.Message) (NotificationTarget_addOngoing_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return NotificationTarget_addOngoing_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return NotificationTarget_addOngoing_Params{st}, nil
+	return NotificationTarget_addOngoing_Params{root.Struct()}, nil
 }
-
 func (s NotificationTarget_addOngoing_Params) DisplayInfo() (NotificationDisplayInfo, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
+	return NotificationDisplayInfo{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return NotificationDisplayInfo{Struct: ss}, nil
+func (s NotificationTarget_addOngoing_Params) HasDisplayInfo() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s NotificationTarget_addOngoing_Params) SetDisplayInfo(v NotificationDisplayInfo) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated NotificationDisplayInfo struct, preferring placement in s's segment.
 func (s NotificationTarget_addOngoing_Params) NewDisplayInfo() (NotificationDisplayInfo, error) {
-
 	ss, err := NewNotificationDisplayInfo(s.Struct.Segment())
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s NotificationTarget_addOngoing_Params) Notification() OngoingNotification {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return OngoingNotification{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return OngoingNotification{Client: c}
+	return OngoingNotification{Client: p.Interface().Client()}
+}
+
+func (s NotificationTarget_addOngoing_Params) HasNotification() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s NotificationTarget_addOngoing_Params) SetNotification(v OngoingNotification) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -6270,7 +6368,7 @@ func (s NotificationTarget_addOngoing_Params) SetNotification(v OngoingNotificat
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // NotificationTarget_addOngoing_Params_List is a list of NotificationTarget_addOngoing_Params.
@@ -6327,26 +6425,27 @@ func NewRootNotificationTarget_addOngoing_Results(s *capnp.Segment) (Notificatio
 }
 
 func ReadRootNotificationTarget_addOngoing_Results(msg *capnp.Message) (NotificationTarget_addOngoing_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return NotificationTarget_addOngoing_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return NotificationTarget_addOngoing_Results{st}, nil
+	return NotificationTarget_addOngoing_Results{root.Struct()}, nil
 }
-
 func (s NotificationTarget_addOngoing_Results) Handle() util.Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Handle{Client: c}
+	return util.Handle{Client: p.Interface().Client()}
+}
+
+func (s NotificationTarget_addOngoing_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s NotificationTarget_addOngoing_Results) SetHandle(v util.Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -6356,7 +6455,7 @@ func (s NotificationTarget_addOngoing_Results) SetHandle(v util.Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // NotificationTarget_addOngoing_Results_List is a list of NotificationTarget_addOngoing_Results.
@@ -6399,7 +6498,6 @@ func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNoti
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xfe851ddbb88940cd,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:OngoingNotification",
@@ -6430,7 +6528,6 @@ func OngoingNotification_Methods(methods []server.Method, s OngoingNotification_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xfe851ddbb88940cd,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:OngoingNotification",
@@ -6473,12 +6570,11 @@ func NewRootOngoingNotification_cancel_Params(s *capnp.Segment) (OngoingNotifica
 }
 
 func ReadRootOngoingNotification_cancel_Params(msg *capnp.Message) (OngoingNotification_cancel_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return OngoingNotification_cancel_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return OngoingNotification_cancel_Params{st}, nil
+	return OngoingNotification_cancel_Params{root.Struct()}, nil
 }
 
 // OngoingNotification_cancel_Params_List is a list of OngoingNotification_cancel_Params.
@@ -6527,12 +6623,11 @@ func NewRootOngoingNotification_cancel_Results(s *capnp.Segment) (OngoingNotific
 }
 
 func ReadRootOngoingNotification_cancel_Results(msg *capnp.Message) (OngoingNotification_cancel_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return OngoingNotification_cancel_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return OngoingNotification_cancel_Results{st}, nil
+	return OngoingNotification_cancel_Results{root.Struct()}, nil
 }
 
 // OngoingNotification_cancel_Results_List is a list of OngoingNotification_cancel_Results.
@@ -6581,31 +6676,43 @@ func NewRootGrainInfo(s *capnp.Segment) (GrainInfo, error) {
 }
 
 func ReadRootGrainInfo(msg *capnp.Message) (GrainInfo, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return GrainInfo{}, err
 	}
-	st := capnp.ToStruct(root)
-	return GrainInfo{st}, nil
+	return GrainInfo{root.Struct()}, nil
 }
-
 func (s GrainInfo) AppId() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s GrainInfo) HasAppId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s GrainInfo) AppIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s GrainInfo) SetAppId(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s GrainInfo) AppVersion() uint32 {
@@ -6613,27 +6720,40 @@ func (s GrainInfo) AppVersion() uint32 {
 }
 
 func (s GrainInfo) SetAppVersion(v uint32) {
-
 	s.Struct.SetUint32(0, v)
 }
 
 func (s GrainInfo) Title() (string, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s GrainInfo) HasTitle() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s GrainInfo) TitleBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s GrainInfo) SetTitle(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(1, t)
+	return s.Struct.SetPtr(1, t.List.ToPtr())
 }
 
 // GrainInfo_List is a list of GrainInfo.
@@ -6668,7 +6788,6 @@ func (c AppPersistent) Save(ctx context.Context, params func(AppPersistent_save_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xaffa789add8747b8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:AppPersistent",
@@ -6699,7 +6818,6 @@ func AppPersistent_Methods(methods []server.Method, s AppPersistent_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xaffa789add8747b8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:AppPersistent",
@@ -6742,12 +6860,11 @@ func NewRootAppPersistent_save_Params(s *capnp.Segment) (AppPersistent_save_Para
 }
 
 func ReadRootAppPersistent_save_Params(msg *capnp.Message) (AppPersistent_save_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return AppPersistent_save_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return AppPersistent_save_Params{st}, nil
+	return AppPersistent_save_Params{root.Struct()}, nil
 }
 
 // AppPersistent_save_Params_List is a list of AppPersistent_save_Params.
@@ -6796,50 +6913,58 @@ func NewRootAppPersistent_save_Results(s *capnp.Segment) (AppPersistent_save_Res
 }
 
 func ReadRootAppPersistent_save_Results(msg *capnp.Message) (AppPersistent_save_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return AppPersistent_save_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return AppPersistent_save_Results{st}, nil
+	return AppPersistent_save_Results{root.Struct()}, nil
+}
+func (s AppPersistent_save_Results) ObjectId() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s AppPersistent_save_Results) ObjectId() (capnp.Pointer, error) {
+func (s AppPersistent_save_Results) HasObjectId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s AppPersistent_save_Results) ObjectIdPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s AppPersistent_save_Results) SetObjectId(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s AppPersistent_save_Results) SetObjectIdPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s AppPersistent_save_Results) Label() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s AppPersistent_save_Results) HasLabel() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s AppPersistent_save_Results) SetLabel(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewLabel sets the label field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s AppPersistent_save_Results) NewLabel() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -6887,7 +7012,6 @@ func (c MainView) Restore(ctx context.Context, params func(MainView_restore_Para
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:MainView",
@@ -6901,7 +7025,6 @@ func (c MainView) Restore(ctx context.Context, params func(MainView_restore_Para
 	}
 	return MainView_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c MainView) Drop(ctx context.Context, params func(MainView_drop_Params) error, opts ...capnp.CallOption) MainView_drop_Results_Promise {
 	if c.Client == nil {
 		return MainView_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -6909,7 +7032,6 @@ func (c MainView) Drop(ctx context.Context, params func(MainView_drop_Params) er
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:MainView",
@@ -6923,7 +7045,6 @@ func (c MainView) Drop(ctx context.Context, params func(MainView_drop_Params) er
 	}
 	return MainView_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c MainView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_Params) error, opts ...capnp.CallOption) UiView_ViewInfo_Promise {
 	if c.Client == nil {
 		return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -6931,7 +7052,6 @@ func (c MainView) GetViewInfo(ctx context.Context, params func(UiView_getViewInf
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
@@ -6945,7 +7065,6 @@ func (c MainView) GetViewInfo(ctx context.Context, params func(UiView_getViewInf
 	}
 	return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c MainView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error, opts ...capnp.CallOption) UiView_newSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -6953,7 +7072,6 @@ func (c MainView) NewSession(ctx context.Context, params func(UiView_newSession_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
@@ -6962,12 +7080,11 @@ func (c MainView) NewSession(ctx context.Context, params func(UiView_newSession_
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
 	}
 	return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c MainView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error, opts ...capnp.CallOption) UiView_newRequestSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -6975,7 +7092,6 @@ func (c MainView) NewRequestSession(ctx context.Context, params func(UiView_newR
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
@@ -6984,12 +7100,11 @@ func (c MainView) NewRequestSession(ctx context.Context, params func(UiView_newR
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
 	}
 	return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error, opts ...capnp.CallOption) UiView_newOfferSession_Results_Promise {
 	if c.Client == nil {
 		return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -6997,7 +7112,6 @@ func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOff
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
@@ -7006,7 +7120,7 @@ func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOff
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
 	}
 	return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
@@ -7038,7 +7152,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:MainView",
@@ -7053,7 +7166,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:MainView",
@@ -7068,7 +7180,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
@@ -7083,7 +7194,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
@@ -7098,7 +7208,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
@@ -7113,7 +7222,6 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
@@ -7164,23 +7272,31 @@ func NewRootMainView_restore_Params(s *capnp.Segment) (MainView_restore_Params, 
 }
 
 func ReadRootMainView_restore_Params(msg *capnp.Message) (MainView_restore_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return MainView_restore_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return MainView_restore_Params{st}, nil
+	return MainView_restore_Params{root.Struct()}, nil
+}
+func (s MainView_restore_Params) ObjectId() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s MainView_restore_Params) ObjectId() (capnp.Pointer, error) {
+func (s MainView_restore_Params) HasObjectId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s MainView_restore_Params) ObjectIdPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s MainView_restore_Params) SetObjectId(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s MainView_restore_Params) SetObjectIdPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // MainView_restore_Params_List is a list of MainView_restore_Params.
@@ -7233,23 +7349,31 @@ func NewRootMainView_restore_Results(s *capnp.Segment) (MainView_restore_Results
 }
 
 func ReadRootMainView_restore_Results(msg *capnp.Message) (MainView_restore_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return MainView_restore_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return MainView_restore_Results{st}, nil
+	return MainView_restore_Results{root.Struct()}, nil
+}
+func (s MainView_restore_Results) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s MainView_restore_Results) Cap() (capnp.Pointer, error) {
+func (s MainView_restore_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s MainView_restore_Results) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s MainView_restore_Results) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s MainView_restore_Results) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // MainView_restore_Results_List is a list of MainView_restore_Results.
@@ -7302,23 +7426,31 @@ func NewRootMainView_drop_Params(s *capnp.Segment) (MainView_drop_Params, error)
 }
 
 func ReadRootMainView_drop_Params(msg *capnp.Message) (MainView_drop_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return MainView_drop_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return MainView_drop_Params{st}, nil
+	return MainView_drop_Params{root.Struct()}, nil
+}
+func (s MainView_drop_Params) ObjectId() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s MainView_drop_Params) ObjectId() (capnp.Pointer, error) {
+func (s MainView_drop_Params) HasObjectId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s MainView_drop_Params) ObjectIdPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s MainView_drop_Params) SetObjectId(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s MainView_drop_Params) SetObjectIdPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // MainView_drop_Params_List is a list of MainView_drop_Params.
@@ -7371,12 +7503,11 @@ func NewRootMainView_drop_Results(s *capnp.Segment) (MainView_drop_Results, erro
 }
 
 func ReadRootMainView_drop_Results(msg *capnp.Message) (MainView_drop_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return MainView_drop_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return MainView_drop_Results{st}, nil
+	return MainView_drop_Results{root.Struct()}, nil
 }
 
 // MainView_drop_Results_List is a list of MainView_drop_Results.

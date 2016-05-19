@@ -30,7 +30,7 @@ using Util = import "util.capnp";
 # "offer".
 #
 # In "request" mode, an app initiates the powerbox by requesting to receive a capability matching
-# some particular criteria using `SessionContext.request()` (or through the client-side
+# some particluar criteria using `SessionContext.request()` (or though the client-side
 # postMessage() API, described in the documentation for `SessionContext.request()`). The user is
 # presented with a list of other grains of theirs which might be able to fulfill this request and
 # asked to choose one. Other grains initially register their ability to answer certain requests
@@ -336,7 +336,7 @@ interface SandstormApi(AppObjectId) {
   #   failure.
 }
 
-interface UiView @0xdbb4d798ea67e2e7 {
+interface UiView {
   # Implements a user interface with which a user can interact with the grain.  We call this a
   # "view" because a single grain may actually have multiple "views" that provide different
   # functionality or represent multiple logical objects in the same physical grain.
@@ -348,9 +348,10 @@ interface UiView @0xdbb4d798ea67e2e7 {
   # It is possible for a grain to export additional views via the usual powerbox mechanisms.  For
   # instance, a spreadsheet app might let the user create a "view" of a few cells of the
   # spreadsheet, allowing them to share those cells to another user without sharing the entire
-  # sheet.  To accomplish this, the app would create an alternate UiView object that implements
-  # an interface just to those cells, and then would use `UiSession.offer()` to offer this object
-  # to the user.  The user could then choose to open it, share it, save it for later, etc.
+  # sheet.  To accomplish this, the app would create an alternate UserInterface object that
+  # implements an interface just to those cells, and then would use `UiSession.offer()` to offer
+  # this object to the user.  The user could then choose to open it, share it, save it for later,
+  # etc.
 
   getViewInfo @0 () -> ViewInfo;
   # Get metadata about the view, especially relating to sharing.
@@ -401,14 +402,6 @@ interface UiView @0xdbb4d798ea67e2e7 {
     # two UiViews are really the same view with different permissions applied, and can then combine
     # them in the UI as appropriate.
     #
-    # Implementation-wise, in addition to the permissions enumerated here, there is an additional
-    # "is human" pseudopermission provided by the Sandstorm platform, which is invisible to apps,
-    # but affects how UiView capabilities may be used.  In particular, all users are said to possess
-    # the "is human" pseudopermission, whereas all other ApiTokenOwners do not, and by default, the
-    # privilege is not passed on.  All method calls on UiView require that the caller have the "is
-    # human" permission.  In practical terms, this means that grains can pass around UiView
-    # capabilities, but only users can actually use them to open sessions.
-    #
     # It is actually entirely possible to implement a traditional filtering membrane around a
     # UiView, perhaps to implement a kind of access that can't be expressed using the permission
     # bits defined by the app.  But doing so will be awkward, slow, and confusing for all the
@@ -447,13 +440,12 @@ interface UiView @0xdbb4d798ea67e2e7 {
 
     matchOffers @4 :List(PowerboxDescriptor);
     # Indicates what kinds of powerbox offers this grain is interested in accepting. If the grain
-    # is chosen by the user during a powerbox offer, then `newOfferSession()` will be called
+    # is chones by the user during a powerbox offer, then `newOfferSession()` will be called
     # to start a session around this.
   }
 
   newSession @1 (userInfo :UserInfo, context :SessionContext,
-                 sessionType :UInt64, sessionParams :AnyPointer,
-                 tabId :Data)
+                 sessionType :UInt64, sessionParams :AnyPointer)
              -> (session :UiSession);
   # Start a new user interface session.  This happens when a user first opens the view, or when
   # the user returns to a tab that has been inactive long enough that the server was killed off in
@@ -471,23 +463,10 @@ interface UiView @0xdbb4d798ea67e2e7 {
   # `sessionParams` is a struct whose type is specified by the session type.  By convention, this
   # struct should be defined nested in the session interface type with name "Params", e.g.
   # `WebSession.Params`.  This struct contains some arbitrary startup information.
-  #
-  # `tabId` is a stable identifier for the "tab" (as in, Sandstorm sidebar tab) in which the grain
-  # is being displayed. A single tab may span multiple UiSessions, for instance if the user
-  # suspends their laptop and then restores later, or if the grain crashes. More importantly,
-  # `tabId` allows multiple grains being composed in the same tab to coordinate. For example, when
-  # a grain is embedded in the powerbox UI to respond to a request, it sees the same `tabId` as
-  # the requesting grain. Similarly, when a grain embeds other grains within iframes within its
-  # own UI, they will all see the same `tabId`. One particular case where `tabId` is useful is
-  # in implementing an `EmailVerifier` that cannot be MITM'd. NOTE: `tabId` should NOT be presumed
-  # to be a secret, although no two tabs in all of time will have the same `tabId`.
-  #
-  # For API requests, `tabId` uniquely identifies the token, as so can be used to correlate
-  # multiple requests from the same client.
 
   newRequestSession @2 (userInfo :UserInfo, context :SessionContext,
                         sessionType :UInt64, sessionParams :AnyPointer,
-                        requestInfo :List(PowerboxDescriptor), tabId :Data)
+                        requestInfo :List(PowerboxDescriptor))
                     -> (session :UiSession);
   # Creates a new session based on a powerbox request. `requestInfo` is the subset of the original
   # request description which matched descriptors that this grain indicated it provides via
@@ -498,13 +477,10 @@ interface UiView @0xdbb4d798ea67e2e7 {
   # disconnected randomly and the front-end will then reconnect by calling `newRequestSession()`
   # again with the same parameters. Generally, apps should avoid storing any session-related state
   # on the server side; it's easy to use client-side sessionStorage instead.
-  #
-  # The `tabId` passed here identifies the requesting tab; see docs under `newSession()`.
 
   newOfferSession @3 (userInfo :UserInfo, context :SessionContext,
                       sessionType :UInt64, sessionParams :AnyPointer,
-                      offer :Capability, descriptor :PowerboxDescriptor,
-                      tabId :Data)
+                      offer :Capability, descriptor :PowerboxDescriptor)
                   -> (session :UiSession);
   # Creates a new session based on a powerbox offer. `offer` is the capability being offered and
   # `descriptor` describes it.
@@ -526,8 +502,6 @@ interface UiView @0xdbb4d798ea67e2e7 {
   # on the server side; it's easy to use client-side sessionStorage instead. (Of course, if the
   # session calls `SessionContext.openView()`, the new view will be opened as a regular session,
   # not an offer session.)
-  #
-  # The `tabId` passed here identifies the offering tab; see docs under `newSession()`.
 }
 
 # ========================================================================================
@@ -541,7 +515,7 @@ struct UserInfo {
   # Information about the user opening a new session.
   #
   # TODO(soon):  More details:
-  # - Profile:  Profile link?
+  # - Profile:  Name, avatar, profile link
   # - Sharing/authority chain:  "Carol (via Bob, via Alice)"
   # - Identity:  Public key, certificates, verification of proxy chain.
 
@@ -552,25 +526,6 @@ struct UserInfo {
   # document's history may be annotated with the display name of the user who made each change.
   # Display names are NOT unique nor stable:  two users could potentially have the same display
   # name and a user's display name could change.
-
-  preferredHandle @4 :Text;
-  # The user's preferred "handle", as set in their account settings. This is guaranteed to be
-  # composed only of lowercase English letters, digits, and underscores, and will not start with
-  # a digit. It is NOT guaranteed to be unique; if your app dislikes duplicate handles, it must
-  # check for them and do something about them.
-
-  pictureUrl @6 :Text;
-  # URL of the user's profile picture, appropriate for displaying in a 64x64 context.
-
-  pronouns @5 :Pronouns;
-  # Indicates which pronouns the user prefers you use to refer to them.
-
-  enum Pronouns {
-    neutral @0;  # "they"
-    male @1;     # "he" / "him"
-    female @2;   # "she" / "her"
-    robot @3;    # "it"
-  }
 
   deprecatedPermissionsBlob @1 :Data;
   permissions @3 :PermissionSet;
@@ -593,9 +548,9 @@ struct UserInfo {
   # permissions.  Either way, the application need not worry about permissions changing during a
   # session.
 
-  identityId @2 :Data;
+  userId @2 :Data;
   # A unique, stable identifier for the calling user. This is computed such that a user's ID will
-  # be the same across all Sandstorm servers, and will not collide with any other identity ID in the
+  # be the same across all Sandstorm servers, and will not collide with any other user ID in the
   # world. Therefore, grains transferred between servers can still count on the user IDs being the
   # same and secure (unless the new host is itself malicious, of course, in which case all bets are
   # off).
@@ -650,31 +605,17 @@ interface SessionContext {
   # postMessage api to get a token, and then restore that token with SandstormApi.restore().
   #
   # The postMessage api is an rpc interface so you will have to listen for a `message` callback
-  # after sending a postMessage. The postMessage object should have the following form:
+  # after sending a postMessage. The postMessage object should have the folliwng form:
   #
   # powerboxRequest:
   #   rpcId: A unique string that should identify this rpc message to the app. You will receive this
   #          id in the callback to verify which message it is referring to.
-  #   query: A list of PowerboxDescriptor objects, serialized as a Javascript array of
-  #          base64-encoded packed powerbox query descriptors created using the `spk query` tool.
-  #   saveLabel: A petname to give this label. This will be displayed to the user as the name
+  #   query: A list of PowerboxDescriptor objects, serialized as a Javascript array OR a
+  #          base64-encoded powerbox query created using the `spk query` tool.
+  #   saveLabel: A string petname to give this label. This will be displayed to the user as the name
   #          for this capability.
   #
-  # e.g.:
-  #   window.parent.postMessage({
-  #     powerboxRequest: {
-  #       rpcId: myRpcId,
-  #       query: [
-  #         {
-  #           tags: [
-  #             // encoded/packed/base64url of (tags = [(id = 15831515641881813735)])
-  #             "EAZQAQEAABEBF1EEAQH_5-Jn6pjXtNsAAAA",
-  #           ],
-  #         },
-  #       ],
-  #       saveLabel: { defaultText: "Linked grain" },
-  #     },
-  #   }, "*");
+  # (eg. window.parent.postMessage({powerboxRequest: {rpcId: myRpcId, query: [{}]}}, "*")
   #
   # The postMessage searches for capabilities in the user's powerbox matching the given query and
   # displays a selection UI to the user.
@@ -686,12 +627,12 @@ interface SessionContext {
   #   }
   # }, false)
 
-  fulfillRequest @4 (cap :Capability, requiredPermissions :PermissionSet,
+  provide @4 (cap :Capability, requiredPermissions :PermissionSet,
               descriptor :PowerboxDescriptor, displayInfo :PowerboxDisplayInfo);
   # For sessions started with `newRequestSession()`, fulfills the original request. If only one
-  # capability was requested, the powerbox will close upon `fulfillRequest()` being called. If
-  # multiple capabilities were requested, then the powerbox remains open and `fulfillRequest()` may
-  # be called repeatedly.
+  # capability was requested, the powerbox will close upon `provide()` being called. If multiple
+  # capabilities were requested, then the powerbox remains open and `provide()` may be called
+  # repeatedly.
   #
   # If the session was not started with `newRequestSession()`, this method is equivalent to
   # `offer()`. This can be helpful when building a UI that can be used both embedded in the
@@ -751,7 +692,7 @@ using PermissionSet = List(Bool);
 # Set of permission IDs, represented as a bitfield.
 
 struct RoleDef {
-  # Metadata describing a shareable role.
+  # Metadata describing a sharable role.
 
   title @0 :Util.LocalizedText;
   # Name of the role, e.g. "editor" or "viewer".

@@ -20,7 +20,6 @@ func (c IpNetwork) GetRemoteHost(ctx context.Context, params func(IpNetwork_getR
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -34,7 +33,6 @@ func (c IpNetwork) GetRemoteHost(ctx context.Context, params func(IpNetwork_getR
 	}
 	return IpNetwork_getRemoteHost_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwork_getRemoteHostByName_Params) error, opts ...capnp.CallOption) IpNetwork_getRemoteHostByName_Results_Promise {
 	if c.Client == nil {
 		return IpNetwork_getRemoteHostByName_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -42,7 +40,6 @@ func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwor
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -75,7 +72,6 @@ func IpNetwork_Methods(methods []server.Method, s IpNetwork_Server) []server.Met
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -90,7 +86,6 @@ func IpNetwork_Methods(methods []server.Method, s IpNetwork_Server) []server.Met
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -141,39 +136,37 @@ func NewRootIpNetwork_getRemoteHost_Params(s *capnp.Segment) (IpNetwork_getRemot
 }
 
 func ReadRootIpNetwork_getRemoteHost_Params(msg *capnp.Message) (IpNetwork_getRemoteHost_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpNetwork_getRemoteHost_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpNetwork_getRemoteHost_Params{st}, nil
+	return IpNetwork_getRemoteHost_Params{root.Struct()}, nil
 }
-
 func (s IpNetwork_getRemoteHost_Params) Address() (IpAddress, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return IpAddress{}, err
 	}
+	return IpAddress{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return IpAddress{Struct: ss}, nil
+func (s IpNetwork_getRemoteHost_Params) HasAddress() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpNetwork_getRemoteHost_Params) SetAddress(v IpAddress) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewAddress sets the address field to a newly
 // allocated IpAddress struct, preferring placement in s's segment.
 func (s IpNetwork_getRemoteHost_Params) NewAddress() (IpAddress, error) {
-
 	ss, err := NewIpAddress(s.Struct.Segment())
 	if err != nil {
 		return IpAddress{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -227,26 +220,27 @@ func NewRootIpNetwork_getRemoteHost_Results(s *capnp.Segment) (IpNetwork_getRemo
 }
 
 func ReadRootIpNetwork_getRemoteHost_Results(msg *capnp.Message) (IpNetwork_getRemoteHost_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpNetwork_getRemoteHost_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpNetwork_getRemoteHost_Results{st}, nil
+	return IpNetwork_getRemoteHost_Results{root.Struct()}, nil
 }
-
 func (s IpNetwork_getRemoteHost_Results) Host() IpRemoteHost {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return IpRemoteHost{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return IpRemoteHost{Client: c}
+	return IpRemoteHost{Client: p.Interface().Client()}
+}
+
+func (s IpNetwork_getRemoteHost_Results) HasHost() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpNetwork_getRemoteHost_Results) SetHost(v IpRemoteHost) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -256,7 +250,7 @@ func (s IpNetwork_getRemoteHost_Results) SetHost(v IpRemoteHost) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpNetwork_getRemoteHost_Results_List is a list of IpNetwork_getRemoteHost_Results.
@@ -309,31 +303,43 @@ func NewRootIpNetwork_getRemoteHostByName_Params(s *capnp.Segment) (IpNetwork_ge
 }
 
 func ReadRootIpNetwork_getRemoteHostByName_Params(msg *capnp.Message) (IpNetwork_getRemoteHostByName_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpNetwork_getRemoteHostByName_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpNetwork_getRemoteHostByName_Params{st}, nil
+	return IpNetwork_getRemoteHostByName_Params{root.Struct()}, nil
 }
-
 func (s IpNetwork_getRemoteHostByName_Params) Address() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s IpNetwork_getRemoteHostByName_Params) HasAddress() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s IpNetwork_getRemoteHostByName_Params) AddressBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s IpNetwork_getRemoteHostByName_Params) SetAddress(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 // IpNetwork_getRemoteHostByName_Params_List is a list of IpNetwork_getRemoteHostByName_Params.
@@ -382,26 +388,27 @@ func NewRootIpNetwork_getRemoteHostByName_Results(s *capnp.Segment) (IpNetwork_g
 }
 
 func ReadRootIpNetwork_getRemoteHostByName_Results(msg *capnp.Message) (IpNetwork_getRemoteHostByName_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpNetwork_getRemoteHostByName_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpNetwork_getRemoteHostByName_Results{st}, nil
+	return IpNetwork_getRemoteHostByName_Results{root.Struct()}, nil
 }
-
 func (s IpNetwork_getRemoteHostByName_Results) Host() IpRemoteHost {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return IpRemoteHost{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return IpRemoteHost{Client: c}
+	return IpRemoteHost{Client: p.Interface().Client()}
+}
+
+func (s IpNetwork_getRemoteHostByName_Results) HasHost() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpNetwork_getRemoteHostByName_Results) SetHost(v IpRemoteHost) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -411,7 +418,7 @@ func (s IpNetwork_getRemoteHostByName_Results) SetHost(v IpRemoteHost) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpNetwork_getRemoteHostByName_Results_List is a list of IpNetwork_getRemoteHostByName_Results.
@@ -464,20 +471,17 @@ func NewRootIpAddress(s *capnp.Segment) (IpAddress, error) {
 }
 
 func ReadRootIpAddress(msg *capnp.Message) (IpAddress, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpAddress{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpAddress{st}, nil
+	return IpAddress{root.Struct()}, nil
 }
-
 func (s IpAddress) Lower64() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s IpAddress) SetLower64(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
@@ -486,7 +490,6 @@ func (s IpAddress) Upper64() uint64 {
 }
 
 func (s IpAddress) SetUpper64(v uint64) {
-
 	s.Struct.SetUint64(8, v)
 }
 
@@ -522,7 +525,6 @@ func (c IpInterface) ListenTcp(ctx context.Context, params func(IpInterface_list
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -536,7 +538,6 @@ func (c IpInterface) ListenTcp(ctx context.Context, params func(IpInterface_list
 	}
 	return IpInterface_listenTcp_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_listenUdp_Params) error, opts ...capnp.CallOption) IpInterface_listenUdp_Results_Promise {
 	if c.Client == nil {
 		return IpInterface_listenUdp_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -544,7 +545,6 @@ func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_list
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -577,7 +577,6 @@ func IpInterface_Methods(methods []server.Method, s IpInterface_Server) []server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -592,7 +591,6 @@ func IpInterface_Methods(methods []server.Method, s IpInterface_Server) []server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -643,35 +641,35 @@ func NewRootIpInterface_listenTcp_Params(s *capnp.Segment) (IpInterface_listenTc
 }
 
 func ReadRootIpInterface_listenTcp_Params(msg *capnp.Message) (IpInterface_listenTcp_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpInterface_listenTcp_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpInterface_listenTcp_Params{st}, nil
+	return IpInterface_listenTcp_Params{root.Struct()}, nil
 }
-
 func (s IpInterface_listenTcp_Params) PortNum() uint16 {
 	return s.Struct.Uint16(0)
 }
 
 func (s IpInterface_listenTcp_Params) SetPortNum(v uint16) {
-
 	s.Struct.SetUint16(0, v)
 }
 
 func (s IpInterface_listenTcp_Params) Port() TcpPort {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return TcpPort{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return TcpPort{Client: c}
+	return TcpPort{Client: p.Interface().Client()}
+}
+
+func (s IpInterface_listenTcp_Params) HasPort() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpInterface_listenTcp_Params) SetPort(v TcpPort) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -681,7 +679,7 @@ func (s IpInterface_listenTcp_Params) SetPort(v TcpPort) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenTcp_Params_List is a list of IpInterface_listenTcp_Params.
@@ -734,26 +732,27 @@ func NewRootIpInterface_listenTcp_Results(s *capnp.Segment) (IpInterface_listenT
 }
 
 func ReadRootIpInterface_listenTcp_Results(msg *capnp.Message) (IpInterface_listenTcp_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpInterface_listenTcp_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpInterface_listenTcp_Results{st}, nil
+	return IpInterface_listenTcp_Results{root.Struct()}, nil
 }
-
 func (s IpInterface_listenTcp_Results) Handle() util.Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Handle{Client: c}
+	return util.Handle{Client: p.Interface().Client()}
+}
+
+func (s IpInterface_listenTcp_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpInterface_listenTcp_Results) SetHandle(v util.Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -763,7 +762,7 @@ func (s IpInterface_listenTcp_Results) SetHandle(v util.Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenTcp_Results_List is a list of IpInterface_listenTcp_Results.
@@ -816,35 +815,35 @@ func NewRootIpInterface_listenUdp_Params(s *capnp.Segment) (IpInterface_listenUd
 }
 
 func ReadRootIpInterface_listenUdp_Params(msg *capnp.Message) (IpInterface_listenUdp_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpInterface_listenUdp_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpInterface_listenUdp_Params{st}, nil
+	return IpInterface_listenUdp_Params{root.Struct()}, nil
 }
-
 func (s IpInterface_listenUdp_Params) PortNum() uint16 {
 	return s.Struct.Uint16(0)
 }
 
 func (s IpInterface_listenUdp_Params) SetPortNum(v uint16) {
-
 	s.Struct.SetUint16(0, v)
 }
 
 func (s IpInterface_listenUdp_Params) Port() UdpPort {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UdpPort{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UdpPort{Client: c}
+	return UdpPort{Client: p.Interface().Client()}
+}
+
+func (s IpInterface_listenUdp_Params) HasPort() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpInterface_listenUdp_Params) SetPort(v UdpPort) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -854,7 +853,7 @@ func (s IpInterface_listenUdp_Params) SetPort(v UdpPort) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenUdp_Params_List is a list of IpInterface_listenUdp_Params.
@@ -907,26 +906,27 @@ func NewRootIpInterface_listenUdp_Results(s *capnp.Segment) (IpInterface_listenU
 }
 
 func ReadRootIpInterface_listenUdp_Results(msg *capnp.Message) (IpInterface_listenUdp_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpInterface_listenUdp_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpInterface_listenUdp_Results{st}, nil
+	return IpInterface_listenUdp_Results{root.Struct()}, nil
 }
-
 func (s IpInterface_listenUdp_Results) Handle() util.Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Handle{Client: c}
+	return util.Handle{Client: p.Interface().Client()}
+}
+
+func (s IpInterface_listenUdp_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpInterface_listenUdp_Results) SetHandle(v util.Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -936,7 +936,7 @@ func (s IpInterface_listenUdp_Results) SetHandle(v util.Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenUdp_Results_List is a list of IpInterface_listenUdp_Results.
@@ -979,7 +979,6 @@ func (c IpRemoteHost) GetTcpPort(ctx context.Context, params func(IpRemoteHost_g
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x905dd76b298b3130,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpRemoteHost",
@@ -993,7 +992,6 @@ func (c IpRemoteHost) GetTcpPort(ctx context.Context, params func(IpRemoteHost_g
 	}
 	return IpRemoteHost_getTcpPort_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_getUdpPort_Params) error, opts ...capnp.CallOption) IpRemoteHost_getUdpPort_Results_Promise {
 	if c.Client == nil {
 		return IpRemoteHost_getUdpPort_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1001,7 +999,6 @@ func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_g
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x905dd76b298b3130,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpRemoteHost",
@@ -1034,7 +1031,6 @@ func IpRemoteHost_Methods(methods []server.Method, s IpRemoteHost_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x905dd76b298b3130,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpRemoteHost",
@@ -1049,7 +1045,6 @@ func IpRemoteHost_Methods(methods []server.Method, s IpRemoteHost_Server) []serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x905dd76b298b3130,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpRemoteHost",
@@ -1100,20 +1095,17 @@ func NewRootIpRemoteHost_getTcpPort_Params(s *capnp.Segment) (IpRemoteHost_getTc
 }
 
 func ReadRootIpRemoteHost_getTcpPort_Params(msg *capnp.Message) (IpRemoteHost_getTcpPort_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpRemoteHost_getTcpPort_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpRemoteHost_getTcpPort_Params{st}, nil
+	return IpRemoteHost_getTcpPort_Params{root.Struct()}, nil
 }
-
 func (s IpRemoteHost_getTcpPort_Params) PortNum() uint16 {
 	return s.Struct.Uint16(0)
 }
 
 func (s IpRemoteHost_getTcpPort_Params) SetPortNum(v uint16) {
-
 	s.Struct.SetUint16(0, v)
 }
 
@@ -1163,26 +1155,27 @@ func NewRootIpRemoteHost_getTcpPort_Results(s *capnp.Segment) (IpRemoteHost_getT
 }
 
 func ReadRootIpRemoteHost_getTcpPort_Results(msg *capnp.Message) (IpRemoteHost_getTcpPort_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpRemoteHost_getTcpPort_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpRemoteHost_getTcpPort_Results{st}, nil
+	return IpRemoteHost_getTcpPort_Results{root.Struct()}, nil
 }
-
 func (s IpRemoteHost_getTcpPort_Results) Port() TcpPort {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return TcpPort{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return TcpPort{Client: c}
+	return TcpPort{Client: p.Interface().Client()}
+}
+
+func (s IpRemoteHost_getTcpPort_Results) HasPort() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpRemoteHost_getTcpPort_Results) SetPort(v TcpPort) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1192,7 +1185,7 @@ func (s IpRemoteHost_getTcpPort_Results) SetPort(v TcpPort) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpRemoteHost_getTcpPort_Results_List is a list of IpRemoteHost_getTcpPort_Results.
@@ -1245,20 +1238,17 @@ func NewRootIpRemoteHost_getUdpPort_Params(s *capnp.Segment) (IpRemoteHost_getUd
 }
 
 func ReadRootIpRemoteHost_getUdpPort_Params(msg *capnp.Message) (IpRemoteHost_getUdpPort_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpRemoteHost_getUdpPort_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpRemoteHost_getUdpPort_Params{st}, nil
+	return IpRemoteHost_getUdpPort_Params{root.Struct()}, nil
 }
-
 func (s IpRemoteHost_getUdpPort_Params) PortNum() uint16 {
 	return s.Struct.Uint16(0)
 }
 
 func (s IpRemoteHost_getUdpPort_Params) SetPortNum(v uint16) {
-
 	s.Struct.SetUint16(0, v)
 }
 
@@ -1308,26 +1298,27 @@ func NewRootIpRemoteHost_getUdpPort_Results(s *capnp.Segment) (IpRemoteHost_getU
 }
 
 func ReadRootIpRemoteHost_getUdpPort_Results(msg *capnp.Message) (IpRemoteHost_getUdpPort_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpRemoteHost_getUdpPort_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpRemoteHost_getUdpPort_Results{st}, nil
+	return IpRemoteHost_getUdpPort_Results{root.Struct()}, nil
 }
-
 func (s IpRemoteHost_getUdpPort_Results) Port() UdpPort {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return UdpPort{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UdpPort{Client: c}
+	return UdpPort{Client: p.Interface().Client()}
+}
+
+func (s IpRemoteHost_getUdpPort_Results) HasPort() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s IpRemoteHost_getUdpPort_Results) SetPort(v UdpPort) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1337,7 +1328,7 @@ func (s IpRemoteHost_getUdpPort_Results) SetPort(v UdpPort) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // IpRemoteHost_getUdpPort_Results_List is a list of IpRemoteHost_getUdpPort_Results.
@@ -1380,7 +1371,6 @@ func (c TcpPort) Connect(ctx context.Context, params func(TcpPort_connect_Params
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xeab20e1af07806b4,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:TcpPort",
@@ -1411,7 +1401,6 @@ func TcpPort_Methods(methods []server.Method, s TcpPort_Server) []server.Method 
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xeab20e1af07806b4,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:TcpPort",
@@ -1454,26 +1443,27 @@ func NewRootTcpPort_connect_Params(s *capnp.Segment) (TcpPort_connect_Params, er
 }
 
 func ReadRootTcpPort_connect_Params(msg *capnp.Message) (TcpPort_connect_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return TcpPort_connect_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return TcpPort_connect_Params{st}, nil
+	return TcpPort_connect_Params{root.Struct()}, nil
 }
-
 func (s TcpPort_connect_Params) Downstream() util.ByteStream {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.ByteStream{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.ByteStream{Client: c}
+	return util.ByteStream{Client: p.Interface().Client()}
+}
+
+func (s TcpPort_connect_Params) HasDownstream() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s TcpPort_connect_Params) SetDownstream(v util.ByteStream) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1483,7 +1473,7 @@ func (s TcpPort_connect_Params) SetDownstream(v util.ByteStream) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // TcpPort_connect_Params_List is a list of TcpPort_connect_Params.
@@ -1536,26 +1526,27 @@ func NewRootTcpPort_connect_Results(s *capnp.Segment) (TcpPort_connect_Results, 
 }
 
 func ReadRootTcpPort_connect_Results(msg *capnp.Message) (TcpPort_connect_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return TcpPort_connect_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return TcpPort_connect_Results{st}, nil
+	return TcpPort_connect_Results{root.Struct()}, nil
 }
-
 func (s TcpPort_connect_Results) Upstream() util.ByteStream {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.ByteStream{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.ByteStream{Client: c}
+	return util.ByteStream{Client: p.Interface().Client()}
+}
+
+func (s TcpPort_connect_Results) HasUpstream() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s TcpPort_connect_Results) SetUpstream(v util.ByteStream) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1565,7 +1556,7 @@ func (s TcpPort_connect_Results) SetUpstream(v util.ByteStream) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // TcpPort_connect_Results_List is a list of TcpPort_connect_Results.
@@ -1608,7 +1599,6 @@ func (c UdpPort) Send(ctx context.Context, params func(UdpPort_send_Params) erro
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc6212e1217d001ce,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:UdpPort",
@@ -1639,7 +1629,6 @@ func UdpPort_Methods(methods []server.Method, s UdpPort_Server) []server.Method 
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc6212e1217d001ce,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:UdpPort",
@@ -1682,45 +1671,48 @@ func NewRootUdpPort_send_Params(s *capnp.Segment) (UdpPort_send_Params, error) {
 }
 
 func ReadRootUdpPort_send_Params(msg *capnp.Message) (UdpPort_send_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UdpPort_send_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UdpPort_send_Params{st}, nil
+	return UdpPort_send_Params{root.Struct()}, nil
 }
-
 func (s UdpPort_send_Params) Message() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s UdpPort_send_Params) HasMessage() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s UdpPort_send_Params) SetMessage(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 func (s UdpPort_send_Params) ReturnPort() UdpPort {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return UdpPort{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return UdpPort{Client: c}
+	return UdpPort{Client: p.Interface().Client()}
+}
+
+func (s UdpPort_send_Params) HasReturnPort() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s UdpPort_send_Params) SetReturnPort(v UdpPort) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1730,7 +1722,7 @@ func (s UdpPort_send_Params) SetReturnPort(v UdpPort) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // UdpPort_send_Params_List is a list of UdpPort_send_Params.
@@ -1783,12 +1775,11 @@ func NewRootUdpPort_send_Results(s *capnp.Segment) (UdpPort_send_Results, error)
 }
 
 func ReadRootUdpPort_send_Results(msg *capnp.Message) (UdpPort_send_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return UdpPort_send_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return UdpPort_send_Results{st}, nil
+	return UdpPort_send_Results{root.Struct()}, nil
 }
 
 // UdpPort_send_Results_List is a list of UdpPort_send_Results.
@@ -1837,40 +1828,51 @@ func NewRootIpPortPowerboxMetadata(s *capnp.Segment) (IpPortPowerboxMetadata, er
 }
 
 func ReadRootIpPortPowerboxMetadata(msg *capnp.Message) (IpPortPowerboxMetadata, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return IpPortPowerboxMetadata{}, err
 	}
-	st := capnp.ToStruct(root)
-	return IpPortPowerboxMetadata{st}, nil
+	return IpPortPowerboxMetadata{root.Struct()}, nil
 }
-
 func (s IpPortPowerboxMetadata) PreferredPortNum() uint16 {
 	return s.Struct.Uint16(0)
 }
 
 func (s IpPortPowerboxMetadata) SetPreferredPortNum(v uint16) {
-
 	s.Struct.SetUint16(0, v)
 }
 
 func (s IpPortPowerboxMetadata) PreferredHost() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s IpPortPowerboxMetadata) HasPreferredHost() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s IpPortPowerboxMetadata) PreferredHostBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s IpPortPowerboxMetadata) SetPreferredHost(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 // IpPortPowerboxMetadata_List is a list of IpPortPowerboxMetadata.
@@ -1909,7 +1911,6 @@ func (c PersistentIpNetwork) GetRemoteHost(ctx context.Context, params func(IpNe
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -1923,7 +1924,6 @@ func (c PersistentIpNetwork) GetRemoteHost(ctx context.Context, params func(IpNe
 	}
 	return IpNetwork_getRemoteHost_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwork_getRemoteHostByName_Params) error, opts ...capnp.CallOption) IpNetwork_getRemoteHostByName_Results_Promise {
 	if c.Client == nil {
 		return IpNetwork_getRemoteHostByName_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1931,7 +1931,6 @@ func (c PersistentIpNetwork) GetRemoteHostByName(ctx context.Context, params fun
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -1945,7 +1944,6 @@ func (c PersistentIpNetwork) GetRemoteHostByName(ctx context.Context, params fun
 	}
 	return IpNetwork_getRemoteHostByName_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpNetwork) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
 	if c.Client == nil {
 		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1953,7 +1951,6 @@ func (c PersistentIpNetwork) AddRequirements(ctx context.Context, params func(su
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -1969,7 +1966,6 @@ func (c PersistentIpNetwork) AddRequirements(ctx context.Context, params func(su
 	}
 	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
 	if c.Client == nil {
 		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1977,7 +1973,6 @@ func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Pe
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -2014,7 +2009,6 @@ func PersistentIpNetwork_Methods(methods []server.Method, s PersistentIpNetwork_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -2029,7 +2023,6 @@ func PersistentIpNetwork_Methods(methods []server.Method, s PersistentIpNetwork_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa982576b7a2a2040,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpNetwork",
@@ -2044,7 +2037,6 @@ func PersistentIpNetwork_Methods(methods []server.Method, s PersistentIpNetwork_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -2059,7 +2051,6 @@ func PersistentIpNetwork_Methods(methods []server.Method, s PersistentIpNetwork_
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -2084,7 +2075,6 @@ func (c PersistentIpInterface) ListenTcp(ctx context.Context, params func(IpInte
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -2098,7 +2088,6 @@ func (c PersistentIpInterface) ListenTcp(ctx context.Context, params func(IpInte
 	}
 	return IpInterface_listenTcp_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpInterface) ListenUdp(ctx context.Context, params func(IpInterface_listenUdp_Params) error, opts ...capnp.CallOption) IpInterface_listenUdp_Results_Promise {
 	if c.Client == nil {
 		return IpInterface_listenUdp_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2106,7 +2095,6 @@ func (c PersistentIpInterface) ListenUdp(ctx context.Context, params func(IpInte
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -2120,7 +2108,6 @@ func (c PersistentIpInterface) ListenUdp(ctx context.Context, params func(IpInte
 	}
 	return IpInterface_listenUdp_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpInterface) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
 	if c.Client == nil {
 		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2128,7 +2115,6 @@ func (c PersistentIpInterface) AddRequirements(ctx context.Context, params func(
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -2144,7 +2130,6 @@ func (c PersistentIpInterface) AddRequirements(ctx context.Context, params func(
 	}
 	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
 	if c.Client == nil {
 		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2152,7 +2137,6 @@ func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -2189,7 +2173,6 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      0,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -2204,7 +2187,6 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xe32c506ee93ed6fa,
 			MethodID:      1,
 			InterfaceName: "ip.capnp:IpInterface",
@@ -2219,7 +2201,6 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -2234,7 +2215,6 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",

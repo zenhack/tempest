@@ -27,50 +27,76 @@ func NewRootKeyValue(s *capnp.Segment) (KeyValue, error) {
 }
 
 func ReadRootKeyValue(msg *capnp.Message) (KeyValue, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return KeyValue{}, err
 	}
-	st := capnp.ToStruct(root)
-	return KeyValue{st}, nil
+	return KeyValue{root.Struct()}, nil
 }
-
 func (s KeyValue) Key() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s KeyValue) HasKey() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s KeyValue) KeyBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s KeyValue) SetKey(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s KeyValue) Value() (string, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s KeyValue) HasValue() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s KeyValue) ValueBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s KeyValue) SetValue(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(1, t)
+	return s.Struct.SetPtr(1, t.List.ToPtr())
 }
 
 // KeyValue_List is a list of KeyValue.
@@ -115,47 +141,71 @@ func NewRootLocalizedText(s *capnp.Segment) (LocalizedText, error) {
 }
 
 func ReadRootLocalizedText(msg *capnp.Message) (LocalizedText, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return LocalizedText{}, err
 	}
-	st := capnp.ToStruct(root)
-	return LocalizedText{st}, nil
+	return LocalizedText{root.Struct()}, nil
 }
-
 func (s LocalizedText) DefaultText() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s LocalizedText) HasDefaultText() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s LocalizedText) DefaultTextBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s LocalizedText) SetDefaultText(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s LocalizedText) Localizations() (LocalizedText_Localization_List, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return LocalizedText_Localization_List{}, err
 	}
+	return LocalizedText_Localization_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return LocalizedText_Localization_List{List: l}, nil
+func (s LocalizedText) HasLocalizations() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s LocalizedText) SetLocalizations(v LocalizedText_Localization_List) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewLocalizations sets the localizations field to a newly
+// allocated LocalizedText_Localization_List, preferring placement in s's segment.
+func (s LocalizedText) NewLocalizations(n int32) (LocalizedText_Localization_List, error) {
+	l, err := NewLocalizedText_Localization_List(s.Struct.Segment(), n)
+	if err != nil {
+		return LocalizedText_Localization_List{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 // LocalizedText_List is a list of LocalizedText.
@@ -200,50 +250,76 @@ func NewRootLocalizedText_Localization(s *capnp.Segment) (LocalizedText_Localiza
 }
 
 func ReadRootLocalizedText_Localization(msg *capnp.Message) (LocalizedText_Localization, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return LocalizedText_Localization{}, err
 	}
-	st := capnp.ToStruct(root)
-	return LocalizedText_Localization{st}, nil
+	return LocalizedText_Localization{root.Struct()}, nil
 }
-
 func (s LocalizedText_Localization) Locale() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s LocalizedText_Localization) HasLocale() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s LocalizedText_Localization) LocaleBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s LocalizedText_Localization) SetLocale(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s LocalizedText_Localization) Text() (string, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s LocalizedText_Localization) HasText() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s LocalizedText_Localization) TextBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s LocalizedText_Localization) SetText(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(1, t)
+	return s.Struct.SetPtr(1, t.List.ToPtr())
 }
 
 // LocalizedText_Localization_List is a list of LocalizedText_Localization.
@@ -300,7 +376,6 @@ func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Para
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:ByteStream",
@@ -314,7 +389,6 @@ func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Para
 	}
 	return ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c ByteStream) Done(ctx context.Context, params func(ByteStream_done_Params) error, opts ...capnp.CallOption) ByteStream_done_Results_Promise {
 	if c.Client == nil {
 		return ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -322,7 +396,6 @@ func (c ByteStream) Done(ctx context.Context, params func(ByteStream_done_Params
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:ByteStream",
@@ -336,7 +409,6 @@ func (c ByteStream) Done(ctx context.Context, params func(ByteStream_done_Params
 	}
 	return ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c ByteStream) ExpectSize(ctx context.Context, params func(ByteStream_expectSize_Params) error, opts ...capnp.CallOption) ByteStream_expectSize_Results_Promise {
 	if c.Client == nil {
 		return ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -344,7 +416,6 @@ func (c ByteStream) ExpectSize(ctx context.Context, params func(ByteStream_expec
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:ByteStream",
@@ -379,7 +450,6 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:ByteStream",
@@ -394,7 +464,6 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:ByteStream",
@@ -409,7 +478,6 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:ByteStream",
@@ -468,31 +536,31 @@ func NewRootByteStream_write_Params(s *capnp.Segment) (ByteStream_write_Params, 
 }
 
 func ReadRootByteStream_write_Params(msg *capnp.Message) (ByteStream_write_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_write_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_write_Params{st}, nil
+	return ByteStream_write_Params{root.Struct()}, nil
 }
-
 func (s ByteStream_write_Params) Data() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s ByteStream_write_Params) HasData() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s ByteStream_write_Params) SetData(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // ByteStream_write_Params_List is a list of ByteStream_write_Params.
@@ -541,12 +609,11 @@ func NewRootByteStream_write_Results(s *capnp.Segment) (ByteStream_write_Results
 }
 
 func ReadRootByteStream_write_Results(msg *capnp.Message) (ByteStream_write_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_write_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_write_Results{st}, nil
+	return ByteStream_write_Results{root.Struct()}, nil
 }
 
 // ByteStream_write_Results_List is a list of ByteStream_write_Results.
@@ -595,12 +662,11 @@ func NewRootByteStream_done_Params(s *capnp.Segment) (ByteStream_done_Params, er
 }
 
 func ReadRootByteStream_done_Params(msg *capnp.Message) (ByteStream_done_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_done_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_done_Params{st}, nil
+	return ByteStream_done_Params{root.Struct()}, nil
 }
 
 // ByteStream_done_Params_List is a list of ByteStream_done_Params.
@@ -649,12 +715,11 @@ func NewRootByteStream_done_Results(s *capnp.Segment) (ByteStream_done_Results, 
 }
 
 func ReadRootByteStream_done_Results(msg *capnp.Message) (ByteStream_done_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_done_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_done_Results{st}, nil
+	return ByteStream_done_Results{root.Struct()}, nil
 }
 
 // ByteStream_done_Results_List is a list of ByteStream_done_Results.
@@ -703,20 +768,17 @@ func NewRootByteStream_expectSize_Params(s *capnp.Segment) (ByteStream_expectSiz
 }
 
 func ReadRootByteStream_expectSize_Params(msg *capnp.Message) (ByteStream_expectSize_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_expectSize_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_expectSize_Params{st}, nil
+	return ByteStream_expectSize_Params{root.Struct()}, nil
 }
-
 func (s ByteStream_expectSize_Params) Size() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s ByteStream_expectSize_Params) SetSize(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
@@ -766,12 +828,11 @@ func NewRootByteStream_expectSize_Results(s *capnp.Segment) (ByteStream_expectSi
 }
 
 func ReadRootByteStream_expectSize_Results(msg *capnp.Message) (ByteStream_expectSize_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ByteStream_expectSize_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ByteStream_expectSize_Results{st}, nil
+	return ByteStream_expectSize_Results{root.Struct()}, nil
 }
 
 // ByteStream_expectSize_Results_List is a list of ByteStream_expectSize_Results.
@@ -801,599 +862,6 @@ func (p ByteStream_expectSize_Results_Promise) Struct() (ByteStream_expectSize_R
 	return ByteStream_expectSize_Results{s}, err
 }
 
-type Blob struct{ Client capnp.Client }
-
-func (c Blob) GetSize(ctx context.Context, params func(Blob_getSize_Params) error, opts ...capnp.CallOption) Blob_getSize_Results_Promise {
-	if c.Client == nil {
-		return Blob_getSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      0,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "getSize",
-		},
-		Options: capnp.NewCallOptions(opts),
-	}
-	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_getSize_Params{Struct: s}) }
-	}
-	return Blob_getSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
-}
-
-func (c Blob) WriteTo(ctx context.Context, params func(Blob_writeTo_Params) error, opts ...capnp.CallOption) Blob_writeTo_Results_Promise {
-	if c.Client == nil {
-		return Blob_writeTo_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      1,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "writeTo",
-		},
-		Options: capnp.NewCallOptions(opts),
-	}
-	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_writeTo_Params{Struct: s}) }
-	}
-	return Blob_writeTo_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
-}
-
-func (c Blob) GetSlice(ctx context.Context, params func(Blob_getSlice_Params) error, opts ...capnp.CallOption) Blob_getSlice_Results_Promise {
-	if c.Client == nil {
-		return Blob_getSlice_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      2,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "getSlice",
-		},
-		Options: capnp.NewCallOptions(opts),
-	}
-	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 16, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_getSlice_Params{Struct: s}) }
-	}
-	return Blob_getSlice_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
-}
-
-type Blob_Server interface {
-	GetSize(Blob_getSize) error
-
-	WriteTo(Blob_writeTo) error
-
-	GetSlice(Blob_getSlice) error
-}
-
-func Blob_ServerToClient(s Blob_Server) Blob {
-	c, _ := s.(server.Closer)
-	return Blob{Client: server.New(Blob_Methods(nil, s), c)}
-}
-
-func Blob_Methods(methods []server.Method, s Blob_Server) []server.Method {
-	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 3)
-	}
-
-	methods = append(methods, server.Method{
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      0,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "getSize",
-		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_getSize{c, opts, Blob_getSize_Params{Struct: p}, Blob_getSize_Results{Struct: r}}
-			return s.GetSize(call)
-		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
-	})
-
-	methods = append(methods, server.Method{
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      1,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "writeTo",
-		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_writeTo{c, opts, Blob_writeTo_Params{Struct: p}, Blob_writeTo_Results{Struct: r}}
-			return s.WriteTo(call)
-		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
-	})
-
-	methods = append(methods, server.Method{
-		Method: capnp.Method{
-
-			InterfaceID:   0xe53527a75d90198f,
-			MethodID:      2,
-			InterfaceName: "util.capnp:Blob",
-			MethodName:    "getSlice",
-		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_getSlice{c, opts, Blob_getSlice_Params{Struct: p}, Blob_getSlice_Results{Struct: r}}
-			return s.GetSlice(call)
-		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
-	})
-
-	return methods
-}
-
-// Blob_getSize holds the arguments for a server call to Blob.getSize.
-type Blob_getSize struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_getSize_Params
-	Results Blob_getSize_Results
-}
-
-// Blob_writeTo holds the arguments for a server call to Blob.writeTo.
-type Blob_writeTo struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_writeTo_Params
-	Results Blob_writeTo_Results
-}
-
-// Blob_getSlice holds the arguments for a server call to Blob.getSlice.
-type Blob_getSlice struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_getSlice_Params
-	Results Blob_getSlice_Results
-}
-
-type Blob_getSize_Params struct{ capnp.Struct }
-
-func NewBlob_getSize_Params(s *capnp.Segment) (Blob_getSize_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	if err != nil {
-		return Blob_getSize_Params{}, err
-	}
-	return Blob_getSize_Params{st}, nil
-}
-
-func NewRootBlob_getSize_Params(s *capnp.Segment) (Blob_getSize_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	if err != nil {
-		return Blob_getSize_Params{}, err
-	}
-	return Blob_getSize_Params{st}, nil
-}
-
-func ReadRootBlob_getSize_Params(msg *capnp.Message) (Blob_getSize_Params, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_getSize_Params{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_getSize_Params{st}, nil
-}
-
-// Blob_getSize_Params_List is a list of Blob_getSize_Params.
-type Blob_getSize_Params_List struct{ capnp.List }
-
-// NewBlob_getSize_Params creates a new list of Blob_getSize_Params.
-func NewBlob_getSize_Params_List(s *capnp.Segment, sz int32) (Blob_getSize_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	if err != nil {
-		return Blob_getSize_Params_List{}, err
-	}
-	return Blob_getSize_Params_List{l}, nil
-}
-
-func (s Blob_getSize_Params_List) At(i int) Blob_getSize_Params {
-	return Blob_getSize_Params{s.List.Struct(i)}
-}
-func (s Blob_getSize_Params_List) Set(i int, v Blob_getSize_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_getSize_Params_Promise is a wrapper for a Blob_getSize_Params promised by a client call.
-type Blob_getSize_Params_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_getSize_Params_Promise) Struct() (Blob_getSize_Params, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_getSize_Params{s}, err
-}
-
-type Blob_getSize_Results struct{ capnp.Struct }
-
-func NewBlob_getSize_Results(s *capnp.Segment) (Blob_getSize_Results, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	if err != nil {
-		return Blob_getSize_Results{}, err
-	}
-	return Blob_getSize_Results{st}, nil
-}
-
-func NewRootBlob_getSize_Results(s *capnp.Segment) (Blob_getSize_Results, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	if err != nil {
-		return Blob_getSize_Results{}, err
-	}
-	return Blob_getSize_Results{st}, nil
-}
-
-func ReadRootBlob_getSize_Results(msg *capnp.Message) (Blob_getSize_Results, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_getSize_Results{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_getSize_Results{st}, nil
-}
-
-func (s Blob_getSize_Results) Size() uint64 {
-	return s.Struct.Uint64(0)
-}
-
-func (s Blob_getSize_Results) SetSize(v uint64) {
-
-	s.Struct.SetUint64(0, v)
-}
-
-// Blob_getSize_Results_List is a list of Blob_getSize_Results.
-type Blob_getSize_Results_List struct{ capnp.List }
-
-// NewBlob_getSize_Results creates a new list of Blob_getSize_Results.
-func NewBlob_getSize_Results_List(s *capnp.Segment, sz int32) (Blob_getSize_Results_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	if err != nil {
-		return Blob_getSize_Results_List{}, err
-	}
-	return Blob_getSize_Results_List{l}, nil
-}
-
-func (s Blob_getSize_Results_List) At(i int) Blob_getSize_Results {
-	return Blob_getSize_Results{s.List.Struct(i)}
-}
-func (s Blob_getSize_Results_List) Set(i int, v Blob_getSize_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_getSize_Results_Promise is a wrapper for a Blob_getSize_Results promised by a client call.
-type Blob_getSize_Results_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_getSize_Results_Promise) Struct() (Blob_getSize_Results, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_getSize_Results{s}, err
-}
-
-type Blob_writeTo_Params struct{ capnp.Struct }
-
-func NewBlob_writeTo_Params(s *capnp.Segment) (Blob_writeTo_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	if err != nil {
-		return Blob_writeTo_Params{}, err
-	}
-	return Blob_writeTo_Params{st}, nil
-}
-
-func NewRootBlob_writeTo_Params(s *capnp.Segment) (Blob_writeTo_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	if err != nil {
-		return Blob_writeTo_Params{}, err
-	}
-	return Blob_writeTo_Params{st}, nil
-}
-
-func ReadRootBlob_writeTo_Params(msg *capnp.Message) (Blob_writeTo_Params, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_writeTo_Params{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_writeTo_Params{st}, nil
-}
-
-func (s Blob_writeTo_Params) Stream() ByteStream {
-	p, err := s.Struct.Pointer(0)
-	if err != nil {
-
-		return ByteStream{}
-	}
-	c := capnp.ToInterface(p).Client()
-	return ByteStream{Client: c}
-}
-
-func (s Blob_writeTo_Params) SetStream(v ByteStream) error {
-
-	seg := s.Segment()
-	if seg == nil {
-
-		return nil
-	}
-	var in capnp.Interface
-	if v.Client != nil {
-		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	}
-	return s.Struct.SetPointer(0, in)
-}
-
-func (s Blob_writeTo_Params) StartAtOffset() uint64 {
-	return s.Struct.Uint64(0)
-}
-
-func (s Blob_writeTo_Params) SetStartAtOffset(v uint64) {
-
-	s.Struct.SetUint64(0, v)
-}
-
-// Blob_writeTo_Params_List is a list of Blob_writeTo_Params.
-type Blob_writeTo_Params_List struct{ capnp.List }
-
-// NewBlob_writeTo_Params creates a new list of Blob_writeTo_Params.
-func NewBlob_writeTo_Params_List(s *capnp.Segment, sz int32) (Blob_writeTo_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	if err != nil {
-		return Blob_writeTo_Params_List{}, err
-	}
-	return Blob_writeTo_Params_List{l}, nil
-}
-
-func (s Blob_writeTo_Params_List) At(i int) Blob_writeTo_Params {
-	return Blob_writeTo_Params{s.List.Struct(i)}
-}
-func (s Blob_writeTo_Params_List) Set(i int, v Blob_writeTo_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_writeTo_Params_Promise is a wrapper for a Blob_writeTo_Params promised by a client call.
-type Blob_writeTo_Params_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_writeTo_Params_Promise) Struct() (Blob_writeTo_Params, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_writeTo_Params{s}, err
-}
-
-func (p Blob_writeTo_Params_Promise) Stream() ByteStream {
-	return ByteStream{Client: p.Pipeline.GetPipeline(0).Client()}
-}
-
-type Blob_writeTo_Results struct{ capnp.Struct }
-
-func NewBlob_writeTo_Results(s *capnp.Segment) (Blob_writeTo_Results, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	if err != nil {
-		return Blob_writeTo_Results{}, err
-	}
-	return Blob_writeTo_Results{st}, nil
-}
-
-func NewRootBlob_writeTo_Results(s *capnp.Segment) (Blob_writeTo_Results, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	if err != nil {
-		return Blob_writeTo_Results{}, err
-	}
-	return Blob_writeTo_Results{st}, nil
-}
-
-func ReadRootBlob_writeTo_Results(msg *capnp.Message) (Blob_writeTo_Results, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_writeTo_Results{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_writeTo_Results{st}, nil
-}
-
-func (s Blob_writeTo_Results) Handle() Handle {
-	p, err := s.Struct.Pointer(0)
-	if err != nil {
-
-		return Handle{}
-	}
-	c := capnp.ToInterface(p).Client()
-	return Handle{Client: c}
-}
-
-func (s Blob_writeTo_Results) SetHandle(v Handle) error {
-
-	seg := s.Segment()
-	if seg == nil {
-
-		return nil
-	}
-	var in capnp.Interface
-	if v.Client != nil {
-		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	}
-	return s.Struct.SetPointer(0, in)
-}
-
-// Blob_writeTo_Results_List is a list of Blob_writeTo_Results.
-type Blob_writeTo_Results_List struct{ capnp.List }
-
-// NewBlob_writeTo_Results creates a new list of Blob_writeTo_Results.
-func NewBlob_writeTo_Results_List(s *capnp.Segment, sz int32) (Blob_writeTo_Results_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	if err != nil {
-		return Blob_writeTo_Results_List{}, err
-	}
-	return Blob_writeTo_Results_List{l}, nil
-}
-
-func (s Blob_writeTo_Results_List) At(i int) Blob_writeTo_Results {
-	return Blob_writeTo_Results{s.List.Struct(i)}
-}
-func (s Blob_writeTo_Results_List) Set(i int, v Blob_writeTo_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_writeTo_Results_Promise is a wrapper for a Blob_writeTo_Results promised by a client call.
-type Blob_writeTo_Results_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_writeTo_Results_Promise) Struct() (Blob_writeTo_Results, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_writeTo_Results{s}, err
-}
-
-func (p Blob_writeTo_Results_Promise) Handle() Handle {
-	return Handle{Client: p.Pipeline.GetPipeline(0).Client()}
-}
-
-type Blob_getSlice_Params struct{ capnp.Struct }
-
-func NewBlob_getSlice_Params(s *capnp.Segment) (Blob_getSlice_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	if err != nil {
-		return Blob_getSlice_Params{}, err
-	}
-	return Blob_getSlice_Params{st}, nil
-}
-
-func NewRootBlob_getSlice_Params(s *capnp.Segment) (Blob_getSlice_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	if err != nil {
-		return Blob_getSlice_Params{}, err
-	}
-	return Blob_getSlice_Params{st}, nil
-}
-
-func ReadRootBlob_getSlice_Params(msg *capnp.Message) (Blob_getSlice_Params, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_getSlice_Params{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_getSlice_Params{st}, nil
-}
-
-func (s Blob_getSlice_Params) Offset() uint64 {
-	return s.Struct.Uint64(0)
-}
-
-func (s Blob_getSlice_Params) SetOffset(v uint64) {
-
-	s.Struct.SetUint64(0, v)
-}
-
-func (s Blob_getSlice_Params) Size() uint32 {
-	return s.Struct.Uint32(8)
-}
-
-func (s Blob_getSlice_Params) SetSize(v uint32) {
-
-	s.Struct.SetUint32(8, v)
-}
-
-// Blob_getSlice_Params_List is a list of Blob_getSlice_Params.
-type Blob_getSlice_Params_List struct{ capnp.List }
-
-// NewBlob_getSlice_Params creates a new list of Blob_getSlice_Params.
-func NewBlob_getSlice_Params_List(s *capnp.Segment, sz int32) (Blob_getSlice_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
-	if err != nil {
-		return Blob_getSlice_Params_List{}, err
-	}
-	return Blob_getSlice_Params_List{l}, nil
-}
-
-func (s Blob_getSlice_Params_List) At(i int) Blob_getSlice_Params {
-	return Blob_getSlice_Params{s.List.Struct(i)}
-}
-func (s Blob_getSlice_Params_List) Set(i int, v Blob_getSlice_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_getSlice_Params_Promise is a wrapper for a Blob_getSlice_Params promised by a client call.
-type Blob_getSlice_Params_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_getSlice_Params_Promise) Struct() (Blob_getSlice_Params, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_getSlice_Params{s}, err
-}
-
-type Blob_getSlice_Results struct{ capnp.Struct }
-
-func NewBlob_getSlice_Results(s *capnp.Segment) (Blob_getSlice_Results, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	if err != nil {
-		return Blob_getSlice_Results{}, err
-	}
-	return Blob_getSlice_Results{st}, nil
-}
-
-func NewRootBlob_getSlice_Results(s *capnp.Segment) (Blob_getSlice_Results, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	if err != nil {
-		return Blob_getSlice_Results{}, err
-	}
-	return Blob_getSlice_Results{st}, nil
-}
-
-func ReadRootBlob_getSlice_Results(msg *capnp.Message) (Blob_getSlice_Results, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return Blob_getSlice_Results{}, err
-	}
-	st := capnp.ToStruct(root)
-	return Blob_getSlice_Results{st}, nil
-}
-
-func (s Blob_getSlice_Results) Data() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(capnp.ToData(p)), nil
-
-}
-
-func (s Blob_getSlice_Results) SetData(v []byte) error {
-
-	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(0, d)
-}
-
-// Blob_getSlice_Results_List is a list of Blob_getSlice_Results.
-type Blob_getSlice_Results_List struct{ capnp.List }
-
-// NewBlob_getSlice_Results creates a new list of Blob_getSlice_Results.
-func NewBlob_getSlice_Results_List(s *capnp.Segment, sz int32) (Blob_getSlice_Results_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	if err != nil {
-		return Blob_getSlice_Results_List{}, err
-	}
-	return Blob_getSlice_Results_List{l}, nil
-}
-
-func (s Blob_getSlice_Results_List) At(i int) Blob_getSlice_Results {
-	return Blob_getSlice_Results{s.List.Struct(i)}
-}
-func (s Blob_getSlice_Results_List) Set(i int, v Blob_getSlice_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// Blob_getSlice_Results_Promise is a wrapper for a Blob_getSlice_Results promised by a client call.
-type Blob_getSlice_Results_Promise struct{ *capnp.Pipeline }
-
-func (p Blob_getSlice_Results_Promise) Struct() (Blob_getSlice_Results, error) {
-	s, err := p.Pipeline.Struct()
-	return Blob_getSlice_Results{s}, err
-}
-
 type Assignable struct{ Client capnp.Client }
 
 func (c Assignable) Get(ctx context.Context, params func(Assignable_get_Params) error, opts ...capnp.CallOption) Assignable_get_Results_Promise {
@@ -1403,7 +871,6 @@ func (c Assignable) Get(ctx context.Context, params func(Assignable_get_Params) 
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable",
@@ -1417,7 +884,6 @@ func (c Assignable) Get(ctx context.Context, params func(Assignable_get_Params) 
 	}
 	return Assignable_get_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Assignable) AsGetter(ctx context.Context, params func(Assignable_asGetter_Params) error, opts ...capnp.CallOption) Assignable_asGetter_Results_Promise {
 	if c.Client == nil {
 		return Assignable_asGetter_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1425,7 +891,6 @@ func (c Assignable) AsGetter(ctx context.Context, params func(Assignable_asGette
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable",
@@ -1439,7 +904,6 @@ func (c Assignable) AsGetter(ctx context.Context, params func(Assignable_asGette
 	}
 	return Assignable_asGetter_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Assignable) AsSetter(ctx context.Context, params func(Assignable_asSetter_Params) error, opts ...capnp.CallOption) Assignable_asSetter_Results_Promise {
 	if c.Client == nil {
 		return Assignable_asSetter_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1447,7 +911,6 @@ func (c Assignable) AsSetter(ctx context.Context, params func(Assignable_asSette
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      2,
 			InterfaceName: "util.capnp:Assignable",
@@ -1482,7 +945,6 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable",
@@ -1497,7 +959,6 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable",
@@ -1512,7 +973,6 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      2,
 			InterfaceName: "util.capnp:Assignable",
@@ -1561,7 +1021,6 @@ func (c Assignable_Getter) Get(ctx context.Context, params func(Assignable_Gette
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Getter",
@@ -1575,7 +1034,6 @@ func (c Assignable_Getter) Get(ctx context.Context, params func(Assignable_Gette
 	}
 	return Assignable_Getter_get_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Assignable_Getter) Subscribe(ctx context.Context, params func(Assignable_Getter_subscribe_Params) error, opts ...capnp.CallOption) Assignable_Getter_subscribe_Results_Promise {
 	if c.Client == nil {
 		return Assignable_Getter_subscribe_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1583,7 +1041,6 @@ func (c Assignable_Getter) Subscribe(ctx context.Context, params func(Assignable
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable.Getter",
@@ -1616,7 +1073,6 @@ func Assignable_Getter_Methods(methods []server.Method, s Assignable_Getter_Serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Getter",
@@ -1631,7 +1087,6 @@ func Assignable_Getter_Methods(methods []server.Method, s Assignable_Getter_Serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable.Getter",
@@ -1682,12 +1137,11 @@ func NewRootAssignable_Getter_get_Params(s *capnp.Segment) (Assignable_Getter_ge
 }
 
 func ReadRootAssignable_Getter_get_Params(msg *capnp.Message) (Assignable_Getter_get_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Getter_get_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Getter_get_Params{st}, nil
+	return Assignable_Getter_get_Params{root.Struct()}, nil
 }
 
 // Assignable_Getter_get_Params_List is a list of Assignable_Getter_get_Params.
@@ -1736,23 +1190,31 @@ func NewRootAssignable_Getter_get_Results(s *capnp.Segment) (Assignable_Getter_g
 }
 
 func ReadRootAssignable_Getter_get_Results(msg *capnp.Message) (Assignable_Getter_get_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Getter_get_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Getter_get_Results{st}, nil
+	return Assignable_Getter_get_Results{root.Struct()}, nil
+}
+func (s Assignable_Getter_get_Results) Value() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s Assignable_Getter_get_Results) Value() (capnp.Pointer, error) {
+func (s Assignable_Getter_get_Results) HasValue() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s Assignable_Getter_get_Results) ValuePtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s Assignable_Getter_get_Results) SetValue(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s Assignable_Getter_get_Results) SetValuePtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // Assignable_Getter_get_Results_List is a list of Assignable_Getter_get_Results.
@@ -1805,26 +1267,27 @@ func NewRootAssignable_Getter_subscribe_Params(s *capnp.Segment) (Assignable_Get
 }
 
 func ReadRootAssignable_Getter_subscribe_Params(msg *capnp.Message) (Assignable_Getter_subscribe_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Getter_subscribe_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Getter_subscribe_Params{st}, nil
+	return Assignable_Getter_subscribe_Params{root.Struct()}, nil
 }
-
 func (s Assignable_Getter_subscribe_Params) Setter() Assignable_Setter {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return Assignable_Setter{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return Assignable_Setter{Client: c}
+	return Assignable_Setter{Client: p.Interface().Client()}
+}
+
+func (s Assignable_Getter_subscribe_Params) HasSetter() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Assignable_Getter_subscribe_Params) SetSetter(v Assignable_Setter) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1834,7 +1297,7 @@ func (s Assignable_Getter_subscribe_Params) SetSetter(v Assignable_Setter) error
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Assignable_Getter_subscribe_Params_List is a list of Assignable_Getter_subscribe_Params.
@@ -1887,26 +1350,27 @@ func NewRootAssignable_Getter_subscribe_Results(s *capnp.Segment) (Assignable_Ge
 }
 
 func ReadRootAssignable_Getter_subscribe_Results(msg *capnp.Message) (Assignable_Getter_subscribe_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Getter_subscribe_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Getter_subscribe_Results{st}, nil
+	return Assignable_Getter_subscribe_Results{root.Struct()}, nil
 }
-
 func (s Assignable_Getter_subscribe_Results) Handle() Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return Handle{Client: c}
+	return Handle{Client: p.Interface().Client()}
+}
+
+func (s Assignable_Getter_subscribe_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Assignable_Getter_subscribe_Results) SetHandle(v Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1916,7 +1380,7 @@ func (s Assignable_Getter_subscribe_Results) SetHandle(v Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Assignable_Getter_subscribe_Results_List is a list of Assignable_Getter_subscribe_Results.
@@ -1959,7 +1423,6 @@ func (c Assignable_Setter) Set(ctx context.Context, params func(Assignable_Sette
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xd5256a3f93589d2f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Setter",
@@ -1990,7 +1453,6 @@ func Assignable_Setter_Methods(methods []server.Method, s Assignable_Setter_Serv
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xd5256a3f93589d2f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Setter",
@@ -2033,23 +1495,31 @@ func NewRootAssignable_Setter_set_Params(s *capnp.Segment) (Assignable_Setter_se
 }
 
 func ReadRootAssignable_Setter_set_Params(msg *capnp.Message) (Assignable_Setter_set_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Setter_set_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Setter_set_Params{st}, nil
+	return Assignable_Setter_set_Params{root.Struct()}, nil
+}
+func (s Assignable_Setter_set_Params) Value() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s Assignable_Setter_set_Params) Value() (capnp.Pointer, error) {
+func (s Assignable_Setter_set_Params) HasValue() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s Assignable_Setter_set_Params) ValuePtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s Assignable_Setter_set_Params) SetValue(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s Assignable_Setter_set_Params) SetValuePtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // Assignable_Setter_set_Params_List is a list of Assignable_Setter_set_Params.
@@ -2102,12 +1572,11 @@ func NewRootAssignable_Setter_set_Results(s *capnp.Segment) (Assignable_Setter_s
 }
 
 func ReadRootAssignable_Setter_set_Results(msg *capnp.Message) (Assignable_Setter_set_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_Setter_set_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_Setter_set_Results{st}, nil
+	return Assignable_Setter_set_Results{root.Struct()}, nil
 }
 
 // Assignable_Setter_set_Results_List is a list of Assignable_Setter_set_Results.
@@ -2156,12 +1625,11 @@ func NewRootAssignable_get_Params(s *capnp.Segment) (Assignable_get_Params, erro
 }
 
 func ReadRootAssignable_get_Params(msg *capnp.Message) (Assignable_get_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_get_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_get_Params{st}, nil
+	return Assignable_get_Params{root.Struct()}, nil
 }
 
 // Assignable_get_Params_List is a list of Assignable_get_Params.
@@ -2210,37 +1678,48 @@ func NewRootAssignable_get_Results(s *capnp.Segment) (Assignable_get_Results, er
 }
 
 func ReadRootAssignable_get_Results(msg *capnp.Message) (Assignable_get_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_get_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_get_Results{st}, nil
+	return Assignable_get_Results{root.Struct()}, nil
+}
+func (s Assignable_get_Results) Value() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s Assignable_get_Results) Value() (capnp.Pointer, error) {
+func (s Assignable_get_Results) HasValue() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s Assignable_get_Results) ValuePtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s Assignable_get_Results) SetValue(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s Assignable_get_Results) SetValuePtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s Assignable_get_Results) Setter() Assignable_Setter {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return Assignable_Setter{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return Assignable_Setter{Client: c}
+	return Assignable_Setter{Client: p.Interface().Client()}
+}
+
+func (s Assignable_get_Results) HasSetter() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s Assignable_get_Results) SetSetter(v Assignable_Setter) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2250,7 +1729,7 @@ func (s Assignable_get_Results) SetSetter(v Assignable_Setter) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // Assignable_get_Results_List is a list of Assignable_get_Results.
@@ -2307,12 +1786,11 @@ func NewRootAssignable_asGetter_Params(s *capnp.Segment) (Assignable_asGetter_Pa
 }
 
 func ReadRootAssignable_asGetter_Params(msg *capnp.Message) (Assignable_asGetter_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_asGetter_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_asGetter_Params{st}, nil
+	return Assignable_asGetter_Params{root.Struct()}, nil
 }
 
 // Assignable_asGetter_Params_List is a list of Assignable_asGetter_Params.
@@ -2361,26 +1839,27 @@ func NewRootAssignable_asGetter_Results(s *capnp.Segment) (Assignable_asGetter_R
 }
 
 func ReadRootAssignable_asGetter_Results(msg *capnp.Message) (Assignable_asGetter_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_asGetter_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_asGetter_Results{st}, nil
+	return Assignable_asGetter_Results{root.Struct()}, nil
 }
-
 func (s Assignable_asGetter_Results) Getter() Assignable_Getter {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return Assignable_Getter{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return Assignable_Getter{Client: c}
+	return Assignable_Getter{Client: p.Interface().Client()}
+}
+
+func (s Assignable_asGetter_Results) HasGetter() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Assignable_asGetter_Results) SetGetter(v Assignable_Getter) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2390,7 +1869,7 @@ func (s Assignable_asGetter_Results) SetGetter(v Assignable_Getter) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Assignable_asGetter_Results_List is a list of Assignable_asGetter_Results.
@@ -2443,12 +1922,11 @@ func NewRootAssignable_asSetter_Params(s *capnp.Segment) (Assignable_asSetter_Pa
 }
 
 func ReadRootAssignable_asSetter_Params(msg *capnp.Message) (Assignable_asSetter_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_asSetter_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_asSetter_Params{st}, nil
+	return Assignable_asSetter_Params{root.Struct()}, nil
 }
 
 // Assignable_asSetter_Params_List is a list of Assignable_asSetter_Params.
@@ -2497,26 +1975,27 @@ func NewRootAssignable_asSetter_Results(s *capnp.Segment) (Assignable_asSetter_R
 }
 
 func ReadRootAssignable_asSetter_Results(msg *capnp.Message) (Assignable_asSetter_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Assignable_asSetter_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Assignable_asSetter_Results{st}, nil
+	return Assignable_asSetter_Results{root.Struct()}, nil
 }
-
 func (s Assignable_asSetter_Results) Setter() Assignable_Setter {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return Assignable_Setter{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return Assignable_Setter{Client: c}
+	return Assignable_Setter{Client: p.Interface().Client()}
+}
+
+func (s Assignable_asSetter_Results) HasSetter() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Assignable_asSetter_Results) SetSetter(v Assignable_Setter) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2526,7 +2005,7 @@ func (s Assignable_asSetter_Results) SetSetter(v Assignable_Setter) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Assignable_asSetter_Results_List is a list of Assignable_asSetter_Results.

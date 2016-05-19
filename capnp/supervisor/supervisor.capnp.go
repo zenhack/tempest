@@ -21,7 +21,6 @@ func (c Supervisor) GetMainView(ctx context.Context, params func(Supervisor_getM
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -35,7 +34,6 @@ func (c Supervisor) GetMainView(ctx context.Context, params func(Supervisor_getM
 	}
 	return Supervisor_getMainView_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) KeepAlive(ctx context.Context, params func(Supervisor_keepAlive_Params) error, opts ...capnp.CallOption) Supervisor_keepAlive_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_keepAlive_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -43,7 +41,6 @@ func (c Supervisor) KeepAlive(ctx context.Context, params func(Supervisor_keepAl
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      1,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -52,12 +49,11 @@ func (c Supervisor) KeepAlive(ctx context.Context, params func(Supervisor_keepAl
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
 		call.ParamsFunc = func(s capnp.Struct) error { return params(Supervisor_keepAlive_Params{Struct: s}) }
 	}
 	return Supervisor_keepAlive_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdown_Params) error, opts ...capnp.CallOption) Supervisor_shutdown_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_shutdown_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -65,7 +61,6 @@ func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdow
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      2,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -79,7 +74,6 @@ func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdow
 	}
 	return Supervisor_shutdown_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) GetGrainSize(ctx context.Context, params func(Supervisor_getGrainSize_Params) error, opts ...capnp.CallOption) Supervisor_getGrainSize_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_getGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -87,7 +81,6 @@ func (c Supervisor) GetGrainSize(ctx context.Context, params func(Supervisor_get
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -101,7 +94,6 @@ func (c Supervisor) GetGrainSize(ctx context.Context, params func(Supervisor_get
 	}
 	return Supervisor_getGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) GetGrainSizeWhenDifferent(ctx context.Context, params func(Supervisor_getGrainSizeWhenDifferent_Params) error, opts ...capnp.CallOption) Supervisor_getGrainSizeWhenDifferent_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_getGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -109,7 +101,6 @@ func (c Supervisor) GetGrainSizeWhenDifferent(ctx context.Context, params func(S
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -123,7 +114,6 @@ func (c Supervisor) GetGrainSizeWhenDifferent(ctx context.Context, params func(S
 	}
 	return Supervisor_getGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_Params) error, opts ...capnp.CallOption) Supervisor_restore_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_restore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -131,7 +121,6 @@ func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      5,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -145,7 +134,6 @@ func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_
 	}
 	return Supervisor_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) Drop(ctx context.Context, params func(Supervisor_drop_Params) error, opts ...capnp.CallOption) Supervisor_drop_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -153,7 +141,6 @@ func (c Supervisor) Drop(ctx context.Context, params func(Supervisor_drop_Params
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      6,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -167,7 +154,6 @@ func (c Supervisor) Drop(ctx context.Context, params func(Supervisor_drop_Params
 	}
 	return Supervisor_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) WatchLog(ctx context.Context, params func(Supervisor_watchLog_Params) error, opts ...capnp.CallOption) Supervisor_watchLog_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_watchLog_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -175,7 +161,6 @@ func (c Supervisor) WatchLog(ctx context.Context, params func(Supervisor_watchLo
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      7,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -189,7 +174,6 @@ func (c Supervisor) WatchLog(ctx context.Context, params func(Supervisor_watchLo
 	}
 	return Supervisor_watchLog_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) SyncStorage(ctx context.Context, params func(Supervisor_syncStorage_Params) error, opts ...capnp.CallOption) Supervisor_syncStorage_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_syncStorage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -197,7 +181,6 @@ func (c Supervisor) SyncStorage(ctx context.Context, params func(Supervisor_sync
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      8,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -211,7 +194,6 @@ func (c Supervisor) SyncStorage(ctx context.Context, params func(Supervisor_sync
 	}
 	return Supervisor_syncStorage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c Supervisor) GetWwwFileHack(ctx context.Context, params func(Supervisor_getWwwFileHack_Params) error, opts ...capnp.CallOption) Supervisor_getWwwFileHack_Results_Promise {
 	if c.Client == nil {
 		return Supervisor_getWwwFileHack_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -219,7 +201,6 @@ func (c Supervisor) GetWwwFileHack(ctx context.Context, params func(Supervisor_g
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      9,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -268,7 +249,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -283,7 +263,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      1,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -298,7 +277,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      2,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -313,7 +291,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -328,7 +305,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -343,7 +319,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      5,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -358,7 +333,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      6,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -373,7 +347,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      7,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -388,7 +361,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      8,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -403,7 +375,6 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      9,
 			InterfaceName: "supervisor.capnp:Supervisor",
@@ -578,12 +549,11 @@ func NewRootSupervisor_getMainView_Params(s *capnp.Segment) (Supervisor_getMainV
 }
 
 func ReadRootSupervisor_getMainView_Params(msg *capnp.Message) (Supervisor_getMainView_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getMainView_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getMainView_Params{st}, nil
+	return Supervisor_getMainView_Params{root.Struct()}, nil
 }
 
 // Supervisor_getMainView_Params_List is a list of Supervisor_getMainView_Params.
@@ -632,26 +602,27 @@ func NewRootSupervisor_getMainView_Results(s *capnp.Segment) (Supervisor_getMain
 }
 
 func ReadRootSupervisor_getMainView_Results(msg *capnp.Message) (Supervisor_getMainView_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getMainView_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getMainView_Results{st}, nil
+	return Supervisor_getMainView_Results{root.Struct()}, nil
 }
-
 func (s Supervisor_getMainView_Results) View() grain.UiView {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return grain.UiView{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return grain.UiView{Client: c}
+	return grain.UiView{Client: p.Interface().Client()}
+}
+
+func (s Supervisor_getMainView_Results) HasView() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_getMainView_Results) SetView(v grain.UiView) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -661,7 +632,7 @@ func (s Supervisor_getMainView_Results) SetView(v grain.UiView) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_getMainView_Results_List is a list of Supervisor_getMainView_Results.
@@ -698,7 +669,7 @@ func (p Supervisor_getMainView_Results_Promise) View() grain.UiView {
 type Supervisor_keepAlive_Params struct{ capnp.Struct }
 
 func NewSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	if err != nil {
 		return Supervisor_keepAlive_Params{}, err
 	}
@@ -706,7 +677,7 @@ func NewSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Para
 }
 
 func NewRootSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	if err != nil {
 		return Supervisor_keepAlive_Params{}, err
 	}
@@ -714,36 +685,11 @@ func NewRootSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_
 }
 
 func ReadRootSupervisor_keepAlive_Params(msg *capnp.Message) (Supervisor_keepAlive_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_keepAlive_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_keepAlive_Params{st}, nil
-}
-
-func (s Supervisor_keepAlive_Params) Core() SandstormCore {
-	p, err := s.Struct.Pointer(0)
-	if err != nil {
-
-		return SandstormCore{}
-	}
-	c := capnp.ToInterface(p).Client()
-	return SandstormCore{Client: c}
-}
-
-func (s Supervisor_keepAlive_Params) SetCore(v SandstormCore) error {
-
-	seg := s.Segment()
-	if seg == nil {
-
-		return nil
-	}
-	var in capnp.Interface
-	if v.Client != nil {
-		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	}
-	return s.Struct.SetPointer(0, in)
+	return Supervisor_keepAlive_Params{root.Struct()}, nil
 }
 
 // Supervisor_keepAlive_Params_List is a list of Supervisor_keepAlive_Params.
@@ -751,7 +697,7 @@ type Supervisor_keepAlive_Params_List struct{ capnp.List }
 
 // NewSupervisor_keepAlive_Params creates a new list of Supervisor_keepAlive_Params.
 func NewSupervisor_keepAlive_Params_List(s *capnp.Segment, sz int32) (Supervisor_keepAlive_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
 	if err != nil {
 		return Supervisor_keepAlive_Params_List{}, err
 	}
@@ -773,10 +719,6 @@ func (p Supervisor_keepAlive_Params_Promise) Struct() (Supervisor_keepAlive_Para
 	return Supervisor_keepAlive_Params{s}, err
 }
 
-func (p Supervisor_keepAlive_Params_Promise) Core() SandstormCore {
-	return SandstormCore{Client: p.Pipeline.GetPipeline(0).Client()}
-}
-
 type Supervisor_keepAlive_Results struct{ capnp.Struct }
 
 func NewSupervisor_keepAlive_Results(s *capnp.Segment) (Supervisor_keepAlive_Results, error) {
@@ -796,12 +738,11 @@ func NewRootSupervisor_keepAlive_Results(s *capnp.Segment) (Supervisor_keepAlive
 }
 
 func ReadRootSupervisor_keepAlive_Results(msg *capnp.Message) (Supervisor_keepAlive_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_keepAlive_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_keepAlive_Results{st}, nil
+	return Supervisor_keepAlive_Results{root.Struct()}, nil
 }
 
 // Supervisor_keepAlive_Results_List is a list of Supervisor_keepAlive_Results.
@@ -850,12 +791,11 @@ func NewRootSupervisor_shutdown_Params(s *capnp.Segment) (Supervisor_shutdown_Pa
 }
 
 func ReadRootSupervisor_shutdown_Params(msg *capnp.Message) (Supervisor_shutdown_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_shutdown_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_shutdown_Params{st}, nil
+	return Supervisor_shutdown_Params{root.Struct()}, nil
 }
 
 // Supervisor_shutdown_Params_List is a list of Supervisor_shutdown_Params.
@@ -904,12 +844,11 @@ func NewRootSupervisor_shutdown_Results(s *capnp.Segment) (Supervisor_shutdown_R
 }
 
 func ReadRootSupervisor_shutdown_Results(msg *capnp.Message) (Supervisor_shutdown_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_shutdown_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_shutdown_Results{st}, nil
+	return Supervisor_shutdown_Results{root.Struct()}, nil
 }
 
 // Supervisor_shutdown_Results_List is a list of Supervisor_shutdown_Results.
@@ -958,12 +897,11 @@ func NewRootSupervisor_getGrainSize_Params(s *capnp.Segment) (Supervisor_getGrai
 }
 
 func ReadRootSupervisor_getGrainSize_Params(msg *capnp.Message) (Supervisor_getGrainSize_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getGrainSize_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getGrainSize_Params{st}, nil
+	return Supervisor_getGrainSize_Params{root.Struct()}, nil
 }
 
 // Supervisor_getGrainSize_Params_List is a list of Supervisor_getGrainSize_Params.
@@ -1012,20 +950,17 @@ func NewRootSupervisor_getGrainSize_Results(s *capnp.Segment) (Supervisor_getGra
 }
 
 func ReadRootSupervisor_getGrainSize_Results(msg *capnp.Message) (Supervisor_getGrainSize_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getGrainSize_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getGrainSize_Results{st}, nil
+	return Supervisor_getGrainSize_Results{root.Struct()}, nil
 }
-
 func (s Supervisor_getGrainSize_Results) Size() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s Supervisor_getGrainSize_Results) SetSize(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
@@ -1075,20 +1010,17 @@ func NewRootSupervisor_getGrainSizeWhenDifferent_Params(s *capnp.Segment) (Super
 }
 
 func ReadRootSupervisor_getGrainSizeWhenDifferent_Params(msg *capnp.Message) (Supervisor_getGrainSizeWhenDifferent_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getGrainSizeWhenDifferent_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getGrainSizeWhenDifferent_Params{st}, nil
+	return Supervisor_getGrainSizeWhenDifferent_Params{root.Struct()}, nil
 }
-
 func (s Supervisor_getGrainSizeWhenDifferent_Params) OldSize() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s Supervisor_getGrainSizeWhenDifferent_Params) SetOldSize(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
@@ -1138,20 +1070,17 @@ func NewRootSupervisor_getGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supe
 }
 
 func ReadRootSupervisor_getGrainSizeWhenDifferent_Results(msg *capnp.Message) (Supervisor_getGrainSizeWhenDifferent_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getGrainSizeWhenDifferent_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getGrainSizeWhenDifferent_Results{st}, nil
+	return Supervisor_getGrainSizeWhenDifferent_Results{root.Struct()}, nil
 }
-
 func (s Supervisor_getGrainSizeWhenDifferent_Results) Size() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s Supervisor_getGrainSizeWhenDifferent_Results) SetSize(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
@@ -1201,75 +1130,87 @@ func NewRootSupervisor_restore_Params(s *capnp.Segment) (Supervisor_restore_Para
 }
 
 func ReadRootSupervisor_restore_Params(msg *capnp.Message) (Supervisor_restore_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_restore_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_restore_Params{st}, nil
+	return Supervisor_restore_Params{root.Struct()}, nil
 }
-
 func (s Supervisor_restore_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
+	return SupervisorObjectId{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return SupervisorObjectId{Struct: ss}, nil
+func (s Supervisor_restore_Params) HasRef() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_restore_Params) SetRef(v SupervisorObjectId) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s Supervisor_restore_Params) NewRef() (SupervisorObjectId, error) {
-
 	ss, err := NewSupervisorObjectId(s.Struct.Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s Supervisor_restore_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
+	return MembraneRequirement_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return MembraneRequirement_List{List: l}, nil
+func (s Supervisor_restore_Params) HasRequirements() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_restore_Params) SetRequirements(v MembraneRequirement_List) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRequirements sets the requirements field to a newly
+// allocated MembraneRequirement_List, preferring placement in s's segment.
+func (s Supervisor_restore_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
+	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	if err != nil {
+		return MembraneRequirement_List{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 func (s Supervisor_restore_Params) ParentToken() ([]byte, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s Supervisor_restore_Params) HasParentToken() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_restore_Params) SetParentToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(2, d)
+	return s.Struct.SetPtr(2, d.List.ToPtr())
 }
 
 // Supervisor_restore_Params_List is a list of Supervisor_restore_Params.
@@ -1322,23 +1263,31 @@ func NewRootSupervisor_restore_Results(s *capnp.Segment) (Supervisor_restore_Res
 }
 
 func ReadRootSupervisor_restore_Results(msg *capnp.Message) (Supervisor_restore_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_restore_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_restore_Results{st}, nil
+	return Supervisor_restore_Results{root.Struct()}, nil
+}
+func (s Supervisor_restore_Results) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s Supervisor_restore_Results) Cap() (capnp.Pointer, error) {
+func (s Supervisor_restore_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s Supervisor_restore_Results) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s Supervisor_restore_Results) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s Supervisor_restore_Results) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // Supervisor_restore_Results_List is a list of Supervisor_restore_Results.
@@ -1391,39 +1340,37 @@ func NewRootSupervisor_drop_Params(s *capnp.Segment) (Supervisor_drop_Params, er
 }
 
 func ReadRootSupervisor_drop_Params(msg *capnp.Message) (Supervisor_drop_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_drop_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_drop_Params{st}, nil
+	return Supervisor_drop_Params{root.Struct()}, nil
 }
-
 func (s Supervisor_drop_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
+	return SupervisorObjectId{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return SupervisorObjectId{Struct: ss}, nil
+func (s Supervisor_drop_Params) HasRef() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_drop_Params) SetRef(v SupervisorObjectId) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s Supervisor_drop_Params) NewRef() (SupervisorObjectId, error) {
-
 	ss, err := NewSupervisorObjectId(s.Struct.Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
@@ -1477,12 +1424,11 @@ func NewRootSupervisor_drop_Results(s *capnp.Segment) (Supervisor_drop_Results, 
 }
 
 func ReadRootSupervisor_drop_Results(msg *capnp.Message) (Supervisor_drop_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_drop_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_drop_Results{st}, nil
+	return Supervisor_drop_Results{root.Struct()}, nil
 }
 
 // Supervisor_drop_Results_List is a list of Supervisor_drop_Results.
@@ -1531,35 +1477,35 @@ func NewRootSupervisor_watchLog_Params(s *capnp.Segment) (Supervisor_watchLog_Pa
 }
 
 func ReadRootSupervisor_watchLog_Params(msg *capnp.Message) (Supervisor_watchLog_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_watchLog_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_watchLog_Params{st}, nil
+	return Supervisor_watchLog_Params{root.Struct()}, nil
 }
-
 func (s Supervisor_watchLog_Params) BacklogAmount() uint64 {
 	return s.Struct.Uint64(0)
 }
 
 func (s Supervisor_watchLog_Params) SetBacklogAmount(v uint64) {
-
 	s.Struct.SetUint64(0, v)
 }
 
 func (s Supervisor_watchLog_Params) Stream() util.ByteStream {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.ByteStream{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.ByteStream{Client: c}
+	return util.ByteStream{Client: p.Interface().Client()}
+}
+
+func (s Supervisor_watchLog_Params) HasStream() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_watchLog_Params) SetStream(v util.ByteStream) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1569,7 +1515,7 @@ func (s Supervisor_watchLog_Params) SetStream(v util.ByteStream) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_watchLog_Params_List is a list of Supervisor_watchLog_Params.
@@ -1622,26 +1568,27 @@ func NewRootSupervisor_watchLog_Results(s *capnp.Segment) (Supervisor_watchLog_R
 }
 
 func ReadRootSupervisor_watchLog_Results(msg *capnp.Message) (Supervisor_watchLog_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_watchLog_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_watchLog_Results{st}, nil
+	return Supervisor_watchLog_Results{root.Struct()}, nil
 }
-
 func (s Supervisor_watchLog_Results) Handle() util.Handle {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return util.Handle{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.Handle{Client: c}
+	return util.Handle{Client: p.Interface().Client()}
+}
+
+func (s Supervisor_watchLog_Results) HasHandle() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_watchLog_Results) SetHandle(v util.Handle) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1651,7 +1598,7 @@ func (s Supervisor_watchLog_Results) SetHandle(v util.Handle) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_watchLog_Results_List is a list of Supervisor_watchLog_Results.
@@ -1704,12 +1651,11 @@ func NewRootSupervisor_syncStorage_Params(s *capnp.Segment) (Supervisor_syncStor
 }
 
 func ReadRootSupervisor_syncStorage_Params(msg *capnp.Message) (Supervisor_syncStorage_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_syncStorage_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_syncStorage_Params{st}, nil
+	return Supervisor_syncStorage_Params{root.Struct()}, nil
 }
 
 // Supervisor_syncStorage_Params_List is a list of Supervisor_syncStorage_Params.
@@ -1758,12 +1704,11 @@ func NewRootSupervisor_syncStorage_Results(s *capnp.Segment) (Supervisor_syncSto
 }
 
 func ReadRootSupervisor_syncStorage_Results(msg *capnp.Message) (Supervisor_syncStorage_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_syncStorage_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_syncStorage_Results{st}, nil
+	return Supervisor_syncStorage_Results{root.Struct()}, nil
 }
 
 // Supervisor_syncStorage_Results_List is a list of Supervisor_syncStorage_Results.
@@ -1812,45 +1757,60 @@ func NewRootSupervisor_getWwwFileHack_Params(s *capnp.Segment) (Supervisor_getWw
 }
 
 func ReadRootSupervisor_getWwwFileHack_Params(msg *capnp.Message) (Supervisor_getWwwFileHack_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getWwwFileHack_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getWwwFileHack_Params{st}, nil
+	return Supervisor_getWwwFileHack_Params{root.Struct()}, nil
 }
-
 func (s Supervisor_getWwwFileHack_Params) Path() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s Supervisor_getWwwFileHack_Params) HasPath() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s Supervisor_getWwwFileHack_Params) PathBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s Supervisor_getWwwFileHack_Params) SetPath(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s Supervisor_getWwwFileHack_Params) Stream() util.ByteStream {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 
 		return util.ByteStream{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return util.ByteStream{Client: c}
+	return util.ByteStream{Client: p.Interface().Client()}
+}
+
+func (s Supervisor_getWwwFileHack_Params) HasStream() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s Supervisor_getWwwFileHack_Params) SetStream(v util.ByteStream) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -1860,7 +1820,7 @@ func (s Supervisor_getWwwFileHack_Params) SetStream(v util.ByteStream) error {
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(1, in)
+	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
 // Supervisor_getWwwFileHack_Params_List is a list of Supervisor_getWwwFileHack_Params.
@@ -1913,20 +1873,17 @@ func NewRootSupervisor_getWwwFileHack_Results(s *capnp.Segment) (Supervisor_getW
 }
 
 func ReadRootSupervisor_getWwwFileHack_Results(msg *capnp.Message) (Supervisor_getWwwFileHack_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return Supervisor_getWwwFileHack_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return Supervisor_getWwwFileHack_Results{st}, nil
+	return Supervisor_getWwwFileHack_Results{root.Struct()}, nil
 }
-
 func (s Supervisor_getWwwFileHack_Results) Status() Supervisor_WwwFileStatus {
 	return Supervisor_WwwFileStatus(s.Struct.Uint16(0))
 }
 
 func (s Supervisor_getWwwFileHack_Results) SetStatus(v Supervisor_WwwFileStatus) {
-
 	s.Struct.SetUint16(0, uint16(v))
 }
 
@@ -1966,7 +1923,6 @@ func (c SandstormCore) Restore(ctx context.Context, params func(SandstormCore_re
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -1980,7 +1936,6 @@ func (c SandstormCore) Restore(ctx context.Context, params func(SandstormCore_re
 	}
 	return SandstormCore_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormCore) MakeToken(ctx context.Context, params func(SandstormCore_makeToken_Params) error, opts ...capnp.CallOption) SandstormCore_makeToken_Results_Promise {
 	if c.Client == nil {
 		return SandstormCore_makeToken_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -1988,7 +1943,6 @@ func (c SandstormCore) MakeToken(ctx context.Context, params func(SandstormCore_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      1,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2002,7 +1956,6 @@ func (c SandstormCore) MakeToken(ctx context.Context, params func(SandstormCore_
 	}
 	return SandstormCore_makeToken_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormCore) GetOwnerNotificationTarget(ctx context.Context, params func(SandstormCore_getOwnerNotificationTarget_Params) error, opts ...capnp.CallOption) SandstormCore_getOwnerNotificationTarget_Results_Promise {
 	if c.Client == nil {
 		return SandstormCore_getOwnerNotificationTarget_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2010,7 +1963,6 @@ func (c SandstormCore) GetOwnerNotificationTarget(ctx context.Context, params fu
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      2,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2024,7 +1976,6 @@ func (c SandstormCore) GetOwnerNotificationTarget(ctx context.Context, params fu
 	}
 	return SandstormCore_getOwnerNotificationTarget_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormCore) Drop(ctx context.Context, params func(SandstormCore_drop_Params) error, opts ...capnp.CallOption) SandstormCore_drop_Results_Promise {
 	if c.Client == nil {
 		return SandstormCore_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2032,7 +1983,6 @@ func (c SandstormCore) Drop(ctx context.Context, params func(SandstormCore_drop_
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2046,7 +1996,6 @@ func (c SandstormCore) Drop(ctx context.Context, params func(SandstormCore_drop_
 	}
 	return SandstormCore_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormCore) CheckRequirements(ctx context.Context, params func(SandstormCore_checkRequirements_Params) error, opts ...capnp.CallOption) SandstormCore_checkRequirements_Results_Promise {
 	if c.Client == nil {
 		return SandstormCore_checkRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2054,7 +2003,6 @@ func (c SandstormCore) CheckRequirements(ctx context.Context, params func(Sandst
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2068,7 +2016,6 @@ func (c SandstormCore) CheckRequirements(ctx context.Context, params func(Sandst
 	}
 	return SandstormCore_checkRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SandstormCore) MakeChildToken(ctx context.Context, params func(SandstormCore_makeChildToken_Params) error, opts ...capnp.CallOption) SandstormCore_makeChildToken_Results_Promise {
 	if c.Client == nil {
 		return SandstormCore_makeChildToken_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -2076,7 +2023,6 @@ func (c SandstormCore) MakeChildToken(ctx context.Context, params func(Sandstorm
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      5,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2117,7 +2063,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2132,7 +2077,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      1,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2147,7 +2091,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      2,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2162,7 +2105,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2177,7 +2119,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2192,7 +2133,6 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0x9ba45778a294b60c,
 			MethodID:      5,
 			InterfaceName: "supervisor.capnp:SandstormCore",
@@ -2265,7 +2205,6 @@ func (c SandstormCore_RequirementObserver) Observe(ctx context.Context, params f
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xa3eb8443f86b46f7,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SandstormCore.RequirementObserver",
@@ -2296,7 +2235,6 @@ func SandstormCore_RequirementObserver_Methods(methods []server.Method, s Sandst
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xa3eb8443f86b46f7,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SandstormCore.RequirementObserver",
@@ -2339,12 +2277,11 @@ func NewRootSandstormCore_RequirementObserver_observe_Params(s *capnp.Segment) (
 }
 
 func ReadRootSandstormCore_RequirementObserver_observe_Params(msg *capnp.Message) (SandstormCore_RequirementObserver_observe_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_RequirementObserver_observe_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_RequirementObserver_observe_Params{st}, nil
+	return SandstormCore_RequirementObserver_observe_Params{root.Struct()}, nil
 }
 
 // SandstormCore_RequirementObserver_observe_Params_List is a list of SandstormCore_RequirementObserver_observe_Params.
@@ -2393,12 +2330,11 @@ func NewRootSandstormCore_RequirementObserver_observe_Results(s *capnp.Segment) 
 }
 
 func ReadRootSandstormCore_RequirementObserver_observe_Results(msg *capnp.Message) (SandstormCore_RequirementObserver_observe_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_RequirementObserver_observe_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_RequirementObserver_observe_Results{st}, nil
+	return SandstormCore_RequirementObserver_observe_Results{root.Struct()}, nil
 }
 
 // SandstormCore_RequirementObserver_observe_Results_List is a list of SandstormCore_RequirementObserver_observe_Results.
@@ -2447,47 +2383,59 @@ func NewRootSandstormCore_restore_Params(s *capnp.Segment) (SandstormCore_restor
 }
 
 func ReadRootSandstormCore_restore_Params(msg *capnp.Message) (SandstormCore_restore_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_restore_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_restore_Params{st}, nil
+	return SandstormCore_restore_Params{root.Struct()}, nil
 }
-
 func (s SandstormCore_restore_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormCore_restore_Params) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_restore_Params) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 func (s SandstormCore_restore_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
+	return capnp.BitList{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
+func (s SandstormCore_restore_Params) HasRequiredPermissions() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_restore_Params) SetRequiredPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(1, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(1, v.List)
+// NewRequiredPermissions sets the requiredPermissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s SandstormCore_restore_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	return l, err
 }
 
 // SandstormCore_restore_Params_List is a list of SandstormCore_restore_Params.
@@ -2536,23 +2484,31 @@ func NewRootSandstormCore_restore_Results(s *capnp.Segment) (SandstormCore_resto
 }
 
 func ReadRootSandstormCore_restore_Results(msg *capnp.Message) (SandstormCore_restore_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_restore_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_restore_Results{st}, nil
+	return SandstormCore_restore_Results{root.Struct()}, nil
+}
+func (s SandstormCore_restore_Results) Cap() (capnp.Pointer, error) {
+	return s.Struct.Pointer(0)
 }
 
-func (s SandstormCore_restore_Results) Cap() (capnp.Pointer, error) {
+func (s SandstormCore_restore_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
-	return s.Struct.Pointer(0)
-
+func (s SandstormCore_restore_Results) CapPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SandstormCore_restore_Results) SetCap(v capnp.Pointer) error {
-
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s SandstormCore_restore_Results) SetCapPtr(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
 }
 
 // SandstormCore_restore_Results_List is a list of SandstormCore_restore_Results.
@@ -2605,84 +2561,94 @@ func NewRootSandstormCore_makeToken_Params(s *capnp.Segment) (SandstormCore_make
 }
 
 func ReadRootSandstormCore_makeToken_Params(msg *capnp.Message) (SandstormCore_makeToken_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_makeToken_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_makeToken_Params{st}, nil
+	return SandstormCore_makeToken_Params{root.Struct()}, nil
 }
-
 func (s SandstormCore_makeToken_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
+	return SupervisorObjectId{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return SupervisorObjectId{Struct: ss}, nil
+func (s SandstormCore_makeToken_Params) HasRef() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeToken_Params) SetRef(v SupervisorObjectId) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s SandstormCore_makeToken_Params) NewRef() (SupervisorObjectId, error) {
-
 	ss, err := NewSupervisorObjectId(s.Struct.Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPointer(0, ss)
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeToken_Params) Owner() (ApiTokenOwner, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
+	return ApiTokenOwner{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return ApiTokenOwner{Struct: ss}, nil
+func (s SandstormCore_makeToken_Params) HasOwner() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeToken_Params) SetOwner(v ApiTokenOwner) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewOwner sets the owner field to a newly
 // allocated ApiTokenOwner struct, preferring placement in s's segment.
 func (s SandstormCore_makeToken_Params) NewOwner() (ApiTokenOwner, error) {
-
 	ss, err := NewApiTokenOwner(s.Struct.Segment())
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeToken_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
+	return MembraneRequirement_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return MembraneRequirement_List{List: l}, nil
+func (s SandstormCore_makeToken_Params) HasRequirements() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeToken_Params) SetRequirements(v MembraneRequirement_List) error {
+	return s.Struct.SetPtr(2, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(2, v.List)
+// NewRequirements sets the requirements field to a newly
+// allocated MembraneRequirement_List, preferring placement in s's segment.
+func (s SandstormCore_makeToken_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
+	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	if err != nil {
+		return MembraneRequirement_List{}, err
+	}
+	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	return l, err
 }
 
 // SandstormCore_makeToken_Params_List is a list of SandstormCore_makeToken_Params.
@@ -2739,31 +2705,31 @@ func NewRootSandstormCore_makeToken_Results(s *capnp.Segment) (SandstormCore_mak
 }
 
 func ReadRootSandstormCore_makeToken_Results(msg *capnp.Message) (SandstormCore_makeToken_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_makeToken_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_makeToken_Results{st}, nil
+	return SandstormCore_makeToken_Results{root.Struct()}, nil
 }
-
 func (s SandstormCore_makeToken_Results) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormCore_makeToken_Results) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeToken_Results) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // SandstormCore_makeToken_Results_List is a list of SandstormCore_makeToken_Results.
@@ -2812,12 +2778,11 @@ func NewRootSandstormCore_getOwnerNotificationTarget_Params(s *capnp.Segment) (S
 }
 
 func ReadRootSandstormCore_getOwnerNotificationTarget_Params(msg *capnp.Message) (SandstormCore_getOwnerNotificationTarget_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_getOwnerNotificationTarget_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_getOwnerNotificationTarget_Params{st}, nil
+	return SandstormCore_getOwnerNotificationTarget_Params{root.Struct()}, nil
 }
 
 // SandstormCore_getOwnerNotificationTarget_Params_List is a list of SandstormCore_getOwnerNotificationTarget_Params.
@@ -2866,26 +2831,27 @@ func NewRootSandstormCore_getOwnerNotificationTarget_Results(s *capnp.Segment) (
 }
 
 func ReadRootSandstormCore_getOwnerNotificationTarget_Results(msg *capnp.Message) (SandstormCore_getOwnerNotificationTarget_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_getOwnerNotificationTarget_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_getOwnerNotificationTarget_Results{st}, nil
+	return SandstormCore_getOwnerNotificationTarget_Results{root.Struct()}, nil
 }
-
 func (s SandstormCore_getOwnerNotificationTarget_Results) Owner() grain.NotificationTarget {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return grain.NotificationTarget{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return grain.NotificationTarget{Client: c}
+	return grain.NotificationTarget{Client: p.Interface().Client()}
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Results) HasOwner() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_getOwnerNotificationTarget_Results) SetOwner(v grain.NotificationTarget) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -2895,7 +2861,7 @@ func (s SandstormCore_getOwnerNotificationTarget_Results) SetOwner(v grain.Notif
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_getOwnerNotificationTarget_Results_List is a list of SandstormCore_getOwnerNotificationTarget_Results.
@@ -2948,31 +2914,31 @@ func NewRootSandstormCore_drop_Params(s *capnp.Segment) (SandstormCore_drop_Para
 }
 
 func ReadRootSandstormCore_drop_Params(msg *capnp.Message) (SandstormCore_drop_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_drop_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_drop_Params{st}, nil
+	return SandstormCore_drop_Params{root.Struct()}, nil
 }
-
 func (s SandstormCore_drop_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormCore_drop_Params) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_drop_Params) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // SandstormCore_drop_Params_List is a list of SandstormCore_drop_Params.
@@ -3021,12 +2987,11 @@ func NewRootSandstormCore_drop_Results(s *capnp.Segment) (SandstormCore_drop_Res
 }
 
 func ReadRootSandstormCore_drop_Results(msg *capnp.Message) (SandstormCore_drop_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_drop_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_drop_Results{st}, nil
+	return SandstormCore_drop_Results{root.Struct()}, nil
 }
 
 // SandstormCore_drop_Results_List is a list of SandstormCore_drop_Results.
@@ -3075,28 +3040,38 @@ func NewRootSandstormCore_checkRequirements_Params(s *capnp.Segment) (SandstormC
 }
 
 func ReadRootSandstormCore_checkRequirements_Params(msg *capnp.Message) (SandstormCore_checkRequirements_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_checkRequirements_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_checkRequirements_Params{st}, nil
+	return SandstormCore_checkRequirements_Params{root.Struct()}, nil
 }
-
 func (s SandstormCore_checkRequirements_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
+	return MembraneRequirement_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return MembraneRequirement_List{List: l}, nil
+func (s SandstormCore_checkRequirements_Params) HasRequirements() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_checkRequirements_Params) SetRequirements(v MembraneRequirement_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(0, v.List)
+// NewRequirements sets the requirements field to a newly
+// allocated MembraneRequirement_List, preferring placement in s's segment.
+func (s SandstormCore_checkRequirements_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
+	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	if err != nil {
+		return MembraneRequirement_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
 }
 
 // SandstormCore_checkRequirements_Params_List is a list of SandstormCore_checkRequirements_Params.
@@ -3145,26 +3120,27 @@ func NewRootSandstormCore_checkRequirements_Results(s *capnp.Segment) (Sandstorm
 }
 
 func ReadRootSandstormCore_checkRequirements_Results(msg *capnp.Message) (SandstormCore_checkRequirements_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_checkRequirements_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_checkRequirements_Results{st}, nil
+	return SandstormCore_checkRequirements_Results{root.Struct()}, nil
 }
-
 func (s SandstormCore_checkRequirements_Results) Observer() SandstormCore_RequirementObserver {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return SandstormCore_RequirementObserver{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SandstormCore_RequirementObserver{Client: c}
+	return SandstormCore_RequirementObserver{Client: p.Interface().Client()}
+}
+
+func (s SandstormCore_checkRequirements_Results) HasObserver() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_checkRequirements_Results) SetObserver(v SandstormCore_RequirementObserver) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -3174,7 +3150,7 @@ func (s SandstormCore_checkRequirements_Results) SetObserver(v SandstormCore_Req
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_checkRequirements_Results_List is a list of SandstormCore_checkRequirements_Results.
@@ -3227,75 +3203,87 @@ func NewRootSandstormCore_makeChildToken_Params(s *capnp.Segment) (SandstormCore
 }
 
 func ReadRootSandstormCore_makeChildToken_Params(msg *capnp.Message) (SandstormCore_makeChildToken_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_makeChildToken_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_makeChildToken_Params{st}, nil
+	return SandstormCore_makeChildToken_Params{root.Struct()}, nil
 }
-
 func (s SandstormCore_makeChildToken_Params) Parent() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormCore_makeChildToken_Params) HasParent() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeChildToken_Params) SetParent(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 func (s SandstormCore_makeChildToken_Params) Owner() (ApiTokenOwner, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
+	return ApiTokenOwner{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return ApiTokenOwner{Struct: ss}, nil
+func (s SandstormCore_makeChildToken_Params) HasOwner() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeChildToken_Params) SetOwner(v ApiTokenOwner) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewOwner sets the owner field to a newly
 // allocated ApiTokenOwner struct, preferring placement in s's segment.
 func (s SandstormCore_makeChildToken_Params) NewOwner() (ApiTokenOwner, error) {
-
 	ss, err := NewApiTokenOwner(s.Struct.Segment())
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeChildToken_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
+	return MembraneRequirement_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return MembraneRequirement_List{List: l}, nil
+func (s SandstormCore_makeChildToken_Params) HasRequirements() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeChildToken_Params) SetRequirements(v MembraneRequirement_List) error {
+	return s.Struct.SetPtr(2, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(2, v.List)
+// NewRequirements sets the requirements field to a newly
+// allocated MembraneRequirement_List, preferring placement in s's segment.
+func (s SandstormCore_makeChildToken_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
+	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	if err != nil {
+		return MembraneRequirement_List{}, err
+	}
+	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	return l, err
 }
 
 // SandstormCore_makeChildToken_Params_List is a list of SandstormCore_makeChildToken_Params.
@@ -3348,31 +3336,31 @@ func NewRootSandstormCore_makeChildToken_Results(s *capnp.Segment) (SandstormCor
 }
 
 func ReadRootSandstormCore_makeChildToken_Results(msg *capnp.Message) (SandstormCore_makeChildToken_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SandstormCore_makeChildToken_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SandstormCore_makeChildToken_Results{st}, nil
+	return SandstormCore_makeChildToken_Results{root.Struct()}, nil
 }
-
 func (s SandstormCore_makeChildToken_Results) Token() ([]byte, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return nil, err
 	}
+	return []byte(p.Data()), nil
+}
 
-	return []byte(capnp.ToData(p)), nil
-
+func (s SandstormCore_makeChildToken_Results) HasToken() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SandstormCore_makeChildToken_Results) SetToken(v []byte) error {
-
 	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, d)
+	return s.Struct.SetPtr(0, d.List.ToPtr())
 }
 
 // SandstormCore_makeChildToken_Results_List is a list of SandstormCore_makeChildToken_Results.
@@ -3427,7 +3415,7 @@ func (w MembraneRequirement_Which) String() string {
 }
 
 func NewMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return MembraneRequirement{}, err
 	}
@@ -3435,7 +3423,7 @@ func NewMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
 }
 
 func NewRootMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return MembraneRequirement{}, err
 	}
@@ -3443,26 +3431,39 @@ func NewRootMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
 }
 
 func ReadRootMembraneRequirement(msg *capnp.Message) (MembraneRequirement, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return MembraneRequirement{}, err
 	}
-	st := capnp.ToStruct(root)
-	return MembraneRequirement{st}, nil
+	return MembraneRequirement{root.Struct()}, nil
 }
 
 func (s MembraneRequirement) Which() MembraneRequirement_Which {
 	return MembraneRequirement_Which(s.Struct.Uint16(0))
 }
-
 func (s MembraneRequirement) TokenValid() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s MembraneRequirement) HasTokenValid() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s MembraneRequirement) TokenValidBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s MembraneRequirement) SetTokenValid(v string) error {
@@ -3471,95 +3472,132 @@ func (s MembraneRequirement) SetTokenValid(v string) error {
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
+
 func (s MembraneRequirement) PermissionsHeld() MembraneRequirement_permissionsHeld {
 	return MembraneRequirement_permissionsHeld(s)
 }
-
-func (s MembraneRequirement) SetPermissionsHeld() { s.Struct.SetUint16(0, 1) }
-
-func (s MembraneRequirement_permissionsHeld) IdentityId() (string, error) {
-	p, err := s.Struct.Pointer(3)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
+func (s MembraneRequirement) SetPermissionsHeld() {
+	s.Struct.SetUint16(0, 1)
 }
-
-func (s MembraneRequirement_permissionsHeld) SetIdentityId(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(3, t)
-}
-
-func (s MembraneRequirement_permissionsHeld) GrainId() (string, error) {
-	p, err := s.Struct.Pointer(1)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s MembraneRequirement_permissionsHeld) SetGrainId(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(1, t)
-}
-
-func (s MembraneRequirement_permissionsHeld) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Pointer(2)
-	if err != nil {
-		return capnp.BitList{}, err
-	}
-
-	l := capnp.ToList(p)
-
-	return capnp.BitList{List: l}, nil
-}
-
-func (s MembraneRequirement_permissionsHeld) SetPermissions(v capnp.BitList) error {
-
-	return s.Struct.SetPointer(2, v.List)
-}
-
 func (s MembraneRequirement_permissionsHeld) UserId() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s MembraneRequirement_permissionsHeld) HasUserId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s MembraneRequirement_permissionsHeld) UserIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s MembraneRequirement_permissionsHeld) SetUserId(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
-func (s MembraneRequirement) UserIsAdmin() (string, error) {
-	p, err := s.Struct.Pointer(0)
+func (s MembraneRequirement_permissionsHeld) GrainId() (string, error) {
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s MembraneRequirement_permissionsHeld) HasGrainId() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s MembraneRequirement_permissionsHeld) GrainIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
+}
+
+func (s MembraneRequirement_permissionsHeld) SetGrainId(v string) error {
+	t, err := capnp.NewText(s.Struct.Segment(), v)
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(1, t.List.ToPtr())
+}
+
+func (s MembraneRequirement_permissionsHeld) Permissions() (capnp.BitList, error) {
+	p, err := s.Struct.Ptr(2)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	return capnp.BitList{List: p.List()}, nil
+}
+
+func (s MembraneRequirement_permissionsHeld) HasPermissions() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
+
+func (s MembraneRequirement_permissionsHeld) SetPermissions(v capnp.BitList) error {
+	return s.Struct.SetPtr(2, v.List.ToPtr())
+}
+
+// NewPermissions sets the permissions field to a newly
+// allocated capnp.BitList, preferring placement in s's segment.
+func (s MembraneRequirement_permissionsHeld) NewPermissions(n int32) (capnp.BitList, error) {
+	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.BitList{}, err
+	}
+	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	return l, err
+}
+
+func (s MembraneRequirement) UserIsAdmin() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return "", err
+	}
+	return p.Text(), nil
+}
+
+func (s MembraneRequirement) HasUserIsAdmin() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s MembraneRequirement) UserIsAdminBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s MembraneRequirement) SetUserIsAdmin(v string) error {
@@ -3568,7 +3606,7 @@ func (s MembraneRequirement) SetUserIsAdmin(v string) error {
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 // MembraneRequirement_List is a list of MembraneRequirement.
@@ -3576,7 +3614,7 @@ type MembraneRequirement_List struct{ capnp.List }
 
 // NewMembraneRequirement creates a new list of MembraneRequirement.
 func NewMembraneRequirement_List(s *capnp.Segment, sz int32) (MembraneRequirement_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
@@ -3597,6 +3635,7 @@ func (p MembraneRequirement_Promise) Struct() (MembraneRequirement, error) {
 	s, err := p.Pipeline.Struct()
 	return MembraneRequirement{s}, err
 }
+
 func (p MembraneRequirement_Promise) PermissionsHeld() MembraneRequirement_permissionsHeld_Promise {
 	return MembraneRequirement_permissionsHeld_Promise{p.Pipeline}
 }
@@ -3618,7 +3657,6 @@ func (c SystemPersistent) AddRequirements(ctx context.Context, params func(Syste
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -3632,7 +3670,6 @@ func (c SystemPersistent) AddRequirements(ctx context.Context, params func(Syste
 	}
 	return SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c SystemPersistent) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
 	if c.Client == nil {
 		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3640,7 +3677,6 @@ func (c SystemPersistent) Save(ctx context.Context, params func(persistent.Persi
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -3673,7 +3709,6 @@ func SystemPersistent_Methods(methods []server.Method, s SystemPersistent_Server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -3688,7 +3723,6 @@ func SystemPersistent_Methods(methods []server.Method, s SystemPersistent_Server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -3731,28 +3765,38 @@ func NewRootSystemPersistent_addRequirements_Params(s *capnp.Segment) (SystemPer
 }
 
 func ReadRootSystemPersistent_addRequirements_Params(msg *capnp.Message) (SystemPersistent_addRequirements_Params, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SystemPersistent_addRequirements_Params{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SystemPersistent_addRequirements_Params{st}, nil
+	return SystemPersistent_addRequirements_Params{root.Struct()}, nil
 }
-
 func (s SystemPersistent_addRequirements_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
+	return MembraneRequirement_List{List: p.List()}, nil
+}
 
-	l := capnp.ToList(p)
-
-	return MembraneRequirement_List{List: l}, nil
+func (s SystemPersistent_addRequirements_Params) HasRequirements() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SystemPersistent_addRequirements_Params) SetRequirements(v MembraneRequirement_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
 
-	return s.Struct.SetPointer(0, v.List)
+// NewRequirements sets the requirements field to a newly
+// allocated MembraneRequirement_List, preferring placement in s's segment.
+func (s SystemPersistent_addRequirements_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
+	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	if err != nil {
+		return MembraneRequirement_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
 }
 
 // SystemPersistent_addRequirements_Params_List is a list of SystemPersistent_addRequirements_Params.
@@ -3801,26 +3845,27 @@ func NewRootSystemPersistent_addRequirements_Results(s *capnp.Segment) (SystemPe
 }
 
 func ReadRootSystemPersistent_addRequirements_Results(msg *capnp.Message) (SystemPersistent_addRequirements_Results, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SystemPersistent_addRequirements_Results{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SystemPersistent_addRequirements_Results{st}, nil
+	return SystemPersistent_addRequirements_Results{root.Struct()}, nil
 }
-
 func (s SystemPersistent_addRequirements_Results) Cap() SystemPersistent {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 
 		return SystemPersistent{}
 	}
-	c := capnp.ToInterface(p).Client()
-	return SystemPersistent{Client: c}
+	return SystemPersistent{Client: p.Interface().Client()}
+}
+
+func (s SystemPersistent_addRequirements_Results) HasCap() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
 }
 
 func (s SystemPersistent_addRequirements_Results) SetCap(v SystemPersistent) error {
-
 	seg := s.Segment()
 	if seg == nil {
 
@@ -3830,7 +3875,7 @@ func (s SystemPersistent_addRequirements_Results) SetCap(v SystemPersistent) err
 	if v.Client != nil {
 		in = capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
 	}
-	return s.Struct.SetPointer(0, in)
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
 // SystemPersistent_addRequirements_Results_List is a list of SystemPersistent_addRequirements_Results.
@@ -3873,7 +3918,6 @@ func (c PersistentHandle) AddRequirements(ctx context.Context, params func(Syste
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -3887,7 +3931,6 @@ func (c PersistentHandle) AddRequirements(ctx context.Context, params func(Syste
 	}
 	return SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentHandle) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
 	if c.Client == nil {
 		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3895,7 +3938,6 @@ func (c PersistentHandle) Save(ctx context.Context, params func(persistent.Persi
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -3928,7 +3970,6 @@ func PersistentHandle_Methods(methods []server.Method, s PersistentHandle_Server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -3943,7 +3984,6 @@ func PersistentHandle_Methods(methods []server.Method, s PersistentHandle_Server
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -3968,7 +4008,6 @@ func (c PersistentOngoingNotification) AddRequirements(ctx context.Context, para
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -3982,7 +4021,6 @@ func (c PersistentOngoingNotification) AddRequirements(ctx context.Context, para
 	}
 	return SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentOngoingNotification) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
 	if c.Client == nil {
 		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -3990,7 +4028,6 @@ func (c PersistentOngoingNotification) Save(ctx context.Context, params func(per
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -4004,7 +4041,6 @@ func (c PersistentOngoingNotification) Save(ctx context.Context, params func(per
 	}
 	return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-
 func (c PersistentOngoingNotification) Cancel(ctx context.Context, params func(grain.OngoingNotification_cancel_Params) error, opts ...capnp.CallOption) grain.OngoingNotification_cancel_Results_Promise {
 	if c.Client == nil {
 		return grain.OngoingNotification_cancel_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -4012,7 +4048,6 @@ func (c PersistentOngoingNotification) Cancel(ctx context.Context, params func(g
 	call := &capnp.Call{
 		Ctx: ctx,
 		Method: capnp.Method{
-
 			InterfaceID:   0xfe851ddbb88940cd,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:OngoingNotification",
@@ -4047,7 +4082,6 @@ func PersistentOngoingNotification_Methods(methods []server.Method, s Persistent
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
@@ -4062,7 +4096,6 @@ func PersistentOngoingNotification_Methods(methods []server.Method, s Persistent
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
@@ -4077,7 +4110,6 @@ func PersistentOngoingNotification_Methods(methods []server.Method, s Persistent
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
-
 			InterfaceID:   0xfe851ddbb88940cd,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:OngoingNotification",
@@ -4091,207 +4123,6 @@ func PersistentOngoingNotification_Methods(methods []server.Method, s Persistent
 	})
 
 	return methods
-}
-
-type DenormalizedGrainMetadata struct{ capnp.Struct }
-type DenormalizedGrainMetadata_icon DenormalizedGrainMetadata
-type DenormalizedGrainMetadata_Which uint16
-
-const (
-	DenormalizedGrainMetadata_Which_icon  DenormalizedGrainMetadata_Which = 0
-	DenormalizedGrainMetadata_Which_appId DenormalizedGrainMetadata_Which = 1
-)
-
-func (w DenormalizedGrainMetadata_Which) String() string {
-	const s = "iconappId"
-	switch w {
-	case DenormalizedGrainMetadata_Which_icon:
-		return s[0:4]
-	case DenormalizedGrainMetadata_Which_appId:
-		return s[4:9]
-
-	}
-	return "DenormalizedGrainMetadata_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
-}
-
-func NewDenormalizedGrainMetadata(s *capnp.Segment) (DenormalizedGrainMetadata, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	if err != nil {
-		return DenormalizedGrainMetadata{}, err
-	}
-	return DenormalizedGrainMetadata{st}, nil
-}
-
-func NewRootDenormalizedGrainMetadata(s *capnp.Segment) (DenormalizedGrainMetadata, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	if err != nil {
-		return DenormalizedGrainMetadata{}, err
-	}
-	return DenormalizedGrainMetadata{st}, nil
-}
-
-func ReadRootDenormalizedGrainMetadata(msg *capnp.Message) (DenormalizedGrainMetadata, error) {
-	root, err := msg.Root()
-	if err != nil {
-		return DenormalizedGrainMetadata{}, err
-	}
-	st := capnp.ToStruct(root)
-	return DenormalizedGrainMetadata{st}, nil
-}
-
-func (s DenormalizedGrainMetadata) Which() DenormalizedGrainMetadata_Which {
-	return DenormalizedGrainMetadata_Which(s.Struct.Uint16(0))
-}
-
-func (s DenormalizedGrainMetadata) AppTitle() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(0)
-	if err != nil {
-		return util.LocalizedText{}, err
-	}
-
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
-}
-
-func (s DenormalizedGrainMetadata) SetAppTitle(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(0, v.Struct)
-}
-
-// NewAppTitle sets the appTitle field to a newly
-// allocated util.LocalizedText struct, preferring placement in s's segment.
-func (s DenormalizedGrainMetadata) NewAppTitle() (util.LocalizedText, error) {
-
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
-	if err != nil {
-		return util.LocalizedText{}, err
-	}
-	err = s.Struct.SetPointer(0, ss)
-	return ss, err
-}
-func (s DenormalizedGrainMetadata) Icon() DenormalizedGrainMetadata_icon {
-	return DenormalizedGrainMetadata_icon(s)
-}
-
-func (s DenormalizedGrainMetadata) SetIcon() { s.Struct.SetUint16(0, 0) }
-
-func (s DenormalizedGrainMetadata_icon) Format() (string, error) {
-	p, err := s.Struct.Pointer(1)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s DenormalizedGrainMetadata_icon) SetFormat(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(1, t)
-}
-
-func (s DenormalizedGrainMetadata_icon) AssetId() (string, error) {
-	p, err := s.Struct.Pointer(2)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s DenormalizedGrainMetadata_icon) SetAssetId(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(2, t)
-}
-
-func (s DenormalizedGrainMetadata_icon) AssetId2xDpi() (string, error) {
-	p, err := s.Struct.Pointer(3)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s DenormalizedGrainMetadata_icon) SetAssetId2xDpi(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(3, t)
-}
-
-func (s DenormalizedGrainMetadata) AppId() (string, error) {
-	p, err := s.Struct.Pointer(1)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s DenormalizedGrainMetadata) SetAppId(v string) error {
-	s.Struct.SetUint16(0, 1)
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(1, t)
-}
-
-// DenormalizedGrainMetadata_List is a list of DenormalizedGrainMetadata.
-type DenormalizedGrainMetadata_List struct{ capnp.List }
-
-// NewDenormalizedGrainMetadata creates a new list of DenormalizedGrainMetadata.
-func NewDenormalizedGrainMetadata_List(s *capnp.Segment, sz int32) (DenormalizedGrainMetadata_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
-	if err != nil {
-		return DenormalizedGrainMetadata_List{}, err
-	}
-	return DenormalizedGrainMetadata_List{l}, nil
-}
-
-func (s DenormalizedGrainMetadata_List) At(i int) DenormalizedGrainMetadata {
-	return DenormalizedGrainMetadata{s.List.Struct(i)}
-}
-func (s DenormalizedGrainMetadata_List) Set(i int, v DenormalizedGrainMetadata) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// DenormalizedGrainMetadata_Promise is a wrapper for a DenormalizedGrainMetadata promised by a client call.
-type DenormalizedGrainMetadata_Promise struct{ *capnp.Pipeline }
-
-func (p DenormalizedGrainMetadata_Promise) Struct() (DenormalizedGrainMetadata, error) {
-	s, err := p.Pipeline.Struct()
-	return DenormalizedGrainMetadata{s}, err
-}
-
-func (p DenormalizedGrainMetadata_Promise) AppTitle() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
-}
-func (p DenormalizedGrainMetadata_Promise) Icon() DenormalizedGrainMetadata_icon_Promise {
-	return DenormalizedGrainMetadata_icon_Promise{p.Pipeline}
-}
-
-// DenormalizedGrainMetadata_icon_Promise is a wrapper for a DenormalizedGrainMetadata_icon promised by a client call.
-type DenormalizedGrainMetadata_icon_Promise struct{ *capnp.Pipeline }
-
-func (p DenormalizedGrainMetadata_icon_Promise) Struct() (DenormalizedGrainMetadata_icon, error) {
-	s, err := p.Pipeline.Struct()
-	return DenormalizedGrainMetadata_icon{s}, err
 }
 
 type ApiTokenOwner struct{ capnp.Struct }
@@ -4326,7 +4157,7 @@ func (w ApiTokenOwner_Which) String() string {
 }
 
 func NewApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
@@ -4334,7 +4165,7 @@ func NewApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
 }
 
 func NewRootApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
@@ -4342,114 +4173,130 @@ func NewRootApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
 }
 
 func ReadRootApiTokenOwner(msg *capnp.Message) (ApiTokenOwner, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
-	st := capnp.ToStruct(root)
-	return ApiTokenOwner{st}, nil
+	return ApiTokenOwner{root.Struct()}, nil
 }
 
 func (s ApiTokenOwner) Which() ApiTokenOwner_Which {
 	return ApiTokenOwner_Which(s.Struct.Uint16(0))
 }
-
 func (s ApiTokenOwner) SetWebkey() {
 	s.Struct.SetUint16(0, 0)
+
 }
+
 func (s ApiTokenOwner) Grain() ApiTokenOwner_grain { return ApiTokenOwner_grain(s) }
-
-func (s ApiTokenOwner) SetGrain() { s.Struct.SetUint16(0, 1) }
-
+func (s ApiTokenOwner) SetGrain() {
+	s.Struct.SetUint16(0, 1)
+}
 func (s ApiTokenOwner_grain) GrainId() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s ApiTokenOwner_grain) HasGrainId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s ApiTokenOwner_grain) GrainIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s ApiTokenOwner_grain) SetGrainId(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s ApiTokenOwner_grain) SaveLabel() (util.LocalizedText, error) {
-	p, err := s.Struct.Pointer(1)
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
+	return util.LocalizedText{Struct: p.Struct()}, nil
+}
 
-	ss := capnp.ToStruct(p)
-
-	return util.LocalizedText{Struct: ss}, nil
+func (s ApiTokenOwner_grain) HasSaveLabel() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
 }
 
 func (s ApiTokenOwner_grain) SetSaveLabel(v util.LocalizedText) error {
-
-	return s.Struct.SetPointer(1, v.Struct)
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
 }
 
 // NewSaveLabel sets the saveLabel field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s ApiTokenOwner_grain) NewSaveLabel() (util.LocalizedText, error) {
-
 	ss, err := util.NewLocalizedText(s.Struct.Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPointer(1, ss)
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
 	return ss, err
 }
 
-func (s ApiTokenOwner_grain) IntroducerIdentity() (string, error) {
-	p, err := s.Struct.Pointer(3)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s ApiTokenOwner_grain) SetIntroducerIdentity(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(3, t)
-}
-
 func (s ApiTokenOwner_grain) IntroducerUser() (string, error) {
-	p, err := s.Struct.Pointer(2)
+	p, err := s.Struct.Ptr(2)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s ApiTokenOwner_grain) HasIntroducerUser() bool {
+	p, err := s.Struct.Ptr(2)
+	return p.IsValid() || err != nil
+}
 
+func (s ApiTokenOwner_grain) IntroducerUserBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(2)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s ApiTokenOwner_grain) SetIntroducerUser(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(2, t)
+	return s.Struct.SetPtr(2, t.List.ToPtr())
 }
 
 func (s ApiTokenOwner) Internet() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(0)
+}
 
+func (s ApiTokenOwner) HasInternet() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s ApiTokenOwner) InternetPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s ApiTokenOwner) SetInternet(v capnp.Pointer) error {
@@ -4457,124 +4304,84 @@ func (s ApiTokenOwner) SetInternet(v capnp.Pointer) error {
 	return s.Struct.SetPointer(0, v)
 }
 
+func (s ApiTokenOwner) SetInternetPtr(v capnp.Ptr) error {
+	s.Struct.SetUint16(0, 2)
+	return s.Struct.SetPtr(0, v)
+}
+
 func (s ApiTokenOwner) SetFrontend() {
 	s.Struct.SetUint16(0, 3)
+
 }
+
 func (s ApiTokenOwner) User() ApiTokenOwner_user { return ApiTokenOwner_user(s) }
-
-func (s ApiTokenOwner) SetUser() { s.Struct.SetUint16(0, 4) }
-
-func (s ApiTokenOwner_user) IdentityId() (string, error) {
-	p, err := s.Struct.Pointer(3)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
+func (s ApiTokenOwner) SetUser() {
+	s.Struct.SetUint16(0, 4)
 }
-
-func (s ApiTokenOwner_user) SetIdentityId(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(3, t)
-}
-
-func (s ApiTokenOwner_user) Title() (string, error) {
-	p, err := s.Struct.Pointer(1)
-	if err != nil {
-		return "", err
-	}
-
-	return capnp.ToText(p), nil
-
-}
-
-func (s ApiTokenOwner_user) SetTitle(v string) error {
-
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPointer(1, t)
-}
-
-func (s ApiTokenOwner_user) DenormalizedGrainMetadata() (DenormalizedGrainMetadata, error) {
-	p, err := s.Struct.Pointer(2)
-	if err != nil {
-		return DenormalizedGrainMetadata{}, err
-	}
-
-	ss := capnp.ToStruct(p)
-
-	return DenormalizedGrainMetadata{Struct: ss}, nil
-}
-
-func (s ApiTokenOwner_user) SetDenormalizedGrainMetadata(v DenormalizedGrainMetadata) error {
-
-	return s.Struct.SetPointer(2, v.Struct)
-}
-
-// NewDenormalizedGrainMetadata sets the denormalizedGrainMetadata field to a newly
-// allocated DenormalizedGrainMetadata struct, preferring placement in s's segment.
-func (s ApiTokenOwner_user) NewDenormalizedGrainMetadata() (DenormalizedGrainMetadata, error) {
-
-	ss, err := NewDenormalizedGrainMetadata(s.Struct.Segment())
-	if err != nil {
-		return DenormalizedGrainMetadata{}, err
-	}
-	err = s.Struct.SetPointer(2, ss)
-	return ss, err
-}
-
 func (s ApiTokenOwner_user) UserId() (string, error) {
-	p, err := s.Struct.Pointer(0)
+	p, err := s.Struct.Ptr(0)
 	if err != nil {
 		return "", err
 	}
+	return p.Text(), nil
+}
 
-	return capnp.ToText(p), nil
+func (s ApiTokenOwner_user) HasUserId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
 
+func (s ApiTokenOwner_user) UserIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
 }
 
 func (s ApiTokenOwner_user) SetUserId(v string) error {
-
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(0, t)
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
-func (s ApiTokenOwner_user) UpstreamTitle() (string, error) {
-	p, err := s.Struct.Pointer(4)
+func (s ApiTokenOwner_user) Title() (string, error) {
+	p, err := s.Struct.Ptr(1)
 	if err != nil {
 		return "", err
 	}
-
-	return capnp.ToText(p), nil
-
+	return p.Text(), nil
 }
 
-func (s ApiTokenOwner_user) SetUpstreamTitle(v string) error {
+func (s ApiTokenOwner_user) HasTitle() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
 
+func (s ApiTokenOwner_user) TitleBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	if err != nil {
+		return nil, err
+	}
+	d := p.Data()
+	if len(d) == 0 {
+		return d, nil
+	}
+	return d[:len(d)-1], nil
+}
+
+func (s ApiTokenOwner_user) SetTitle(v string) error {
 	t, err := capnp.NewText(s.Struct.Segment(), v)
 	if err != nil {
 		return err
 	}
-	return s.Struct.SetPointer(4, t)
-}
-
-func (s ApiTokenOwner_user) Renamed() bool {
-	return s.Struct.Bit(16)
-}
-
-func (s ApiTokenOwner_user) SetRenamed(v bool) {
-
-	s.Struct.SetBit(16, v)
+	return s.Struct.SetPtr(1, t.List.ToPtr())
 }
 
 // ApiTokenOwner_List is a list of ApiTokenOwner.
@@ -4582,7 +4389,7 @@ type ApiTokenOwner_List struct{ capnp.List }
 
 // NewApiTokenOwner creates a new list of ApiTokenOwner.
 func NewApiTokenOwner_List(s *capnp.Segment, sz int32) (ApiTokenOwner_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
 	if err != nil {
 		return ApiTokenOwner_List{}, err
 	}
@@ -4599,6 +4406,7 @@ func (p ApiTokenOwner_Promise) Struct() (ApiTokenOwner, error) {
 	s, err := p.Pipeline.Struct()
 	return ApiTokenOwner{s}, err
 }
+
 func (p ApiTokenOwner_Promise) Grain() ApiTokenOwner_grain_Promise {
 	return ApiTokenOwner_grain_Promise{p.Pipeline}
 }
@@ -4618,6 +4426,7 @@ func (p ApiTokenOwner_grain_Promise) SaveLabel() util.LocalizedText_Promise {
 func (p ApiTokenOwner_Promise) Internet() *capnp.Pipeline {
 	return p.Pipeline.GetPipeline(0)
 }
+
 func (p ApiTokenOwner_Promise) User() ApiTokenOwner_user_Promise {
 	return ApiTokenOwner_user_Promise{p.Pipeline}
 }
@@ -4628,10 +4437,6 @@ type ApiTokenOwner_user_Promise struct{ *capnp.Pipeline }
 func (p ApiTokenOwner_user_Promise) Struct() (ApiTokenOwner_user, error) {
 	s, err := p.Pipeline.Struct()
 	return ApiTokenOwner_user{s}, err
-}
-
-func (p ApiTokenOwner_user_Promise) DenormalizedGrainMetadata() DenormalizedGrainMetadata_Promise {
-	return DenormalizedGrainMetadata_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
 }
 
 type SupervisorObjectId struct{ capnp.Struct }
@@ -4671,27 +4476,37 @@ func NewRootSupervisorObjectId(s *capnp.Segment) (SupervisorObjectId, error) {
 }
 
 func ReadRootSupervisorObjectId(msg *capnp.Message) (SupervisorObjectId, error) {
-	root, err := msg.Root()
+	root, err := msg.RootPtr()
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	st := capnp.ToStruct(root)
-	return SupervisorObjectId{st}, nil
+	return SupervisorObjectId{root.Struct()}, nil
 }
 
 func (s SupervisorObjectId) Which() SupervisorObjectId_Which {
 	return SupervisorObjectId_Which(s.Struct.Uint16(0))
 }
-
 func (s SupervisorObjectId) AppRef() (capnp.Pointer, error) {
-
 	return s.Struct.Pointer(0)
+}
 
+func (s SupervisorObjectId) HasAppRef() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s SupervisorObjectId) AppRefPtr() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
 }
 
 func (s SupervisorObjectId) SetAppRef(v capnp.Pointer) error {
 	s.Struct.SetUint16(0, 0)
 	return s.Struct.SetPointer(0, v)
+}
+
+func (s SupervisorObjectId) SetAppRefPtr(v capnp.Ptr) error {
+	s.Struct.SetUint16(0, 0)
+	return s.Struct.SetPtr(0, v)
 }
 
 func (s SupervisorObjectId) WakeLockNotification() uint32 {

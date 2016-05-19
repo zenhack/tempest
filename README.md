@@ -3,8 +3,13 @@ Go Wrappers for Sandstorm's API
 Right now just the output of go-capnpc for both the stuff that ships
 with capnproto and all of the sandstorm schemas.
 
-* `capnp/capnp` contains the base capnproto schema
-* `capnp/sandstorm` contains the sandstorm APIs.
+Right now this contains:
+
+* `capnp`, generated packages for the sandstorm API capnproto schema.
+  The packages are currently generated from the schema in sandstorm
+  v0.97
+* `websession`, a *very* WIP set of helpers around WebSession, most
+  notably code to glue it to `net/http`.
 
 Since the schema names are not all legal package names, the following
 changes have been made:
@@ -12,9 +17,14 @@ changes have been made:
 * Schema with dashes in their names have had the dashes removed.
 * The schema `package` has been mapped to the package `spk` (since
   `package` is a go reserved word).
-* The schema `c++` has been mapped to the package `cxx`. Direct use of
-  this is unlikely, but some of the other schema include it, so it needs
-  to be present.
+
+This depends on a change to `zombiezen.com/go/capnproto2` that at the
+time of writing has not been merged:
+
+<https://github.com/zombiezen/go-capnproto2/pull/31>
+
+To build these packages you will have to manually check out that branch
+on my fork and put it in the appropriate place in `$GOPATH`.
 
 # Licensing
 

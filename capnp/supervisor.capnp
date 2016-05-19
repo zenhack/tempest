@@ -16,7 +16,7 @@
 
 @0xc7205d6d32c7b040;
 # This file contains interfaces defining communication between a Sandstorm grain supervisor and
-# other components of the system. These interfaces are NOT used by Sandstorm applications.
+# other components of the sysetm. These interfaces are NOT used by Sandstorm applications.
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
 
@@ -30,16 +30,9 @@ interface Supervisor {
   getMainView @0 () -> (view :Grain.UiView);
   # Get the grain's main UiView.
 
-  keepAlive @1 (core :SandstormCore);
+  keepAlive @1 ();
   # Must call periodically to prevent supervisor from killing itself off.  Call at least once
   # per minute.
-  #
-  # `core` may be null. If not null, then it is a new copy of the SandstormCore capability which
-  # should replace the old one. This allows the grain to recover if the original SandstormCore
-  # becomes disconnected.
-  #
-  # TODO(reliability): Passing `core` here is an ugly hack. The supervisor really needs a way to
-  #   proactively reconnect.
 
   syncStorage @8 ();
   # Calls syncfs() on /var.
@@ -65,10 +58,10 @@ interface Supervisor {
   # fail. Additionally, the membrane will ensure that any capabilities save()d after passing
   # through this membrane have these requirements applied as well.
   #
-  # (Typically, `requirements` is empty or contains one entry: a `permissionsHeld` requirement
+  # (Normally, `requirements` contains one or two entries: a `tokenValid` requirement for the token
+  # from which this capability was restored, and (sometimes) a `permissionsHeld` requirement
   # against the grain that is restoring the capability (in order to implement the
-  # `requiredPermissions` argument of SandstormCore.restore()). `requirements` should NOT contain
-  # a requirement that `parentToken` be valid; this is implied.)
+  # `requiredPermissions` argument of SandstormCore.restore())).
   #
   # `parentToken` is the API token restored to get this capability. The receiver will want to keep
   # this in memory in order to pass to `SandstormCore.makeChildToken()` later, if the live
@@ -104,13 +97,12 @@ interface Supervisor {
 }
 
 interface SandstormCore {
-  # When the front-end connects to a Sandstorm supervisor, the front-end exports a SandstormCore
-  # capability as the default capability on the connection. This SandstormCore instance is specific
-  # to the supervisor's grain; e.g. the grain ID is used to enforce ownership restrictions in
-  # `restore()` and to fill out the `grainId` field in the `ApiTokens` table in calls to
-  # `wrapSaved()`.
+  # When the front-end connects to a Sandstorm supervisor, it exports a SandstormCore capability as
+  # the default capability on the connection. This SandstormCore instance is specific to the
+  # supervisor's grain; e.g. the grain ID is used to enforce ownership restrictions in `restore()`
+  # and to fill out the `grainId` field in the `ApiTokens` table in calls to `wrapSaved()`.
   #
-  # If the front-end disconnects, this probably means that it is restarting. It will connect again
+  # If the front-end disconnects, it probably means that it is restarting. It will connect again
   # after restart. In the meantime, the supervisor should queue any RPCs to this interface and
   # retry them after the front-end has reconnected.
 
@@ -182,20 +174,17 @@ struct MembraneRequirement {
     # specifies the `_id` of the other ApiToken.
 
     permissionsHeld :group {
-      # This token is valid only as long as some specified identity holds some specified set of
+      # This token is valid only as long as some specified user holds some specified set of
       # permissions on some specified grain.
 
-      identityId @5 :Text;
-      # The identity that must hold the permissions.
+      userId @1 :Text;
+      # The user who must hold the permissions.
 
       grainId @2 :Text;
       # The grain on which the permissions must be held.
 
       permissions @3 :Grain.PermissionSet;
       # The permissions the user must hold on the grain.
-
-      userId @1 :Text;
-      # Deprecated. See `identityId`.
     }
 
     userIsAdmin @4 :Text;
@@ -224,29 +213,6 @@ interface PersistentHandle extends(SystemPersistent, Util.Handle) {}
 
 interface PersistentOngoingNotification extends(SystemPersistent, Grain.OngoingNotification) {}
 
-struct DenormalizedGrainMetadata {
-  # The metadata that we need to present contextual information for shared grains (in particular,
-  # information about the app providing that grain, like icon and title).
-
-  appTitle @0 :Util.LocalizedText;
-  # A copy of the app name for the corresponding UIView for presentation in the grain list.
-
-  union {
-    icon :group {
-      format @1 :Text;
-      # Icon asset format, if present.  One of "png" or "svg"
-
-      assetId @2 :Text;
-      # The asset ID associated with the grain-size icon for this token
-
-      assetId2xDpi @3 :Text;
-      # If present, the asset ID for the equivalent asset as assetId at twice-resolution
-    }
-    appId @4 :Text;
-    # App ID, needed to generate a favicon if no icon is provided.
-  }
-}
-
 struct ApiTokenOwner {
   # Defines who is permitted to use a particular API token.
 
@@ -272,15 +238,12 @@ struct ApiTokenOwner {
       saveLabel @2 :Util.LocalizedText;
       # As passed to `save()` in Sandstorm's Persistent interface.
 
-      introducerIdentity @9 :Text;
-      # The identity ID through which a user's powerbox action caused the grain to receive this
-      # token. This is the identity against which the `requiredPermissions` parameter
+      introducerUser @5 :Text;
+      # The user ID (`_id` in the users table) of the user whose powerbox action caused the grain
+      # to receive this token. This is the user against which the `requiredPermissions` parameter
       # to `restore()` will be checked. This field is only intended to be filled in by the
       # front-end during a powerbox request; a regular `save()` call produces a capability that
       # has no "introducer".
-
-      introducerUser @5 :Text;
-      # Deprecated. See `introducerIdentity`.
     }
 
     internet @3 :AnyPointer;
@@ -295,32 +258,14 @@ struct ApiTokenOwner {
     # Owned by the front-end, i.e. stored in its Mongo database.
 
     user :group {
-      # Owned by a user's identity. If the token represents a UiView, then it will show up in this
-      # user's grain list.
-
-      identityId @10 :Text;
-      # The identity that is allowed to restore this token.
-
-      title @7 :Text;
-      # Title as chosen by the user, or as copied from the sharer.
-
-      # Fields below this line are not actually allowed to be passed to save(), but are added
-      # internally.
-
-      denormalizedGrainMetadata @8 :DenormalizedGrainMetadata;
-      # Information needed to show the user an app title and icon in the grain list.
+      # Owned by a user. If the token represents a UiView, then it will show up in this user's
+      # grain list.
 
       userId @6 :Text;
-      # Deprecated. See `identityId`.
+      # The ID (`_id` in the users table) of the user who is allowed to restore this token.
 
-      upstreamTitle @11 :Text;
-      # Title as chosen by the grain owner. This field is directly updated whenever the grain owner
-      # changes the title. As an optimization, this field is omitted if the value would be
-      # identical to `title`.
-
-      renamed @12 :Bool;
-      # True if the user has explicitly renamed the grain to differ from the owner's title.
-      # Otherwise, `title` is a copy of either the current or previous value of `upstreamTitle`.
+      title @7 :Text;
+      # Title as chosen by the user.
     }
   }
 }
