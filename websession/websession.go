@@ -25,11 +25,12 @@ package websession
 import (
 	"net/http"
 	"net/url"
+	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/sandstorm/capnp/util"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
 )
 
-func FromHandler(h http.Handler) capnp.WebSession_Server {
+func FromHandler(h http.Handler) HandlerWebSession {
 	return HandlerWebSession{h}
 }
 
@@ -118,6 +119,8 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	return nil
 }
 
+// Websession stubs:
+
 func (h HandlerWebSession) Post(capnp.WebSession_post) error {
 	return nil
 }
@@ -139,5 +142,25 @@ func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 }
 
 func (h HandlerWebSession) OpenWebSocket(capnp.WebSession_openWebSocket) error {
+	return nil
+}
+
+// UiView stubs.
+
+func (h HandlerWebSession) GetViewInfo(p grain.UiView_getViewInfo) error {
+	return nil
+}
+
+func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
+	// TODO: Check params.
+	p.Results.SetSession(grain.UiSession_ServerToClient(h))
+	return nil
+}
+
+func (h HandlerWebSession) NewRequestSession(p grain.UiView_newRequestSession) error {
+	return nil
+}
+
+func (h HandlerWebSession) NewOfferSession(p grain.UiView_newOfferSession) error {
 	return nil
 }
