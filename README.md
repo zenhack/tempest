@@ -24,6 +24,12 @@ time of writing has not been merged:
 To build these packages you will have to manually check out that branch
 on my fork and put it in the appropriate place in `$GOPATH`.
 
+Note: we use import path checking; you'll need to import things as e.g:
+
+    import "zenhack.net/go/sandstorm/grain"
+
+rather than directly via the URL for this repository.
+
 # Licensing
 
 Apache 2.0, both my stuff and the bits pulled from upstream:

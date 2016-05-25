@@ -4,7 +4,7 @@
 // converting package "net/http"'s Handler type to Sandstorm WebSessions. This
 // makes writing web servers pretty much the same between sandstorm and
 // non-sandstorm environments.
-package websession
+package websession // import "zenhack.net/go/sandstorm/websession"
 
 // Copyright (c) 2016 Ian Denhardt <ian@zenhack.net>
 //

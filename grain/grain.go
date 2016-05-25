@@ -1,5 +1,5 @@
 // package grain provides helpers for acting as a sandstorm grain.
-package grain
+package grain // import "zenhack.net/go/sandstorm/grain"
 
 // Copyright (c) 2016 Ian Denhardt <ian@zenhack.net>
 //
