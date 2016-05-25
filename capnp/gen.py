@@ -35,7 +35,7 @@ def go(capnp_file, package):
     os.mkdir(package)
     check_call([
         'capnp', 'compile',
-        '-I', join(os.getenv('GOPATH'), 'src/zombiezen.com/go/capnproto2'),
+        '-I', join(os.getenv('GOPATH'), 'src/zombiezen.com/go/capnproto2/std'),
         '-I', '.',
         '-ogo:' + package,
         basename(capnp_file),

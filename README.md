@@ -1,13 +1,11 @@
 Go Wrappers for Sandstorm's API
 
-Right now just the output of go-capnpc for both the stuff that ships
-with capnproto and all of the sandstorm schemas.
-
 Right now this contains:
 
 * `capnp`, generated packages for the sandstorm API capnproto schema.
   The packages are currently generated from the schema in sandstorm
   v0.97
+* `grain`, which provides a helper to connect to the sandstorm API.
 * `websession`, a *very* WIP set of helpers around WebSession, most
   notably code to glue it to `net/http`.
 

@@ -8,8 +8,8 @@ import (
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zombiezen.com/go/capnproto2"
-	persistent "zombiezen.com/go/capnproto2/capnp/persistent"
 	server "zombiezen.com/go/capnproto2/server"
+	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type Supervisor struct{ Client capnp.Client }
