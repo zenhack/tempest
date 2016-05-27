@@ -16,14 +16,6 @@ changes have been made:
 * The schema `package` has been mapped to the package `spk` (since
   `package` is a go reserved word).
 
-This depends on a change to `zombiezen.com/go/capnproto2` that at the
-time of writing has not been merged:
-
-<https://github.com/zombiezen/go-capnproto2/pull/31>
-
-To build these packages you will have to manually check out that branch
-on my fork and put it in the appropriate place in `$GOPATH`.
-
 Note: we use import path checking; you'll need to import things as e.g:
 
     import "zenhack.net/go/sandstorm/grain"
