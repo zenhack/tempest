@@ -265,7 +265,8 @@ func (h HandlerWebSession) GetViewInfo(p grain.UiView_getViewInfo) error {
 
 func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
 	// TODO: Check params.
-	p.Results.SetSession(grain.UiSession_ServerToClient(h))
+	client := capnp.WebSession_ServerToClient(h).Client
+	p.Results.SetSession(grain.UiSession{Client: client})
 	return nil
 }
 
