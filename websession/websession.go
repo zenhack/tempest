@@ -29,6 +29,7 @@ import (
 	"mime"
 	"net/http"
 	"net/url"
+	"strings"
 	"zenhack.net/go/sandstorm/capnp/grain"
 	capnp_util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
@@ -209,9 +210,15 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 		return firstErr
 	}
 
-	// TODO/FIXME: we need to make sure we're mapping parsed/unparsed URL fields to the right
-	// thing; mixing this up could have serioius security implications. Need to dig into this
-	// a bit more.
+	if !strings.HasPrefix(path, "/") {
+		// ServeMux will give us a redirect otherwise, and sandstorm
+		// will then give us the relative path again, resulting in an
+		// infinite redirect loop.
+		//
+		// As far as I know sandstorm always gives relative paths, but
+		// I haven't found documentation actually saying so (yet).
+		path = "/" + path
+	}
 	request := http.Request{
 		Method: "GET",
 		URL: &url.URL{
