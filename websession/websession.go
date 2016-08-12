@@ -234,6 +234,9 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	}
 
 	h.ServeHTTP(&respond, &request)
+	if respond.status == 0 {
+		(&respond).WriteHeader(200)
+	}
 	respond.body.Close()
 	return nil
 }
