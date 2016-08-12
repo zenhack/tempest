@@ -107,6 +107,16 @@ func (r *responseWriter) setSuccessHeaders() {
 	}
 }
 
+// Trivial wrapper that adds a no-op Close() method to an io.Reader. Used for
+// supplying buffers as request bodies.
+type readDummyCloser struct {
+	io.Reader
+}
+
+func (r readDummyCloser) Close() error {
+	return nil
+}
+
 func (r *responseWriter) WriteHeader(status int) {
 	r.status = status
 	switch status {
@@ -186,29 +196,23 @@ type HandlerWebSession struct {
 	http.Handler
 }
 
-func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
-	var firstErr error
-	var err error
-	checkErr := func() {
-		if firstErr == nil {
-			firstErr = err
+// Error handling helper. Returns a fuction which wraps an initially nil error.
+// The first time (and only the first time) the function is called, the error is
+// updated. The return value is the (possibly updated) stored error.
+func firstErr() func(err error) error {
+	var e error
+	return func(newE error) error {
+		if e == nil {
+			e = newE
 		}
+		return e
 	}
+}
 
-	// TODO: some of these have a HasFoo() method; should look into the exact semantics of all
-	// this and see what the right way to do this is.
-	path, err := args.Params.Path()
-	checkErr()
-	ctx, err := args.Params.Context()
-	checkErr()
-	// TODO: pull these out, and add them to request below:
-	//cookies, err := ctx.Cookies()
-	//checkErr()
-	//accept, err := ctx.Accept()
-	//checkErr()
-	if firstErr != nil {
-		return firstErr
-	}
+func (h HandlerWebSession) handleRequest(method string, path string,
+	body io.ReadCloser,
+	ctx capnp.WebSession_Context,
+	wsResponse *capnp.WebSession_Response) error {
 
 	if !strings.HasPrefix(path, "/") {
 		// ServeMux will give us a redirect otherwise, and sandstorm
@@ -220,17 +224,18 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 		path = "/" + path
 	}
 	request := http.Request{
-		Method: "GET",
+		Method: method,
 		URL: &url.URL{
 			Path: path,
 		},
+		Body: body,
 	}
 
 	respond := responseWriter{
 		webSession: h,
 		ctx:        ctx,
 		header:     make(map[string][]string),
-		response:   &args.Results,
+		response:   wsResponse,
 	}
 
 	h.ServeHTTP(&respond, &request)
@@ -241,11 +246,47 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	return nil
 }
 
-// Websession stubs:
+func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
+	checkErr := firstErr()
 
-func (h HandlerWebSession) Post(capnp.WebSession_post) error {
-	return nil
+	// TODO: some of these have a HasFoo() method; should look into the exact semantics of all
+	// this and see what the right way to do this is.
+	path, err := args.Params.Path()
+	checkErr(err)
+	ctx, err := args.Params.Context()
+	checkErr(err)
+	// TODO: pull these out, and add them to request below:
+	//cookies, err := ctx.Cookies()
+	//checkErr()
+	//accept, err := ctx.Accept()
+	//checkErr()
+	if err = checkErr(nil); err != nil {
+		return err
+	}
+	return h.handleRequest("GET", path, nil, ctx, &args.Results)
 }
+
+func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
+	checkErr := firstErr()
+	path, err := args.Params.Path()
+	checkErr(err)
+	ctx, err := args.Params.Context()
+	checkErr(err)
+	content, err := args.Params.Content()
+	checkErr(err)
+	if err = checkErr(nil); err != nil {
+		return err
+	}
+	payload, err := content.Content()
+	if err != nil {
+		println(err)
+		return err
+	}
+	body := readDummyCloser{bytes.NewBuffer(payload)}
+	return h.handleRequest("POST", path, body, ctx, &args.Results)
+}
+
+// Websession stubs:
 
 func (h HandlerWebSession) Put(capnp.WebSession_put) error {
 	return nil
