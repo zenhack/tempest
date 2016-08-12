@@ -196,23 +196,21 @@ type HandlerWebSession struct {
 	http.Handler
 }
 
-// Error handling helper. Returns a fuction which wraps an initially nil error.
-// The first time (and only the first time) the function is called, the error is
-// updated. The return value is the (possibly updated) stored error.
-func firstErr() func(err error) error {
-	var e error
-	return func(newE error) error {
-		if e == nil {
-			e = newE
-		}
-		return e
-	}
-}
-
-func (h HandlerWebSession) handleRequest(method string, path string,
+func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	body io.ReadCloser,
-	ctx capnp.WebSession_Context,
 	wsResponse *capnp.WebSession_Response) error {
+
+	path, err := args.Path()
+	if err != nil {
+		return err
+	}
+	ctx, err := args.Context()
+	if err != nil {
+		return err
+	}
+	// TODO: pull these out, and add them to request below:
+	//cookies, err := ctx.Cookies()
+	//accept, err := ctx.Accept()
 
 	if !strings.HasPrefix(path, "/") {
 		// ServeMux will give us a redirect otherwise, and sandstorm
@@ -246,44 +244,27 @@ func (h HandlerWebSession) handleRequest(method string, path string,
 	return nil
 }
 
-func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
-	checkErr := firstErr()
+type requestArgs interface {
+	// Arguments common to all request types
+	Path() (string, error)
+	Context() (capnp.WebSession_Context, error)
+}
 
-	// TODO: some of these have a HasFoo() method; should look into the exact semantics of all
-	// this and see what the right way to do this is.
-	path, err := args.Params.Path()
-	checkErr(err)
-	ctx, err := args.Params.Context()
-	checkErr(err)
-	// TODO: pull these out, and add them to request below:
-	//cookies, err := ctx.Cookies()
-	//checkErr()
-	//accept, err := ctx.Accept()
-	//checkErr()
-	if err = checkErr(nil); err != nil {
-		return err
-	}
-	return h.handleRequest("GET", path, nil, ctx, &args.Results)
+func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
+	return h.handleRequest("GET", args.Params, nil, &args.Results)
 }
 
 func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
-	checkErr := firstErr()
-	path, err := args.Params.Path()
-	checkErr(err)
-	ctx, err := args.Params.Context()
-	checkErr(err)
 	content, err := args.Params.Content()
-	checkErr(err)
-	if err = checkErr(nil); err != nil {
+	if err != nil {
 		return err
 	}
 	payload, err := content.Content()
 	if err != nil {
-		println(err)
 		return err
 	}
 	body := readDummyCloser{bytes.NewBuffer(payload)}
-	return h.handleRequest("POST", path, body, ctx, &args.Results)
+	return h.handleRequest("POST", args.Params, body, &args.Results)
 }
 
 // Websession stubs:
