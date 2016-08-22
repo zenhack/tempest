@@ -197,8 +197,13 @@ type HandlerWebSession struct {
 }
 
 func (h HandlerWebSession) handleRequest(method string, args requestArgs,
+	headers map[string][]string,
 	body io.ReadCloser,
 	wsResponse *capnp.WebSession_Response) error {
+
+	if headers == nil {
+		headers = make(map[string][]string)
+	}
 
 	path, err := args.Path()
 	if err != nil {
@@ -226,7 +231,8 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 		URL: &url.URL{
 			Path: path,
 		},
-		Body: body,
+		Header: headers,
+		Body:   body,
 	}
 
 	respond := responseWriter{
@@ -251,7 +257,7 @@ type requestArgs interface {
 }
 
 func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
-	return h.handleRequest("GET", args.Params, nil, &args.Results)
+	return h.handleRequest("GET", args.Params, nil, nil, &args.Results)
 }
 
 func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
@@ -263,8 +269,15 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 	if err != nil {
 		return err
 	}
+	mimeType, err := content.MimeType()
+	if err != nil {
+		return err
+	}
 	body := readDummyCloser{bytes.NewBuffer(payload)}
-	return h.handleRequest("POST", args.Params, body, &args.Results)
+	headers := map[string][]string{
+		"Content-Type": {mimeType},
+	}
+	return h.handleRequest("POST", args.Params, headers, body, &args.Results)
 }
 
 // Websession stubs:
