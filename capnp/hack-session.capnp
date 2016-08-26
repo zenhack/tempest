@@ -25,6 +25,7 @@ $import "/capnp/c++.capnp".namespace("sandstorm");
 using Grain = import "grain.capnp";
 using Email = import "email.capnp";
 using Ip = import "ip.capnp";
+using Identity = import "identity.capnp";
 
 interface HackSessionContext @0xe14c1f5321159b8f
     extends(Grain.SessionContext, Email.EmailSendPort) {
@@ -63,47 +64,11 @@ interface HackSessionContext @0xe14c1f5321159b8f
   getUserAddress @2 () -> Email.EmailAddress;
   # Returns the address of the owner of the grain.
 
-  generateApiToken @3 (petname :Text, userInfo :Grain.UserInfo, expires :UInt64 = 0)
+  obsoleteGenerateApiToken @3 (petname :Text, userInfo :Identity.UserInfo, expires :UInt64 = 0)
       -> (token :Text, endpointUrl :Text, tokenId :Text);
-  # Generates a new API token which can be used to access an HTTP API exported by this application.
-  # The method also returns the URL at which the API is exported.
-  #
-  # To access the API, a client may send requests to `endpointUrl` (or sub-paths thereof) and pass
-  # the following header, replacing <token> with the returned `token`:
-  #
-  #     Authorization: Bearer <token>
-  #
-  # The request will be delivered to the app like a regular web request. However, the request will
-  # contain no cookies, and any cookies in the response will be ignored. Also note that the system
-  # will arrange for `endpointUrl` to accept cross-origin request from any origin, so that
-  # third-party web sites can use XMLHttpRequest to communicate with this API.
-  #
-  # By convention, if you wish to present `endpointUrl` and `token` to the user (e.g. to copy/paste
-  # into a client app), you should do so in the format: "<endpointUrl>#<token>" -- that is,
-  # separate the two by a '#' character, as if the token is a URL "hash" or "fragment". If this
-  # combined URL is loaded directly in the browser, Sandstorm may be able to display something
-  # useful to the user, although this is not the intended usage method.
-  #
-  # `userInfo` contains the `UserInfo` struct which should be passed back to the application
-  # verbatim when this token is used. There is no need to fill this struct with accurate
-  # information as it will only be passed back to the app. You are encouraged to replace the
-  # `userId` field with some sort of token that grants a narrow permission rather than use an
-  # actual user's ID. This is a temporary hack. Eventually, when we have persistent Cap'n Proto
-  # capabilities, we will not use `newSession()` with capability tokens; we will persist and
-  # restore the WebSession capability instead.
-  #
-  # `expires` is a Unix timestamp (seconds since epoch) after which the token should no longer
-  # work. A value of zero (default) indicates no expiration.
-  #
-  # `tokenId` can be used to identify and delete the token in later requests. (We don't use
-  # `token` itself for this because the token is not actually stored by Sandstorm; only a hash
-  # of it is.)
-
-  listApiTokens @4 () -> (tokens :List(TokenInfo));
-  # List all tokens that were previously created by `generateApiToken()` and have not yet expired.
-
-  revokeApiToken @5 (tokenId :Text);
-  # Revoke (delete) a previously-generated token.
+  obsoleteListApiTokens @4 () -> (tokens :List(TokenInfo));
+  obsoleteRevokeApiToken @5 (tokenId :Text);
+  # OBSOLETE. Apps that need to present API tokens to users should use offer templates.
 
   getUiViewForEndpoint @8 (url :Text) -> (view :Grain.UiView);
   # There are 3 cases here that are seamlessly handled by the platform
@@ -120,16 +85,12 @@ interface HackSessionContext @0xe14c1f5321159b8f
   struct TokenInfo {
     tokenId @0 :Text;
     petname @1 :Text;
-    userInfo @2 :Grain.UserInfo;
+    userInfo @2 :Identity.UserInfo;
   }
 
-  getIpNetwork @6 () -> (network: Ip.IpNetwork);
-  # Returns an IpNetwork for unrestricted outgoing network access. If the owner of the grain
-  # calling this is not an admin, then this will raise an exception
-
-  getIpInterface @7 () -> (interface: Ip.IpInterface);
-  # Returns an IpNetwork for unrestricted incoming network access. If the owner of the grain
-  # calling this is not an admin, then this will raise an exception
+  obsoleteGetIpNetwork @6 () -> (network: Ip.IpNetwork);
+  obsoleteGetIpInterface @7 () -> (interface: Ip.IpInterface);
+  # OBSOLETE. Apps that need IpNetwork or IpInterface should use the powerbox.
 }
 
 interface HackEmailSession @0xc3b5ced7344b04a6 extends(Grain.UiSession, Email.EmailSendPort) {

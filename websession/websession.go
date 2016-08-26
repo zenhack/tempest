@@ -290,6 +290,10 @@ func (h HandlerWebSession) Delete(capnp.WebSession_delete) error {
 	return nil
 }
 
+func (h HandlerWebSession) Patch(capnp.WebSession_patch) error {
+	return nil
+}
+
 func (h HandlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
 	return nil
 }
@@ -299,6 +303,46 @@ func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 }
 
 func (h HandlerWebSession) OpenWebSocket(capnp.WebSession_openWebSocket) error {
+	return nil
+}
+
+func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
+	return nil
+}
+
+func (h HandlerWebSession) Proppatch(capnp.WebSession_proppatch) error {
+	return nil
+}
+
+func (h HandlerWebSession) Mkcol(capnp.WebSession_mkcol) error {
+	return nil
+}
+
+func (h HandlerWebSession) Copy(capnp.WebSession_copy) error {
+	return nil
+}
+
+func (h HandlerWebSession) Move(capnp.WebSession_move) error {
+	return nil
+}
+
+func (h HandlerWebSession) Lock(capnp.WebSession_lock) error {
+	return nil
+}
+
+func (h HandlerWebSession) Unlock(capnp.WebSession_unlock) error {
+	return nil
+}
+
+func (h HandlerWebSession) Acl(capnp.WebSession_acl) error {
+	return nil
+}
+
+func (h HandlerWebSession) Report(capnp.WebSession_report) error {
+	return nil
+}
+
+func (h HandlerWebSession) Options(capnp.WebSession_options) error {
 	return nil
 }
 
