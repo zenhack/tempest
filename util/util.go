@@ -41,8 +41,8 @@ func (bs ByteStreamWriteCloser) Write(p []byte) (n int, err error) {
 }
 
 func (bs ByteStreamWriteCloser) Close() error {
-	_, err := bs.Obj.Done(bs.Ctx, func(args capnp.ByteStream_done_Params) error {
+	bs.Obj.Done(bs.Ctx, func(args capnp.ByteStream_done_Params) error {
 		return nil
-	}).Struct()
-	return err
+	})
+	return nil
 }

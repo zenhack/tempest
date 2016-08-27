@@ -43,7 +43,11 @@ func checkMd5(p []byte) bool {
 	if err != nil || n != len(p) {
 		return false
 	}
-	err = bsClient.Close()
+	_, err = bsClient.Obj.Done(
+		bsClient.Ctx,
+		func(p capnp.ByteStream_done_Params) error {
+			return nil
+		}).Struct()
 	if err != nil {
 		return false
 	}
