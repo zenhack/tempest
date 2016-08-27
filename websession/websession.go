@@ -33,6 +33,7 @@ import (
 	"zenhack.net/go/sandstorm/capnp/grain"
 	capnp_util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/internal/errors"
 	"zenhack.net/go/sandstorm/util"
 )
 
@@ -283,73 +284,73 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 // Websession stubs:
 
 func (h HandlerWebSession) Put(capnp.WebSession_put) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Delete(capnp.WebSession_delete) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Patch(capnp.WebSession_patch) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) OpenWebSocket(capnp.WebSession_openWebSocket) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Proppatch(capnp.WebSession_proppatch) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Mkcol(capnp.WebSession_mkcol) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Copy(capnp.WebSession_copy) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Move(capnp.WebSession_move) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Lock(capnp.WebSession_lock) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Unlock(capnp.WebSession_unlock) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Acl(capnp.WebSession_acl) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Report(capnp.WebSession_report) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) Options(capnp.WebSession_options) error {
-	return nil
+	return errors.NotImplemented
 }
 
 // UiView stubs.
 
 func (h HandlerWebSession) GetViewInfo(p grain.UiView_getViewInfo) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
@@ -360,9 +361,9 @@ func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
 }
 
 func (h HandlerWebSession) NewRequestSession(p grain.UiView_newRequestSession) error {
-	return nil
+	return errors.NotImplemented
 }
 
 func (h HandlerWebSession) NewOfferSession(p grain.UiView_newOfferSession) error {
-	return nil
+	return errors.NotImplemented
 }
