@@ -131,7 +131,7 @@ func (r *responseWriter) WriteHeader(status int) {
 		// handy.
 		r.response.Content().Body().SetStream(capnp_util.Handle_ServerToClient(0))
 		r.setSuccessHeaders()
-		r.body = util.ByteStream{r.webSession.Ctx, r.ctx.ResponseStream()}
+		r.body = util.ByteStreamWriteCloser{r.webSession.Ctx, r.ctx.ResponseStream()}
 	case 204, 205:
 		r.body = noBody{}
 		r.response.SetNoContent()
