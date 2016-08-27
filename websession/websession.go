@@ -23,10 +23,12 @@ package websession // import "zenhack.net/go/sandstorm/websession"
 // limitations under the License.
 
 import (
+	"bufio"
 	"bytes"
 	"golang.org/x/net/context"
 	"io"
 	"mime"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -34,6 +36,7 @@ import (
 	capnp_util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/internal/errors"
+	"zenhack.net/go/sandstorm/internal/iocommon"
 	"zenhack.net/go/sandstorm/util"
 )
 
@@ -42,12 +45,40 @@ func FromHandler(ctx context.Context, h http.Handler) HandlerWebSession {
 }
 
 type responseWriter struct {
+	hijacked   bool
 	status     int
 	header     http.Header
 	ctx        capnp.WebSession_Context
 	body       io.WriteCloser
 	response   *capnp.WebSession_Response
 	webSession HandlerWebSession
+
+	// We include the request so we can implement Hijacker
+	req *http.Request
+}
+
+func (r *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	r.hijacked = true
+	conn := &iocommon.RWCConn{
+		ReadWriteCloser: iocommon.MergedRWC{
+			Reader: r.req.Body,
+			Writer: r,
+			Closer: iocommon.MultiCloser(r.body, r.req.Body),
+		},
+		Local: &iocommon.HardCodedAddr{
+			Net:  "capnp",
+			Addr: "app",
+		},
+		Remote: &iocommon.HardCodedAddr{
+			Net:  "capnp",
+			Addr: "client",
+		},
+	}
+	bufrw := &bufio.ReadWriter{
+		Reader: bufio.NewReader(conn),
+		Writer: bufio.NewWriter(conn),
+	}
+	return conn, bufrw, nil
 }
 
 func (r *responseWriter) Header() http.Header {
@@ -119,6 +150,9 @@ func (r readDummyCloser) Close() error {
 }
 
 func (r *responseWriter) WriteHeader(status int) {
+	if r.hijacked {
+		return
+	}
 	r.status = status
 	switch status {
 	case 200, 201, 202:
@@ -241,13 +275,17 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 		ctx:        ctx,
 		header:     make(map[string][]string),
 		response:   wsResponse,
+		body:       noBody{},
+		req:        &request,
 	}
 
 	h.ServeHTTP(&respond, &request)
 	if respond.status == 0 {
 		(&respond).WriteHeader(200)
 	}
-	respond.body.Close()
+	if !respond.hijacked {
+		respond.body.Close()
+	}
 	return nil
 }
 
