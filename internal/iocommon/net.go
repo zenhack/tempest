@@ -4,6 +4,7 @@ import (
 	"io"
 	"net"
 	"time"
+	"zenhack.net/go/sandstorm/internal/errors"
 )
 
 // Implementation of net.Addr using hard-coded values
@@ -41,13 +42,13 @@ func (c *RWCConn) LocalAddr() net.Addr {
 }
 
 func (c *RWCConn) SetDeadline(t time.Time) error {
-	return NotImplemented
+	return errors.NotImplemented
 }
 
 func (c *RWCConn) SetReadDeadline(t time.Time) error {
-	return NotImplemented
+	return errors.NotImplemented
 }
 
 func (c *RWCConn) SetWriteDeadline(t time.Time) error {
-	return NotImplemented
+	return errors.NotImplemented
 }
