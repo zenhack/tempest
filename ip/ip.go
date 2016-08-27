@@ -5,71 +5,11 @@ import (
 	"golang.org/x/net/context"
 	"io"
 	"net"
-	"time"
 	capnp "zenhack.net/go/sandstorm/capnp/ip"
 	util_capnp "zenhack.net/go/sandstorm/capnp/util"
+	"zenhack.net/go/sandstorm/internal/iocommon"
 	"zenhack.net/go/sandstorm/util"
 )
-
-// XXX TODO FIXME: The deadline related operations for byteStreamConn are
-// noops, which is a serious security hazard; we need to find a way to
-// support this interface.
-
-type byteStreamConn struct {
-	wc            io.WriteCloser
-	rc            io.ReadCloser
-	local, remote byteStreamConnAddr
-}
-
-type byteStreamConnAddr struct {
-	network, addr string
-}
-
-func (a byteStreamConnAddr) Network() string {
-	return a.network
-}
-
-func (a byteStreamConnAddr) String() string {
-	return a.addr
-}
-
-func (b *byteStreamConn) Read(p []byte) (int, error) {
-	return b.rc.Read(p)
-}
-
-func (b *byteStreamConn) Write(p []byte) (int, error) {
-	return b.wc.Write(p)
-}
-
-func (b *byteStreamConn) Close() error {
-	err1 := b.wc.Close()
-	err2 := b.rc.Close()
-	if err1 != nil {
-		return err1
-	} else {
-		return err2
-	}
-}
-
-func (b *byteStreamConn) LocalAddr() net.Addr {
-	return b.local
-}
-
-func (b *byteStreamConn) RemoteAddr() net.Addr {
-	return b.remote
-}
-
-func (b *byteStreamConn) SetDeadline(t time.Time) error {
-	return nil
-}
-
-func (b *byteStreamConn) SetReadDeadline(t time.Time) error {
-	return nil
-}
-
-func (b *byteStreamConn) SetWriteDeadline(t time.Time) error {
-	return nil
-}
 
 type IpNetworkDialer struct {
 	Ctx       context.Context
@@ -129,16 +69,19 @@ func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
 					return nil
 				}).Upstream(),
 		}
-		return &byteStreamConn{
-			rc: fromUpstream,
-			wc: toUpstream,
-			local: byteStreamConnAddr{
-				network: network,
-				addr:    "localhost",
+		return &iocommon.RWCConn{
+			ReadWriteCloser: iocommon.MergedRWC{
+				Reader: fromUpstream,
+				Writer: toUpstream,
+				Closer: iocommon.MultiCloser(fromUpstream, toUpstream),
 			},
-			remote: byteStreamConnAddr{
-				network: network,
-				addr:    addr,
+			Local: &iocommon.HardCodedAddr{
+				Net:  network,
+				Addr: "localhost",
+			},
+			Remote: &iocommon.HardCodedAddr{
+				Net:  network,
+				Addr: addr,
 			},
 		}, nil
 	default:
