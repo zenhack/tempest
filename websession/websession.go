@@ -432,6 +432,7 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 
 	clientStream := p.Params.ClientStream()
 	respond := responseWriter{
+		header:            make(map[string][]string),
 		websocketResponse: &p.Results,
 		websocketProtoSet: make(chan struct{}),
 		body: &WebSocketStreamWriteCloser{
