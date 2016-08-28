@@ -26,6 +26,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"fmt"
 	"golang.org/x/net/context"
 	"io"
 	"math/rand"
@@ -67,6 +68,37 @@ type responseWriter struct {
 
 func (r *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	r.hijacked = true
+	if r.status == 0 {
+		// We haven't written the header yet. Hijack() should just take over the
+		// connection entirely, so the caller needs to write out the header
+		// manually.
+		//
+		// Sandstorm won't let us *not* write a header, so if the caller doesn't
+		// do this we just set the status to 500.
+
+		// Clear any headers already set; we're not supposed to be writing
+		// anything ourselves, so reset the state so that we only set headers
+		// read from the caller's manually generated response.
+		r.header = make(map[string][]string)
+		pipeReader, pipeWriter := io.Pipe()
+		r.body = pipeWriter
+		go func() {
+			reader := bufio.NewReader(pipeReader)
+			resp, err := http.ReadResponse(reader, r.req)
+			if err != nil {
+				r.writeHeader(500)
+				return
+			} else {
+				r.header = resp.Header
+				r.writeHeader(resp.StatusCode)
+			}
+			// writeHeader will have changed the value of r.body:
+			newBody := r.body
+			r.body = pipeWriter
+			io.Copy(newBody, resp.Body)
+			resp.Body.Close()
+		}()
+	}
 	conn := &iocommon.RWCConn{
 		ReadWriteCloser: iocommon.MergedRWC{
 			Reader: r.req.Body,
@@ -158,9 +190,21 @@ func (r readDummyCloser) Close() error {
 }
 
 func (r *responseWriter) WriteHeader(status int) {
+	fmt.Printf("WriteHeader(%d)\n", status)
 	if r.hijacked {
+		resp := &http.Response{
+			StatusCode: status,
+			Header:     r.header,
+		}
+		resp.Write(r)
 		return
+	} else {
+		r.writeHeader(status)
 	}
+}
+
+func (r *responseWriter) writeHeader(status int) {
+	fmt.Printf("writeHeader(%d)\n", status)
 	r.status = status
 	if status != 101 && r.response == nil {
 		// This was a call to openWebSocket
@@ -181,7 +225,9 @@ func (r *responseWriter) WriteHeader(status int) {
 			r.body = noBody{}
 			return
 		}
-		serverProtoSlice := strings.Split(r.header.Get("Sec-WebSocket-Protocol"), ",")
+		// TODO: deal with multiple instances of the header
+		serverProtoSlice := strings.Split(r.header.Get("Sec-Websocket-Protocol"), ",")
+		fmt.Println("serverProtoSlice: ", serverProtoSlice)
 
 		serverProtoList, err := r.websocketResponse.NewProtocol(int32(len(serverProtoSlice)))
 		if err != nil {
@@ -191,6 +237,7 @@ func (r *responseWriter) WriteHeader(status int) {
 		for i := range serverProtoSlice {
 			serverProtoList.Set(i, strings.Trim(serverProtoSlice[i], " "))
 		}
+		fmt.Println("Signaling done wth header setup.")
 		r.websocketProtoSet <- struct{}{}
 	case 200, 201, 202:
 		r.response.SetContent()
@@ -257,7 +304,8 @@ func (r *responseWriter) WriteHeader(status int) {
 }
 
 func (r *responseWriter) Write(p []byte) (int, error) {
-	if r.status == 0 {
+	fmt.Printf("Write(%s)\n", p)
+	if r.status == 0 && !r.hijacked {
 		r.WriteHeader(200)
 	}
 	return r.body.Write(p)
@@ -396,22 +444,22 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 
 	reqPipeReader, reqPipeWriter := io.Pipe()
 
-	reqBodyWriteEnd := capnp.WebSession_WebSocketStream_ServerToClient(
+	reqBodyCapnpWriter := capnp.WebSession_WebSocketStream_ServerToClient(
 		WriteCloserWebSocketStream{reqPipeWriter},
 	)
 	// WebSocketStream doesn't have a close method, but when the cap gets dropped, we
 	// can safely assume the connection is closed:
-	reqBodyWriteEnd.Client = iocommon.WithClosers(reqBodyWriteEnd.Client, reqPipeWriter)
-	p.Results.SetServerStream(reqBodyWriteEnd)
+	reqBodyCapnpWriter.Client = iocommon.WithClosers(reqBodyCapnpWriter.Client, reqPipeWriter)
 
-	clientProtoSlice := make([]string, clientProtoList.Len())
-	for i := range clientProtoSlice {
-		clientProtoSlice[i], err = clientProtoList.At(i)
+	p.Results.SetServerStream(reqBodyCapnpWriter)
+
+	clientProtoHeader := make([]string, clientProtoList.Len())
+	for i := range clientProtoHeader {
+		clientProtoHeader[i], err = clientProtoList.At(i)
 		if err != nil {
 			return nil
 		}
 	}
-	clientProtoHeader := strings.Join(clientProtoSlice, ", ")
 
 	request := http.Request{
 		Method: "GET",
@@ -420,10 +468,10 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		},
 		Header: map[string][]string{
 			"Upgrade":                {"websocket"},
-			"Connect":                {"Upgrade"},
-			"Sec-WebSocket-Key":      {makeWebSocketKey()},
-			"Sec-WebSocket-Protocol": {clientProtoHeader},
-			"Sec-WebSocket-Version":  {"13"},
+			"Connection":             {"Upgrade"},
+			"Sec-Websocket-Key":      {makeWebSocketKey()},
+			"Sec-Websocket-Protocol": clientProtoHeader,
+			"Sec-Websocket-Version":  {"13"},
 			// XXX: we should find something more sensible to put here:
 			"Origin": {"http://dummy.example.com"},
 		},
@@ -446,7 +494,7 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 	return nil
 }
 
-// Generate a random value for the Sec-WebSocket-Key header. Sandstorm doesn't
+// Generate a random value for the Sec-Websocket-Key header. Sandstorm doesn't
 // give this to us, so for existing server-side websocket libraries to work
 // we need to provide it ourselves.
 func makeWebSocketKey() string {
