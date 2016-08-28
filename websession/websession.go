@@ -25,8 +25,10 @@ package websession // import "zenhack.net/go/sandstorm/websession"
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"golang.org/x/net/context"
 	"io"
+	"math/rand"
 	"mime"
 	"net"
 	"net/http"
@@ -50,8 +52,14 @@ type responseWriter struct {
 	header     http.Header
 	ctx        capnp.WebSession_Context
 	body       io.WriteCloser
-	response   *capnp.WebSession_Response
 	webSession HandlerWebSession
+
+	// both of these are nil except for calls to openWebSocket
+	websocketResponse *capnp.WebSession_openWebSocket_Results
+	websocketProtoSet chan struct{} // a send indicates we've set Sec-Websocket-Protocol
+
+	// This is nil for calls to openWebSocket
+	response *capnp.WebSession_Response
 
 	// We include the request so we can implement Hijacker
 	req *http.Request
@@ -154,7 +162,36 @@ func (r *responseWriter) WriteHeader(status int) {
 		return
 	}
 	r.status = status
+	if status != 101 && r.response == nil {
+		// This was a call to openWebSocket
+		// XXX: This is here to prevent a nil pointer dereference,
+		// but we ought to have a cleaner way of dealing with this.
+		//
+		// We signal the openWebSocket call that we're done here so it doesn't
+		// hang, then return. It will probably still do weird things though.
+		r.websocketProtoSet <- struct{}{}
+		return
+	}
 	switch status {
+	case 101:
+		// websocket.
+		if r.websocketResponse == nil {
+			// This wasn't a call to openWebSocket; send a 5xx error.
+			r.response.SetServerError()
+			r.body = noBody{}
+			return
+		}
+		serverProtoSlice := strings.Split(r.header.Get("Sec-WebSocket-Protocol"), ",")
+
+		serverProtoList, err := r.websocketResponse.NewProtocol(int32(len(serverProtoSlice)))
+		if err != nil {
+			// TODO: find some way of reporting the error.
+			return
+		}
+		for i := range serverProtoSlice {
+			serverProtoList.Set(i, strings.Trim(serverProtoSlice[i], " "))
+		}
+		r.websocketProtoSet <- struct{}{}
 	case 200, 201, 202:
 		r.response.SetContent()
 		// TODO: the subtraction is breaking an abstraction boundary just a bit.
@@ -231,6 +268,21 @@ type HandlerWebSession struct {
 	http.Handler
 }
 
+// make path an absolute path, by prepending a slash if it is not already
+// present.  ServeMux will give us a redirect otherwise, and sandstorm
+// will then give us the relative path again, resulting in an infinite
+// redirect loop.
+//
+// As far as I know sandstorm always leaves off the leading slash, but
+// I haven't found documentation actually saying so (yet).
+func makeAbsolute(path string) string {
+	if strings.HasPrefix(path, "/") {
+		return path
+	} else {
+		return "/" + path
+	}
+}
+
 func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	headers map[string][]string,
 	body io.ReadCloser,
@@ -252,19 +304,10 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	//cookies, err := ctx.Cookies()
 	//accept, err := ctx.Accept()
 
-	if !strings.HasPrefix(path, "/") {
-		// ServeMux will give us a redirect otherwise, and sandstorm
-		// will then give us the relative path again, resulting in an
-		// infinite redirect loop.
-		//
-		// As far as I know sandstorm always gives relative paths, but
-		// I haven't found documentation actually saying so (yet).
-		path = "/" + path
-	}
 	request := http.Request{
 		Method: method,
 		URL: &url.URL{
-			Path: path,
+			Path: makeAbsolute(path),
 		},
 		Header: headers,
 		Body:   body,
@@ -341,8 +384,78 @@ func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) OpenWebSocket(capnp.WebSession_openWebSocket) error {
-	return errors.NotImplemented
+func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
+	path, err := p.Params.Path()
+	if err != nil {
+		return err
+	}
+	clientProtoList, err := p.Params.Protocol()
+	if err != nil {
+		return err
+	}
+
+	reqPipeReader, reqPipeWriter := io.Pipe()
+
+	reqBodyWriteEnd := capnp.WebSession_WebSocketStream_ServerToClient(
+		WriteCloserWebSocketStream{reqPipeWriter},
+	)
+	// WebSocketStream doesn't have a close method, but when the cap gets dropped, we
+	// can safely assume the connection is closed:
+	reqBodyWriteEnd.Client = iocommon.WithClosers(reqBodyWriteEnd.Client, reqPipeWriter)
+	p.Results.SetServerStream(reqBodyWriteEnd)
+
+	clientProtoSlice := make([]string, clientProtoList.Len())
+	for i := range clientProtoSlice {
+		clientProtoSlice[i], err = clientProtoList.At(i)
+		if err != nil {
+			return nil
+		}
+	}
+	clientProtoHeader := strings.Join(clientProtoSlice, ", ")
+
+	request := http.Request{
+		Method: "GET",
+		URL: &url.URL{
+			Path: makeAbsolute(path),
+		},
+		Header: map[string][]string{
+			"Upgrade":                {"websocket"},
+			"Connect":                {"Upgrade"},
+			"Sec-WebSocket-Key":      {makeWebSocketKey()},
+			"Sec-WebSocket-Protocol": {clientProtoHeader},
+			"Sec-WebSocket-Version":  {"13"},
+			// XXX: we should find something more sensible to put here:
+			"Origin": {"http://dummy.example.com"},
+		},
+		Body: reqPipeReader,
+	}
+
+	clientStream := p.Params.ClientStream()
+	respond := responseWriter{
+		websocketResponse: &p.Results,
+		websocketProtoSet: make(chan struct{}),
+		body: &WebSocketStreamWriteCloser{
+			WebSession_WebSocketStream: clientStream,
+			Ctx: h.Ctx,
+		},
+		req: &request,
+	}
+	go h.ServeHTTP(&respond, &request)
+	<-respond.websocketProtoSet
+	return nil
+}
+
+// Generate a random value for the Sec-WebSocket-Key header. Sandstorm doesn't
+// give this to us, so for existing server-side websocket libraries to work
+// we need to provide it ourselves.
+func makeWebSocketKey() string {
+	rawBytes := make([]byte, 32)
+	rand.Read(rawBytes)
+	buf := &bytes.Buffer{}
+	enc := base64.NewEncoder(base64.StdEncoding, buf)
+	enc.Write(rawBytes)
+	enc.Close()
+	return buf.String()
 }
 
 func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
