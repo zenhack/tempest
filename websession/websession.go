@@ -479,18 +479,59 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 	}
 
 	clientStream := p.Params.ClientStream()
-	respond := responseWriter{
-		header:            make(map[string][]string),
-		websocketResponse: &p.Results,
-		websocketProtoSet: make(chan struct{}),
-		body: &WebSocketStreamWriteCloser{
-			WebSession_WebSocketStream: clientStream,
-			Ctx: h.Ctx,
-		},
-		req: &request,
+	capnpResponseBody := &WebSocketStreamWriteCloser{
+		WebSession_WebSocketStream: clientStream,
+		Ctx: h.Ctx,
 	}
-	go h.ServeHTTP(&respond, &request)
-	<-respond.websocketProtoSet
+
+	doneChan := make(chan struct{})
+	hijackChan := make(chan struct{})
+	headingChan := make(chan *heading)
+	respPipeReader, respPipeWriter := io.Pipe()
+
+	respond := websocketResponseWriter{
+		hd: &heading{
+			header: make(map[string][]string),
+			status: 0,
+		},
+		hijack:      hijackChan,
+		headingChan: headingChan,
+		body:        respPipeWriter,
+		request:     &request,
+	}
+	go func() {
+		h.ServeHTTP(&respond, &request)
+		doneChan <- struct{}{}
+	}()
+	copyBody := func() {
+		defer respPipeReader.Close()
+		io.Copy(capnpResponseBody, respPipeReader)
+	}
+	select {
+	case <-hijackChan:
+		resp, err := http.ReadResponse(bufio.NewReader(respPipeReader), &request)
+		if err != nil {
+			return err
+		}
+		err = buildWebSocketHeading(&p, &heading{
+			status: resp.StatusCode,
+			header: resp.Header,
+		})
+		if err != nil {
+			return err
+		}
+		go func() {
+			defer respPipeReader.Close()
+			io.Copy(capnpResponseBody, respPipeReader)
+		}()
+	case hd := <-headingChan:
+		err := buildWebSocketHeading(&p, hd)
+		if err != nil {
+			return err
+		}
+		go copyBody()
+	case <-doneChan:
+	}
 	return nil
 }
 
