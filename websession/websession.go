@@ -447,9 +447,6 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 	reqBodyCapnpWriter := capnp.WebSession_WebSocketStream_ServerToClient(
 		WriteCloserWebSocketStream{reqPipeWriter},
 	)
-	// WebSocketStream doesn't have a close method, but when the cap gets dropped, we
-	// can safely assume the connection is closed:
-	reqBodyCapnpWriter.Client = iocommon.WithClosers(reqBodyCapnpWriter.Client, reqPipeWriter)
 
 	p.Results.SetServerStream(reqBodyCapnpWriter)
 
