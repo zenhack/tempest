@@ -484,7 +484,7 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		Ctx: h.Ctx,
 	}
 
-	doneChan := make(chan struct{})
+	doneChan := make(chan struct{}, 1)
 	hijackChan := make(chan struct{})
 	headingChan := make(chan *heading)
 	respPipeReader, respPipeWriter := io.Pipe()
