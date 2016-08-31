@@ -520,10 +520,7 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		if err != nil {
 			return err
 		}
-		go func() {
-			defer respPipeReader.Close()
-			io.Copy(capnpResponseBody, respPipeReader)
-		}()
+		go copyBody()
 	case hd := <-headingChan:
 		err := buildWebSocketHeading(&p, hd)
 		if err != nil {
