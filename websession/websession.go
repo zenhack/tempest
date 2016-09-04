@@ -26,7 +26,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
-	"fmt"
 	"golang.org/x/net/context"
 	"io"
 	"math/rand"
@@ -190,7 +189,6 @@ func (r readDummyCloser) Close() error {
 }
 
 func (r *responseWriter) WriteHeader(status int) {
-	fmt.Printf("WriteHeader(%d)\n", status)
 	if r.hijacked {
 		resp := &http.Response{
 			StatusCode: status,
@@ -204,7 +202,6 @@ func (r *responseWriter) WriteHeader(status int) {
 }
 
 func (r *responseWriter) writeHeader(status int) {
-	fmt.Printf("writeHeader(%d)\n", status)
 	r.status = status
 	if status != 101 && r.response == nil {
 		// This was a call to openWebSocket
@@ -227,7 +224,6 @@ func (r *responseWriter) writeHeader(status int) {
 		}
 		// TODO: deal with multiple instances of the header
 		serverProtoSlice := strings.Split(r.header.Get("Sec-Websocket-Protocol"), ",")
-		fmt.Println("serverProtoSlice: ", serverProtoSlice)
 
 		serverProtoList, err := r.websocketResponse.NewProtocol(int32(len(serverProtoSlice)))
 		if err != nil {
@@ -237,7 +233,6 @@ func (r *responseWriter) writeHeader(status int) {
 		for i := range serverProtoSlice {
 			serverProtoList.Set(i, strings.Trim(serverProtoSlice[i], " "))
 		}
-		fmt.Println("Signaling done wth header setup.")
 		r.websocketProtoSet <- struct{}{}
 	case 200, 201, 202:
 		r.response.SetContent()
@@ -304,7 +299,6 @@ func (r *responseWriter) writeHeader(status int) {
 }
 
 func (r *responseWriter) Write(p []byte) (int, error) {
-	fmt.Printf("Write(%s)\n", p)
 	if r.status == 0 && !r.hijacked {
 		r.WriteHeader(200)
 	}
