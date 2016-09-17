@@ -23,286 +23,20 @@ package websession // import "zenhack.net/go/sandstorm/websession"
 // limitations under the License.
 
 import (
-	"bufio"
 	"bytes"
-	"encoding/base64"
 	"golang.org/x/net/context"
 	"io"
-	"math/rand"
-	"mime"
-	"net"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"zenhack.net/go/sandstorm/capnp/grain"
-	capnp_util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/internal/errors"
-	"zenhack.net/go/sandstorm/internal/iocommon"
-	"zenhack.net/go/sandstorm/util"
 )
 
 func FromHandler(ctx context.Context, h http.Handler) HandlerWebSession {
 	return HandlerWebSession{ctx, h}
-}
-
-type responseWriter struct {
-	hijacked   bool
-	status     int
-	header     http.Header
-	ctx        capnp.WebSession_Context
-	body       io.WriteCloser
-	webSession HandlerWebSession
-
-	// both of these are nil except for calls to openWebSocket
-	websocketResponse *capnp.WebSession_openWebSocket_Results
-	websocketProtoSet chan struct{} // a send indicates we've set Sec-Websocket-Protocol
-
-	// This is nil for calls to openWebSocket
-	response *capnp.WebSession_Response
-
-	// We include the request so we can implement Hijacker
-	req *http.Request
-}
-
-func (r *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	r.hijacked = true
-	if r.status == 0 {
-		// We haven't written the header yet. Hijack() should just take over the
-		// connection entirely, so the caller needs to write out the header
-		// manually.
-		//
-		// Sandstorm won't let us *not* write a header, so if the caller doesn't
-		// do this we just set the status to 500.
-
-		// Clear any headers already set; we're not supposed to be writing
-		// anything ourselves, so reset the state so that we only set headers
-		// read from the caller's manually generated response.
-		r.header = make(map[string][]string)
-		pipeReader, pipeWriter := io.Pipe()
-		r.body = pipeWriter
-		go func() {
-			reader := bufio.NewReader(pipeReader)
-			resp, err := http.ReadResponse(reader, r.req)
-			if err != nil {
-				r.writeHeader(500)
-				return
-			} else {
-				r.header = resp.Header
-				r.writeHeader(resp.StatusCode)
-			}
-			// writeHeader will have changed the value of r.body:
-			newBody := r.body
-			r.body = pipeWriter
-			io.Copy(newBody, resp.Body)
-			resp.Body.Close()
-		}()
-	}
-	conn := &iocommon.RWCConn{
-		ReadWriteCloser: iocommon.MergedRWC{
-			Reader: r.req.Body,
-			Writer: r,
-			Closer: iocommon.MultiCloser(r.body, r.req.Body),
-		},
-		Local: &iocommon.HardCodedAddr{
-			Net:  "capnp",
-			Addr: "app",
-		},
-		Remote: &iocommon.HardCodedAddr{
-			Net:  "capnp",
-			Addr: "client",
-		},
-	}
-	bufrw := &bufio.ReadWriter{
-		Reader: bufio.NewReader(conn),
-		Writer: bufio.NewWriter(conn),
-	}
-	return conn, bufrw, nil
-}
-
-func (r *responseWriter) Header() http.Header {
-	return r.header
-}
-
-// value for responesWriter.body where a body is legal, but the capnp schema
-// doesn't provide a way to do streaming. In this case we just buffer the
-// writes and transmit on close.
-//
-// Note that closeCallback needs to be set to a function that will supply the
-// apropriate field.
-type bufBody struct {
-	bytes.Buffer
-	closeCallback func()
-}
-
-func (b *bufBody) Close() error {
-	b.closeCallback()
-	return nil
-}
-
-// io.WriteCloser with both metods NoOps. For responseWriter.body where no body
-// is allowed.
-type noBody struct {
-}
-
-func (b noBody) Write(p []byte) (n int, err error) {
-	return len(p), nil
-}
-
-func (b noBody) Close() error {
-	return nil
-}
-
-// Set all the headers that are present and accepted by sandstorm. Silently
-// drop any headers sandstorm doesn't support.
-func (r *responseWriter) setSuccessHeaders() {
-	content := r.response.Content()
-	if encoding := r.header.Get("Content-Encoding"); encoding != "" {
-		content.SetEncoding(encoding)
-	}
-	if language := r.header.Get("Content-Language"); language != "" {
-		content.SetLanguage(language)
-	}
-	if mimeType := r.header.Get("Content-Type"); mimeType != "" {
-		content.SetMimeType(mimeType)
-	}
-	if disposition := r.header.Get("Content-Disposition"); disposition != "" {
-		typ, params, err := mime.ParseMediaType(disposition)
-		if err != nil {
-			if typ == "attachment" {
-				content.Disposition().SetDownload(params["filename"])
-			} else {
-				content.Disposition().SetNormal()
-			}
-		}
-	}
-}
-
-// Trivial wrapper that adds a no-op Close() method to an io.Reader. Used for
-// supplying buffers as request bodies.
-type readDummyCloser struct {
-	io.Reader
-}
-
-func (r readDummyCloser) Close() error {
-	return nil
-}
-
-func (r *responseWriter) WriteHeader(status int) {
-	if r.hijacked {
-		resp := &http.Response{
-			StatusCode: status,
-			Header:     r.header,
-		}
-		resp.Write(r)
-		return
-	} else {
-		r.writeHeader(status)
-	}
-}
-
-func (r *responseWriter) writeHeader(status int) {
-	r.status = status
-	if status != 101 && r.response == nil {
-		// This was a call to openWebSocket
-		// XXX: This is here to prevent a nil pointer dereference,
-		// but we ought to have a cleaner way of dealing with this.
-		//
-		// We signal the openWebSocket call that we're done here so it doesn't
-		// hang, then return. It will probably still do weird things though.
-		r.websocketProtoSet <- struct{}{}
-		return
-	}
-	switch status {
-	case 101:
-		// websocket.
-		if r.websocketResponse == nil {
-			// This wasn't a call to openWebSocket; send a 5xx error.
-			r.response.SetServerError()
-			r.body = noBody{}
-			return
-		}
-		// TODO: deal with multiple instances of the header
-		serverProtoSlice := strings.Split(r.header.Get("Sec-Websocket-Protocol"), ",")
-
-		serverProtoList, err := r.websocketResponse.NewProtocol(int32(len(serverProtoSlice)))
-		if err != nil {
-			// TODO: find some way of reporting the error.
-			return
-		}
-		for i := range serverProtoSlice {
-			serverProtoList.Set(i, strings.Trim(serverProtoSlice[i], " "))
-		}
-		r.websocketProtoSet <- struct{}{}
-	case 200, 201, 202:
-		r.response.SetContent()
-		// TODO: the subtraction is breaking an abstraction boundary just a bit.
-		// should be safe in this case, but let's think about the implications.
-		capnpStatus := capnp.WebSession_Response_SuccessCode(status - 200)
-		r.response.Content().SetStatusCode(capnpStatus)
-		// TODO: Figure out what we should be passing here; do we actually need to do
-		// anything? Handle_Server is just interface{}, so we're passing in 0, since it's
-		// handy.
-		r.response.Content().Body().SetStream(capnp_util.Handle_ServerToClient(0))
-		r.setSuccessHeaders()
-		r.body = util.ByteStreamWriteCloser{r.webSession.Ctx, r.ctx.ResponseStream()}
-	case 204, 205:
-		r.body = noBody{}
-		r.response.SetNoContent()
-		r.response.NoContent().SetShouldResetForm(status == 205)
-	case 301, 302, 303, 307:
-		// Redirects. Web-session.capnp talks about a 308, but I haven't found
-		// any info about its semantics. "net/http" doesn't deifine a constant
-		// for it, so we're just going to say to heck with it and not support
-		// it for now.
-		r.body = noBody{}
-		r.response.SetRedirect()
-		r.response.Redirect().SetLocation(r.header.Get("Location"))
-		switch status {
-		case 301:
-			r.response.Redirect().SetIsPermanent(true)
-		case 302, 303, 307:
-			r.response.Redirect().SetIsPermanent(false)
-		}
-		switch status {
-		case 302, 303:
-			r.response.Redirect().SetSwitchToGet(true)
-		default:
-			r.response.Redirect().SetSwitchToGet(false)
-		}
-	case 400, 403, 404, 405, 406, 409, 410, 413, 414, 415, 418:
-		r.response.SetClientError()
-		capnpStatus := capnp.WebSession_Response_ClientErrorCode(status - 400)
-		r.response.ClientError().SetStatusCode(capnpStatus)
-		buf := &bufBody{}
-		buf.closeCallback = func() {
-			r.response.ClientError().SetDescriptionHtml(buf.String())
-		}
-		r.body = buf
-	default:
-		r.response.SetServerError()
-		if status >= 500 && status < 600 {
-			// The handler actually returned a 5xx; let them set the body.
-			buf := &bufBody{}
-			buf.closeCallback = func() {
-				r.response.ServerError().SetDescriptionHtml(buf.String())
-			}
-			r.body = buf
-		} else {
-			// The client returned some status sandstorm doesn't support. In this
-			// case we just junk the body.
-			//
-			// TODO: Log this somewhere?
-			r.body = noBody{}
-		}
-	}
-}
-
-func (r *responseWriter) Write(p []byte) (int, error) {
-	if r.status == 0 && !r.hijacked {
-		r.WriteHeader(200)
-	}
-	return r.body.Write(p)
 }
 
 type HandlerWebSession struct {
@@ -311,12 +45,12 @@ type HandlerWebSession struct {
 }
 
 // make path an absolute path, by prepending a slash if it is not already
-// present.  ServeMux will give us a redirect otherwise, and sandstorm
+// present. http.ServeMux will give us a redirect otherwise, and sandstorm
 // will then give us the relative path again, resulting in an infinite
 // redirect loop.
 //
-// As far as I know sandstorm always leaves off the leading slash, but
-// I haven't found documentation actually saying so (yet).
+// As far as I(zenhack) know sandstorm always leaves off the leading slash,
+// but I haven't found documentation actually saying so (yet).
 func makeAbsolute(path string) string {
 	if strings.HasPrefix(path, "/") {
 		return path
@@ -355,22 +89,9 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 		Body:   body,
 	}
 
-	respond := responseWriter{
-		webSession: h,
-		ctx:        ctx,
-		header:     make(map[string][]string),
-		response:   wsResponse,
-		body:       noBody{},
-		req:        &request,
-	}
-
-	h.ServeHTTP(&respond, &request)
-	if respond.status == 0 {
-		(&respond).WriteHeader(200)
-	}
-	if !respond.hijacked {
-		respond.body.Close()
-	}
+	runHandler(h, &request, func(response *http.Response) {
+		buildCapnpResponse(h.Ctx, response, &ctx, wsResponse)
+	})
 	return nil
 }
 
@@ -397,7 +118,7 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 	if err != nil {
 		return err
 	}
-	body := readDummyCloser{bytes.NewBuffer(payload)}
+	body := ioutil.NopCloser(bytes.NewBuffer(payload))
 	headers := map[string][]string{
 		"Content-Type": {mimeType},
 	}
@@ -426,115 +147,8 @@ func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
-	path, err := p.Params.Path()
-	if err != nil {
-		return err
-	}
-	clientProtoList, err := p.Params.Protocol()
-	if err != nil {
-		return err
-	}
-
-	reqPipeReader, reqPipeWriter := io.Pipe()
-
-	reqBodyCapnpWriter := capnp.WebSession_WebSocketStream_ServerToClient(
-		WriteCloserWebSocketStream{reqPipeWriter},
-	)
-
-	p.Results.SetServerStream(reqBodyCapnpWriter)
-
-	clientProtoHeader := make([]string, clientProtoList.Len())
-	for i := range clientProtoHeader {
-		clientProtoHeader[i], err = clientProtoList.At(i)
-		if err != nil {
-			return nil
-		}
-	}
-
-	request := http.Request{
-		Method: "GET",
-		URL: &url.URL{
-			Path: makeAbsolute(path),
-		},
-		Header: map[string][]string{
-			"Upgrade":                {"websocket"},
-			"Connection":             {"Upgrade"},
-			"Sec-Websocket-Key":      {makeWebSocketKey()},
-			"Sec-Websocket-Protocol": clientProtoHeader,
-			"Sec-Websocket-Version":  {"13"},
-			// XXX: we should find something more sensible to put here:
-			"Origin": {"http://dummy.example.com"},
-		},
-		Body: reqPipeReader,
-	}
-
-	clientStream := p.Params.ClientStream()
-	capnpResponseBody := &WebSocketStreamWriteCloser{
-		WebSession_WebSocketStream: clientStream,
-		Ctx: h.Ctx,
-	}
-
-	doneChan := make(chan struct{}, 1)
-	hijackChan := make(chan struct{})
-	headingChan := make(chan *heading)
-	respPipeReader, respPipeWriter := io.Pipe()
-
-	respond := websocketResponseWriter{
-		hd: &heading{
-			header: make(map[string][]string),
-			status: 0,
-		},
-		hijack:      hijackChan,
-		headingChan: headingChan,
-		body:        respPipeWriter,
-		request:     &request,
-	}
-	go func() {
-		h.ServeHTTP(&respond, &request)
-		doneChan <- struct{}{}
-	}()
-	copyBody := func() {
-		defer respPipeReader.Close()
-		io.Copy(capnpResponseBody, respPipeReader)
-	}
-	select {
-	case <-hijackChan:
-		resp, err := http.ReadResponse(bufio.NewReader(respPipeReader), &request)
-		if err != nil {
-			return err
-		}
-		err = buildWebSocketHeading(&p, &heading{
-			status: resp.StatusCode,
-			header: resp.Header,
-		})
-		if err != nil {
-			return err
-		}
-		go copyBody()
-	case hd := <-headingChan:
-		err := buildWebSocketHeading(&p, hd)
-		if err != nil {
-			return err
-		}
-		go copyBody()
-	case <-doneChan:
-	}
-	return nil
-}
-
-// Generate a random value for the Sec-Websocket-Key header. Sandstorm doesn't
-// give this to us, so for existing server-side websocket libraries to work
-// we need to provide it ourselves.
-func makeWebSocketKey() string {
-	rawBytes := make([]byte, 32)
-	rand.Read(rawBytes)
-	buf := &bytes.Buffer{}
-	enc := base64.NewEncoder(base64.StdEncoding, buf)
-	enc.Write(rawBytes)
-	enc.Close()
-	return buf.String()
-}
+//// In websocket.go:
+// func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
 
 func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
 	return errors.NotImplemented
