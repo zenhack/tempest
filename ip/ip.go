@@ -3,12 +3,9 @@ package ip
 import (
 	"encoding/binary"
 	"golang.org/x/net/context"
-	"io"
 	"net"
 	capnp "zenhack.net/go/sandstorm/capnp/ip"
-	util_capnp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/internal/iocommon"
-	"zenhack.net/go/sandstorm/util"
 )
 
 type IpNetworkDialer struct {
@@ -57,33 +54,17 @@ func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
 				p.SetPortNum(uint16(portNum))
 				return nil
 			}).Port()
-		fromUpstream, toDownstream := io.Pipe()
-		toUpstream := util.ByteStreamWriteCloser{
-			Ctx: d.Ctx,
-			Obj: portPromise.Connect(d.Ctx,
-				func(p capnp.TcpPort_connect_Params) error {
-					downstream := util_capnp.ByteStream_ServerToClient(
-						&util.WriteCloserByteStream{toDownstream},
-					)
-					p.SetDownstream(downstream)
-					return nil
-				}).Upstream(),
-		}
-		return &iocommon.RWCConn{
-			ReadWriteCloser: iocommon.MergedRWC{
-				Reader: fromUpstream,
-				Writer: toUpstream,
-				Closer: iocommon.MultiCloser(fromUpstream, toUpstream),
-			},
-			Local: &iocommon.HardCodedAddr{
+		return connect(d.Ctx, portPromise,
+			&iocommon.HardCodedAddr{
 				Net:  network,
 				Addr: "localhost",
 			},
-			Remote: &iocommon.HardCodedAddr{
+			&iocommon.HardCodedAddr{
 				Net:  network,
 				Addr: addr,
 			},
-		}, nil
+		), nil
+
 	default:
 		panic("TODO")
 	}
