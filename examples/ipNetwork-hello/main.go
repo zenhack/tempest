@@ -102,7 +102,7 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 			return
 		}
 		capability, err := results.Cap()
-		dialer.IpNetwork = ip_capnp.IpNetwork{capnp.ToInterface(capability).Client()}
+		dialer.IpNetwork = ip_capnp.IpNetwork{Client: capnp.ToInterface(capability).Client()}
 	})
 
 	mux.HandleFunc("/sayhello", func(w http.ResponseWriter, req *http.Request) {
@@ -121,7 +121,7 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 		conn.Write([]byte(message))
 	})
 	client := ws_capnp.WebSession_ServerToClient(websession.FromHandler(v.Ctx, mux)).Client
-	p.Results.SetSession(grain_capnp.UiSession{client})
+	p.Results.SetSession(grain_capnp.UiSession{Client: client})
 	return nil
 }
 
