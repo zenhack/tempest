@@ -102,6 +102,9 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 			return
 		}
 		capability, err := results.Cap()
+		if checkErr(err) {
+			return
+		}
 		dialer.IpNetwork = ip_capnp.IpNetwork{Client: capnp.ToInterface(capability).Client()}
 	})
 
