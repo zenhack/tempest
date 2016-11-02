@@ -146,11 +146,5 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	// We don't need to do anything else in this goroutine; our uivew
-	// is registered with sandstorm. But, if we fall off the end of
-	// main the program will exit, so let's avoid that:
-	for {
-		time.Sleep(30 * time.Second)
-	}
+	<-ctx.Done()
 }
