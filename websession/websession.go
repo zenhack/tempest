@@ -81,13 +81,12 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	//accept, err := ctx.Accept()
 
 	request := http.Request{
-		Method: method,
-		URL: &url.URL{
-			Path: makeAbsolute(path),
-		},
-		Header: headers,
-		Body:   body,
+		Method:     method,
+		RequestURI: makeAbsolute(path),
+		Header:     headers,
+		Body:       body,
 	}
+	request.URL, err = url.ParseRequestURI(request.RequestURI)
 
 	runHandler(h, &request, func(response *http.Response) {
 		buildCapnpResponse(h.Ctx, response, &ctx, wsResponse)
