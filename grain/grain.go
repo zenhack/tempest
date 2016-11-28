@@ -42,3 +42,9 @@ func ConnectAPI(ctx context.Context, uiview capnp.UiView_Server) (capnp.Sandstor
 	client := rpc.NewConn(transport, rpc.MainInterface(uiviewClient.Client)).Bootstrap(ctx)
 	return capnp.SandstormApi{Client: client}, nil
 }
+
+// A HasSessionContext has a SessionContext associated with it, which may be retrieved by
+// calling GetSessionContext().
+type HasSessionContext interface {
+	GetSessionContext() capnp.SessionContext
+}
