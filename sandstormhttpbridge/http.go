@@ -1,6 +1,7 @@
 package sandstormhttpbridge
 
 import (
+	"bufio"
 	"golang.org/x/net/context"
 	"log"
 	"net"
@@ -85,17 +86,27 @@ func Dial(ctx context.Context) (capnp.SandstormHttpBridge, error) {
 	return capnp.SandstormHttpBridge{Client: client}, nil
 }
 
+// A http.Handler which wraps the ResponseWriter with something
+// implementing grain.HasSessionContext before calling the underlying
+// handler. If the original ResponseWriter implments http.Hijacker,
+// the wrapped ResponseWriter will as well.
 type proxiedHandler struct {
 	handler http.Handler
 	bridge  capnp.SandstormHttpBridge
 }
 
 func (h proxiedHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	h.handler.ServeHTTP(httpBridgeResponseWriter{
+	newW := httpBridgeResponseWriter{
 		ResponseWriter: w,
 		requestId:      req.Header.Get("X-Sandstorm-Session-Id"),
 		bridge:         h.bridge,
-	}, req)
+	}
+	if _, ok := w.(http.Hijacker); ok {
+		w = hijackBridgeResponseWriter{newW}
+	} else {
+		w = newW
+	}
+	h.handler.ServeHTTP(w, req)
 }
 
 // A responseWriter which gets the websesion context from sandstorm-http-bridge.
@@ -103,6 +114,16 @@ type httpBridgeResponseWriter struct {
 	http.ResponseWriter
 	requestId string
 	bridge    capnp.SandstormHttpBridge
+}
+
+// A wrapper around the above that exposes the underlying ResponseWriter's
+// Hijack() method.
+type hijackBridgeResponseWriter struct {
+	httpBridgeResponseWriter
+}
+
+func (w hijackBridgeResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return w.httpBridgeResponseWriter.ResponseWriter.(http.Hijacker).Hijack()
 }
 
 func (w httpBridgeResponseWriter) GetSessionContext() grain_capnp.SessionContext {
