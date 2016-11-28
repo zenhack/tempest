@@ -105,8 +105,8 @@ type httpBridgeResponseWriter struct {
 	bridge    capnp.SandstormHttpBridge
 }
 
-func (w httpBridgeResponseWriter) GetSessionContext(ctx context.Context) grain_capnp.SessionContext {
-	return w.bridge.GetSessionContext(ctx,
+func (w httpBridgeResponseWriter) GetSessionContext() grain_capnp.SessionContext {
+	return w.bridge.GetSessionContext(context.TODO(),
 		func(p capnp.SandstormHttpBridge_getSessionContext_Params) error {
 			p.SetId(w.requestId)
 			return nil
