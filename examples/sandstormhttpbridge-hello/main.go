@@ -10,9 +10,9 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("Hello, World!"))
 	})
-	bridge, err := sandstormhttpbridge.Dial(context.Background())
+
+	err := sandstormhttpbridge.ListenAndServe(context.Background(), nil, ":8000", nil)
 	if err != nil {
 		panic(err)
 	}
-	sandstormhttpbridge.ListenAndServe(bridge, ":8080", nil)
 }
