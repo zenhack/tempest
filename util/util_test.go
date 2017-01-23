@@ -20,9 +20,9 @@ func (w writeNoopCloser) Close() error {
 
 // compute the md5 sum of p both directly and by writing it through
 // the bytestream interface, returns true if the results are the same.
-func checkMd5(p []byte) bool {
-	// TODO: would be nice if we could use t.Logf in here, but we
-	// need to restructure the control flow a bit to get access to it.
+// We take a *testing.T for the logging facilites, but it is never
+// flagged as failing.
+func checkMd5(t *testing.T, p []byte) bool {
 	if p == nil {
 		// We don't want to deal with this
 		return true
@@ -32,7 +32,7 @@ func checkMd5(p []byte) bool {
 	directDigest := fmt.Sprintf("%x", hash.Sum([]byte{}))
 
 	hash.Reset()
-	fmt.Printf("Direct digest: %q\n", directDigest)
+	t.Logf("Direct digest: %q\n", directDigest)
 
 	bsServer := &WriteCloserByteStream{writeNoopCloser{hash}}
 	bsClient := ByteStreamWriteCloser{
@@ -41,6 +41,7 @@ func checkMd5(p []byte) bool {
 	}
 	n, err := bsClient.Write(p)
 	if err != nil || n != len(p) {
+		t.Logf("Error: %v", err)
 		return false
 	}
 	_, err = bsClient.Obj.Done(
@@ -49,17 +50,20 @@ func checkMd5(p []byte) bool {
 			return nil
 		}).Struct()
 	if err != nil {
+		t.Logf("Error: %v", err)
 		return false
 	}
 
 	rpcDigest := fmt.Sprintf("%x", hash.Sum([]byte{}))
-	fmt.Printf("RPC digest: %q\n", rpcDigest)
+	t.Logf("RPC digest: %q\n", rpcDigest)
 
 	return rpcDigest == directDigest
 }
 
 func TestMd5(t *testing.T) {
-	err := quick.Check(checkMd5, nil)
+	err := quick.Check(func(p []byte) bool {
+		return checkMd5(t, p)
+	}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
