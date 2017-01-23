@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"time"
 	"zenhack.net/go/sandstorm/grain"
 	"zenhack.net/go/sandstorm/websession"
 )
