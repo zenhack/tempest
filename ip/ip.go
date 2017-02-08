@@ -7,14 +7,21 @@ import (
 	"net"
 	capnp "zenhack.net/go/sandstorm/capnp/ip"
 	capnp_util "zenhack.net/go/sandstorm/capnp/util"
+	"zenhack.net/go/sandstorm/internal/errors"
 	"zenhack.net/go/sandstorm/util"
 )
 
+// A Dialer that wraps an ipNetwork capability.
 type IpNetworkDialer struct {
 	Ctx       context.Context
 	IpNetwork capnp.IpNetwork
 }
 
+// Dial the given address. currently only the "tcp", "tcp4", and "tcp6"
+// networks are supported. Udp will likely be supported in the future.
+// We do not currently distinguish between ipv4 and ipv6, so all of the
+// above networks are equivalent. This is unlikely to change, since the
+// sandstorm APIs don't give us what we would need to do that.
 func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
 	switch network {
 	case "tcp", "tcp4", "tcp6":
@@ -30,10 +37,11 @@ func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
 		return connect(d.Ctx, portPromise), nil
 
 	default:
-		panic("TODO")
+		return nil, errors.NotImplemented
 	}
 }
 
+// Translate the go-style address to an ipRemoteHost and a (numeric) port.
 func (d *IpNetworkDialer) getAddr(network, addr string) (capnp.IpRemoteHost, uint16, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
