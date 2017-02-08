@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"strings"
-	"zenhack.net/go/sandstorm/internal/iocommon"
 )
 
 type responseWriter struct {
@@ -49,26 +48,20 @@ func (w *responseWriter) WriteHeader(status int) {
 func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	w.hijacked = true
 	w.hijack <- struct{}{}
-	conn := &iocommon.RWCConn{
-		ReadWriteCloser: iocommon.MergedRWC{
-			Reader: w.request.Body,
-			Writer: w.body,
-			Closer: iocommon.MultiCloser(w.body, w.request.Body),
-		},
-		Local: &iocommon.HardCodedAddr{
-			Net:  "capnp",
-			Addr: "app",
-		},
-		Remote: &iocommon.HardCodedAddr{
-			Net:  "capnp",
-			Addr: "client",
-		},
-	}
+	clientConn, serverConn := net.Pipe()
+	go func() {
+		io.Copy(clientConn, w.request.Body)
+		w.request.Body.Close()
+	}()
+	go func() {
+		io.Copy(w.body, clientConn)
+		w.body.Close()
+	}()
 	bufrw := &bufio.ReadWriter{
-		Reader: bufio.NewReader(conn),
-		Writer: bufio.NewWriter(conn),
+		Reader: bufio.NewReader(serverConn),
+		Writer: bufio.NewWriter(serverConn),
 	}
-	return conn, bufrw, nil
+	return serverConn, bufrw, nil
 }
 
 // Run handler.ServeHTTP, and call buildResponse when the status and

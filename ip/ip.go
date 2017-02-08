@@ -3,9 +3,11 @@ package ip
 import (
 	"encoding/binary"
 	"golang.org/x/net/context"
+	"io"
 	"net"
 	capnp "zenhack.net/go/sandstorm/capnp/ip"
-	"zenhack.net/go/sandstorm/internal/iocommon"
+	capnp_util "zenhack.net/go/sandstorm/capnp/util"
+	"zenhack.net/go/sandstorm/util"
 )
 
 type IpNetworkDialer struct {
@@ -14,13 +16,32 @@ type IpNetworkDialer struct {
 }
 
 func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
+	switch network {
+	case "tcp", "tcp4", "tcp6":
+		hostPromise, portNum, err := d.getAddr(network, addr)
+		if err != nil {
+			return nil, err
+		}
+		portPromise := hostPromise.GetTcpPort(d.Ctx,
+			func(p capnp.IpRemoteHost_getTcpPort_Params) error {
+				p.SetPortNum(portNum)
+				return nil
+			}).Port()
+		return connect(d.Ctx, portPromise), nil
+
+	default:
+		panic("TODO")
+	}
+}
+
+func (d *IpNetworkDialer) getAddr(network, addr string) (capnp.IpRemoteHost, uint16, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
-		return nil, err
+		return capnp.IpRemoteHost{}, 0, err
 	}
 	portNum, err := net.LookupPort(network, port)
 	if err != nil {
-		return nil, err
+		return capnp.IpRemoteHost{}, 0, err
 	}
 	if portNum < 0 || portNum >= 1<<16 {
 		// Invaid port number. TODO: return an error.
@@ -47,25 +68,20 @@ func (d *IpNetworkDialer) Dial(network, addr string) (net.Conn, error) {
 				return nil
 			}).Host()
 	}
-	switch network {
-	case "tcp", "tcp4", "tcp6":
-		portPromise := hostPromise.GetTcpPort(d.Ctx,
-			func(p capnp.IpRemoteHost_getTcpPort_Params) error {
-				p.SetPortNum(uint16(portNum))
-				return nil
-			}).Port()
-		return connect(d.Ctx, portPromise,
-			&iocommon.HardCodedAddr{
-				Net:  network,
-				Addr: "localhost",
-			},
-			&iocommon.HardCodedAddr{
-				Net:  network,
-				Addr: addr,
-			},
-		), nil
+	return hostPromise, uint16(portNum), nil
+}
 
-	default:
-		panic("TODO")
-	}
+func connect(ctx context.Context, port capnp.TcpPort) net.Conn {
+	clientConn, serverConn := net.Pipe()
+	toServerBS := port.Connect(ctx, func(p capnp.TcpPort_connect_Params) error {
+		p.SetDownstream(capnp_util.ByteStream_ServerToClient(
+			&util.WriteCloserByteStream{WC: serverConn},
+		))
+		return nil
+	}).Upstream()
+	go io.Copy(
+		&util.ByteStreamWriteCloser{Ctx: ctx, Obj: toServerBS},
+		clientConn,
+	)
+	return clientConn
 }
