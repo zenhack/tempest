@@ -89,7 +89,7 @@ func connect(ctx context.Context, port capnp.TcpPort) net.Conn {
 	}).Upstream()
 	go io.Copy(
 		&util.ByteStreamWriteCloser{Ctx: ctx, Obj: toServerBS},
-		clientConn,
+		serverConn,
 	)
 	return clientConn
 }
