@@ -1,4 +1,5 @@
-[![][travis-img]][travis-ci]
+[![Travis CI][travis-img]][travis-ci]
+[![Go Report Card][goreport-img]][goreport]
 
 Go Wrappers for Sandstorm's API
 
@@ -45,3 +46,5 @@ files contain relevant copyright notices.
 
 [travis-ci]: https://travis-ci.org/zenhack/go.sandstorm
 [travis-img]: https://travis-ci.org/zenhack/go.sandstorm.svg?branch=master
+[goreport-img]: https://goreportcard.com/badge/github.com/zenhack/go.sandstorm
+[goreport]: https://goreportcard.com/report/github.com/zenhack/go.sandstorm
