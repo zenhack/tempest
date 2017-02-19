@@ -1,3 +1,5 @@
+[![][travis-img]][travis-ci]
+
 Go Wrappers for Sandstorm's API
 
 Right now this contains:
@@ -40,3 +42,6 @@ Apache 2.0, both my stuff and the bits pulled from upstream:
 
 A copy of the license is in the file `license.txt`. Individual source
 files contain relevant copyright notices.
+
+[travis-ci]: https://travis-ci.org/zenhack/go.sandstorm
+[travis-img]: https://travis-ci.org/zenhack/go.sandstorm.svg?branch=master
