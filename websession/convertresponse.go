@@ -152,7 +152,10 @@ func buildCapnpResponse(goCtx context.Context, goResponse *http.Response,
 // Set all the headers that are present and accepted by sandstorm as part of the
 // "content" variant of Response. Ignore any other headers.
 //
-// TODO: ETag
+// TODO:
+//
+// * ETag
+// * Content-Length (call expectSize on body)
 func setContentHeaders(wsResponse *capnp.WebSession_Response, goResponse *http.Response) {
 	content := wsResponse.Content()
 	hdr := goResponse.Header
