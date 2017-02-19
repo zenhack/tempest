@@ -59,6 +59,18 @@ func makeAbsolute(path string) string {
 	}
 }
 
+func contextPopulateRequest(wsCtx *capnp.WebSession_Context, req *http.Request) error {
+	// TODO:
+	//
+	// * cookies
+	// * accept
+	// * acceptEncoding
+	// * eTagPrecondition
+	//
+	// We don't need responseStream, as that's handled in buildResponse.
+	return nil
+}
+
 func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	headers map[string][]string,
 	body io.ReadCloser,
@@ -76,9 +88,6 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	if err != nil {
 		return err
 	}
-	// TODO: pull these out, and add them to request below:
-	//cookies, err := ctx.Cookies()
-	//accept, err := ctx.Accept()
 
 	request := http.Request{
 		Method:     method,
@@ -87,6 +96,9 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 		Body:       body,
 	}
 	request.URL, err = url.ParseRequestURI(request.RequestURI)
+	if err = contextPopulateRequest(&ctx, &request); err != nil {
+		return err
+	}
 
 	runHandler(h, &request, func(response *http.Response) {
 		buildCapnpResponse(h.Ctx, response, &ctx, wsResponse)
@@ -94,14 +106,30 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	return nil
 }
 
+// Arguments common to all request types
 type requestArgs interface {
-	// Arguments common to all request types
 	Path() (string, error)
 	Context() (capnp.WebSession_Context, error)
 }
 
+// Websession has both PutContent and PostContent, which are identical
+// structs. Merging these in capnp would require ABI breakage. For now,
+// we abstract away the differences with this interface.
+type pContent interface {
+	MimeType() (string, error)
+	Content() ([]byte, error)
+	Encoding() (string, error)
+}
+
 func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
-	return h.handleRequest("GET", args.Params, nil, nil, &args.Results)
+	ignoreBody := args.Params.IgnoreBody()
+	method := ""
+	if ignoreBody {
+		method = "HEAD"
+	} else {
+		method = "GET"
+	}
+	return h.handleRequest(method, args.Params, nil, nil, &args.Results)
 }
 
 func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
@@ -109,6 +137,13 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 	if err != nil {
 		return err
 	}
+	return h.handleP("POST", args.Params, content, &args.Results)
+}
+
+// Request handling logic common to Put, Post, and Patch.
+func (h HandlerWebSession) handleP(method string, args requestArgs, content pContent,
+	wsResponse *capnp.WebSession_Response) error {
+
 	payload, err := content.Content()
 	if err != nil {
 		return err
@@ -121,22 +156,34 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 	headers := map[string][]string{
 		"Content-Type": {mimeType},
 	}
-	return h.handleRequest("POST", args.Params, headers, body, &args.Results)
+	encoding, err := content.Encoding()
+	if err == nil {
+		headers["Content-Encoding"] = []string{encoding}
+	}
+	return h.handleRequest(method, args, headers, body, wsResponse)
+}
+
+func (h HandlerWebSession) Put(args capnp.WebSession_put) error {
+	content, err := args.Params.Content()
+	if err != nil {
+		return err
+	}
+	return h.handleP("PUT", args.Params, content, &args.Results)
+}
+
+func (h HandlerWebSession) Delete(args capnp.WebSession_delete) error {
+	return h.handleRequest("DELETE", args.Params, nil, nil, &args.Results)
+}
+
+func (h HandlerWebSession) Patch(args capnp.WebSession_patch) error {
+	content, err := args.Params.Content()
+	if err != nil {
+		return err
+	}
+	return h.handleP("PATCH", args.Params, content, &args.Results)
 }
 
 // Websession stubs:
-
-func (h HandlerWebSession) Put(capnp.WebSession_put) error {
-	return errors.NotImplemented
-}
-
-func (h HandlerWebSession) Delete(capnp.WebSession_delete) error {
-	return errors.NotImplemented
-}
-
-func (h HandlerWebSession) Patch(capnp.WebSession_patch) error {
-	return errors.NotImplemented
-}
 
 func (h HandlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
 	return errors.NotImplemented
@@ -148,6 +195,8 @@ func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 
 //// In websocket.go:
 // func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
+
+// WEBDAV stuff
 
 func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
 	return errors.NotImplemented

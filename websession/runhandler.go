@@ -102,16 +102,9 @@ func runHandler(handler http.Handler, req *http.Request, buildResponse func(*htt
 					"Internal Server Error",
 				)),
 			})
-		} else {
-			// ReadResponse does some auto-decoding of the body that we
-			// don't want, so instead we just read it straight from the
-			// pipe. XXX this is questionable at best; what if there is
-			// data that's been buffered? Doesn't currently seem to be
-			// triggered by the websocket package in golang.org/x,
-			// but...
-			resp.Body = respPipeReader
-			buildResponse(resp)
+			return
 		}
+		buildResponse(resp)
 	case resp := <-respond:
 		resp.Body = respPipeReader
 		buildResponse(resp)
