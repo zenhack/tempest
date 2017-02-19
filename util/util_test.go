@@ -20,7 +20,7 @@ func (w writeNoopCloser) Close() error {
 
 // compute the md5 sum of p both directly and by writing it through
 // the bytestream interface, returns true if the results are the same.
-// We take a *testing.T for the logging facilites, but it is never
+// We take a *testing.T for the logging facilities, but it is never
 // flagged as failing.
 func checkMd5(t *testing.T, p []byte) bool {
 	if p == nil {
