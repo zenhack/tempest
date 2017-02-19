@@ -217,6 +217,26 @@ func (c SandstormApi) BackgroundActivity(ctx context.Context, params func(Sandst
 	}
 	return SandstormApi_backgroundActivity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
+func (c SandstormApi) GetIdentityId(ctx context.Context, params func(SandstormApi_getIdentityId_Params) error, opts ...capnp.CallOption) SandstormApi_getIdentityId_Results_Promise {
+	if c.Client == nil {
+		return SandstormApi_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0xd2654fcf2a7002cb,
+			MethodID:      10,
+			InterfaceName: "grain.capnp:SandstormApi",
+			MethodName:    "getIdentityId",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_getIdentityId_Params{Struct: s}) }
+	}
+	return SandstormApi_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
 
 type SandstormApi_Server interface {
 	DeprecatedPublish(SandstormApi_deprecatedPublish) error
@@ -238,6 +258,8 @@ type SandstormApi_Server interface {
 	Save(SandstormApi_save) error
 
 	BackgroundActivity(SandstormApi_backgroundActivity) error
+
+	GetIdentityId(SandstormApi_getIdentityId) error
 }
 
 func SandstormApi_ServerToClient(s SandstormApi_Server) SandstormApi {
@@ -247,7 +269,7 @@ func SandstormApi_ServerToClient(s SandstormApi_Server) SandstormApi {
 
 func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 10)
+		methods = make([]server.Method, 0, 11)
 	}
 
 	methods = append(methods, server.Method{
@@ -390,6 +412,20 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xd2654fcf2a7002cb,
+			MethodID:      10,
+			InterfaceName: "grain.capnp:SandstormApi",
+			MethodName:    "getIdentityId",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := SandstormApi_getIdentityId{c, opts, SandstormApi_getIdentityId_Params{Struct: p}, SandstormApi_getIdentityId_Results{Struct: r}}
+			return s.GetIdentityId(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
+	})
+
 	return methods
 }
 
@@ -473,7 +509,18 @@ type SandstormApi_backgroundActivity struct {
 	Results SandstormApi_backgroundActivity_Results
 }
 
+// SandstormApi_getIdentityId holds the arguments for a server call to SandstormApi.getIdentityId.
+type SandstormApi_getIdentityId struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  SandstormApi_getIdentityId_Params
+	Results SandstormApi_getIdentityId_Results
+}
+
 type SandstormApi_deprecatedPublish_Params struct{ capnp.Struct }
+
+// SandstormApi_deprecatedPublish_Params_TypeID is the unique identifier for the type SandstormApi_deprecatedPublish_Params.
+const SandstormApi_deprecatedPublish_Params_TypeID = 0xa2873a59df6d885c
 
 func NewSandstormApi_deprecatedPublish_Params(s *capnp.Segment) (SandstormApi_deprecatedPublish_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -522,6 +569,9 @@ func (p SandstormApi_deprecatedPublish_Params_Promise) Struct() (SandstormApi_de
 
 type SandstormApi_deprecatedPublish_Results struct{ capnp.Struct }
 
+// SandstormApi_deprecatedPublish_Results_TypeID is the unique identifier for the type SandstormApi_deprecatedPublish_Results.
+const SandstormApi_deprecatedPublish_Results_TypeID = 0xb42ccfaaf45a3f7a
+
 func NewSandstormApi_deprecatedPublish_Results(s *capnp.Segment) (SandstormApi_deprecatedPublish_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormApi_deprecatedPublish_Results{st}, err
@@ -568,6 +618,9 @@ func (p SandstormApi_deprecatedPublish_Results_Promise) Struct() (SandstormApi_d
 }
 
 type SandstormApi_deprecatedRegisterAction_Params struct{ capnp.Struct }
+
+// SandstormApi_deprecatedRegisterAction_Params_TypeID is the unique identifier for the type SandstormApi_deprecatedRegisterAction_Params.
+const SandstormApi_deprecatedRegisterAction_Params_TypeID = 0xd271034eec62b43b
 
 func NewSandstormApi_deprecatedRegisterAction_Params(s *capnp.Segment) (SandstormApi_deprecatedRegisterAction_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -616,6 +669,9 @@ func (p SandstormApi_deprecatedRegisterAction_Params_Promise) Struct() (Sandstor
 
 type SandstormApi_deprecatedRegisterAction_Results struct{ capnp.Struct }
 
+// SandstormApi_deprecatedRegisterAction_Results_TypeID is the unique identifier for the type SandstormApi_deprecatedRegisterAction_Results.
+const SandstormApi_deprecatedRegisterAction_Results_TypeID = 0xb9d62f4beefefc29
+
 func NewSandstormApi_deprecatedRegisterAction_Results(s *capnp.Segment) (SandstormApi_deprecatedRegisterAction_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormApi_deprecatedRegisterAction_Results{st}, err
@@ -662,6 +718,9 @@ func (p SandstormApi_deprecatedRegisterAction_Results_Promise) Struct() (Sandsto
 }
 
 type SandstormApi_shareCap_Params struct{ capnp.Struct }
+
+// SandstormApi_shareCap_Params_TypeID is the unique identifier for the type SandstormApi_shareCap_Params.
+const SandstormApi_shareCap_Params_TypeID = 0xeb3c29aff080ec3e
 
 func NewSandstormApi_shareCap_Params(s *capnp.Segment) (SandstormApi_shareCap_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -764,6 +823,9 @@ func (p SandstormApi_shareCap_Params_Promise) DisplayInfo() powerbox.PowerboxDis
 
 type SandstormApi_shareCap_Results struct{ capnp.Struct }
 
+// SandstormApi_shareCap_Results_TypeID is the unique identifier for the type SandstormApi_shareCap_Results.
+const SandstormApi_shareCap_Results_TypeID = 0xb96fc5fb8137a705
+
 func NewSandstormApi_shareCap_Results(s *capnp.Segment) (SandstormApi_shareCap_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
 	return SandstormApi_shareCap_Results{st}, err
@@ -859,6 +921,9 @@ func (p SandstormApi_shareCap_Results_Promise) Link() SharingLink {
 
 type SandstormApi_shareView_Params struct{ capnp.Struct }
 
+// SandstormApi_shareView_Params_TypeID is the unique identifier for the type SandstormApi_shareView_Params.
+const SandstormApi_shareView_Params_TypeID = 0xb1e3f6ac609eb4d7
+
 func NewSandstormApi_shareView_Params(s *capnp.Segment) (SandstormApi_shareView_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormApi_shareView_Params{st}, err
@@ -928,6 +993,9 @@ func (p SandstormApi_shareView_Params_Promise) View() UiView {
 }
 
 type SandstormApi_shareView_Results struct{ capnp.Struct }
+
+// SandstormApi_shareView_Results_TypeID is the unique identifier for the type SandstormApi_shareView_Results.
+const SandstormApi_shareView_Results_TypeID = 0xe6abbf843a84f35d
 
 func NewSandstormApi_shareView_Results(s *capnp.Segment) (SandstormApi_shareView_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1022,6 +1090,9 @@ func (p SandstormApi_shareView_Results_Promise) Link() ViewSharingLink {
 
 type SandstormApi_restore_Params struct{ capnp.Struct }
 
+// SandstormApi_restore_Params_TypeID is the unique identifier for the type SandstormApi_restore_Params.
+const SandstormApi_restore_Params_TypeID = 0xd29e9db5843719f0
+
 func NewSandstormApi_restore_Params(s *capnp.Segment) (SandstormApi_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormApi_restore_Params{st}, err
@@ -1086,6 +1157,9 @@ func (p SandstormApi_restore_Params_Promise) Struct() (SandstormApi_restore_Para
 }
 
 type SandstormApi_restore_Results struct{ capnp.Struct }
+
+// SandstormApi_restore_Results_TypeID is the unique identifier for the type SandstormApi_restore_Results.
+const SandstormApi_restore_Results_TypeID = 0xecf1f14c4209c731
 
 func NewSandstormApi_restore_Results(s *capnp.Segment) (SandstormApi_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1159,6 +1233,9 @@ func (p SandstormApi_restore_Results_Promise) Cap() *capnp.Pipeline {
 
 type SandstormApi_drop_Params struct{ capnp.Struct }
 
+// SandstormApi_drop_Params_TypeID is the unique identifier for the type SandstormApi_drop_Params.
+const SandstormApi_drop_Params_TypeID = 0xadac227f85285c65
+
 func NewSandstormApi_drop_Params(s *capnp.Segment) (SandstormApi_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormApi_drop_Params{st}, err
@@ -1224,6 +1301,9 @@ func (p SandstormApi_drop_Params_Promise) Struct() (SandstormApi_drop_Params, er
 
 type SandstormApi_drop_Results struct{ capnp.Struct }
 
+// SandstormApi_drop_Results_TypeID is the unique identifier for the type SandstormApi_drop_Results.
+const SandstormApi_drop_Results_TypeID = 0xfbbc20367c72bc59
+
 func NewSandstormApi_drop_Results(s *capnp.Segment) (SandstormApi_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormApi_drop_Results{st}, err
@@ -1270,6 +1350,9 @@ func (p SandstormApi_drop_Results_Promise) Struct() (SandstormApi_drop_Results, 
 }
 
 type SandstormApi_deleted_Params struct{ capnp.Struct }
+
+// SandstormApi_deleted_Params_TypeID is the unique identifier for the type SandstormApi_deleted_Params.
+const SandstormApi_deleted_Params_TypeID = 0x87d94955ce3c61dd
 
 func NewSandstormApi_deleted_Params(s *capnp.Segment) (SandstormApi_deleted_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1343,6 +1426,9 @@ func (p SandstormApi_deleted_Params_Promise) Ref() *capnp.Pipeline {
 
 type SandstormApi_deleted_Results struct{ capnp.Struct }
 
+// SandstormApi_deleted_Results_TypeID is the unique identifier for the type SandstormApi_deleted_Results.
+const SandstormApi_deleted_Results_TypeID = 0xf8fe6b4e94a960f7
+
 func NewSandstormApi_deleted_Results(s *capnp.Segment) (SandstormApi_deleted_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormApi_deleted_Results{st}, err
@@ -1389,6 +1475,9 @@ func (p SandstormApi_deleted_Results_Promise) Struct() (SandstormApi_deleted_Res
 }
 
 type SandstormApi_stayAwake_Params struct{ capnp.Struct }
+
+// SandstormApi_stayAwake_Params_TypeID is the unique identifier for the type SandstormApi_stayAwake_Params.
+const SandstormApi_stayAwake_Params_TypeID = 0xb469e5d523b89e1b
 
 func NewSandstormApi_stayAwake_Params(s *capnp.Segment) (SandstormApi_stayAwake_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1489,6 +1578,9 @@ func (p SandstormApi_stayAwake_Params_Promise) Notification() activity.OngoingNo
 
 type SandstormApi_stayAwake_Results struct{ capnp.Struct }
 
+// SandstormApi_stayAwake_Results_TypeID is the unique identifier for the type SandstormApi_stayAwake_Results.
+const SandstormApi_stayAwake_Results_TypeID = 0x9fd40f92e1eb5d21
+
 func NewSandstormApi_stayAwake_Results(s *capnp.Segment) (SandstormApi_stayAwake_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormApi_stayAwake_Results{st}, err
@@ -1558,6 +1650,9 @@ func (p SandstormApi_stayAwake_Results_Promise) Handle() util.Handle {
 }
 
 type SandstormApi_save_Params struct{ capnp.Struct }
+
+// SandstormApi_save_Params_TypeID is the unique identifier for the type SandstormApi_save_Params.
+const SandstormApi_save_Params_TypeID = 0xd692a643ba8a1f58
 
 func NewSandstormApi_save_Params(s *capnp.Segment) (SandstormApi_save_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1660,6 +1755,9 @@ func (p SandstormApi_save_Params_Promise) Label() util.LocalizedText_Promise {
 
 type SandstormApi_save_Results struct{ capnp.Struct }
 
+// SandstormApi_save_Results_TypeID is the unique identifier for the type SandstormApi_save_Results.
+const SandstormApi_save_Results_TypeID = 0x9206caa8d3e3cc7e
+
 func NewSandstormApi_save_Results(s *capnp.Segment) (SandstormApi_save_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormApi_save_Results{st}, err
@@ -1724,6 +1822,9 @@ func (p SandstormApi_save_Results_Promise) Struct() (SandstormApi_save_Results, 
 }
 
 type SandstormApi_backgroundActivity_Params struct{ capnp.Struct }
+
+// SandstormApi_backgroundActivity_Params_TypeID is the unique identifier for the type SandstormApi_backgroundActivity_Params.
+const SandstormApi_backgroundActivity_Params_TypeID = 0xec8866df56873858
 
 func NewSandstormApi_backgroundActivity_Params(s *capnp.Segment) (SandstormApi_backgroundActivity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1801,6 +1902,9 @@ func (p SandstormApi_backgroundActivity_Params_Promise) Event() activity.Activit
 
 type SandstormApi_backgroundActivity_Results struct{ capnp.Struct }
 
+// SandstormApi_backgroundActivity_Results_TypeID is the unique identifier for the type SandstormApi_backgroundActivity_Results.
+const SandstormApi_backgroundActivity_Results_TypeID = 0xa535ac09456b2870
+
 func NewSandstormApi_backgroundActivity_Results(s *capnp.Segment) (SandstormApi_backgroundActivity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormApi_backgroundActivity_Results{st}, err
@@ -1846,243 +1950,145 @@ func (p SandstormApi_backgroundActivity_Results_Promise) Struct() (SandstormApi_
 	return SandstormApi_backgroundActivity_Results{s}, err
 }
 
-type StaticAsset struct{ Client capnp.Client }
+type SandstormApi_getIdentityId_Params struct{ capnp.Struct }
 
-func (c StaticAsset) GetUrl(ctx context.Context, params func(StaticAsset_getUrl_Params) error, opts ...capnp.CallOption) StaticAsset_getUrl_Results_Promise {
-	if c.Client == nil {
-		return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
-		Method: capnp.Method{
-			InterfaceID:   0xfabb5e621fa9a23f,
-			MethodID:      0,
-			InterfaceName: "grain.capnp:StaticAsset",
-			MethodName:    "getUrl",
-		},
-		Options: capnp.NewCallOptions(opts),
-	}
-	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(StaticAsset_getUrl_Params{Struct: s}) }
-	}
-	return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+// SandstormApi_getIdentityId_Params_TypeID is the unique identifier for the type SandstormApi_getIdentityId_Params.
+const SandstormApi_getIdentityId_Params_TypeID = 0xd76b6c6364d6bff5
+
+func NewSandstormApi_getIdentityId_Params(s *capnp.Segment) (SandstormApi_getIdentityId_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_getIdentityId_Params{st}, err
 }
 
-type StaticAsset_Server interface {
-	GetUrl(StaticAsset_getUrl) error
+func NewRootSandstormApi_getIdentityId_Params(s *capnp.Segment) (SandstormApi_getIdentityId_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_getIdentityId_Params{st}, err
 }
 
-func StaticAsset_ServerToClient(s StaticAsset_Server) StaticAsset {
-	c, _ := s.(server.Closer)
-	return StaticAsset{Client: server.New(StaticAsset_Methods(nil, s), c)}
-}
-
-func StaticAsset_Methods(methods []server.Method, s StaticAsset_Server) []server.Method {
-	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 1)
-	}
-
-	methods = append(methods, server.Method{
-		Method: capnp.Method{
-			InterfaceID:   0xfabb5e621fa9a23f,
-			MethodID:      0,
-			InterfaceName: "grain.capnp:StaticAsset",
-			MethodName:    "getUrl",
-		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := StaticAsset_getUrl{c, opts, StaticAsset_getUrl_Params{Struct: p}, StaticAsset_getUrl_Results{Struct: r}}
-			return s.GetUrl(call)
-		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 1},
-	})
-
-	return methods
-}
-
-// StaticAsset_getUrl holds the arguments for a server call to StaticAsset.getUrl.
-type StaticAsset_getUrl struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  StaticAsset_getUrl_Params
-	Results StaticAsset_getUrl_Results
-}
-
-type StaticAsset_Protocol uint16
-
-// Values of StaticAsset_Protocol.
-const (
-	StaticAsset_Protocol_https StaticAsset_Protocol = 0
-	StaticAsset_Protocol_http  StaticAsset_Protocol = 1
-)
-
-// String returns the enum's constant name.
-func (c StaticAsset_Protocol) String() string {
-	switch c {
-	case StaticAsset_Protocol_https:
-		return "https"
-	case StaticAsset_Protocol_http:
-		return "http"
-
-	default:
-		return ""
-	}
-}
-
-// StaticAsset_ProtocolFromString returns the enum value with a name,
-// or the zero value if there's no such value.
-func StaticAsset_ProtocolFromString(c string) StaticAsset_Protocol {
-	switch c {
-	case "https":
-		return StaticAsset_Protocol_https
-	case "http":
-		return StaticAsset_Protocol_http
-
-	default:
-		return 0
-	}
-}
-
-type StaticAsset_Protocol_List struct{ capnp.List }
-
-func NewStaticAsset_Protocol_List(s *capnp.Segment, sz int32) (StaticAsset_Protocol_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return StaticAsset_Protocol_List{l.List}, err
-}
-
-func (l StaticAsset_Protocol_List) At(i int) StaticAsset_Protocol {
-	ul := capnp.UInt16List{List: l.List}
-	return StaticAsset_Protocol(ul.At(i))
-}
-
-func (l StaticAsset_Protocol_List) Set(i int, v StaticAsset_Protocol) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type StaticAsset_getUrl_Params struct{ capnp.Struct }
-
-func NewStaticAsset_getUrl_Params(s *capnp.Segment) (StaticAsset_getUrl_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return StaticAsset_getUrl_Params{st}, err
-}
-
-func NewRootStaticAsset_getUrl_Params(s *capnp.Segment) (StaticAsset_getUrl_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return StaticAsset_getUrl_Params{st}, err
-}
-
-func ReadRootStaticAsset_getUrl_Params(msg *capnp.Message) (StaticAsset_getUrl_Params, error) {
+func ReadRootSandstormApi_getIdentityId_Params(msg *capnp.Message) (SandstormApi_getIdentityId_Params, error) {
 	root, err := msg.RootPtr()
-	return StaticAsset_getUrl_Params{root.Struct()}, err
+	return SandstormApi_getIdentityId_Params{root.Struct()}, err
 }
 
-func (s StaticAsset_getUrl_Params) String() string {
-	str, _ := text.Marshal(0xa75ecf12570b2966, s.Struct)
+func (s SandstormApi_getIdentityId_Params) String() string {
+	str, _ := text.Marshal(0xd76b6c6364d6bff5, s.Struct)
 	return str
 }
 
-// StaticAsset_getUrl_Params_List is a list of StaticAsset_getUrl_Params.
-type StaticAsset_getUrl_Params_List struct{ capnp.List }
-
-// NewStaticAsset_getUrl_Params creates a new list of StaticAsset_getUrl_Params.
-func NewStaticAsset_getUrl_Params_List(s *capnp.Segment, sz int32) (StaticAsset_getUrl_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return StaticAsset_getUrl_Params_List{l}, err
+func (s SandstormApi_getIdentityId_Params) Identity() identity.Identity {
+	p, _ := s.Struct.Ptr(0)
+	return identity.Identity{Client: p.Interface().Client()}
 }
 
-func (s StaticAsset_getUrl_Params_List) At(i int) StaticAsset_getUrl_Params {
-	return StaticAsset_getUrl_Params{s.List.Struct(i)}
-}
-
-func (s StaticAsset_getUrl_Params_List) Set(i int, v StaticAsset_getUrl_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-// StaticAsset_getUrl_Params_Promise is a wrapper for a StaticAsset_getUrl_Params promised by a client call.
-type StaticAsset_getUrl_Params_Promise struct{ *capnp.Pipeline }
-
-func (p StaticAsset_getUrl_Params_Promise) Struct() (StaticAsset_getUrl_Params, error) {
-	s, err := p.Pipeline.Struct()
-	return StaticAsset_getUrl_Params{s}, err
-}
-
-type StaticAsset_getUrl_Results struct{ capnp.Struct }
-
-func NewStaticAsset_getUrl_Results(s *capnp.Segment) (StaticAsset_getUrl_Results, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return StaticAsset_getUrl_Results{st}, err
-}
-
-func NewRootStaticAsset_getUrl_Results(s *capnp.Segment) (StaticAsset_getUrl_Results, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return StaticAsset_getUrl_Results{st}, err
-}
-
-func ReadRootStaticAsset_getUrl_Results(msg *capnp.Message) (StaticAsset_getUrl_Results, error) {
-	root, err := msg.RootPtr()
-	return StaticAsset_getUrl_Results{root.Struct()}, err
-}
-
-func (s StaticAsset_getUrl_Results) String() string {
-	str, _ := text.Marshal(0xa5c3aa75d6b648e2, s.Struct)
-	return str
-}
-
-func (s StaticAsset_getUrl_Results) Protocol() StaticAsset_Protocol {
-	return StaticAsset_Protocol(s.Struct.Uint16(0))
-}
-
-func (s StaticAsset_getUrl_Results) SetProtocol(v StaticAsset_Protocol) {
-	s.Struct.SetUint16(0, uint16(v))
-}
-
-func (s StaticAsset_getUrl_Results) HostPath() (string, error) {
-	p, err := s.Struct.Ptr(0)
-	return p.Text(), err
-}
-
-func (s StaticAsset_getUrl_Results) HasHostPath() bool {
+func (s SandstormApi_getIdentityId_Params) HasIdentity() bool {
 	p, err := s.Struct.Ptr(0)
 	return p.IsValid() || err != nil
 }
 
-func (s StaticAsset_getUrl_Results) HostPathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
-	return p.TextBytes(), err
-}
-
-func (s StaticAsset_getUrl_Results) SetHostPath(v string) error {
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
+func (s SandstormApi_getIdentityId_Params) SetIdentity(v identity.Identity) error {
+	if v.Client == nil {
+		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
-	return s.Struct.SetPtr(0, t.List.ToPtr())
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
+	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
-// StaticAsset_getUrl_Results_List is a list of StaticAsset_getUrl_Results.
-type StaticAsset_getUrl_Results_List struct{ capnp.List }
+// SandstormApi_getIdentityId_Params_List is a list of SandstormApi_getIdentityId_Params.
+type SandstormApi_getIdentityId_Params_List struct{ capnp.List }
 
-// NewStaticAsset_getUrl_Results creates a new list of StaticAsset_getUrl_Results.
-func NewStaticAsset_getUrl_Results_List(s *capnp.Segment, sz int32) (StaticAsset_getUrl_Results_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return StaticAsset_getUrl_Results_List{l}, err
+// NewSandstormApi_getIdentityId_Params creates a new list of SandstormApi_getIdentityId_Params.
+func NewSandstormApi_getIdentityId_Params_List(s *capnp.Segment, sz int32) (SandstormApi_getIdentityId_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormApi_getIdentityId_Params_List{l}, err
 }
 
-func (s StaticAsset_getUrl_Results_List) At(i int) StaticAsset_getUrl_Results {
-	return StaticAsset_getUrl_Results{s.List.Struct(i)}
+func (s SandstormApi_getIdentityId_Params_List) At(i int) SandstormApi_getIdentityId_Params {
+	return SandstormApi_getIdentityId_Params{s.List.Struct(i)}
 }
 
-func (s StaticAsset_getUrl_Results_List) Set(i int, v StaticAsset_getUrl_Results) error {
+func (s SandstormApi_getIdentityId_Params_List) Set(i int, v SandstormApi_getIdentityId_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// StaticAsset_getUrl_Results_Promise is a wrapper for a StaticAsset_getUrl_Results promised by a client call.
-type StaticAsset_getUrl_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_getIdentityId_Params_Promise is a wrapper for a SandstormApi_getIdentityId_Params promised by a client call.
+type SandstormApi_getIdentityId_Params_Promise struct{ *capnp.Pipeline }
 
-func (p StaticAsset_getUrl_Results_Promise) Struct() (StaticAsset_getUrl_Results, error) {
+func (p SandstormApi_getIdentityId_Params_Promise) Struct() (SandstormApi_getIdentityId_Params, error) {
 	s, err := p.Pipeline.Struct()
-	return StaticAsset_getUrl_Results{s}, err
+	return SandstormApi_getIdentityId_Params{s}, err
+}
+
+func (p SandstormApi_getIdentityId_Params_Promise) Identity() identity.Identity {
+	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+}
+
+type SandstormApi_getIdentityId_Results struct{ capnp.Struct }
+
+// SandstormApi_getIdentityId_Results_TypeID is the unique identifier for the type SandstormApi_getIdentityId_Results.
+const SandstormApi_getIdentityId_Results_TypeID = 0x8c4a70a31703d35c
+
+func NewSandstormApi_getIdentityId_Results(s *capnp.Segment) (SandstormApi_getIdentityId_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_getIdentityId_Results{st}, err
+}
+
+func NewRootSandstormApi_getIdentityId_Results(s *capnp.Segment) (SandstormApi_getIdentityId_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_getIdentityId_Results{st}, err
+}
+
+func ReadRootSandstormApi_getIdentityId_Results(msg *capnp.Message) (SandstormApi_getIdentityId_Results, error) {
+	root, err := msg.RootPtr()
+	return SandstormApi_getIdentityId_Results{root.Struct()}, err
+}
+
+func (s SandstormApi_getIdentityId_Results) String() string {
+	str, _ := text.Marshal(0x8c4a70a31703d35c, s.Struct)
+	return str
+}
+
+func (s SandstormApi_getIdentityId_Results) Id() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return []byte(p.Data()), err
+}
+
+func (s SandstormApi_getIdentityId_Results) HasId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s SandstormApi_getIdentityId_Results) SetId(v []byte) error {
+	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(0, d.List.ToPtr())
+}
+
+// SandstormApi_getIdentityId_Results_List is a list of SandstormApi_getIdentityId_Results.
+type SandstormApi_getIdentityId_Results_List struct{ capnp.List }
+
+// NewSandstormApi_getIdentityId_Results creates a new list of SandstormApi_getIdentityId_Results.
+func NewSandstormApi_getIdentityId_Results_List(s *capnp.Segment, sz int32) (SandstormApi_getIdentityId_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormApi_getIdentityId_Results_List{l}, err
+}
+
+func (s SandstormApi_getIdentityId_Results_List) At(i int) SandstormApi_getIdentityId_Results {
+	return SandstormApi_getIdentityId_Results{s.List.Struct(i)}
+}
+
+func (s SandstormApi_getIdentityId_Results_List) Set(i int, v SandstormApi_getIdentityId_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormApi_getIdentityId_Results_Promise is a wrapper for a SandstormApi_getIdentityId_Results promised by a client call.
+type SandstormApi_getIdentityId_Results_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormApi_getIdentityId_Results_Promise) Struct() (SandstormApi_getIdentityId_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormApi_getIdentityId_Results{s}, err
 }
 
 type UiView struct{ Client capnp.Client }
@@ -2281,6 +2287,9 @@ type UiView_newOfferSession struct {
 
 type UiView_ViewInfo struct{ capnp.Struct }
 
+// UiView_ViewInfo_TypeID is the unique identifier for the type UiView_ViewInfo.
+const UiView_ViewInfo_TypeID = 0xbc5e354741a8e665
+
 func NewUiView_ViewInfo(s *capnp.Segment) (UiView_ViewInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 8})
 	return UiView_ViewInfo{st}, err
@@ -2451,9 +2460,9 @@ func (s UiView_ViewInfo) NewAppTitle() (util.LocalizedText, error) {
 	return ss, err
 }
 
-func (s UiView_ViewInfo) GrainIcon() StaticAsset {
+func (s UiView_ViewInfo) GrainIcon() util.StaticAsset {
 	p, _ := s.Struct.Ptr(6)
-	return StaticAsset{Client: p.Interface().Client()}
+	return util.StaticAsset{Client: p.Interface().Client()}
 }
 
 func (s UiView_ViewInfo) HasGrainIcon() bool {
@@ -2461,7 +2470,7 @@ func (s UiView_ViewInfo) HasGrainIcon() bool {
 	return p.IsValid() || err != nil
 }
 
-func (s UiView_ViewInfo) SetGrainIcon(v StaticAsset) error {
+func (s UiView_ViewInfo) SetGrainIcon(v util.StaticAsset) error {
 	if v.Client == nil {
 		return s.Struct.SetPtr(6, capnp.Ptr{})
 	}
@@ -2522,11 +2531,14 @@ func (p UiView_ViewInfo_Promise) AppTitle() util.LocalizedText_Promise {
 	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
 }
 
-func (p UiView_ViewInfo_Promise) GrainIcon() StaticAsset {
-	return StaticAsset{Client: p.Pipeline.GetPipeline(6).Client()}
+func (p UiView_ViewInfo_Promise) GrainIcon() util.StaticAsset {
+	return util.StaticAsset{Client: p.Pipeline.GetPipeline(6).Client()}
 }
 
 type UiView_PowerboxTag struct{ capnp.Struct }
+
+// UiView_PowerboxTag_TypeID is the unique identifier for the type UiView_PowerboxTag.
+const UiView_PowerboxTag_TypeID = 0x982790c08b1958ec
 
 func NewUiView_PowerboxTag(s *capnp.Segment) (UiView_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2598,6 +2610,9 @@ func (p UiView_PowerboxTag_Promise) Struct() (UiView_PowerboxTag, error) {
 
 type UiView_getViewInfo_Params struct{ capnp.Struct }
 
+// UiView_getViewInfo_Params_TypeID is the unique identifier for the type UiView_getViewInfo_Params.
+const UiView_getViewInfo_Params_TypeID = 0x8f2ef49549d64e86
+
 func NewUiView_getViewInfo_Params(s *capnp.Segment) (UiView_getViewInfo_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return UiView_getViewInfo_Params{st}, err
@@ -2644,6 +2659,9 @@ func (p UiView_getViewInfo_Params_Promise) Struct() (UiView_getViewInfo_Params, 
 }
 
 type UiView_newSession_Params struct{ capnp.Struct }
+
+// UiView_newSession_Params_TypeID is the unique identifier for the type UiView_newSession_Params.
+const UiView_newSession_Params_TypeID = 0xf87a2c5a9f996828
 
 func NewUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
@@ -2795,6 +2813,9 @@ func (p UiView_newSession_Params_Promise) SessionParams() *capnp.Pipeline {
 
 type UiView_newSession_Results struct{ capnp.Struct }
 
+// UiView_newSession_Results_TypeID is the unique identifier for the type UiView_newSession_Results.
+const UiView_newSession_Results_TypeID = 0xa8f4ff97289294c7
+
 func NewUiView_newSession_Results(s *capnp.Segment) (UiView_newSession_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return UiView_newSession_Results{st}, err
@@ -2864,6 +2885,9 @@ func (p UiView_newSession_Results_Promise) Session() UiSession {
 }
 
 type UiView_newRequestSession_Params struct{ capnp.Struct }
+
+// UiView_newRequestSession_Params_TypeID is the unique identifier for the type UiView_newRequestSession_Params.
+const UiView_newRequestSession_Params_TypeID = 0xbc193a4219598bcb
 
 func NewUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequestSession_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
@@ -3040,6 +3064,9 @@ func (p UiView_newRequestSession_Params_Promise) SessionParams() *capnp.Pipeline
 
 type UiView_newRequestSession_Results struct{ capnp.Struct }
 
+// UiView_newRequestSession_Results_TypeID is the unique identifier for the type UiView_newRequestSession_Results.
+const UiView_newRequestSession_Results_TypeID = 0xa22a2d1cf9579778
+
 func NewUiView_newRequestSession_Results(s *capnp.Segment) (UiView_newRequestSession_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return UiView_newRequestSession_Results{st}, err
@@ -3109,6 +3136,9 @@ func (p UiView_newRequestSession_Results_Promise) Session() UiSession {
 }
 
 type UiView_newOfferSession_Params struct{ capnp.Struct }
+
+// UiView_newOfferSession_Params_TypeID is the unique identifier for the type UiView_newOfferSession_Params.
+const UiView_newOfferSession_Params_TypeID = 0xa53aedb3ce8994df
 
 func NewUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSession_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
@@ -3313,6 +3343,9 @@ func (p UiView_newOfferSession_Params_Promise) Descriptor() powerbox.PowerboxDes
 }
 
 type UiView_newOfferSession_Results struct{ capnp.Struct }
+
+// UiView_newOfferSession_Results_TypeID is the unique identifier for the type UiView_newOfferSession_Results.
+const UiView_newOfferSession_Results_TypeID = 0x9eb6708c01ec2079
 
 func NewUiView_newOfferSession_Results(s *capnp.Segment) (UiView_newOfferSession_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -3816,6 +3849,9 @@ type SessionContext_activity struct {
 
 type SessionContext_getSharedPermissions_Params struct{ capnp.Struct }
 
+// SessionContext_getSharedPermissions_Params_TypeID is the unique identifier for the type SessionContext_getSharedPermissions_Params.
+const SessionContext_getSharedPermissions_Params_TypeID = 0xe96859cf77da6e6b
+
 func NewSessionContext_getSharedPermissions_Params(s *capnp.Segment) (SessionContext_getSharedPermissions_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_getSharedPermissions_Params{st}, err
@@ -3862,6 +3898,9 @@ func (p SessionContext_getSharedPermissions_Params_Promise) Struct() (SessionCon
 }
 
 type SessionContext_getSharedPermissions_Results struct{ capnp.Struct }
+
+// SessionContext_getSharedPermissions_Results_TypeID is the unique identifier for the type SessionContext_getSharedPermissions_Results.
+const SessionContext_getSharedPermissions_Results_TypeID = 0xb70bd877cecb7b88
 
 func NewSessionContext_getSharedPermissions_Results(s *capnp.Segment) (SessionContext_getSharedPermissions_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -3932,6 +3971,9 @@ func (p SessionContext_getSharedPermissions_Results_Promise) Var() util.Assignab
 }
 
 type SessionContext_tieToUser_Params struct{ capnp.Struct }
+
+// SessionContext_tieToUser_Params_TypeID is the unique identifier for the type SessionContext_tieToUser_Params.
+const SessionContext_tieToUser_Params_TypeID = 0xc41e71e8d893086c
 
 func NewSessionContext_tieToUser_Params(s *capnp.Segment) (SessionContext_tieToUser_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -4059,6 +4101,9 @@ func (p SessionContext_tieToUser_Params_Promise) DisplayInfo() powerbox.Powerbox
 
 type SessionContext_tieToUser_Results struct{ capnp.Struct }
 
+// SessionContext_tieToUser_Results_TypeID is the unique identifier for the type SessionContext_tieToUser_Results.
+const SessionContext_tieToUser_Results_TypeID = 0xf6f911c4804ba7e5
+
 func NewSessionContext_tieToUser_Results(s *capnp.Segment) (SessionContext_tieToUser_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SessionContext_tieToUser_Results{st}, err
@@ -4130,6 +4175,9 @@ func (p SessionContext_tieToUser_Results_Promise) TiedCap() *capnp.Pipeline {
 }
 
 type SessionContext_offer_Params struct{ capnp.Struct }
+
+// SessionContext_offer_Params_TypeID is the unique identifier for the type SessionContext_offer_Params.
+const SessionContext_offer_Params_TypeID = 0xfb3d38da0c9eaee6
 
 func NewSessionContext_offer_Params(s *capnp.Segment) (SessionContext_offer_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
@@ -4286,6 +4334,9 @@ func (p SessionContext_offer_Params_Promise) DisplayInfo() powerbox.PowerboxDisp
 
 type SessionContext_offer_Results struct{ capnp.Struct }
 
+// SessionContext_offer_Results_TypeID is the unique identifier for the type SessionContext_offer_Results.
+const SessionContext_offer_Results_TypeID = 0xfe7135f15d39bd5b
+
 func NewSessionContext_offer_Results(s *capnp.Segment) (SessionContext_offer_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_offer_Results{st}, err
@@ -4332,6 +4383,9 @@ func (p SessionContext_offer_Results_Promise) Struct() (SessionContext_offer_Res
 }
 
 type SessionContext_request_Params struct{ capnp.Struct }
+
+// SessionContext_request_Params_TypeID is the unique identifier for the type SessionContext_request_Params.
+const SessionContext_request_Params_TypeID = 0xf63b8546288ee8e1
 
 func NewSessionContext_request_Params(s *capnp.Segment) (SessionContext_request_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -4429,6 +4483,9 @@ func (p SessionContext_request_Params_Promise) Struct() (SessionContext_request_
 }
 
 type SessionContext_request_Results struct{ capnp.Struct }
+
+// SessionContext_request_Results_TypeID is the unique identifier for the type SessionContext_request_Results.
+const SessionContext_request_Results_TypeID = 0xd42684f756e09afd
 
 func NewSessionContext_request_Results(s *capnp.Segment) (SessionContext_request_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -4530,6 +4587,9 @@ func (p SessionContext_request_Results_Promise) Descriptor() powerbox.PowerboxDe
 }
 
 type SessionContext_fulfillRequest_Params struct{ capnp.Struct }
+
+// SessionContext_fulfillRequest_Params_TypeID is the unique identifier for the type SessionContext_fulfillRequest_Params.
+const SessionContext_fulfillRequest_Params_TypeID = 0x9f6c36ef490dfd92
 
 func NewSessionContext_fulfillRequest_Params(s *capnp.Segment) (SessionContext_fulfillRequest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
@@ -4686,6 +4746,9 @@ func (p SessionContext_fulfillRequest_Params_Promise) DisplayInfo() powerbox.Pow
 
 type SessionContext_fulfillRequest_Results struct{ capnp.Struct }
 
+// SessionContext_fulfillRequest_Results_TypeID is the unique identifier for the type SessionContext_fulfillRequest_Results.
+const SessionContext_fulfillRequest_Results_TypeID = 0xb4ecd69ac97e2de8
+
 func NewSessionContext_fulfillRequest_Results(s *capnp.Segment) (SessionContext_fulfillRequest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_fulfillRequest_Results{st}, err
@@ -4732,6 +4795,9 @@ func (p SessionContext_fulfillRequest_Results_Promise) Struct() (SessionContext_
 }
 
 type SessionContext_close_Params struct{ capnp.Struct }
+
+// SessionContext_close_Params_TypeID is the unique identifier for the type SessionContext_close_Params.
+const SessionContext_close_Params_TypeID = 0xf12c60ebc67984d4
 
 func NewSessionContext_close_Params(s *capnp.Segment) (SessionContext_close_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -4780,6 +4846,9 @@ func (p SessionContext_close_Params_Promise) Struct() (SessionContext_close_Para
 
 type SessionContext_close_Results struct{ capnp.Struct }
 
+// SessionContext_close_Results_TypeID is the unique identifier for the type SessionContext_close_Results.
+const SessionContext_close_Results_TypeID = 0x9d4102fadb4f069c
+
 func NewSessionContext_close_Results(s *capnp.Segment) (SessionContext_close_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_close_Results{st}, err
@@ -4826,6 +4895,9 @@ func (p SessionContext_close_Results_Promise) Struct() (SessionContext_close_Res
 }
 
 type SessionContext_openView_Params struct{ capnp.Struct }
+
+// SessionContext_openView_Params_TypeID is the unique identifier for the type SessionContext_openView_Params.
+const SessionContext_openView_Params_TypeID = 0xf37f5e08534c68aa
 
 func NewSessionContext_openView_Params(s *capnp.Segment) (SessionContext_openView_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
@@ -4928,6 +5000,9 @@ func (p SessionContext_openView_Params_Promise) View() UiView {
 
 type SessionContext_openView_Results struct{ capnp.Struct }
 
+// SessionContext_openView_Results_TypeID is the unique identifier for the type SessionContext_openView_Results.
+const SessionContext_openView_Results_TypeID = 0xf9d6c8c6d207c123
+
 func NewSessionContext_openView_Results(s *capnp.Segment) (SessionContext_openView_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_openView_Results{st}, err
@@ -4974,6 +5049,9 @@ func (p SessionContext_openView_Results_Promise) Struct() (SessionContext_openVi
 }
 
 type SessionContext_claimRequest_Params struct{ capnp.Struct }
+
+// SessionContext_claimRequest_Params_TypeID is the unique identifier for the type SessionContext_claimRequest_Params.
+const SessionContext_claimRequest_Params_TypeID = 0xda13a4f2919ce2cf
 
 func NewSessionContext_claimRequest_Params(s *capnp.Segment) (SessionContext_claimRequest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -5070,6 +5148,9 @@ func (p SessionContext_claimRequest_Params_Promise) Struct() (SessionContext_cla
 
 type SessionContext_claimRequest_Results struct{ capnp.Struct }
 
+// SessionContext_claimRequest_Results_TypeID is the unique identifier for the type SessionContext_claimRequest_Results.
+const SessionContext_claimRequest_Results_TypeID = 0xefea656d4b56b756
+
 func NewSessionContext_claimRequest_Results(s *capnp.Segment) (SessionContext_claimRequest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SessionContext_claimRequest_Results{st}, err
@@ -5141,6 +5222,9 @@ func (p SessionContext_claimRequest_Results_Promise) Cap() *capnp.Pipeline {
 }
 
 type SessionContext_activity_Params struct{ capnp.Struct }
+
+// SessionContext_activity_Params_TypeID is the unique identifier for the type SessionContext_activity_Params.
+const SessionContext_activity_Params_TypeID = 0x85e320f14a5d23e0
 
 func NewSessionContext_activity_Params(s *capnp.Segment) (SessionContext_activity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -5218,6 +5302,9 @@ func (p SessionContext_activity_Params_Promise) Event() activity.ActivityEvent_P
 
 type SessionContext_activity_Results struct{ capnp.Struct }
 
+// SessionContext_activity_Results_TypeID is the unique identifier for the type SessionContext_activity_Results.
+const SessionContext_activity_Results_TypeID = 0xa93eadc9671ea08b
+
 func NewSessionContext_activity_Results(s *capnp.Segment) (SessionContext_activity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SessionContext_activity_Results{st}, err
@@ -5264,6 +5351,9 @@ func (p SessionContext_activity_Results_Promise) Struct() (SessionContext_activi
 }
 
 type PermissionDef struct{ capnp.Struct }
+
+// PermissionDef_TypeID is the unique identifier for the type PermissionDef.
+const PermissionDef_TypeID = 0xf144a5e58889dafb
 
 func NewPermissionDef(s *capnp.Segment) (PermissionDef, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
@@ -5396,6 +5486,9 @@ func (p PermissionDef_Promise) Description() util.LocalizedText_Promise {
 }
 
 type RoleDef struct{ capnp.Struct }
+
+// RoleDef_TypeID is the unique identifier for the type RoleDef.
+const RoleDef_TypeID = 0xcb3f7064eae4dc5a
 
 func NewRoleDef(s *capnp.Segment) (RoleDef, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
@@ -5630,6 +5723,9 @@ type SharingLink_getPetname struct {
 
 type SharingLink_getPetname_Params struct{ capnp.Struct }
 
+// SharingLink_getPetname_Params_TypeID is the unique identifier for the type SharingLink_getPetname_Params.
+const SharingLink_getPetname_Params_TypeID = 0xf0931856093654c1
+
 func NewSharingLink_getPetname_Params(s *capnp.Segment) (SharingLink_getPetname_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SharingLink_getPetname_Params{st}, err
@@ -5676,6 +5772,9 @@ func (p SharingLink_getPetname_Params_Promise) Struct() (SharingLink_getPetname_
 }
 
 type SharingLink_getPetname_Results struct{ capnp.Struct }
+
+// SharingLink_getPetname_Results_TypeID is the unique identifier for the type SharingLink_getPetname_Results.
+const SharingLink_getPetname_Results_TypeID = 0x9ad927034671cad1
 
 func NewSharingLink_getPetname_Results(s *capnp.Segment) (SharingLink_getPetname_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -5866,6 +5965,9 @@ func (w ViewSharingLink_RoleAssignment_Which) String() string {
 	return "ViewSharingLink_RoleAssignment_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
 }
 
+// ViewSharingLink_RoleAssignment_TypeID is the unique identifier for the type ViewSharingLink_RoleAssignment.
+const ViewSharingLink_RoleAssignment_TypeID = 0xf020f2be35e8e2b5
+
 func NewViewSharingLink_RoleAssignment(s *capnp.Segment) (ViewSharingLink_RoleAssignment, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
 	return ViewSharingLink_RoleAssignment{st}, err
@@ -5985,6 +6087,9 @@ func (p ViewSharingLink_RoleAssignment_Promise) Struct() (ViewSharingLink_RoleAs
 
 type ViewSharingLink_getRoleAssignment_Params struct{ capnp.Struct }
 
+// ViewSharingLink_getRoleAssignment_Params_TypeID is the unique identifier for the type ViewSharingLink_getRoleAssignment_Params.
+const ViewSharingLink_getRoleAssignment_Params_TypeID = 0xb8083dd65a24c770
+
 func NewViewSharingLink_getRoleAssignment_Params(s *capnp.Segment) (ViewSharingLink_getRoleAssignment_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return ViewSharingLink_getRoleAssignment_Params{st}, err
@@ -6031,6 +6136,9 @@ func (p ViewSharingLink_getRoleAssignment_Params_Promise) Struct() (ViewSharingL
 }
 
 type ViewSharingLink_getRoleAssignment_Results struct{ capnp.Struct }
+
+// ViewSharingLink_getRoleAssignment_Results_TypeID is the unique identifier for the type ViewSharingLink_getRoleAssignment_Results.
+const ViewSharingLink_getRoleAssignment_Results_TypeID = 0x9d159666de73f39d
 
 func NewViewSharingLink_getRoleAssignment_Results(s *capnp.Segment) (ViewSharingLink_getRoleAssignment_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -6101,6 +6209,9 @@ func (p ViewSharingLink_getRoleAssignment_Results_Promise) Var() util.Assignable
 }
 
 type GrainInfo struct{ capnp.Struct }
+
+// GrainInfo_TypeID is the unique identifier for the type GrainInfo.
+const GrainInfo_TypeID = 0xb5fcc0e153671d68
 
 func NewGrainInfo(s *capnp.Segment) (GrainInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
@@ -6261,6 +6372,9 @@ type AppPersistent_save struct {
 
 type AppPersistent_save_Params struct{ capnp.Struct }
 
+// AppPersistent_save_Params_TypeID is the unique identifier for the type AppPersistent_save_Params.
+const AppPersistent_save_Params_TypeID = 0xf0136e14d8019d3c
+
 func NewAppPersistent_save_Params(s *capnp.Segment) (AppPersistent_save_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return AppPersistent_save_Params{st}, err
@@ -6307,6 +6421,9 @@ func (p AppPersistent_save_Params_Promise) Struct() (AppPersistent_save_Params, 
 }
 
 type AppPersistent_save_Results struct{ capnp.Struct }
+
+// AppPersistent_save_Results_TypeID is the unique identifier for the type AppPersistent_save_Results.
+const AppPersistent_save_Results_TypeID = 0xba36a34b4eeb483f
 
 func NewAppPersistent_save_Results(s *capnp.Segment) (AppPersistent_save_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -6659,6 +6776,9 @@ type MainView_drop struct {
 
 type MainView_restore_Params struct{ capnp.Struct }
 
+// MainView_restore_Params_TypeID is the unique identifier for the type MainView_restore_Params.
+const MainView_restore_Params_TypeID = 0x9ad62de07dfc6419
+
 func NewMainView_restore_Params(s *capnp.Segment) (MainView_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return MainView_restore_Params{st}, err
@@ -6730,6 +6850,9 @@ func (p MainView_restore_Params_Promise) ObjectId() *capnp.Pipeline {
 }
 
 type MainView_restore_Results struct{ capnp.Struct }
+
+// MainView_restore_Results_TypeID is the unique identifier for the type MainView_restore_Results.
+const MainView_restore_Results_TypeID = 0x99efcebf23bbae35
 
 func NewMainView_restore_Results(s *capnp.Segment) (MainView_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -6803,6 +6926,9 @@ func (p MainView_restore_Results_Promise) Cap() *capnp.Pipeline {
 
 type MainView_drop_Params struct{ capnp.Struct }
 
+// MainView_drop_Params_TypeID is the unique identifier for the type MainView_drop_Params.
+const MainView_drop_Params_TypeID = 0x8c519e0dedc17d73
+
 func NewMainView_drop_Params(s *capnp.Segment) (MainView_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return MainView_drop_Params{st}, err
@@ -6875,6 +7001,9 @@ func (p MainView_drop_Params_Promise) ObjectId() *capnp.Pipeline {
 
 type MainView_drop_Results struct{ capnp.Struct }
 
+// MainView_drop_Results_TypeID is the unique identifier for the type MainView_drop_Results.
+const MainView_drop_Results_TypeID = 0x9210d9e69d14fa35
+
 func NewMainView_drop_Results(s *capnp.Segment) (MainView_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return MainView_drop_Results{st}, err
@@ -6920,317 +7049,314 @@ func (p MainView_drop_Results_Promise) Struct() (MainView_drop_Results, error) {
 	return MainView_drop_Results{s}, err
 }
 
-const schema_c8d91463cfc4fb4a = "x\xda\xdcz{xT\xd5\xb5\xf8\xd93\x99\x9c\xc4&" +
-	"\x9d\x1c\xce\xc40<\x1a\x88\xe9\x8f$\xe6\x01A|\xa4" +
-	"h^ \x06Q3y \xe4g\xfc8\x93\x9c$#" +
-	"\x93\x99\xc9\xcc\x84\x10*E\xbdp\x81\xaa\xb7B\xf1\x0a" +
-	"|\x06+\x95+p\xa5V\x0b\x0aV*Z\xad\x80\x0f" +
-	"\x0a\"\"\x96\x0a(\x14\x11* \xa2\x820w\xad}" +
-	"\xce>\xb3g2y\xf1\xdd\xaf\x7f\\\xbeo\xc8\xcc:" +
-	"k\xaf\xbd\xf6z\xef\xb5\xce\xe8\"k\x89i\x8c\xa58" +
-	"K\x10\xaa\xf7\x12K|\xe8\xd05\xf5\x93\xcf\x8c\xf8l" +
-	"\x81 \x0d%\x82`!\xa2 \x8c\xb5\xd8\xea\x88@d" +
-	"\xc9V,\x90\xd0Ae\xfc\xfb\xb5\x15\x1f/\x14$\xbb" +
-	"\x86\x90B\xc6\x8e\xb1\x95!\xc2M\x14!0\xf7\xf5S" +
-	"\xc9\xab\x1c\x8f\x08R\xaa\x810\xddv\x15\"(\x14\xe1" +
-	"\xdf\xef\xdcW\xf1\xf8\xb9\xfc_\x09\x92\x0c\x08q\xb8\xc3" +
-	"\x02[!\x11\xe2B\xbfx\xf7\xb3\x0f\xd6\xee\x8c_\xca" +
-	"\xd3n\xc5GDn\xa7K\xc7]\xb0u\x1d\xfb8e" +
-	"\xa9F;\x0e\x9f?n\x1b\x84KoJ\xda\x7fk{" +
-	"\xb9\xed\x09A\x1al\x0a\x15\xaf^\x97\xee\xbc\xf7\x8f\x17" +
-	"\x04\x81\x8c\x9d\x0b[\xcb\x8f\xda`\x17y\xb1\xed\x06\xa0" +
-	"qr\x9a\xfd\xe1m\x8f\x8dZ\x8e\xdb\x87\xfeq\xa4\xf9" +
-	"\xc4\xf2\x8f6~\xa2\x9d\x14\xf0.\xc8+(\xee\xe3\xda" +
-	"~\xbf\xfb\xe35\xaf\xbd\xff\xd5\x0a\xfe,\x9bl9\xc8" +
-	"\xd0V\x8a`o\xfca\xee\xa1\xbc}+y\x84\x83\xb6" +
-	"\x0cD8J\x11v\xefl\xbb\xd5<\xeac@\x18l" +
-	"\xc831\x95\xca35\x15\x11\xba\xbe\x0e\xfc\xbd\xe9?" +
-	"S\xbb\x04i\x98\x81\xa0\xa6\xbeH\xcfL\x11\x9e\x8c\xbf" +
-	"\xeb\x93\x0b\xa6\xd2.M#T\\o\xa5N\xc63w" +
-	"\x8e8I\x1e\xf1\xbd\xb4J\x13\xa4\xb6\xf4\x05\x8d\xf6V" +
-	"\xbat\xe9\xa5\xe4\x8a\xaf\xaew?\xa5+\x93\xae=\x98" +
-	"\xfaKD8\x95\xfa\x0f@\x18Y\xff\xe5\xe1\xa5\xd6\xbd" +
-	"O\xf1\x02?|5\xa5p\xeaj\xa40\xfb\x89\xbb\xbf" +
-	"\x1f\x96\x97\xb3\x9a\xdf\"9\xed>D\xb0\xa7!\xc2=" +
-	"\x8bZ?\x9d^\xb4p\xb5F\x81j\xe4\xa6\xb4\xa5\xc8" +
-	"\xdd\xf1\xcb\x7f\xbecV\xc1w\xcf\x08R\x9294\xf9" +
-	"\xe2\x9b\xbb\x1al\x1fo\x07\x8d\xc8\xd9iG\xe4qi" +
-	"i \xe4\xd2\xb4Ir\x1b~\x0b\xf9\xb2fNL|" +
-	"n\xdc\x1a\x8e\x8c\x92\xb6\x1a\xc9|\xbal\xf1\xfb\x7f8" +
-	"U\xb4Fp\xc8\x04Y\x88G\x16\x1ciU\xc0\xc2\xd8" +
-	"\xfa\xb4_\xc1\x9f\xd0\x91\xdb^\xda\xd7\xbe\xfe\xcf\x802" +
-	"\x98\x18\\~3\xb8\x08\xb9\xbc4\xb8\x030\x9a\xb2\x7f" +
-	"t\xf7\xa0]\xf7>\xabi\x81\xcaA\xb1S\x93{{" +
-	"\xd9\xd2\xac'B\xe7\xd6\xf2\x07\xac\xb0S\x93s\xd8\xf1" +
-	"\x80\x0f\xff\xe6'\xcd;6\xdc\xb2\x8e\x13\x7f\x9b\xdd\x89" +
-	"K\xd5{\xb2\x16\xcc\xcbxn\x03/\xbcz;5\x0e" +
-	"\x95.\xdd<i\xe1\xc1\x95\xb3/<\x1f%\x01!\x85" +
-	"\xc8\x0b\xec{\xe4%vjr\xf6I\xf2A\xbb\x08\x1f" +
-	"k\xe8\xa3\x8d\xabf<w\xfe\xb3\x17x\x8a\x1f\xda\xf1" +
-	"\xa8\xf2aJqNq\xdd\xb9\xf5\xbbr7rb\"" +
-	"CV\"3CWm\xbe\xe6\xc3\xa3.\xfd\x89\xc5\x84" +
-	"\x8f\xcehK/\xd9Q\x04\xc7\xf3~\xb1c\xe5\xbe\x93" +
-	"\x1b\xb9s(C\xa8\xa2Z\x867W\x1f\xde\xf6\xc3&" +
-	"\xc1\x91DH\x98O\xa0\x01\xec9\x86\xbc(O\x1f\x82" +
-	"\xdfj\x87<\x0fd\x16\xfd\xfc\x9d\xf7;\xf6\xff\xe8e" +
-	">>\x9c\x19\xf2\x06\xeeC\x86\"\x8b\xbe\xb73\xeb\xf6" +
-	"\xdd\x9c\xb0Y\xb3gm\x9f\xa1\xebq\x1f\xcb\xb37<" +
-	"x\xf1-\xef\x16\x9eE\xc7P\xcab\xfdPd1\xfb" +
-	"\x87\xcb\xff\xbc\xbd`\xdf\x16\xeet[\x87\xee\xc1\xa5\xc5" +
-	"\xb7}y\xe7\xed\xbf\xbd\xfe\x15A\x1ab,}a(" +
-	"U\xf0\x16\xba\xf4\x9d\x87\xa7\xdb\xcb\x8a\xec\xaf2+\xb1" +
-	"\xe0\xbe\xf6aN\xb4\x92\x9f\x0e\xbb\x1b\xadD=\xb6\xb6" +
-	"t\xd2\xb8{_\x8d\xf2\xfb\x04<\xdb\x92\xe1G\xe4\xae" +
-	"\xe1\xb8f\xc5\xf0\xb7\x11\xf9\xfa\xaf\x1b\xea\x86\x97\xdc\xf2" +
-	"Z7\xe3=\x98~@\xfe\"\x1d1\x8f\xa6O2\xc9" +
-	"\xae\x91\xf05\xf4\xc1\xe4\x15\xbf\xdf1\xa2v[7l" +
-	"\xc7\xc87\xe4\xe9#\xa9\xf4FN\x92\x1f\xa4\xc8?l" +
-	"?\x92\xf3\xd0\x17\x1do\xc4\xb0\x0a\xd7\xc8\xf5r\x1bE" +
-	"o\x1d\xb9PN\xceH\x93S3\xac!w\xc2\xaf\xf7" +
-	"\x1fo\xfb\xc9\x9b\xba\xc8\xcd\xd4\x073\x9c\xd4\x073P" +
-	"'u\x7f\xfb\xfcD\xa3\xaf\xf8\x9dh\x05\xa2\xf0\xe5\xf7" +
-	"2V\xcb\x1ff\xe0\x9a\xdd\x19T\x0e\xef\x98|9\xbb" +
-	"\xeeR\xf7\xc4\xd8\xff\xe6\xcc\x9drE&\xe2N\xcc\\" +
-	"h\x92\x1f\x1d%\xc2\xc7\x1a\xfa\xd9F\xe7\xc9;\xcdm" +
-	"{8\xbd,\x18\xb5\x13\xf5r\xda~\xc3\xfcM]\xab" +
-	"\xf6\xf0\x06\xdb9\x8a&\x83\x07G\xa15\\Zyh" +
-	"\xea\xb7\xf3\xff\xdf^\x9dw4\xa9\xb1O\x8f\xa2\x01f" +
-	"\xc3(T\xdc\xb4\xf4_\xbeR\xfe_K\xf7\xf1F\x91" +
-	"\x9cE\x9d(5\x0b\x11v\x1dyr\xc9\xd9g\xe4\x03" +
-	"<\x85\xb6\xac9\x880\x97\"\x18\xaa\x8c\x16\xfe7Y" +
-	"+\xe5KY\xa3\xd0\x10\xb2E\"\xbf\x97\x8d\xd2\xaf\xff" +
-	"z~\xd1\xfc\xd7\xfe\xfb\x18\xbf\xdf\xa6l\xca\xd0\xeb\xd9" +
-	"Hn\xa6\xe7@\xc7\xae\xe9-_p~22\xe7\x15" +
-	"<\xec-'\x1f8\xfd|\xf6\xf8/\xf9\xa5R\xced" +
-	"\\:<\x87\x9e\xe5\xc6\x85S?mZt\x92\x97\xc6" +
-	"\xdc\x9c\x95\x88\xf0h\x0eJc\xcc\xdb\x89eS\xce\x9c" +
-	"\x89@\xd8\xa0Q\xd8B\x11\xa6\xbe<\xf5\xf6V\xf5\xc4" +
-	"W\xbcw}\x9c\xf3\x10M'\x14a|\x17\xd9o\xf3" +
-	"\xc8\xa75G\xa0\xaa\xb0\\K\x03\xd9\xa6#\xc7\xc7\xfd" +
-	"\xe9\xec\x88\xd3\x82c\x18\x18\x81\x11|'\x9aD3\x10" +
-	"9\x95S\x07\x0ez-\xd2\xbb\x94\x93\x8ef\xf0z\xcd" +
-	"\xf5\x89S\x07\xff\xfa4\x17\x12o\xce\xadBJ{\xe7" +
-	"w\xfe\xe5\xcb\x19\xb9g8\x09d\xe7\x96\xe1\x93\x8b\x07" +
-	"\x16/:\xbaf\xc2\x99hCC\x93\x94\xa5\xdc=\xf2" +
-	"\xf0\\\xfcf\xcf\xc5\xdc\xb2\xbeeJu\xc2\xbd\xf3\xbe" +
-	"\x16\x1cC\x89\xa1\xb9or\xa9\xa8I\x1e\xda\xad\xf7\xea" +
-	"M\xd3\xfeYZx\xbe\x9b\xe6\xba\xf2^\x94\xd7\xe4!" +
-	"\xa9\xa7\xf3D\xfc\x80\xe2\x0e\x1f\xff\x8f\xac[\x17\xfc\xec" +
-	"<o\x07\x8b\xf3h\xf4x<\x0f\xa5\x7f\xf4\xd9\xdb\x1f" +
-	"xS\xfa\xfe</;{>MU?\xcdG\xd9e" +
-	"\xb5\xacx\xaa.w\xcew,F\xd0\x93M\xccG[" +
-	"\x1b{G>\x15\xca\xb73\xd6-\xbbs\xe6\xe5\xef8" +
-	"Kw\x15\xd0\\{\xcd\xeb\xe2\x9e\xbfl\xdf\xf7='" +
-	"\x94\xda\x02\x9a\x06\x8cb#\xfa\x14\xa5\x05o\xc8\x15\x05" +
-	"\x98\xe7j\x0b&\xc9s\x0b\xf0\x14\xc7~\xb7*\xe9\xc0" +
-	"\x8d7_\xe43\xb2Z@\x1d\xa6\xb5\x00\xa56\xfdU" +
-	"\xff\xfd\xd7\x8fx\xf5\"\x9f\x08GS\x05\xff\xff\xad7" +
-	"\xd5\x9f\x19\xd7v\x99\xe3\xa0b4\xf0\x16\x12\x8e\x87\x9a" +
-	"\xfd\x8a\xcb\x93\xdf\xa0\xc4\xf9<\xbe\xa2j5\x10py" +
-	"=\xe5^OP\x9d\x1d\xccW\x1a\x82\xaeY\xae`g" +
-	"f\xa5\xe2W\xcc\xad\x01G\x9c9\x0e\xd6\x03\x0d)\xb9" +
-	"P\x10\x1c\x09f\xe2\xb0\x99H\xba:K\xf5\x04IJ" +
-	"\xe8v\xf7#\xebN\xbc\xb4\xedY8\x02I\x01\x8e\"" +
-	"i+\x9e\xc6@\xd0\xebo-\xf5\xb9\xf2\x1bU\xb7\x1a" +
-	"T\x1b)\xe1\xd6\x80\xc0\x13\xce\x08\x13\x16\xfdj\x13\x19" +
-	"D\xb8\xc0\x03\x94\x07q\x84\xcdH\xf8\x0e\xf8>\xd5\xa5" +
-	"v\xe47\xfa\xbd>F1\x82\xe4d\xf8\x99\x04$\x07" +
-	"\x9b\xc0r\x9c\xf7\xa9\x0d\xc1\x8aFJ\x0aH\x1b15" +
-	"\x16\xe9Z\x17%\xdc\xac\x06\xf1o\x85\xa7\xc9\x9bY\x99" +
-	"N7\x88\xc4\x8b8[@\x99\xa5fV\xa9\xe9\x81v" +
-	"w\xb0G\x91\x05\xbd3U\x0fI\x16L\xf0\xe9\xf5<" +
-	"U*\xd2!\xd1\x1b\x06\x95\xa0\xab\xa14\x10P\x83\xf9" +
-	"\x95~o\xd0\xdb\xe0u\x0bB%!\x8e\x04b\x82\xbd" +
-	"\xa4B\xd4\x81\x94\x98#\x08\xe9-\xc1\xa0/`\xc5\xff" +
-	"\x0d\x1a&\xeep\x95\xde\x0e\xd5_\xec\xf4\xce\xaeQ\x9a" +
-	"\x91@O\x0c\xbb\x82n\x95$\x01\xc3I=2\xecW" +
-	"Q\x08x\xf8\x805\xfa\xf0\xbcZ\x1b\x14\x1f\x19\x14g" +
-	"\x06\x0e\x07\xf5I\x0b\xf4)*\x91\xa6w%\xea\xd4L" +
-	"\xb0E\xf1\xbb<\xcdS\\\x9e\x99\xa8\xd3J5\xe8Q" +
-	"ZUM\xc4\xe6Hvstv'\x98\x88\x15\x91\x88" +
-	"\x14Z\xb1$c\xf9\xc6\xda\xb3'\x80t\x09\x91H\xba" +
-	"#\x0e\xf6\xe7\x80\x12Is\xc4\x11\xf8Wi\x06\xf3\x0f" +
-	"U\x1c\xf9\xf9\x0d\xfe\x97\xeb\x1f\xa6\x8a\xe08\xb1 '" +
-	"x\xc4(n\xaa\xbcn\x15\x14\xeaj\xf6\xb4\x827\xc5" +
-	"4\xa0\x8c0S\xe2,\xc5?p\x9e\x8cH\x1f\xc5S" +
-	",\xe7op{\x03\xbal\x82\xe0O\x91\xb8\xba\xedx" +
-	"\xd4\x8e\xbb\x9a\x9aT\xbf\xbe4\xa6$\xcb\xc2\x8a\x9f\x17" +
-	"\xd0\xf0\x80q#\x80\xc7\x92N\x14'M\xed\xee&\x97" +
-	"\xdb]\xa5\xb6\xb5\x83Q\x84=<\xc5\xd8DA\xc9\xdc" +
-	"\x03\x9b\xb4\x98@\x0a\xc4\x86AZRW\x03\xb0\x05\x80" +
-	"\xf3\x01h2\xd9\xa8c<X\x07\xc0\x07\x00\xf8\x08\x00" +
-	"\xcdf\x1b\x81\x14'-v\x02p\x11\x00\x97u3N" +
-	"?l\xea\xf2\xab\x8d\xa4R\xf5\xb7\xba\x80-\xd1\xeb\x09" +
-	"\x90\x1f\x0bT\xa0\x04\xbc\x01\xbe\x86\x1a\xd5@\x83\xdf\xe5" +
-	"\x0b\x0af\xaf\x1f\xa4<m\xd8\xdb\xaf\xfd\xd6\xba\xeb\x14" +
-	"\x0b\x83\x8d\xae\x80\xcf\xadtV\x08\"\x04\x10x~\xf2" +
-	"\xda\xcf\xfe\x94\xb8\xbazM\xdfa2\x10T:K;" +
-	"\x94\x99\xb1m\xb4(,\xd9\xe2\x16X\xe6F+=T" +
-	"6c\xc6s\x99\xe7\x96\xc7TqXm\xba09\xc5" +
-	"u\xf3\xd8+Q\\d\x8c\xf7\xf9\xd5\x06\x05\xc2|e" +
-	"\xbb\xd3\xed\x0a\xb4h\x9a\xe3B\x99)\xda\x15D\xf0\x05" +
-	"\xb4\xd7\xb0\xa1JdN\x88y\x86P\xac\xf9\x060i" +
-	"\xc1\x8b\x9f~] \xec\x1e,IK\x05\x93\x94,\x86" +
-	"\x987\x11\xe6N$XB(]\xa3\xdc\xe6\x0c\xba;" +
-	"\xe7N\xa5af\xb3\xdf\xdb\xeei,e\x19\x10\xe5/" +
-	"\x82\x80\xfa\xe5\x06\xfa9\x1d\xc3\x0can\xc2\x98\xb5\x11" +
-	"\x84\xb9\x8d3\xd0\xad(\xe1\xcd\x00|\xd3D\x88n\x9f" +
-	"\xaf\xa3)n\x03\xd8\xbbh\x9f&\xcd>w\xf8\x01\xb8" +
-	"\x1d\x80{\x01\x18\x07F\x0bd\xa5\xdd\x18\x9d\xdf\x05\xe0" +
-	"~\x00Z\xe2l\x04d\"}\x88\xe6\xbd\x17\x80\x87\x00" +
-	"\x18o\xb1\x91x\x00\x1eD\xcc\xfd\x00\xfc\x1c\x82C{" +
-	"@\xf5c\"\xc3\x00\x99\x12\xfa@\xaa\xff\xc3W\xbb\xb7" +
-	",\xd3Mq^\x83\xe6r\xa0g\xe3\x1a\xa3\xebY\xb7" +
-	"\x80\x1aA\xec\xf4\xa9$\x11,?1\x0c\xad\x14\xb4\xac" +
-	"\x08.cB\xb7I\xf7\xa2887\xea\xddC\xd2\x83" +
-	"\x8a\xb3\xa21v6\xe43\x1d\xe8\xb5\xd6\xef\xce\xac*" +
-	"\xd6\x82\x12X'\x93o6\xca7\x0b\x8ex\x1d\x88R" +
-	"\x17\xef\x18\x84\x8d\x06\xd8x8\xb6\xcfH\x92\x02\xb1\x86" +
-	"[>\xb0\xbf\x15vl\xf1\x06\x82\x95J\xb0\x05\x9f\xc6" +
-	"Lq1\xb8\x88Y\x08\x84\x0d\"\xecY\xdd\xe3\xf8\xc0" +
-	"<\xab\xd7\xca\xac\x9b]v\xafG\xf4\xb2\xc8\xeaWZ" +
-	"\x07X\x8eP\xff,\xf5\xf9 \xf6\x05\\\x81 \xfa\x91" +
-	"V!\xa0\xfb\xb1\xfb\x04a7lI\x82\xa4Y\x9aD" +
-	"J\x87\x11)O\xb4b\x19\xc42\x92\xd1\xce\xa0\x8a\x89" +
-	"\x05,!@\xb94\x0e\x9c\xc3\x19\x82\x1d\xef\xc2\xb4." +
-	"\x88\x90\xd8{\x8b\x8e\x105T\x94\xb7\xe1p1\x128" +
-	"\x9c\xce:\x0bp@\xc0\xc6u\xef\x0aB\x17\x8b\xbf\xfd" +
-	"\x0a\xd6\x8c\x1d\xce>\x9da\xfb4\xfc\x7f\xcc}\x9c\x81" +
-	"F'\x89\x7f\xfbvo\xd9\xce\xb3[>`I\xc2\xe3" +
-	"\x0d\xba\x9a\\\x0d\x8a`\x0dj\xe6\xf2^\xc9\xe2\xcd\x9f" +
-	"\x0c_p\xf9\x0a2h\xb7\x9a\x92\xe0\x9aI\xf0#\xdd" +
-	"\x83\xb1\x01\x95\x9cd\xf0>\x11\x0d\xa5\x04\xd8\x9c\x12\xf6" +
-	"\xad\x0a\x8c3\xb7\x01\xac\x06s+\xd1b\x97\x03\x11\xa7" +
-	"\x00p\x1aX\x94\xe2\xf3\x81K3g\x82_S\xd1\x88" +
-	"\xc0\xff=$\x01\x80\x09BO%e|\x0c\xfe\xc1\xe5" +
-	"0E\x80:\xf4,\x0cI\xd8(MbUH5F" +
-	"\x85\x94Y\xb6oF\xf5\xf9\xb3\x0f\xf4\xabB\xe2\xf2\xfa" +
-	"\x15\x94l\xba\x8f\xf5e\xb1\xe5J\xb8\xaa\xe7M\xa4*" +
-	"\x96\x89\xa0\x19\xe7\x02\xf0F\xe0\x9a\xaen,W\x04\xc2" +
-	"U(V70\x03\xe7\x0cg\xb6Hs\x88\xef\xc5\xb8" +
-	"\xab\xd4ftk?f9V\xbdu\xbbj\xf0\xfe\x1f" +
-	"\xd4/7\xbd\x07\xe00\xf7\x85\x1c\xf7\xd1\x95\xba\xe1\xfe" +
-	"Z\xa5\x9e\xeeV\x9c\xaa;\xaanN\xe9w\x01\xc3\xae" +
-	"\x09\x83\x0d\x8eV G\xcba\xf3g8\x8e\x9e\xc6\xd0" +
-	"\xfb$\x00\xd7\x86S\xee\x1a\xf4\xcdg\x00\xf6{.\xe5" +
-	"n\xc0\x94\xfb\x1c\x007s)w\x93S\xcf\xe2\x7f\xe5" +
-	"R\xee{\x85\xe1\xe4\xfc\xaf\xc9\xae\xb4(\x85\xb3\xeb\xb1" +
-	"B7\xda\xc8\xac\xfa\xe3\x1e\xb3*\x7f\xf7\xa3\xb7ZQ" +
-	"\xf7\xf8\x11\x86\xe8v\xe39\xff\x0aG:\xc9\x89\xee\x0b" +
-	"<\xe7\xe7fRE\xb8r\xfa\xd2RA\xa8\"fR" +
-	"=\x8c\x84\xebi\xd9N@z\xd5\x83\x11~\x1d\xc2\xe3" +
-	"\xe2\xa8\xfc\xe41\x04\x08W\x8fF\xf8\x14\x84[,T" +
-	"\x84r\x05\x01]U\xdf\x86\xf0\x1a\x84\xc7\xc7\xd3\xc2E" +
-	"v\x10\xf0\x89\xeaJ\x84\xdf\x83pQ\xb4\xd1Y\xcbt" +
-	"\x02\xe1\xa7z\x1a\xc2\x83\x04\x93\xbb\x1e\x15\x04\xbe8O" +
-	"\x09\xf7\x9cty\xf8\xc1]\xb9\xc7F\xefS{\x0c5" +
-	"\x8a\xc7\x85\x11\x86\xb0\x10C\xba\x15\xfa\xadJ\xb0\xa1\x05" +
-	",OHG\xf9\x07z\x14\xbd\x86\x085\xa1 \x82\xeb" +
-	"\xf4\x8c\x06a\xb1\x06\x83\xa0f.1-\xbf\xa2\xc1+" +
-	"\x10\x8c\xf7\xdcd\x8a\x9a\x0cm\xba\xd4t\xfa\x043\x7f" +
-	"\xa8kWn\xff\xe8\xaa\xbf\xdfx\x8c\xed\x10\xa1u>" +
-	"\xaa\x9ag\xd3\\\x9eIs9\xeb\\\x12\xd6\xa3\x97%" +
-	"\xb2^0\xc9\xc9D\x04Oe]d\xc2\xfad2\x01" +
-	"\xc5\x98\xa4\xefEb2\xdaR\x845\x99\xa4S\x85\xf0" +
-	"\xec\xb0H\xccF\xe3\x8d\xb0^\xae\xf4a\x19<\xdb!" +
-	"\x12\x8b1`\"l\xba m\x9d\x03\xcf6\x89$\xde" +
-	"h#\x126\xc0\x92\xd6!\xcd.\x91\x88Fo\x90\xb0" +
-	"\xb6\x9a\xb4d2<[,\x928\xa3\xe1KX3T" +
-	"\x9a{\x1f<k\x17I\x821\x9d$l*#\xb9p" +
-	"\x9dBo\x0b4\xb9\x10\x96]\xac\x98^JH(\xe8" +
-	"Rk\xbc\xb5\x01U \xfe\x12\xbd\xa4-!\xf3t\xe7" +
-	"\x83\xe7,\xab\x0a\xc5\x0c\x94N/\xcd\xf0\xc8\xebSi" +
-	"\x1b\x83f\x9dP\x83[q\xb5\xa2\xd9X\xf5\x95\xac|" +
-	"\x13\xf4\xc2'JM\xe1,#\x84\xeb-\xd6u%l" +
-	".(Iup\x80Dz\x00\xda\xca\x10\xcc\xadj$" +
-	"9\xc2Z*Vd\x86\xb6\x87(-6{$lJ" +
-	")\x8d\x81\xc0X\x9aKJ\xc7\x13\xe9\x0e\xd49\x1b\xc5" +
-	"\x1267\x95J\xb1\xba\x1bOJ\xa7\x10\xa9^\x9c\xa7" +
-	"\xb7gXB5\xda.|\x81\x17\x01,!V,D" +
-	"\x07\xb2\x80\xde\xd8\xc2E\x9b\xd0\x8f\xf20\xb2l`\x0a" +
-	"\xf4\x1b\xe9\x81\xabj2\xc2U\x8d\x11\xe3*V\xeb\x15" +
-	"L\x0b\x17\xe3T\x8c\x86\x8d\x00\xf4]aw\xa0\x9f\xd7" +
-	"\x7f\xaa,,)\xc4\x09j\x13\xea\x8a\xcbe\x18{\x97" +
-	"\x01\x0b\xbf\xe1\x98\xed\xaa\x0b\xe72\x83\xd9\xc8d\xa6\xf7" +
-	"768\xf5d\xb6\x1d\xb2\x1e\xc6b\x88 oaz" +
-	"|\x93\xe52 i\x01\xe0{e\xe1\\\xa6\x97g\xdd" +
-	"\xc3\xd2,\xd5\xef\xacl\xf1\x83\xb9\x05b=6\xaez" +
-	"\"\x86\xd0\xee\xcfc\x06k&+\xaf3\xe0\xc5\xce0" +
-	"\x06D\x84\x11\xc8\x9a\x8dj\x93\x82u\x89\xfe;\xcaW" +
-	"\xb8\xcaFk\x80fQ\x0bg\xc3e\xc2\xe6\x9e\x90|" +
-	" W\x95_GH\xf9\x04B\xe4Z\x1a\xd9\xd8x\x8a" +
-	"\xb0\xf9!\xa4\xa2\x9d\x80\x05t\xcag\x00V\x1b\xc1\x10" +
-	"\xc7\xa67\x84\x8d!e\x15\x13Vy#`\x01[\xf2" +
-	"\x02\x82\xc1\x8eM`\x09\x9b\x13\xc9\x9d\x98\xbe\xcag\x03" +
-	"\xd6\"\xc0ZA0\xec\xb1\xb1\x17a\x03\x1d\xf9Q\x02" +
-	"BG\x8c\xf2\xe5\x80\xb5\x8e`\x00d\xf3a\xc2z\xfa" +
-	"r\x17\x01\xf7C\x8c\xf2\xb5\x80\xb5\x85`(d\xefS" +
-	"\x106{\x907PZ\x80Q\xbe\x19\xb0v\x10\x0c|" +
-	"l\xbcK\xd8\xc4^\xdeJ\xf9z\x15\xb0\xde\x05\xac\x83" +
-	"\x04C'\x1b\xa6\x11\xf6\"\x85\xbc\x9b\xee\x08\x18\xe5\x7f" +
-	"\x03\xacS\x80\x95h\x8c\xa9\x08\x1b\xba\xcb\x87\xc9J\xc0" +
-	"\xfa\x1c\xb0\xce\x01\x96\xc5$\x86XyI\xd8\xe5\x89\xb4" +
-	"0\xff6\xda\xf8\xbc\xd3G\x00K\x88\xb1\xde\x14]\x9f" +
-	"\xf6\xb0\xa4':\xac\xd6\x16\xaed\x1d\x84K\x81t\x0c" +
-	"d]tD\xec\xcf\x9a\x88\x88\xd8\xafM\xf4\xb9\xc9\xc0" +
-	"\x0e\xa4\xdfK\x0520\xe6\xf8\x0b|\xbf6bm3" +
-	"\xc2\xfaf\xe6`\xe7@\x08\xf4\xd5\x01\x18\xc0U\x86\xf5" +
-	"\x88{\xb9\x8bq\x03\x86\xe8\x11T\xdf\x9d\x91X\xd9\xc6" +
-	"\xcf\xdf\xae\xcd\x91\xb7#L6\x99@q4\x17\xbf\xf3" +
-	"\xea\xc2\xb7\xa3\xa8\xbc\xd2GC\xb9\x8f\xd9\x13\xeb\xf5\xf4" +
-	"\xb5\x7fa\xf8\xca\x16\xb9\x7f\xff\xeeb\xdd\xe6\x05Z\x91" +
-	"CeP\xacI\x95g\xe1\xbeX\x17D\xcc\xb7\xd7\x01" +
-	"\xb0\xd2d\xdcjj\x04+\x159\xeb\x0b\xf4+\xc7F" +
-	"\xe4P\xbc\xdc\x98\xd5\x0eG\x02\xe1_\xddH\x9c\xcc\xbd" +
-	"\xbf\x95\xe8\x0c\xb1\x89\x1e\xb6\x82\xe9\x0c\xcc\xe9\x9d-\x88" +
-	"5J\xb3#\x85f\x10\xf6\xae\x19a$\xa46'\xd4" +
-	"[.\xcc\x1bl\x1eL\xd8;@R=\xd6b\xb5\x98" +
-	"-\xd8\xfb$\x84\xbd\x00%U`[z\"\xe6\x08\xf6" +
-	"F\x12a\xef_I7=\x04\xcf\xc6\xd0\x1a\x8e2D" +
-	"\x8b\x04\xf0%\xd6A\xc4\x86\x89\xf6\x93\x8a\x96\xb0\x1b/" +
-	"\xd1\xa1\xb4\xefLtUD\x15\x93\xbdu\xccb\x19i" +
-	"]\xff\x1a\x10S\x81\xa9X\xfd4\xd6\x890^ \xe8" +
-	"Gc*fcG7\x9e\xfe\xf4Q\x8cYP_\xb6" +
-	"\xee\xec\xd9\xd7\xfaY\x9e\xf5kL\xf0\xbf>(\xe7F" +
-	"\xaa\xda\x1cn`3UK_\x8e\xda[\x13\xad\x8fQ" +
-	"m\x8c\xc6PtO<.V\xe3\x8c\xef\x9a\x99=\xf4" +
-	"\x16j3\xc7%\x85Bt\xf7\xb9hp\xb3\xb5\xa9]" +
-	"2\xb9\x1c\xd2\xf4\xf7`Uxl7\xdct)\xa4w" +
-	"\x1c\x17\xe3\x08l>\x80\x1f\x83\xd2P/v\x1f\x9d\x03" +
-	"\xb0G\xf4\xb28\x8eh\x9d\x9b5P\xfb9\xd6j\xa3" +
-	"\x16\xab\xc7\xebQ\x85\xf8\x90\xe2v\x9764\xa8\x01\x81" +
-	"\x04\x84\xf8bl\x0eT4\x12\x11\x02\x8a\x887\xf3F" +
-	"\xcd$\x85b\xcd(\xa3\x03\x8e_m\xf5\xceR{m" +
-	"\x16\xf4g\xf4\x1c=\x11\x13{\x1c\xc4\xea\x96\xce\x10\x11" +
-	"/\xec3\x13TBo\x0c)f(\xed\xb5\x89h!" +
-	"7\x115\xb1\x89(w\x93Aq\xc1\xffR+\xde\x03" +
-	"\xdc\x00\x9bm\")z\xf3\xab\x1du\xe0\x03\xd8\xfd\xbd" +
-	"\\\x03\xfa\xaa\xf3c\x94\xf2\xda$=\xba\xe1\x1b+\x99" +
-	"\xb0\xfb\xb3\xe1P\xdc\xc5-'\xfa\xe2\x06\xa7\xa8@\xe0" +
-	"\x04-\x91\xd0\xbe\x1e\xc0\x1cE\xe1vt\x0f#\x00\xab" +
-	"O\x09\xb6\xe8\x0cAUr\x95 \x14CL\xadQ\x9c" +
-	"\xdd.\x1bzb\xa9V\xd3\xb5\x96\x1c\xf6\x8b-\xdd\x83" +
-	"m\xec\x8a \xc6<\xa0P\x0fR%\\\x90\xbay\xb5" +
-	"~\xb2{@\xec\xb0\xd2\xdf\xd9s\xe7h@Y\xb1\xf7" +
-	"\xbbq_\xb3_\xc0l,\xef9\x0ct\x1fy\xb1\xfa" +
-	"\xc3f\xd0\x9b\x8bFv?\xd0[\xc4\x1dwAY\xd8" +
-	"\xa7Y/\x96\x9f\xc4\x1b\xbd\xd8%\xd8\x8b}\x0c\x80O" +
-	"r\xbdX\xfeJ\xfc/\x1aj\xc6\xee\xa7\xf6\xfcrS" +
-	"\x0f\xefN\xf4d\xea\xddFy\xa6\xa8\xc9\xa3@\x1b\"" +
-	"\xe1\xd7\xd5\xc9\xe4P\xf8\xdd\x1fAo\x13\xb1\xf7\x95\x09" +
-	"{\xb5Y\x92\x8a\xa0\xc4\xb0\x88\xc5\xda\xdc2V\x89\x10" +
-	"\xc5\x10\x96\x14FY\xfc\x7f\xed%\x8b\x1e\xe6\xa3lL" +
-	"\xdb\x0f\xc9\x18j\xfd\x9f\x00\x00\x00\xff\xff\xce\x14\xd4H"
+const schema_c8d91463cfc4fb4a = "x\xda\xdc:kxT\xd5\xb5k\x9d3\xc9\x10/i" +
+	"r<\x09\x84\x10\x0c\x86xMB\x12^\xa2B\xd1\xbc" +
+	"\xa4\x98\x88\x9a\x93\x04\x0a\xb9\xe2\xc7I\xe6$\x19\x99\xcc" +
+	"Lf&\x84P)\xe2\x85+T\xbc\x95\x14o\x81O" +
+	"\xb0Es\x05\xaf\xd4j\xa1\x82\x95\x8a^-\x0f\x1fT" +
+	"\x04\x04-U\xf0QP\xa8\xa2\xe2\x1b\xce\xfd\xd6\x9e\xb3" +
+	"\xcf\xecL&/\xbe\xfb\xf5G\x7f\xf01\xd9g\xed\xb5" +
+	"\xd7^\xef\xc7\x1ek$\x15K\xe3\xe2\xbe\xca\x05\xa8>" +
+	"\x89q\xf1\xe6\xbb\xa3\xe6T\x9c\x1d\xf9\xde2P\x86#" +
+	"@\x1c:\x01&\x1cO\xa9E@\xf5LJ\x11\xa0y" +
+	"L\x9f\xf2\xda\x8c\xf2\xa3\xf7\x802,\x0c\x90\x8c\x13\x12" +
+	"SK\x09 5\x95\x00n{C\x1e\xfa\xb0\xbfb\xa5" +
+	"\x0801u!\x01\x940\x80\xe0\xa2\xe7\xcf$n\xd0" +
+	"V\x82\x92j\x03\xe8\xa9\x97\x10\x80\x9b\x01\xfc\xc7-\x87" +
+	"\xcb\x1f\xf8\xa2\xf0\xe7\xa0\xa8\x08\xe0 \x12\xeeK\x1d\x8f" +
+	"\xe00\x7f\xfa\xca{ol\xda\x17\xdf!\xe2n\xa5O" +
+	"\xa8.b['~\x9b\xb2\xfe\xc3\xa3\xc9\x1da\xdc\x0e" +
+	"\xfa\xbe>\xf5R\xdazz\xd6\xb0{w\xdd\x7f\xe5\x1a" +
+	"Bj\xfe\xedD\xe3Gk\xde\xdc\xfav\xf8\x82\xea\xb2" +
+	"\xd4o\xd5U\xa9\xf4\xeb\xbe0\x96\xdf\xfca\xd4s\xaf" +
+	"}\xb2V\xa4pKj\x1e\x1d\xb3\x8d\x01\x0cs}\xbf" +
+	"\xe8\xdd\x82\xc3\xebD\x80C\xa9Y\x04p\x8c\x01\xbc\xbe" +
+	"\xaf\xe5G\xf2\x95G\xd7\x81\x92f\xb3\x11\x8706&" +
+	"\x0e!\x80\xf5\x9f\x07\xff\xda\xf0_\xa9\xebA\xc9\xb0\x01" +
+	"\xe6\x0cy\x8a\x00\x9a\x19\xc0\x83\xf1\xb7\xbe\xfd\xadT\xb2" +
+	">,\x08\xc6\x84\x9dC*\xe8&\xed#O\xe3J\xff" +
+	"\xef7\x84\xd9\x13\xde\xba9\x8c{\x1b\xdb\xdaq>\xb1" +
+	"\xfc\x93\xab=\x0fY2d{\x0f\x0d\xf9\x19\x01|0" +
+	"\xe4o\x80\xe6\xe5s>>\xde\x91t\xf0!\x91\x8dG" +
+	"\x872\x0c\x1f\x0c%\x0c\x0b~\xf9\xe3o2\x0a\xf26" +
+	"\x8aG\xc4\xa5\xddA\x00J\x1a\x13\xf2\xf2\xe6wfO" +
+	"\xbegc\x18\x03\xe3\xf3\xb8\xb4\x0e\xa2\xee\xe4\x85\xff\xbd" +
+	"y\xfe\x98\xaf\x1f\x01e\xb0lV|\xf7\xe2\xfe\xfa\x94" +
+	"\xa3{\x00P\xbd<\xed\x84Z\x906\x14@\x9d\x946" +
+	"Mu\xd3/\xd3\x9f3oj\xc2\xe3\x13;\x054\xb3" +
+	"\xd36\x12\x9awV\xafx\xedwg&w\x82\xa6\"" +
+	"\x91\x10O$\x94\xa7U!\xe0\x84\x19i?G@s" +
+	"\xf7\xea\x8e\x9c_\x9a_l\x12\x89<3\x8c)\xc3\xb9" +
+	"aD\xe4\xbd\xbf\xba\xacq\xef\x96\xeb7\x0b,LM" +
+	"\xaf#\xec\xc6m9\xcb\x16g=\xbeEd\x00\xa63" +
+	"\x01'\xa4\xd3\xd6\xed\xd3\xee9\xb6n\xc1\xb7OD\xdd" +
+	"\x02\x92Q\xcdM?\xa0NL'e\x19\x97>M]" +
+	"\x92\xeeT\x97\xa4'\x99on\xdd0\xf7\xf1/\xdf{" +
+	"R\xc4\xd8\x9eN\xe4\xaa\xcb\x18\xc6\x85E\xb5_<\xb6" +
+	"?\x7f\xabp\xd5\xce\xf4uD\xcc\xf0\x0d\xdbG\x1d\xfa" +
+	"\xc0m}\x89\x93\xe8\xd3\x03\xe1\xad\xbfNo\x034O" +
+	"\x16\xfct\xef\xba\xc3\xa7\xb7\x0a\xf7\x88\x1b\xce\x98\xdd4" +
+	"\xa2\xb1\xfa\xf8\xae\xef\xb7\x816\x181Bg\x9cD\xe4" +
+	"\x9dK\x7fJ=\xcf\x08\xfd&\xfd\x09@s\xf9O^" +
+	"~\xad\xed\xc8\xbf<-\x9a\xf6\x03\xc3_\xa0s:\x87" +
+	"\x13\x89\xfe\xdd\xd9\xb5\x87\xaf\x1b\xb4=\xac\x93\xe1s2" +
+	"\x1e\xa3s\xe2\x1e\xbdf\xc9w/\xf9v\x88$\x9e\x1b" +
+	"\xceH\xc4\x0c\"1\xf7\xfb\x0b\x7f\xbfi\xcc\xe1\x1d\xc2" +
+	"\xed\xf4\x8c\x03\xb4\xb5\xe8\xc6\x8fo\xb9\xe9\xe1\xab\x9f\x01" +
+	"%\xdd\xde:#c2m\x9d\xc3\xb6\xbe|\xef\xeca" +
+	"\xa5\x93\x87=\xcb%\x1d\xc7T=\xa3\x8e$\xbd7\xe3" +
+	"\xc7$i\xe3\xc3M%\xd3&\xde\xfel\x94\xed\x0e\xa2" +
+	"\xbbM\xbc\xec\x84Zr\x19\xed\xb9\xee\xb2\xdd\x04|\xf5" +
+	"\xe7\xf5\xb5#\x8a\xaf\x7f\xae\x9b\x02.\x19\xf9\x96z\xdf" +
+	"H\x82\\1r\x9a\xa4&f9\x01\xcc7*\xd6\xfe" +
+	"v\xef\xc8\x19\xbb\xbaA\x9f\xbb\xfc\x05\xf5\xfc\xe5\x8c{" +
+	"\x97OS\xaf`\xc0\xdf\xef9\x91w\xf7\xa9\xb6\x17b" +
+	"hEb\xd6cj*\x01\xa9J\xd6=\xea\x93YC" +
+	"\xd5\x1dYI\xa6g\xd0/\x8e\x9cl\xb9\xecE\x8b\xe5" +
+	"2\x1d\xfed\x16]M\xdd\x99E2\xa9\xfd\xcb\xfb\x1f" +
+	"\xb9\xfcE/G\x0b\x90\x98\xaf\xb6\x8c\xda\xa8\xb6\x8f\xa2" +
+	"=\xad\xa3\x18\x1f^\x96\xfcy\xfbo5\x0e\xc48\xff" +
+	"x\xf6>\xf5L6\xc1\x9e\xca\xde-\xa9\xcbr\x9c\xea" +
+	"\xb2\x9c$\xf3\x87[\xebN\xdf\"\xb7\x1c\x10\xe4\xb2(" +
+	"g\x1f\xc9\xe5\xd3a\xd7,\xdd\xb6~\xc3\x01Qa[" +
+	"r\x98\x1fo\xcf!m8\xbf\xee\xdd\x99_-\xfd\xd7" +
+	"\x83\x16\xed\xa4R\x13\xd6\xe60'\xd1\x99C\x82\x9b\x95" +
+	"\xf9\xb3g\xca\xfe\xbb\xe3\xb0\xa8\x14q\xb9\xcc\x88\x12s" +
+	"\x09\xe0\xdcs\x87]\xf5\x9eyo\x8aG\xb8s\x03\x04" +
+	"\xd0\x9aKG\xec?\xf1\xe0\xaa\xcf\x1eQ\xdf\xearD" +
+	".\x0b\x15\x9d\x0c\x83-\xebh\xe9\x8c\xc8[\xa7^\x91" +
+	"w%\xc0\x84\x92<'\xaa\xe7\xf2H<s>_:" +
+	"y\xe9s\xff\xf3\xa1H\xd0\xb1<F\xf1\xa9<B7" +
+	"\xcf\xfbV\xdb\xfe\xd9M\xa7\x04C*\x1f\xfd\x0cq\xe3" +
+	"\xfa\xd3w}\xfaD\xee\x94\x8f\xc5\xad\x93FW\xd0\xd6" +
+	"\xa9\xa3\xd9e\xaf\xbdg\xe6;\x0d\xcbO\x8bw\xe9\x1c" +
+	"\xbd\x8e9\xdd\xd1t\x97q\xbb\x13J\xa7\x9f=\xdb\x05" +
+	"\xe0P\x18\xc3q\x060\xf3\xe9\x9975\x1b\x1f}\"" +
+	"\x9a\x1f\xe6\xdf\xcd\xd8\x95O\x00S\xd6\xe3\x91\x14\xaf\xfa" +
+	"i\xd8R\x98\xac\x0a\xf2Y\xd8\xdbv\xe2\xe4\xc4?~" +
+	"6\xf2S\xd02\x10#\x1ev\xaa\xe4\x94\xc9\xa7\xe5\xd7" +
+	"\xa2\x9a\x9bO\xf8\xae\xc8\xcf$=y\xbe\xe6\xea\x84\x99" +
+	"i\xbf\xf84\x1c}\xd8=\x8d\x82*\xc2tpi\xfb" +
+	"\x9f>\x9e\x9b\x7fV\xe0\x80VPJ_\xbe{k\xc5" +
+	"\xf2\x0f:o8\x1b\xad\x89\xa4\xb3\xea\xa4\x82\x03\xea\xd4" +
+	"\x02\xfaUR@\x01\xe4\xb1\xa6\xe9\xd5\x83n_\xfc9" +
+	"h\xc3\xd1\x96\xdc\x88B\xc6\xea\xdcBRl\xdf\x90m" +
+	"\xb3\xfe^2\xfe\xcbn\x92{\xa9\xf0)\xf5\xd5BB" +
+	"\xb5\xb7\xd0I\xff\x00\xcc\xe3'\xff3\xe7G\xcb~\xf8" +
+	"\xa5\xa8\x07O\x162\xf7\xb2\xb3\x90\xb8\xff\xc1\xa37\xdd" +
+	"\xf5\xa2\xf2\xcd\x97\"\xefJ\xc6\xb0xt\xf3\x18\xe2]" +
+	"N\xd3\xda\x87j\xf3\x17~\xcd\x9d\x08\xbbY\xf3\x18R" +
+	"\xc6\x09\xadc\x18S\xbe\x9a\xbby\xf5-\xf3.|-" +
+	"\x98\xc2\xaa\xb1,\xa0\x8ez\xdey\xe0O{\x0e\x7f#" +
+	"0e\xd1X\x16'>\xfc\xcd\x86\xc1o]{\xddw" +
+	"b$u\x8feF\xd22\x96\x181\xfb\xd9\xc0\x9dW" +
+	"\x8f|\xf6;\x01\xa91\x8e\xc9\xec\xdfvN\x9asv" +
+	"b\xcb\x05\x01\xe9\xcd\xe3*\x10L0a\xa2\xd9\x18\xd0" +
+	"\xdd\xde\xc2z\xdd\xe1\xf7\xfa'W\x1b\xc1\xa0\xdb\xe7-" +
+	"\xf3yC\xc6\x82P\xa1^\x1fr\xcfw\x87\xda\xb3+" +
+	"\xf5\x80.7\x075\x87\xec\x00p \x80\x928\x1e@" +
+	"\x1b$\xa3\x96\"a\xa61\xdf\xf0\x860\xd9\xbc\xc9\xb3" +
+	"r\xf3G\xbf\xdf\xf5(\x00b2`\x14n\xdd\xeb\x0a" +
+	"\x86|\x81\xe6\x12\xbf\xbb\xd0ex\x8c\x90\xe1b\x88\x9b" +
+	"\x83 \"\xce\x8a v\x06\x8c\x06\xbc\x14\x05w\x03\x80" +
+	"\x97\xf6\x8a\xb8\xd1\x08\x95\xbb\x0co\xc8\x1dj/we" +
+	"W\x15\x19\xc1VO\xa8\x0b\xe1\xe9\x11\xfc\xb2\xdb\x85\x89" +
+	" a\xa2\x80R&\x947\xebn\xefL\xb7\xd1V\xe8" +
+	"\x0a\xf8\xfc\x9c\xc8.TV\x00h\x83e\xd4\xd2$4" +
+	"}uw\x18\xf5\xa1r\x17\xa3\x0e1\xe2\x9c\xa3\xa8e" +
+	"\xa8g\xb8\x19\xe2F#D\xff\x97{\x1b|\xd9\x95\x99" +
+	"\xec\x80\xaep]n\x15\xd4\xe7\x1b\xd9UFf\xb7\xcb" +
+	"\x88R\x08\xf9\xe6\x19\xde\xfe\xdc\xa7\x8a1\x05#\x07J" +
+	"\x02a\x95\xbe6#PT\xe7[P\xa37V\"\xf6" +
+	"x\x98;\xe41p0H8\xb8\xc7\xc3\x02\x06]\x80" +
+	"\x08\x0f&E\x13.J\xb9^\xf7\xe3\xa5\x0e\x19\xb0;" +
+	"\xb7\xba\xe1\xaa\xd4\x03N\xbd\xab&^\x8c(\xc2\x8a\xd3" +
+	"\xa4\x07\xdc\xde\xc6\xe9n\xef<\x92G\xa5\x11\xf2\xea\xcd" +
+	"F\x98=rWr\xf3,ro\x900\x89\x80P1" +
+	"\xd7\xae\xcaZ\xb3u\xc6g\x1f\x01@1*\x98\xa99" +
+	"$\x14\x17\x15\x1c\xaa9\x10\x11+e\xc4d\xb3\xfc\xc4" +
+	"O\xae\x09<=\xe7^\xb2\x0dE\xa0$\x8e(\xa1+" +
+	"FQS\xe5\xf3\x18%\xc1\xa0\xbb\xd1\xdblxC1" +
+	"\x85\x9f\x15!\xca9_\x0f\x0c\x9c&\xdb\x9bG\xd1\x14" +
+	"\xcb\x17\xd4{|A\x8b7\xa1 @WXKw\xbc" +
+	"F\xdb\xad\x0d\x0dF\xc0\xda\x1a\x93\x93\xa5\x11\xc1/\x0e" +
+	"\x86\xe1P\x898\xe9X\xdc\x89\xa2\xa4\xa1\xd5\xd3\xe0\xf6" +
+	"x\xaa\x8c\x96V#\x18\x8aXg\xb2}\x88N\x9c\xb9" +
+	"MF\xadIB\x051\x85\x1c\xb1bl\x04\xd0\x9ad" +
+	"\xd4\x96J\xa8HR\x0aJ\x00\xca\x92Z\x00\xed.\x19" +
+	"\xb5\x95\x12*\xb2\x9c\x822\x80\xb2\xa2\x0e@[.\xa3" +
+	"\xb6\xba\x9br\x06\x8c\x96Vw\xc0pa\xa5\x11hv" +
+	"\x07\x83n\xa7\xcf\x1b\xc4\x1f\x00c(\x82D?M\x97" +
+	"\x11\xac\x0f\xb8\xfd!\x90}\x01L6ge\xec~\xee" +
+	"\xe1\xa4\xfdg\xb8Wt\xb9\x83~\x8f\xde^\x0eNo" +
+	"\x83\x0f\x93\xcd\xd3\xa3\xdf\xfbc\xc2\xc6\xea\xce\xbe\xbdf" +
+	"0\xa4\xb7\x97\xb4\xe9\xf3b\xeb\xe8\xe4\x08g\x8b\x9at" +
+	"\xaf\xcbCZ\xfan\xe9\xdc\xb9\x8fg\x7f\xb1&\xa6\x88" +
+	"#b\xb3\x98)\x08\xae\x9b\xc5^\x8c\xe0\xba\xba|\x7f" +
+	"\xc0\xa8\xd7C\x86\xab\xb2\xb5\xce\xe3\x0e6\x85%\x17\xed" +
+	"\x86DSp\xba\xbd\xf3H_#\x8a\xaa\xe0B\x93[" +
+	"\x06\x14\x85mCs\xc8qT\xc1Y5\x03\xf2\x82V" +
+	"Q:@R\x12\x9d&\xb7&\xe4\xe6\x84\xa1bdx" +
+	"\xed\x9c[P\xe8\xee\x94\xd7\xe9\xf5\xf3\x1a\x03\xbeV\xaf" +
+	"\xab\x84\x07D\xe2\xbf\xd3\x13\x0a\xf6\xcb\x0c\xac{j\x19" +
+	"63\xb7\x91\xcf\xda*\xa3\xb6KP\xd0\x9d\xc4\xe1\xed" +
+	"2j/J\x88\x96~>O\xaa\xb8KF\xed\x15\xd2" +
+	"O)\xac\x9f{\x03\x00\xda\x1e\x19\xb5\x83\x12*\x0e9" +
+	"\x05\x1d\x00\xca\xeb\xe4\x9d_\x91Q;\"\xa1\x12\xe7H" +
+	"\xc18\x00\xe5\x10\xa9\xf7A\x19\xb5w%T\xe2\xe3R" +
+	"0\x1e@9F\x90Gd\xd4\xde\x97\xd0l\x0d\x1a\x01" +
+	"\x0aB\xe4 \x93\xcd7\x949\xbf\xfb\xe4\xf5\x1d\xab-" +
+	"U\\\\\x1f69T\"\xb5\x8c%gK\x03j\xc0" +
+	"\xd9\xee70\x01$L\x88\xacVB8\xa2\xe1\xa5 " +
+	"\x91\xd9d\xfa\x88\x1d\x82\x19\xf5n!\x99!\xbd\xae\xbc" +
+	"\x87\xc8\x1caqDW\xbb{\xc6\x81\xe9j\xaf\xa9O" +
+	"7Iw\x8f\xceV\x92\x90\x14\xd0\x9b\x07\x18\x9c\x99\xc6" +
+	"\x97\xf8\xfd\x95F \xe8\x0e\x86H3\xc31\x97\x14\x9a" +
+	"g\xe1\xc8\x0bWE\xc9\x03(\x19\x8c%\x19\xa8\x148" +
+	"\x93()\xe0>\xde\xee\x120M\x8a\xb5X\x8c\x95\x88" +
+	"%\x0eT\xb0\xce,\xf1\xfbo\xa5@\x09\xceP\xb9\xab" +
+	"7\x7f\xd3\xa4\x07\x0c\xe2\xb7\xad\xc21Bb\x8a\x84I" +
+	"\xf3\xddF\x1b*\x91\"\xe9\"\x9c\x01\xf7h\xfdr\x7f" +
+	"\x9c\x9cA69\xb9d(92jW\x09\x165\xee" +
+	"\x0e\x00m\xac\x8c\xda\x14\xa9\xbb\xdb\xfd\xf7\xaf\x0e\x96\xee" +
+	"\xfbl\xc7\x1b\xdc\xedz}!w\x83\xbb^\x87\xa4P" +
+	"X]^-^\xb1\xfd\xed\x11\xcb.\\DL\xea\x96" +
+	"a!\xed\x99\x16\xd0\xdd\x99^\xb26\x12\xf2`\x9b\xf6" +
+	"\xa9\xa4(\xc52j\xd3%\xe4\xa4\x97\x93\xe5\xde(\xa3" +
+	"VC\xd1\x0a\xc3\xde@#\xc0\xe92j\xb3$\xcc\xd4" +
+	"\xfd\xfer\x97\x9d\x81\xe9~\xffLR\"\x90}^\x1c" +
+	"\x04\x12\x0e\x82\x9e\x92\xb4\xf8\x18\xf47\x1a!r\xba\x86" +
+	"\x8b\xc75\x9f7h\x07\xfbX9G\x8d\x9dsd\x97" +
+	"\x1e\x9e[\xfd\xe5gw\xf5+\xe7\x10\"\xe5E$A" +
+	"\x96\x8d\xf5\xa5\xb1ez$\xc7\x15U\xa4*\x96\x8a\x90" +
+	"\x1a\xe7\xcb\xa8]+\xa1\xc9v\xbb\xcat@!\xe6'" +
+	"y\xdc\xdey\xa8\x08\xb1\xa2\xab:\xc4\xf7\xa2\xdcUF" +
+	"#\x99u\x80\xe2\x06\xcf\x87D\xb5\x90\xa3\xed?d\xa5" +
+	"\xfa\xbcn\x11\xa8\xaf\x88E\xfdx\x81\xfa\xe8\xdc\xd76" +
+	"\xffp\xee\x9b\xe9\xd1\xeb\x0cOT&\x9a\xdc\xef\x94\x80" +
+	"'\xdei6Ek\x89\xa252j\x8f\x08\x14\xfd\x9a" +
+	"\\\xef\x832j\x9b\"A\xac\x93l\xf3\x11\x19\xb5\xdf" +
+	"\x0aAl\x0b\x05\xb1\xc7e\xd4\xb6\x0bAl[\x9d\x15" +
+	"\x17\xff,\x04\xb1W\xc7G\xc2\xdd?&^\xb14\xcf" +
+	"\x08\x86,_a)m\xd78\xf5\x83\x1e\xe3\x94XM" +
+	"\xb1\x1a\xcfiY\xfcH\x9bu\xaf\xd3=\xff,\xa3v" +
+	"Z`\xdd)\xba\xe7\xfb2V\xa1\x90\xa0\x9e\xef\x00\xa8" +
+	"B\x19\xab30\x92\xa1\xaa\xc30\x00P\x9dF\xebW" +
+	"\xd1\xba\xc3\xc1\xf8\xa7\x8e\xc3:\x80\xea\xb1\xb4>\x9d\xd6" +
+	"\xe3\xe2\x18\x0b\xd5r\xac\x00\xa8\xbe\x91\xd6kh=>" +
+	"\x9e\xa5\x02\xaa\x86U\x00\xd5\x95\xb4~\x1b\xad;\x9d)" +
+	"l\x0c1\x1bk\x01\xaag\xd1z\x08%4\xfd\x96W" +
+	"\x001\xddM\x8etj,~\x04|\x1eC\xf8l\xb7" +
+	"\x14\xc3\x9fM\x97\xe1u\x93\x87A\xeeb\xb0[\xea\xdc" +
+	"\xac\x87\xea\x9b\xaa\x8c\x16\xc8$\xfe\x07{d}\x18\xf0" +
+	"\xd6\x86\x06p\x1a\x81^\xc0t\xbf\xbf\x86\x9c`X]" +
+	"bj~y\xbd\x0f\x90\xfc}\xd1\xc6\xcd\x99u\xb7\xff" +
+	"\xe1[\xae2\xac\xabQ\xd3\xee\x07Y\xbc\xd4\xe8u{" +
+	"\xde\xbc\xe4\xaf\xd7~\xc8O\xe8\"u\xd1\xab\xca\x0bX" +
+	",\xcff\xb1\x9c\xf7\xfb\x90\xb7\xbeU\x05\x1f\x03IM" +
+	"D'\xa2\xdd\x9cE\xde]R\x11\xab@R\xbeq\xa2" +
+	"dw~\x90\xf7q\x943\xe3AR\x8e;Q\xb6\xdb" +
+	"U\xc8[\xa4\xca\xa1R\x90\x94\xbdN\x8c\xb3g/\xc8" +
+	"\x9b\xf6\xca\xce\x85 )\xdb\x9c\x18o7\xdf\x90\xcfv" +
+	"\x94\xcd\x84s\xbd\x13\x9dvG\x0dy3JYU\x01" +
+	"\x92\xb2\xc2\x89\x0e\xbbM\x8a\xbc\x85\xa8,\xba\x03$\xa5" +
+	"\xd5\x89\x83\xecy\x1d\xf2a\x87\xe2\xa6}:\xcb\xbfY" +
+	"pA\x1e]\x92(\xbc\x14\xa3\x19r\x1b5\xbe\x19A" +
+	"\x030Pl%\x89\xc5\xb8\xd82\xbeb4yT\x85" +
+	"\"\xbe\x94\xc9\xca\xd0b4}~\x835\x06X\xd41" +
+	"\xeb=\xba\xbb\x99\xd4&\xc9\xda\xc9\xd37\xb0\x12\x9f(" +
+	"1E\xa2\x0cD\xf2-\xde\xabD>2S\x94Z\x90" +
+	"\x94\x04v\x01\xd6\x1c\x00\xb9\xd9\xe8\x8a\x0ey\x93\"\x89" +
+	"\x88!\\\x83\x18.>\x96C>\xc0S\xc6\x95\x02\x94" +
+	"\xe4c\xc9\x14Tn&\x99\xf3\xd9#\xf2A\xa1RB" +
+	"\xd9\xdd\x14,\x99\x8e\xca\x1c\xe7b\xab\xe1\xc1\x03\xaa\xdd" +
+	"\xc8\x10\x13\xbc.\x8b\xc5\x98D\x89\xe8@6\xb0\x1a(" +
+	"\x92\xb4A?\xd2\xc3\xaei\x03\x17`\xc0\x0e\x0fBV" +
+	"\x93\x15\xc9jl\x1fW\xbe\xd1\xca`\x9a\x04\x1fg\x90" +
+	"7t\xc9\xa8\xf9/\xb2\xde\xeegA\xcd\x84E)\x85" +
+	"\xf3\x06\xa3\x81d%\xc42\xf2\xbd\xabe\xd4~%\x10" +
+	"\xbb\xbe6\x12\xcblb\xbb\x063\xabc\xb0\xa5\xce\x0a" +
+	"f{$D\xf2\xc5\x88\xcaK\x14\x1e_\xe4\xb1\x0cS" +
+	"0\x0eQy\xb54\x12\xcb\xac\xf4\xac\xbb[\x9ao\x04" +
+	"\xea*\x9b\x02:\xc8\xc1X\x9f\xed\xe2\xc9I.\xb4\xfb" +
+	"\xf7\x98\xce\x9a\xf3\xcaW\x17\xf4y\x8c\x10s\x88\xb4\x86" +
+	"\x80\x8b]F\x83Ny\x89\xf5w\x94\xad\x08\x99\x0d0" +
+	"k\xc9g\x1a\xce\xe7\xae\xc8\xc7\x89\xaa\x86\x1d\x00e5" +
+	"\x88e.D\xb5\x95y6>\xf5A>\x96S\xdd\xb8" +
+	"\x0f\xa0\xcc\x8fXv\x17\xa2\xba\x0a\xc9\xc5\xf1\x99\x07\xf2" +
+	"\xe9\x9e\xba\x8c\x02V\xd9R\xc4\xb2\xd5\x88j'\x92\xb3" +
+	"\xe3\x83M\xe4\xd3\x15u-\x85\xaf\xb25\x88e\x9b\x10" +
+	"\xd5\x1dHn\x8fO\x93\x90\x8fA\xd4-X\x0a@\x10" +
+	"e\xdb\x11\xd5\xbdH\x0e\x90\x8f]\x91\xb7\xcd\xd5\x9d\x98" +
+	"\x07@\x10e{\x10\xd5\xa3H\xae\x90\xbf0@\xde\xb1" +
+	"W_e\xb8\xf6 \x96\x1dATO!9>>5" +
+	"E>\xccV\x8f1\xba\xfe\x82Xv\x1aQ=\x8f\xe4" +
+	":\xf9\x8c\x0a\xf9\xcb\x01\xf5,;\xf14b\xd9\xf7\x88" +
+	"j\xa2\xe4\xc4\x04{\xb8\x83|\x1e\xad\xa2\xb4\x0e\xa0\xcc" +
+	"!aY\x8a\x84\xea\x15\x92\x13/\xb1\xc7Y\xc8_8" +
+	"\xa8\xc3\xa4\x00@Y\x9a\x84e9\x12\xaa\x93$\xa7\xc9" +
+	"\x93P\xe4%\x166q/`w\xd3E\xd7\xd0e\xb1" +
+	"\x18\xed\xfdRt\x16\xdb\xc3\x96\x9e\xf0\xf0\x8c\x1c.f" +
+	"\xdfL\xb7\x01\xd86\x90}\xd1~\xb3?{\xba\xf8\xcd" +
+	"~\x1db\x8d/\x06v!\xabz\x05\x1c\x18qb\x99" +
+	"\xdf\xaf\x83x\xbb\x0ay\xbfJ\x0e\xb5\x0f\x08\x01\x9f\xa1" +
+	"@&\x9b\xa2\x0cdo_=\x86\x01\x14K\xbc\xaf\xdb" +
+	"K\xb5'\x0c\x05\xa2\xa7H}\xf7^b\xc5\xb3\x80X" +
+	"\xbf\xcb]\xeb/\x0ag\xd92jc\x85\x08QP\x1b" +
+	"\xa9\xbf\xa2\"W\x1fM\xe0>f=\xbc\x9b\xd4\xd7\xf9" +
+	"\xe3#Ea\xd7\xf3\xfbW\xed\xf52:\xb3\x86R=" +
+	"\x0dZ\xdc\x16$\xc5\x11\xc5L;\xa6m^\xb8f\xe9" +
+	"\xae\xfe\x0d\x12\xc2\xb9\x1actQXt\xe2=\xef\x88" +
+	"U\xe7R\xdap\x95\x8cZ\xa5d\x17g5\x90\xc4\xe4" +
+	"\xca\xdb\x1b\xfdJ\x15\xba\xa4\x02T\xa3\xc9F\x9b6\x08" +
+	"\xc5\x87\x1d\x09\x15\xc2\x0b\xad\x84:\x93\x8f\xe9\x00\xc0d" +
+	"\xc3\xb1:\xdf\x02p\xd6\xe8\x8dZ2\x0b\x84\xfc\x8d\x18" +
+	"r\x14JK\x1dH\x8a\x9b\xc2\x1f\x1f\x06#\x7f!\xa4" +
+	"\xcc\xa1\x94r\x06\x05=\xfe\xda\x04\xf9\x13'\xa5\xbc\x03" +
+	"$e*\x85:\xfe\xe6\x08\xf9\x0b+e\xd2\xdd )" +
+	"\xe3X*\xca\x08b\xb9N1\x9a\xbc\x11\x0a\xb2\xcf\x1b" +
+	"\xfe\x93\xb1\x16y\xe1\x8e\xd6*kH\xa3%\x8a\xa8\x9c" +
+	"\xb8\xb7\xc6_,K\xa8\xed_\x1fe\xa6\x1b\xe4Xm" +
+	"A\xdeP\xb1_\x0f\xf4\xa3\xbf\x16\xb3?e)O\x7f" +
+	"\xdaA\xf6\x90\xa8/\x83\xaa\xeb\xd9\xa0\xfb\x99e\xf6k" +
+	"~\xf0\xff>P\x17f\xad\xe1\x01\xdd\xc0\x86\xadq}" +
+	"\x19jo\xbd\xc0>f\xb81\xfa[\xd1\x13oG\xac" +
+	"\xfe\x9f\xd8\xfc\x93\xbd\xac\x98N\x91\x1d\x83M\x93\x9d\xbe" +
+	"\x88\x14nAx\x9c\x97\x88\x17\xcc\xb0\xfc\x96TE\xe6" +
+	"y#\xa4\xf3\xa6\xd58]1\x19@[*\xa3v\xbf" +
+	"\x84h\xe5\xec\xf7-\x04\xd0VZ\xd9\xbd\x03\xc3\x0d\xa8" +
+	"\xce\x0e\x00mSx\x06\x93\xe4\xf5y\x0d\x887u\x8f" +
+	"\xa7\xa4\xbe\xde\x08\x02\x06!\xbe(\xe0\xf3\x18\xe5.t" +
+	"\x82\x84N@Sw\x85U\x12\x8a\xc2J\x19\xedp\x02" +
+	"F\xb3o\xbe\xd1k\xcf\xa3?3\xe9\xe8Q\x99\xb3\xc7" +
+	"\x09\xad\xa5\xe9\x1c\x90\xe0\"6s\x83\x81\xac\xf0I\x96" +
+	"\x1d\x88\xe1Q\xe9xaT*\xf1Q\xa9P\x90\x11\xbb" +
+	"$D\xa5\x99\xbc\xbfGFm\x81\x84\xc9V\x0f\xaf\x95" +
+	"d\xe0\x97Q\xbb\xb3\x97j\xa6\xafr%FE\x12\x1e" +
+	"\xb1G\xf7\xadc\x05\x13\xde\x06\xb0\x0dJ\xa8?\xf3\xa2" +
+	"\xebOD\xa5\x9c\x16o\x08\x07\x12\xd6\x9eDT\xb4\xc9" +
+	"\x91\xaez\x0f\x93\x8c$\xbf\x1ej\xb2\x08\x02\x05/\x01" +
+	"(\xf2\x1am5z]\xb7\x9a\xc9\x0a,\xd5Ff\xb8" +
+	"\xb3\x88X)\xc7uw\xb6\xb1\xd3\x8e\x18c\x8d\xf1\x96" +
+	"\x93*\x16\x9c\xd4u\x1b\xad\x9b\xdd&afK\xab\x11" +
+	"h\xef\xb9\x016\xa0\xa8\xd8{\x89\xdf\xd7P8\xe46" +
+	"\\e=\xbb\x81\xee\x93;\x9e\xe4\xa4\xd8\xf8\x16\x91\x92" +
+	"\xdd)\xa3\xb6\\\xb8\xee\xb2\xd2\x88M\xf3\x96\xb28\xa2" +
+	"\xb7[\xca\xab\x02\x00\xda\xfd2j\x0f\x0a-e\xb1\xb2" +
+	"\xff\x07M;c\xb7\x85{~\x04\xd5\xc3\xa3\x8a\x9eT" +
+	"=\xf6\xec9\x1a\x9a\xe2\xbd\x9d\x18\xff\xb3=\x8d\xe8a" +
+	"\x06\xcbG\xc1\xfd\xe0\x8c\xcd\xf3\xff\x0b\x00\x00\xff\xffx" +
+	"_\xaa\xae"
 
 func init() {
 	schemas.Register(schema_c8d91463cfc4fb4a,
 		0x85e320f14a5d23e0,
 		0x87d94955ce3c61dd,
+		0x8c4a70a31703d35c,
 		0x8c519e0dedc17d73,
 		0x8f2ef49549d64e86,
 		0x9206caa8d3e3cc7e,
 		0x9210d9e69d14fa35,
-		0x9714437546d80c39,
 		0x982790c08b1958ec,
 		0x99efcebf23bbae35,
 		0x9ad62de07dfc6419,
@@ -7245,8 +7371,6 @@ func init() {
 		0xa4f82f764dc3fee8,
 		0xa535ac09456b2870,
 		0xa53aedb3ce8994df,
-		0xa5c3aa75d6b648e2,
-		0xa75ecf12570b2966,
 		0xa8f4ff97289294c7,
 		0xa93eadc9671ea08b,
 		0xadac227f85285c65,
@@ -7273,6 +7397,7 @@ func init() {
 		0xd29e9db5843719f0,
 		0xd42684f756e09afd,
 		0xd692a643ba8a1f58,
+		0xd76b6c6364d6bff5,
 		0xda13a4f2919ce2cf,
 		0xdbb4d798ea67e2e7,
 		0xe6abbf843a84f35d,
@@ -7293,7 +7418,6 @@ func init() {
 		0xf87a2c5a9f996828,
 		0xf8fe6b4e94a960f7,
 		0xf9d6c8c6d207c123,
-		0xfabb5e621fa9a23f,
 		0xfb3d38da0c9eaee6,
 		0xfbbc20367c72bc59,
 		0xfe7135f15d39bd5b)

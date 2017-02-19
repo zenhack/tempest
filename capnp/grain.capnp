@@ -119,23 +119,13 @@ interface SandstormApi(AppObjectId) {
   backgroundActivity @9 (event :Activity.ActivityEvent);
   # Post an activity event to the grain's activity log that was *not* initiated by any particular
   # user. For activity that should be attributed to a user, use SessionContext.activity().
-}
 
-interface StaticAsset @0xfabb5e621fa9a23f {
-  # A file served by the Sandstorm frontend, suitable for embedding e.g. in <img> elements
-  # inside of a grain iframe.
-
-  enum Protocol {
-    # To prevent XSS attacks, we restrict the protocols allowed in static asset URLs. For example,
-    # allowing "javascript:" URLs would be dangerous because then the static asset could provide
-    # abritrary code that would likely be executed in the context of the calling app.
-
-     https @0;
-     http @1;
-  }
-
-  getUrl @0 () -> (protocol: Protocol, hostPath :Text);
-  # To reconstruct the full URL from the return value, concatenate: `protocol + "://" + hostPath`.
+  getIdentityId @10 (identity: Identity.Identity) -> (id :Data);
+  # Gets the ID of the identity, as it would appear in UserInfo.identityId.
+  #
+  # This method is here on `SandstormApi` rather than on `Identity` in order to ease a possible
+  # future transition to a model where identity IDs are not globally stable and each grain has a
+  # separate (possibly incompatible) map from identity ID to account ID.
 }
 
 interface UiView @0xdbb4d798ea67e2e7 {
@@ -255,7 +245,7 @@ interface UiView @0xdbb4d798ea67e2e7 {
     appTitle @5 :Util.LocalizedText;
     # Title for the app of which this grain is an instance.
 
-    grainIcon @6 :StaticAsset;
+    grainIcon @6 :Util.StaticAsset;
     # Icon for the app of which this grain is an instance, suitable for display in a grain list.
 
     eventTypes @7 :List(Activity.ActivityTypeDef);
@@ -429,7 +419,9 @@ interface SessionContext {
   # callback to the grain will occur. You can listen for such a message like so:
   # window.addEventListener("message", function (event) {
   #   if (event.data.rpcId === myRpcId && !event.data.error) {
-  #     // pass event.data.token to your app's server and call SandstormApi.restore() with it
+  #     // Pass `event.data.token` to your app's server and call SessionContext.claimRequest() with
+  #     // it. The token is guaranteed to be a URL-safe string. That is, passing it through
+  #     // encodeURIComponent() should be a no-op.
   #   }
   # }, false)
 
@@ -621,7 +613,7 @@ struct GrainInfo {
 # ========================================================================================
 # Persistent objects
 
-interface AppPersistent(AppObjectId) {
+interface AppPersistent @0xaffa789add8747b8 (AppObjectId) {
   # To make an object implemented by your own app persistent, implement this interface.
   #
   # `AppObjectId` is a structure like a URL which identifies a specific object within your app.
@@ -656,6 +648,10 @@ interface AppPersistent(AppObjectId) {
   # canonicalization rules) so that it can recognize when the same object is saved multiple times.
   # `MainView.drop()` will be called when all such references have been dropped by their respective
   # clients.
+  #
+  # TODO(cleanup): How does `label` here relate to `PowerboxDisplayInfo` on `offer()` and
+  #   `fulfillRequest()`? Maybe `label` here should actually be `PowerboxDisplayInfo` and those
+  #   other methods shouldn't take that parameter?
 }
 
 interface MainView(AppObjectId) extends(UiView) {

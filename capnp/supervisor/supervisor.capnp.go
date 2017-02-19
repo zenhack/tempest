@@ -7,6 +7,7 @@ import (
 	strconv "strconv"
 	activity "zenhack.net/go/sandstorm/capnp/activity"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
+	identity "zenhack.net/go/sandstorm/capnp/identity"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zombiezen.com/go/capnproto2"
 	text "zombiezen.com/go/capnproto2/encoding/text"
@@ -77,9 +78,9 @@ func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdow
 	}
 	return Supervisor_shutdown_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-func (c Supervisor) GetGrainSize(ctx context.Context, params func(Supervisor_getGrainSize_Params) error, opts ...capnp.CallOption) Supervisor_getGrainSize_Results_Promise {
+func (c Supervisor) ObsoleteGetGrainSize(ctx context.Context, params func(Supervisor_obsoleteGetGrainSize_Params) error, opts ...capnp.CallOption) Supervisor_obsoleteGetGrainSize_Results_Promise {
 	if c.Client == nil {
-		return Supervisor_getGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return Supervisor_obsoleteGetGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -87,19 +88,19 @@ func (c Supervisor) GetGrainSize(ctx context.Context, params func(Supervisor_get
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:Supervisor",
-			MethodName:    "getGrainSize",
+			MethodName:    "obsoleteGetGrainSize",
 		},
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Supervisor_getGrainSize_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error { return params(Supervisor_obsoleteGetGrainSize_Params{Struct: s}) }
 	}
-	return Supervisor_getGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return Supervisor_obsoleteGetGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
-func (c Supervisor) GetGrainSizeWhenDifferent(ctx context.Context, params func(Supervisor_getGrainSizeWhenDifferent_Params) error, opts ...capnp.CallOption) Supervisor_getGrainSizeWhenDifferent_Results_Promise {
+func (c Supervisor) ObsoleteGetGrainSizeWhenDifferent(ctx context.Context, params func(Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) error, opts ...capnp.CallOption) Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise {
 	if c.Client == nil {
-		return Supervisor_getGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+		return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
 	}
 	call := &capnp.Call{
 		Ctx: ctx,
@@ -107,15 +108,17 @@ func (c Supervisor) GetGrainSizeWhenDifferent(ctx context.Context, params func(S
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:Supervisor",
-			MethodName:    "getGrainSizeWhenDifferent",
+			MethodName:    "obsoleteGetGrainSizeWhenDifferent",
 		},
 		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
 		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Supervisor_getGrainSizeWhenDifferent_Params{Struct: s}) }
+		call.ParamsFunc = func(s capnp.Struct) error {
+			return params(Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{Struct: s})
+		}
 	}
-	return Supervisor_getGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
 func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_Params) error, opts ...capnp.CallOption) Supervisor_restore_Results_Promise {
 	if c.Client == nil {
@@ -225,9 +228,9 @@ type Supervisor_Server interface {
 
 	Shutdown(Supervisor_shutdown) error
 
-	GetGrainSize(Supervisor_getGrainSize) error
+	ObsoleteGetGrainSize(Supervisor_obsoleteGetGrainSize) error
 
-	GetGrainSizeWhenDifferent(Supervisor_getGrainSizeWhenDifferent) error
+	ObsoleteGetGrainSizeWhenDifferent(Supervisor_obsoleteGetGrainSizeWhenDifferent) error
 
 	Restore(Supervisor_restore) error
 
@@ -297,11 +300,11 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      3,
 			InterfaceName: "supervisor.capnp:Supervisor",
-			MethodName:    "getGrainSize",
+			MethodName:    "obsoleteGetGrainSize",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Supervisor_getGrainSize{c, opts, Supervisor_getGrainSize_Params{Struct: p}, Supervisor_getGrainSize_Results{Struct: r}}
-			return s.GetGrainSize(call)
+			call := Supervisor_obsoleteGetGrainSize{c, opts, Supervisor_obsoleteGetGrainSize_Params{Struct: p}, Supervisor_obsoleteGetGrainSize_Results{Struct: r}}
+			return s.ObsoleteGetGrainSize(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
 	})
@@ -311,11 +314,11 @@ func Supervisor_Methods(methods []server.Method, s Supervisor_Server) []server.M
 			InterfaceID:   0x9951c12163385530,
 			MethodID:      4,
 			InterfaceName: "supervisor.capnp:Supervisor",
-			MethodName:    "getGrainSizeWhenDifferent",
+			MethodName:    "obsoleteGetGrainSizeWhenDifferent",
 		},
 		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Supervisor_getGrainSizeWhenDifferent{c, opts, Supervisor_getGrainSizeWhenDifferent_Params{Struct: p}, Supervisor_getGrainSizeWhenDifferent_Results{Struct: r}}
-			return s.GetGrainSizeWhenDifferent(call)
+			call := Supervisor_obsoleteGetGrainSizeWhenDifferent{c, opts, Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{Struct: p}, Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{Struct: r}}
+			return s.ObsoleteGetGrainSizeWhenDifferent(call)
 		},
 		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
 	})
@@ -417,20 +420,20 @@ type Supervisor_shutdown struct {
 	Results Supervisor_shutdown_Results
 }
 
-// Supervisor_getGrainSize holds the arguments for a server call to Supervisor.getGrainSize.
-type Supervisor_getGrainSize struct {
+// Supervisor_obsoleteGetGrainSize holds the arguments for a server call to Supervisor.obsoleteGetGrainSize.
+type Supervisor_obsoleteGetGrainSize struct {
 	Ctx     context.Context
 	Options capnp.CallOptions
-	Params  Supervisor_getGrainSize_Params
-	Results Supervisor_getGrainSize_Results
+	Params  Supervisor_obsoleteGetGrainSize_Params
+	Results Supervisor_obsoleteGetGrainSize_Results
 }
 
-// Supervisor_getGrainSizeWhenDifferent holds the arguments for a server call to Supervisor.getGrainSizeWhenDifferent.
-type Supervisor_getGrainSizeWhenDifferent struct {
+// Supervisor_obsoleteGetGrainSizeWhenDifferent holds the arguments for a server call to Supervisor.obsoleteGetGrainSizeWhenDifferent.
+type Supervisor_obsoleteGetGrainSizeWhenDifferent struct {
 	Ctx     context.Context
 	Options capnp.CallOptions
-	Params  Supervisor_getGrainSizeWhenDifferent_Params
-	Results Supervisor_getGrainSizeWhenDifferent_Results
+	Params  Supervisor_obsoleteGetGrainSizeWhenDifferent_Params
+	Results Supervisor_obsoleteGetGrainSizeWhenDifferent_Results
 }
 
 // Supervisor_restore holds the arguments for a server call to Supervisor.restore.
@@ -532,6 +535,9 @@ func (l Supervisor_WwwFileStatus_List) Set(i int, v Supervisor_WwwFileStatus) {
 
 type Supervisor_getMainView_Params struct{ capnp.Struct }
 
+// Supervisor_getMainView_Params_TypeID is the unique identifier for the type Supervisor_getMainView_Params.
+const Supervisor_getMainView_Params_TypeID = 0xba19fd491deeb222
+
 func NewSupervisor_getMainView_Params(s *capnp.Segment) (Supervisor_getMainView_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_getMainView_Params{st}, err
@@ -578,6 +584,9 @@ func (p Supervisor_getMainView_Params_Promise) Struct() (Supervisor_getMainView_
 }
 
 type Supervisor_getMainView_Results struct{ capnp.Struct }
+
+// Supervisor_getMainView_Results_TypeID is the unique identifier for the type Supervisor_getMainView_Results.
+const Supervisor_getMainView_Results_TypeID = 0x88abdb347bc63d0f
 
 func NewSupervisor_getMainView_Results(s *capnp.Segment) (Supervisor_getMainView_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -649,6 +658,9 @@ func (p Supervisor_getMainView_Results_Promise) View() grain.UiView {
 
 type Supervisor_keepAlive_Params struct{ capnp.Struct }
 
+// Supervisor_keepAlive_Params_TypeID is the unique identifier for the type Supervisor_keepAlive_Params.
+const Supervisor_keepAlive_Params_TypeID = 0xe4a4f650ea454237
+
 func NewSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Supervisor_keepAlive_Params{st}, err
@@ -719,6 +731,9 @@ func (p Supervisor_keepAlive_Params_Promise) Core() SandstormCore {
 
 type Supervisor_keepAlive_Results struct{ capnp.Struct }
 
+// Supervisor_keepAlive_Results_TypeID is the unique identifier for the type Supervisor_keepAlive_Results.
+const Supervisor_keepAlive_Results_TypeID = 0xa0b4085080573e77
+
 func NewSupervisor_keepAlive_Results(s *capnp.Segment) (Supervisor_keepAlive_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_keepAlive_Results{st}, err
@@ -765,6 +780,9 @@ func (p Supervisor_keepAlive_Results_Promise) Struct() (Supervisor_keepAlive_Res
 }
 
 type Supervisor_shutdown_Params struct{ capnp.Struct }
+
+// Supervisor_shutdown_Params_TypeID is the unique identifier for the type Supervisor_shutdown_Params.
+const Supervisor_shutdown_Params_TypeID = 0xd597c8d788fec5df
 
 func NewSupervisor_shutdown_Params(s *capnp.Segment) (Supervisor_shutdown_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -813,6 +831,9 @@ func (p Supervisor_shutdown_Params_Promise) Struct() (Supervisor_shutdown_Params
 
 type Supervisor_shutdown_Results struct{ capnp.Struct }
 
+// Supervisor_shutdown_Results_TypeID is the unique identifier for the type Supervisor_shutdown_Results.
+const Supervisor_shutdown_Results_TypeID = 0xcb7ee0fa69cd6e70
+
 func NewSupervisor_shutdown_Results(s *capnp.Segment) (Supervisor_shutdown_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_shutdown_Results{st}, err
@@ -858,219 +879,234 @@ func (p Supervisor_shutdown_Results_Promise) Struct() (Supervisor_shutdown_Resul
 	return Supervisor_shutdown_Results{s}, err
 }
 
-type Supervisor_getGrainSize_Params struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSize_Params struct{ capnp.Struct }
 
-func NewSupervisor_getGrainSize_Params(s *capnp.Segment) (Supervisor_getGrainSize_Params, error) {
+// Supervisor_obsoleteGetGrainSize_Params_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSize_Params.
+const Supervisor_obsoleteGetGrainSize_Params_TypeID = 0xf3e98c16ae117300
+
+func NewSupervisor_obsoleteGetGrainSize_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_getGrainSize_Params{st}, err
+	return Supervisor_obsoleteGetGrainSize_Params{st}, err
 }
 
-func NewRootSupervisor_getGrainSize_Params(s *capnp.Segment) (Supervisor_getGrainSize_Params, error) {
+func NewRootSupervisor_obsoleteGetGrainSize_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_getGrainSize_Params{st}, err
+	return Supervisor_obsoleteGetGrainSize_Params{st}, err
 }
 
-func ReadRootSupervisor_getGrainSize_Params(msg *capnp.Message) (Supervisor_getGrainSize_Params, error) {
+func ReadRootSupervisor_obsoleteGetGrainSize_Params(msg *capnp.Message) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	root, err := msg.RootPtr()
-	return Supervisor_getGrainSize_Params{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSize_Params{root.Struct()}, err
 }
 
-func (s Supervisor_getGrainSize_Params) String() string {
+func (s Supervisor_obsoleteGetGrainSize_Params) String() string {
 	str, _ := text.Marshal(0xf3e98c16ae117300, s.Struct)
 	return str
 }
 
-// Supervisor_getGrainSize_Params_List is a list of Supervisor_getGrainSize_Params.
-type Supervisor_getGrainSize_Params_List struct{ capnp.List }
+// Supervisor_obsoleteGetGrainSize_Params_List is a list of Supervisor_obsoleteGetGrainSize_Params.
+type Supervisor_obsoleteGetGrainSize_Params_List struct{ capnp.List }
 
-// NewSupervisor_getGrainSize_Params creates a new list of Supervisor_getGrainSize_Params.
-func NewSupervisor_getGrainSize_Params_List(s *capnp.Segment, sz int32) (Supervisor_getGrainSize_Params_List, error) {
+// NewSupervisor_obsoleteGetGrainSize_Params creates a new list of Supervisor_obsoleteGetGrainSize_Params.
+func NewSupervisor_obsoleteGetGrainSize_Params_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSize_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_getGrainSize_Params_List{l}, err
+	return Supervisor_obsoleteGetGrainSize_Params_List{l}, err
 }
 
-func (s Supervisor_getGrainSize_Params_List) At(i int) Supervisor_getGrainSize_Params {
-	return Supervisor_getGrainSize_Params{s.List.Struct(i)}
+func (s Supervisor_obsoleteGetGrainSize_Params_List) At(i int) Supervisor_obsoleteGetGrainSize_Params {
+	return Supervisor_obsoleteGetGrainSize_Params{s.List.Struct(i)}
 }
 
-func (s Supervisor_getGrainSize_Params_List) Set(i int, v Supervisor_getGrainSize_Params) error {
+func (s Supervisor_obsoleteGetGrainSize_Params_List) Set(i int, v Supervisor_obsoleteGetGrainSize_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// Supervisor_getGrainSize_Params_Promise is a wrapper for a Supervisor_getGrainSize_Params promised by a client call.
-type Supervisor_getGrainSize_Params_Promise struct{ *capnp.Pipeline }
+// Supervisor_obsoleteGetGrainSize_Params_Promise is a wrapper for a Supervisor_obsoleteGetGrainSize_Params promised by a client call.
+type Supervisor_obsoleteGetGrainSize_Params_Promise struct{ *capnp.Pipeline }
 
-func (p Supervisor_getGrainSize_Params_Promise) Struct() (Supervisor_getGrainSize_Params, error) {
+func (p Supervisor_obsoleteGetGrainSize_Params_Promise) Struct() (Supervisor_obsoleteGetGrainSize_Params, error) {
 	s, err := p.Pipeline.Struct()
-	return Supervisor_getGrainSize_Params{s}, err
+	return Supervisor_obsoleteGetGrainSize_Params{s}, err
 }
 
-type Supervisor_getGrainSize_Results struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSize_Results struct{ capnp.Struct }
 
-func NewSupervisor_getGrainSize_Results(s *capnp.Segment) (Supervisor_getGrainSize_Results, error) {
+// Supervisor_obsoleteGetGrainSize_Results_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSize_Results.
+const Supervisor_obsoleteGetGrainSize_Results_TypeID = 0xdc76071bd22f9a4b
+
+func NewSupervisor_obsoleteGetGrainSize_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSize_Results{st}, err
+	return Supervisor_obsoleteGetGrainSize_Results{st}, err
 }
 
-func NewRootSupervisor_getGrainSize_Results(s *capnp.Segment) (Supervisor_getGrainSize_Results, error) {
+func NewRootSupervisor_obsoleteGetGrainSize_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSize_Results{st}, err
+	return Supervisor_obsoleteGetGrainSize_Results{st}, err
 }
 
-func ReadRootSupervisor_getGrainSize_Results(msg *capnp.Message) (Supervisor_getGrainSize_Results, error) {
+func ReadRootSupervisor_obsoleteGetGrainSize_Results(msg *capnp.Message) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	root, err := msg.RootPtr()
-	return Supervisor_getGrainSize_Results{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSize_Results{root.Struct()}, err
 }
 
-func (s Supervisor_getGrainSize_Results) String() string {
+func (s Supervisor_obsoleteGetGrainSize_Results) String() string {
 	str, _ := text.Marshal(0xdc76071bd22f9a4b, s.Struct)
 	return str
 }
 
-func (s Supervisor_getGrainSize_Results) Size() uint64 {
+func (s Supervisor_obsoleteGetGrainSize_Results) Size() uint64 {
 	return s.Struct.Uint64(0)
 }
 
-func (s Supervisor_getGrainSize_Results) SetSize(v uint64) {
+func (s Supervisor_obsoleteGetGrainSize_Results) SetSize(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-// Supervisor_getGrainSize_Results_List is a list of Supervisor_getGrainSize_Results.
-type Supervisor_getGrainSize_Results_List struct{ capnp.List }
+// Supervisor_obsoleteGetGrainSize_Results_List is a list of Supervisor_obsoleteGetGrainSize_Results.
+type Supervisor_obsoleteGetGrainSize_Results_List struct{ capnp.List }
 
-// NewSupervisor_getGrainSize_Results creates a new list of Supervisor_getGrainSize_Results.
-func NewSupervisor_getGrainSize_Results_List(s *capnp.Segment, sz int32) (Supervisor_getGrainSize_Results_List, error) {
+// NewSupervisor_obsoleteGetGrainSize_Results creates a new list of Supervisor_obsoleteGetGrainSize_Results.
+func NewSupervisor_obsoleteGetGrainSize_Results_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSize_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_getGrainSize_Results_List{l}, err
+	return Supervisor_obsoleteGetGrainSize_Results_List{l}, err
 }
 
-func (s Supervisor_getGrainSize_Results_List) At(i int) Supervisor_getGrainSize_Results {
-	return Supervisor_getGrainSize_Results{s.List.Struct(i)}
+func (s Supervisor_obsoleteGetGrainSize_Results_List) At(i int) Supervisor_obsoleteGetGrainSize_Results {
+	return Supervisor_obsoleteGetGrainSize_Results{s.List.Struct(i)}
 }
 
-func (s Supervisor_getGrainSize_Results_List) Set(i int, v Supervisor_getGrainSize_Results) error {
+func (s Supervisor_obsoleteGetGrainSize_Results_List) Set(i int, v Supervisor_obsoleteGetGrainSize_Results) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// Supervisor_getGrainSize_Results_Promise is a wrapper for a Supervisor_getGrainSize_Results promised by a client call.
-type Supervisor_getGrainSize_Results_Promise struct{ *capnp.Pipeline }
+// Supervisor_obsoleteGetGrainSize_Results_Promise is a wrapper for a Supervisor_obsoleteGetGrainSize_Results promised by a client call.
+type Supervisor_obsoleteGetGrainSize_Results_Promise struct{ *capnp.Pipeline }
 
-func (p Supervisor_getGrainSize_Results_Promise) Struct() (Supervisor_getGrainSize_Results, error) {
+func (p Supervisor_obsoleteGetGrainSize_Results_Promise) Struct() (Supervisor_obsoleteGetGrainSize_Results, error) {
 	s, err := p.Pipeline.Struct()
-	return Supervisor_getGrainSize_Results{s}, err
+	return Supervisor_obsoleteGetGrainSize_Results{s}, err
 }
 
-type Supervisor_getGrainSizeWhenDifferent_Params struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params struct{ capnp.Struct }
 
-func NewSupervisor_getGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_getGrainSizeWhenDifferent_Params, error) {
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
+const Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_TypeID = 0xc08fb7eab4fb0e05
+
+func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSizeWhenDifferent_Params{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{st}, err
 }
 
-func NewRootSupervisor_getGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_getGrainSizeWhenDifferent_Params, error) {
+func NewRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSizeWhenDifferent_Params{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{st}, err
 }
 
-func ReadRootSupervisor_getGrainSizeWhenDifferent_Params(msg *capnp.Message) (Supervisor_getGrainSizeWhenDifferent_Params, error) {
+func ReadRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(msg *capnp.Message) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	root, err := msg.RootPtr()
-	return Supervisor_getGrainSizeWhenDifferent_Params{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{root.Struct()}, err
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Params) String() string {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) String() string {
 	str, _ := text.Marshal(0xc08fb7eab4fb0e05, s.Struct)
 	return str
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Params) OldSize() uint64 {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) OldSize() uint64 {
 	return s.Struct.Uint64(0)
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Params) SetOldSize(v uint64) {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) SetOldSize(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-// Supervisor_getGrainSizeWhenDifferent_Params_List is a list of Supervisor_getGrainSizeWhenDifferent_Params.
-type Supervisor_getGrainSizeWhenDifferent_Params_List struct{ capnp.List }
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List is a list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List struct{ capnp.List }
 
-// NewSupervisor_getGrainSizeWhenDifferent_Params creates a new list of Supervisor_getGrainSizeWhenDifferent_Params.
-func NewSupervisor_getGrainSizeWhenDifferent_Params_List(s *capnp.Segment, sz int32) (Supervisor_getGrainSizeWhenDifferent_Params_List, error) {
+// NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params creates a new list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
+func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_getGrainSizeWhenDifferent_Params_List{l}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List{l}, err
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Params_List) At(i int) Supervisor_getGrainSizeWhenDifferent_Params {
-	return Supervisor_getGrainSizeWhenDifferent_Params{s.List.Struct(i)}
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List) At(i int) Supervisor_obsoleteGetGrainSizeWhenDifferent_Params {
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{s.List.Struct(i)}
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Params_List) Set(i int, v Supervisor_getGrainSizeWhenDifferent_Params) error {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List) Set(i int, v Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// Supervisor_getGrainSizeWhenDifferent_Params_Promise is a wrapper for a Supervisor_getGrainSizeWhenDifferent_Params promised by a client call.
-type Supervisor_getGrainSizeWhenDifferent_Params_Promise struct{ *capnp.Pipeline }
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Promise is a wrapper for a Supervisor_obsoleteGetGrainSizeWhenDifferent_Params promised by a client call.
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Promise struct{ *capnp.Pipeline }
 
-func (p Supervisor_getGrainSizeWhenDifferent_Params_Promise) Struct() (Supervisor_getGrainSizeWhenDifferent_Params, error) {
+func (p Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Promise) Struct() (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	s, err := p.Pipeline.Struct()
-	return Supervisor_getGrainSizeWhenDifferent_Params{s}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{s}, err
 }
 
-type Supervisor_getGrainSizeWhenDifferent_Results struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results struct{ capnp.Struct }
 
-func NewSupervisor_getGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_getGrainSizeWhenDifferent_Results, error) {
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
+const Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_TypeID = 0xcce106c2fbaa9b04
+
+func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSizeWhenDifferent_Results{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{st}, err
 }
 
-func NewRootSupervisor_getGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_getGrainSizeWhenDifferent_Results, error) {
+func NewRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getGrainSizeWhenDifferent_Results{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{st}, err
 }
 
-func ReadRootSupervisor_getGrainSizeWhenDifferent_Results(msg *capnp.Message) (Supervisor_getGrainSizeWhenDifferent_Results, error) {
+func ReadRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(msg *capnp.Message) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	root, err := msg.RootPtr()
-	return Supervisor_getGrainSizeWhenDifferent_Results{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{root.Struct()}, err
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Results) String() string {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) String() string {
 	str, _ := text.Marshal(0xcce106c2fbaa9b04, s.Struct)
 	return str
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Results) Size() uint64 {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) Size() uint64 {
 	return s.Struct.Uint64(0)
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Results) SetSize(v uint64) {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) SetSize(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-// Supervisor_getGrainSizeWhenDifferent_Results_List is a list of Supervisor_getGrainSizeWhenDifferent_Results.
-type Supervisor_getGrainSizeWhenDifferent_Results_List struct{ capnp.List }
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List is a list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List struct{ capnp.List }
 
-// NewSupervisor_getGrainSizeWhenDifferent_Results creates a new list of Supervisor_getGrainSizeWhenDifferent_Results.
-func NewSupervisor_getGrainSizeWhenDifferent_Results_List(s *capnp.Segment, sz int32) (Supervisor_getGrainSizeWhenDifferent_Results_List, error) {
+// NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results creates a new list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
+func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_getGrainSizeWhenDifferent_Results_List{l}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List{l}, err
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Results_List) At(i int) Supervisor_getGrainSizeWhenDifferent_Results {
-	return Supervisor_getGrainSizeWhenDifferent_Results{s.List.Struct(i)}
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List) At(i int) Supervisor_obsoleteGetGrainSizeWhenDifferent_Results {
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{s.List.Struct(i)}
 }
 
-func (s Supervisor_getGrainSizeWhenDifferent_Results_List) Set(i int, v Supervisor_getGrainSizeWhenDifferent_Results) error {
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List) Set(i int, v Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-// Supervisor_getGrainSizeWhenDifferent_Results_Promise is a wrapper for a Supervisor_getGrainSizeWhenDifferent_Results promised by a client call.
-type Supervisor_getGrainSizeWhenDifferent_Results_Promise struct{ *capnp.Pipeline }
+// Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise is a wrapper for a Supervisor_obsoleteGetGrainSizeWhenDifferent_Results promised by a client call.
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise struct{ *capnp.Pipeline }
 
-func (p Supervisor_getGrainSizeWhenDifferent_Results_Promise) Struct() (Supervisor_getGrainSizeWhenDifferent_Results, error) {
+func (p Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Promise) Struct() (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	s, err := p.Pipeline.Struct()
-	return Supervisor_getGrainSizeWhenDifferent_Results{s}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{s}, err
 }
 
 type Supervisor_restore_Params struct{ capnp.Struct }
+
+// Supervisor_restore_Params_TypeID is the unique identifier for the type Supervisor_restore_Params.
+const Supervisor_restore_Params_TypeID = 0xaae54cb2386e60ab
 
 func NewSupervisor_restore_Params(s *capnp.Segment) (Supervisor_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -1191,6 +1227,9 @@ func (p Supervisor_restore_Params_Promise) Ref() SupervisorObjectId_Promise {
 
 type Supervisor_restore_Results struct{ capnp.Struct }
 
+// Supervisor_restore_Results_TypeID is the unique identifier for the type Supervisor_restore_Results.
+const Supervisor_restore_Results_TypeID = 0x96fb2fd9e320599f
+
 func NewSupervisor_restore_Results(s *capnp.Segment) (Supervisor_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Supervisor_restore_Results{st}, err
@@ -1262,6 +1301,9 @@ func (p Supervisor_restore_Results_Promise) Cap() *capnp.Pipeline {
 }
 
 type Supervisor_drop_Params struct{ capnp.Struct }
+
+// Supervisor_drop_Params_TypeID is the unique identifier for the type Supervisor_drop_Params.
+const Supervisor_drop_Params_TypeID = 0xaf3c0d4c9b788c3b
 
 func NewSupervisor_drop_Params(s *capnp.Segment) (Supervisor_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1339,6 +1381,9 @@ func (p Supervisor_drop_Params_Promise) Ref() SupervisorObjectId_Promise {
 
 type Supervisor_drop_Results struct{ capnp.Struct }
 
+// Supervisor_drop_Results_TypeID is the unique identifier for the type Supervisor_drop_Results.
+const Supervisor_drop_Results_TypeID = 0x80e7bfc1abd2efa7
+
 func NewSupervisor_drop_Results(s *capnp.Segment) (Supervisor_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_drop_Results{st}, err
@@ -1385,6 +1430,9 @@ func (p Supervisor_drop_Results_Promise) Struct() (Supervisor_drop_Results, erro
 }
 
 type Supervisor_watchLog_Params struct{ capnp.Struct }
+
+// Supervisor_watchLog_Params_TypeID is the unique identifier for the type Supervisor_watchLog_Params.
+const Supervisor_watchLog_Params_TypeID = 0xc152ab1174b40c0a
 
 func NewSupervisor_watchLog_Params(s *capnp.Segment) (Supervisor_watchLog_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
@@ -1464,6 +1512,9 @@ func (p Supervisor_watchLog_Params_Promise) Stream() util.ByteStream {
 
 type Supervisor_watchLog_Results struct{ capnp.Struct }
 
+// Supervisor_watchLog_Results_TypeID is the unique identifier for the type Supervisor_watchLog_Results.
+const Supervisor_watchLog_Results_TypeID = 0x98053037c12fa689
+
 func NewSupervisor_watchLog_Results(s *capnp.Segment) (Supervisor_watchLog_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Supervisor_watchLog_Results{st}, err
@@ -1534,6 +1585,9 @@ func (p Supervisor_watchLog_Results_Promise) Handle() util.Handle {
 
 type Supervisor_syncStorage_Params struct{ capnp.Struct }
 
+// Supervisor_syncStorage_Params_TypeID is the unique identifier for the type Supervisor_syncStorage_Params.
+const Supervisor_syncStorage_Params_TypeID = 0xcf3e8fcfd0506bd0
+
 func NewSupervisor_syncStorage_Params(s *capnp.Segment) (Supervisor_syncStorage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_syncStorage_Params{st}, err
@@ -1581,6 +1635,9 @@ func (p Supervisor_syncStorage_Params_Promise) Struct() (Supervisor_syncStorage_
 
 type Supervisor_syncStorage_Results struct{ capnp.Struct }
 
+// Supervisor_syncStorage_Results_TypeID is the unique identifier for the type Supervisor_syncStorage_Results.
+const Supervisor_syncStorage_Results_TypeID = 0xba8b9f7f3a411a03
+
 func NewSupervisor_syncStorage_Results(s *capnp.Segment) (Supervisor_syncStorage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Supervisor_syncStorage_Results{st}, err
@@ -1627,6 +1684,9 @@ func (p Supervisor_syncStorage_Results_Promise) Struct() (Supervisor_syncStorage
 }
 
 type Supervisor_getWwwFileHack_Params struct{ capnp.Struct }
+
+// Supervisor_getWwwFileHack_Params_TypeID is the unique identifier for the type Supervisor_getWwwFileHack_Params.
+const Supervisor_getWwwFileHack_Params_TypeID = 0xf9c6e362d6fcb22a
 
 func NewSupervisor_getWwwFileHack_Params(s *capnp.Segment) (Supervisor_getWwwFileHack_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1720,6 +1780,9 @@ func (p Supervisor_getWwwFileHack_Params_Promise) Stream() util.ByteStream {
 }
 
 type Supervisor_getWwwFileHack_Results struct{ capnp.Struct }
+
+// Supervisor_getWwwFileHack_Results_TypeID is the unique identifier for the type Supervisor_getWwwFileHack_Results.
+const Supervisor_getWwwFileHack_Results_TypeID = 0x902651d6de458996
 
 func NewSupervisor_getWwwFileHack_Results(s *capnp.Segment) (Supervisor_getWwwFileHack_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
@@ -1936,6 +1999,46 @@ func (c SandstormCore) BackgroundActivity(ctx context.Context, params func(Sands
 	}
 	return SandstormCore_backgroundActivity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
+func (c SandstormCore) ReportGrainSize(ctx context.Context, params func(SandstormCore_reportGrainSize_Params) error, opts ...capnp.CallOption) SandstormCore_reportGrainSize_Results_Promise {
+	if c.Client == nil {
+		return SandstormCore_reportGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0x9ba45778a294b60c,
+			MethodID:      8,
+			InterfaceName: "supervisor.capnp:SandstormCore",
+			MethodName:    "reportGrainSize",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormCore_reportGrainSize_Params{Struct: s}) }
+	}
+	return SandstormCore_reportGrainSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
+func (c SandstormCore) GetIdentityId(ctx context.Context, params func(SandstormCore_getIdentityId_Params) error, opts ...capnp.CallOption) SandstormCore_getIdentityId_Results_Promise {
+	if c.Client == nil {
+		return SandstormCore_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0x9ba45778a294b60c,
+			MethodID:      9,
+			InterfaceName: "supervisor.capnp:SandstormCore",
+			MethodName:    "getIdentityId",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormCore_getIdentityId_Params{Struct: s}) }
+	}
+	return SandstormCore_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
 
 type SandstormCore_Server interface {
 	Restore(SandstormCore_restore) error
@@ -1953,6 +2056,10 @@ type SandstormCore_Server interface {
 	ClaimRequest(SandstormCore_claimRequest) error
 
 	BackgroundActivity(SandstormCore_backgroundActivity) error
+
+	ReportGrainSize(SandstormCore_reportGrainSize) error
+
+	GetIdentityId(SandstormCore_getIdentityId) error
 }
 
 func SandstormCore_ServerToClient(s SandstormCore_Server) SandstormCore {
@@ -1962,7 +2069,7 @@ func SandstormCore_ServerToClient(s SandstormCore_Server) SandstormCore {
 
 func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 8)
+		methods = make([]server.Method, 0, 10)
 	}
 
 	methods = append(methods, server.Method{
@@ -2077,6 +2184,34 @@ func SandstormCore_Methods(methods []server.Method, s SandstormCore_Server) []se
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0x9ba45778a294b60c,
+			MethodID:      8,
+			InterfaceName: "supervisor.capnp:SandstormCore",
+			MethodName:    "reportGrainSize",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := SandstormCore_reportGrainSize{c, opts, SandstormCore_reportGrainSize_Params{Struct: p}, SandstormCore_reportGrainSize_Results{Struct: r}}
+			return s.ReportGrainSize(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0x9ba45778a294b60c,
+			MethodID:      9,
+			InterfaceName: "supervisor.capnp:SandstormCore",
+			MethodName:    "getIdentityId",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := SandstormCore_getIdentityId{c, opts, SandstormCore_getIdentityId_Params{Struct: p}, SandstormCore_getIdentityId_Results{Struct: r}}
+			return s.GetIdentityId(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
+	})
+
 	return methods
 }
 
@@ -2144,6 +2279,22 @@ type SandstormCore_backgroundActivity struct {
 	Results SandstormCore_backgroundActivity_Results
 }
 
+// SandstormCore_reportGrainSize holds the arguments for a server call to SandstormCore.reportGrainSize.
+type SandstormCore_reportGrainSize struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  SandstormCore_reportGrainSize_Params
+	Results SandstormCore_reportGrainSize_Results
+}
+
+// SandstormCore_getIdentityId holds the arguments for a server call to SandstormCore.getIdentityId.
+type SandstormCore_getIdentityId struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  SandstormCore_getIdentityId_Params
+	Results SandstormCore_getIdentityId_Results
+}
+
 type SandstormCore_RequirementObserver struct{ Client capnp.Client }
 
 func (c SandstormCore_RequirementObserver) Observe(ctx context.Context, params func(SandstormCore_RequirementObserver_observe_Params) error, opts ...capnp.CallOption) SandstormCore_RequirementObserver_observe_Results_Promise {
@@ -2208,6 +2359,9 @@ type SandstormCore_RequirementObserver_observe struct {
 
 type SandstormCore_RequirementObserver_observe_Params struct{ capnp.Struct }
 
+// SandstormCore_RequirementObserver_observe_Params_TypeID is the unique identifier for the type SandstormCore_RequirementObserver_observe_Params.
+const SandstormCore_RequirementObserver_observe_Params_TypeID = 0x99bc33fd5d97c13d
+
 func NewSandstormCore_RequirementObserver_observe_Params(s *capnp.Segment) (SandstormCore_RequirementObserver_observe_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormCore_RequirementObserver_observe_Params{st}, err
@@ -2255,6 +2409,9 @@ func (p SandstormCore_RequirementObserver_observe_Params_Promise) Struct() (Sand
 
 type SandstormCore_RequirementObserver_observe_Results struct{ capnp.Struct }
 
+// SandstormCore_RequirementObserver_observe_Results_TypeID is the unique identifier for the type SandstormCore_RequirementObserver_observe_Results.
+const SandstormCore_RequirementObserver_observe_Results_TypeID = 0xcc28367ccc71b3df
+
 func NewSandstormCore_RequirementObserver_observe_Results(s *capnp.Segment) (SandstormCore_RequirementObserver_observe_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormCore_RequirementObserver_observe_Results{st}, err
@@ -2301,6 +2458,9 @@ func (p SandstormCore_RequirementObserver_observe_Results_Promise) Struct() (San
 }
 
 type SandstormCore_restore_Params struct{ capnp.Struct }
+
+// SandstormCore_restore_Params_TypeID is the unique identifier for the type SandstormCore_restore_Params.
+const SandstormCore_restore_Params_TypeID = 0xf839f92f21f00b08
 
 func NewSandstormCore_restore_Params(s *capnp.Segment) (SandstormCore_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2366,6 +2526,9 @@ func (p SandstormCore_restore_Params_Promise) Struct() (SandstormCore_restore_Pa
 }
 
 type SandstormCore_restore_Results struct{ capnp.Struct }
+
+// SandstormCore_restore_Results_TypeID is the unique identifier for the type SandstormCore_restore_Results.
+const SandstormCore_restore_Results_TypeID = 0x92e92771f2b6b2b7
 
 func NewSandstormCore_restore_Results(s *capnp.Segment) (SandstormCore_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2438,6 +2601,9 @@ func (p SandstormCore_restore_Results_Promise) Cap() *capnp.Pipeline {
 }
 
 type SandstormCore_makeToken_Params struct{ capnp.Struct }
+
+// SandstormCore_makeToken_Params_TypeID is the unique identifier for the type SandstormCore_makeToken_Params.
+const SandstormCore_makeToken_Params_TypeID = 0xf0e8359b121f97d2
 
 func NewSandstormCore_makeToken_Params(s *capnp.Segment) (SandstormCore_makeToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -2569,6 +2735,9 @@ func (p SandstormCore_makeToken_Params_Promise) Owner() ApiTokenOwner_Promise {
 
 type SandstormCore_makeToken_Results struct{ capnp.Struct }
 
+// SandstormCore_makeToken_Results_TypeID is the unique identifier for the type SandstormCore_makeToken_Results.
+const SandstormCore_makeToken_Results_TypeID = 0x9f96d4b948521f91
+
 func NewSandstormCore_makeToken_Results(s *capnp.Segment) (SandstormCore_makeToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCore_makeToken_Results{st}, err
@@ -2634,6 +2803,9 @@ func (p SandstormCore_makeToken_Results_Promise) Struct() (SandstormCore_makeTok
 
 type SandstormCore_getOwnerNotificationTarget_Params struct{ capnp.Struct }
 
+// SandstormCore_getOwnerNotificationTarget_Params_TypeID is the unique identifier for the type SandstormCore_getOwnerNotificationTarget_Params.
+const SandstormCore_getOwnerNotificationTarget_Params_TypeID = 0xaf72d693dbf4bf54
+
 func NewSandstormCore_getOwnerNotificationTarget_Params(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormCore_getOwnerNotificationTarget_Params{st}, err
@@ -2680,6 +2852,9 @@ func (p SandstormCore_getOwnerNotificationTarget_Params_Promise) Struct() (Sands
 }
 
 type SandstormCore_getOwnerNotificationTarget_Results struct{ capnp.Struct }
+
+// SandstormCore_getOwnerNotificationTarget_Results_TypeID is the unique identifier for the type SandstormCore_getOwnerNotificationTarget_Results.
+const SandstormCore_getOwnerNotificationTarget_Results_TypeID = 0x888c6d95df2cc976
 
 func NewSandstormCore_getOwnerNotificationTarget_Results(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2751,6 +2926,9 @@ func (p SandstormCore_getOwnerNotificationTarget_Results_Promise) Owner() activi
 
 type SandstormCore_drop_Params struct{ capnp.Struct }
 
+// SandstormCore_drop_Params_TypeID is the unique identifier for the type SandstormCore_drop_Params.
+const SandstormCore_drop_Params_TypeID = 0xe03b8c8163d957c6
+
 func NewSandstormCore_drop_Params(s *capnp.Segment) (SandstormCore_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCore_drop_Params{st}, err
@@ -2816,6 +2994,9 @@ func (p SandstormCore_drop_Params_Promise) Struct() (SandstormCore_drop_Params, 
 
 type SandstormCore_drop_Results struct{ capnp.Struct }
 
+// SandstormCore_drop_Results_TypeID is the unique identifier for the type SandstormCore_drop_Results.
+const SandstormCore_drop_Results_TypeID = 0xce435c92a97c1b97
+
 func NewSandstormCore_drop_Results(s *capnp.Segment) (SandstormCore_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormCore_drop_Results{st}, err
@@ -2862,6 +3043,9 @@ func (p SandstormCore_drop_Results_Promise) Struct() (SandstormCore_drop_Results
 }
 
 type SandstormCore_checkRequirements_Params struct{ capnp.Struct }
+
+// SandstormCore_checkRequirements_Params_TypeID is the unique identifier for the type SandstormCore_checkRequirements_Params.
+const SandstormCore_checkRequirements_Params_TypeID = 0x8867ef4f53bc45c3
 
 func NewSandstormCore_checkRequirements_Params(s *capnp.Segment) (SandstormCore_checkRequirements_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2935,6 +3119,9 @@ func (p SandstormCore_checkRequirements_Params_Promise) Struct() (SandstormCore_
 
 type SandstormCore_checkRequirements_Results struct{ capnp.Struct }
 
+// SandstormCore_checkRequirements_Results_TypeID is the unique identifier for the type SandstormCore_checkRequirements_Results.
+const SandstormCore_checkRequirements_Results_TypeID = 0xca83e6f36908ed7f
+
 func NewSandstormCore_checkRequirements_Results(s *capnp.Segment) (SandstormCore_checkRequirements_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCore_checkRequirements_Results{st}, err
@@ -3004,6 +3191,9 @@ func (p SandstormCore_checkRequirements_Results_Promise) Observer() SandstormCor
 }
 
 type SandstormCore_makeChildToken_Params struct{ capnp.Struct }
+
+// SandstormCore_makeChildToken_Params_TypeID is the unique identifier for the type SandstormCore_makeChildToken_Params.
+const SandstormCore_makeChildToken_Params_TypeID = 0x9b25c148edb2b020
 
 func NewSandstormCore_makeChildToken_Params(s *capnp.Segment) (SandstormCore_makeChildToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -3124,6 +3314,9 @@ func (p SandstormCore_makeChildToken_Params_Promise) Owner() ApiTokenOwner_Promi
 
 type SandstormCore_makeChildToken_Results struct{ capnp.Struct }
 
+// SandstormCore_makeChildToken_Results_TypeID is the unique identifier for the type SandstormCore_makeChildToken_Results.
+const SandstormCore_makeChildToken_Results_TypeID = 0x9ea56a46fc87138a
+
 func NewSandstormCore_makeChildToken_Results(s *capnp.Segment) (SandstormCore_makeChildToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCore_makeChildToken_Results{st}, err
@@ -3188,6 +3381,9 @@ func (p SandstormCore_makeChildToken_Results_Promise) Struct() (SandstormCore_ma
 }
 
 type SandstormCore_claimRequest_Params struct{ capnp.Struct }
+
+// SandstormCore_claimRequest_Params_TypeID is the unique identifier for the type SandstormCore_claimRequest_Params.
+const SandstormCore_claimRequest_Params_TypeID = 0xeeaeb799e53e0b01
 
 func NewSandstormCore_claimRequest_Params(s *capnp.Segment) (SandstormCore_claimRequest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -3284,6 +3480,9 @@ func (p SandstormCore_claimRequest_Params_Promise) Struct() (SandstormCore_claim
 
 type SandstormCore_claimRequest_Results struct{ capnp.Struct }
 
+// SandstormCore_claimRequest_Results_TypeID is the unique identifier for the type SandstormCore_claimRequest_Results.
+const SandstormCore_claimRequest_Results_TypeID = 0xb91071e3d7b9ab13
+
 func NewSandstormCore_claimRequest_Results(s *capnp.Segment) (SandstormCore_claimRequest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCore_claimRequest_Results{st}, err
@@ -3355,6 +3554,9 @@ func (p SandstormCore_claimRequest_Results_Promise) Cap() *capnp.Pipeline {
 }
 
 type SandstormCore_backgroundActivity_Params struct{ capnp.Struct }
+
+// SandstormCore_backgroundActivity_Params_TypeID is the unique identifier for the type SandstormCore_backgroundActivity_Params.
+const SandstormCore_backgroundActivity_Params_TypeID = 0x938e798cc0e3d6ac
 
 func NewSandstormCore_backgroundActivity_Params(s *capnp.Segment) (SandstormCore_backgroundActivity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -3432,6 +3634,9 @@ func (p SandstormCore_backgroundActivity_Params_Promise) Event() activity.Activi
 
 type SandstormCore_backgroundActivity_Results struct{ capnp.Struct }
 
+// SandstormCore_backgroundActivity_Results_TypeID is the unique identifier for the type SandstormCore_backgroundActivity_Results.
+const SandstormCore_backgroundActivity_Results_TypeID = 0x9d87019c48640d21
+
 func NewSandstormCore_backgroundActivity_Results(s *capnp.Segment) (SandstormCore_backgroundActivity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormCore_backgroundActivity_Results{st}, err
@@ -3477,6 +3682,255 @@ func (p SandstormCore_backgroundActivity_Results_Promise) Struct() (SandstormCor
 	return SandstormCore_backgroundActivity_Results{s}, err
 }
 
+type SandstormCore_reportGrainSize_Params struct{ capnp.Struct }
+
+// SandstormCore_reportGrainSize_Params_TypeID is the unique identifier for the type SandstormCore_reportGrainSize_Params.
+const SandstormCore_reportGrainSize_Params_TypeID = 0xaec15e35d479f4f3
+
+func NewSandstormCore_reportGrainSize_Params(s *capnp.Segment) (SandstormCore_reportGrainSize_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return SandstormCore_reportGrainSize_Params{st}, err
+}
+
+func NewRootSandstormCore_reportGrainSize_Params(s *capnp.Segment) (SandstormCore_reportGrainSize_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return SandstormCore_reportGrainSize_Params{st}, err
+}
+
+func ReadRootSandstormCore_reportGrainSize_Params(msg *capnp.Message) (SandstormCore_reportGrainSize_Params, error) {
+	root, err := msg.RootPtr()
+	return SandstormCore_reportGrainSize_Params{root.Struct()}, err
+}
+
+func (s SandstormCore_reportGrainSize_Params) String() string {
+	str, _ := text.Marshal(0xaec15e35d479f4f3, s.Struct)
+	return str
+}
+
+func (s SandstormCore_reportGrainSize_Params) Bytes() uint64 {
+	return s.Struct.Uint64(0)
+}
+
+func (s SandstormCore_reportGrainSize_Params) SetBytes(v uint64) {
+	s.Struct.SetUint64(0, v)
+}
+
+// SandstormCore_reportGrainSize_Params_List is a list of SandstormCore_reportGrainSize_Params.
+type SandstormCore_reportGrainSize_Params_List struct{ capnp.List }
+
+// NewSandstormCore_reportGrainSize_Params creates a new list of SandstormCore_reportGrainSize_Params.
+func NewSandstormCore_reportGrainSize_Params_List(s *capnp.Segment, sz int32) (SandstormCore_reportGrainSize_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return SandstormCore_reportGrainSize_Params_List{l}, err
+}
+
+func (s SandstormCore_reportGrainSize_Params_List) At(i int) SandstormCore_reportGrainSize_Params {
+	return SandstormCore_reportGrainSize_Params{s.List.Struct(i)}
+}
+
+func (s SandstormCore_reportGrainSize_Params_List) Set(i int, v SandstormCore_reportGrainSize_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormCore_reportGrainSize_Params_Promise is a wrapper for a SandstormCore_reportGrainSize_Params promised by a client call.
+type SandstormCore_reportGrainSize_Params_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormCore_reportGrainSize_Params_Promise) Struct() (SandstormCore_reportGrainSize_Params, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormCore_reportGrainSize_Params{s}, err
+}
+
+type SandstormCore_reportGrainSize_Results struct{ capnp.Struct }
+
+// SandstormCore_reportGrainSize_Results_TypeID is the unique identifier for the type SandstormCore_reportGrainSize_Results.
+const SandstormCore_reportGrainSize_Results_TypeID = 0xc43d5a1430e113ca
+
+func NewSandstormCore_reportGrainSize_Results(s *capnp.Segment) (SandstormCore_reportGrainSize_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormCore_reportGrainSize_Results{st}, err
+}
+
+func NewRootSandstormCore_reportGrainSize_Results(s *capnp.Segment) (SandstormCore_reportGrainSize_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormCore_reportGrainSize_Results{st}, err
+}
+
+func ReadRootSandstormCore_reportGrainSize_Results(msg *capnp.Message) (SandstormCore_reportGrainSize_Results, error) {
+	root, err := msg.RootPtr()
+	return SandstormCore_reportGrainSize_Results{root.Struct()}, err
+}
+
+func (s SandstormCore_reportGrainSize_Results) String() string {
+	str, _ := text.Marshal(0xc43d5a1430e113ca, s.Struct)
+	return str
+}
+
+// SandstormCore_reportGrainSize_Results_List is a list of SandstormCore_reportGrainSize_Results.
+type SandstormCore_reportGrainSize_Results_List struct{ capnp.List }
+
+// NewSandstormCore_reportGrainSize_Results creates a new list of SandstormCore_reportGrainSize_Results.
+func NewSandstormCore_reportGrainSize_Results_List(s *capnp.Segment, sz int32) (SandstormCore_reportGrainSize_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return SandstormCore_reportGrainSize_Results_List{l}, err
+}
+
+func (s SandstormCore_reportGrainSize_Results_List) At(i int) SandstormCore_reportGrainSize_Results {
+	return SandstormCore_reportGrainSize_Results{s.List.Struct(i)}
+}
+
+func (s SandstormCore_reportGrainSize_Results_List) Set(i int, v SandstormCore_reportGrainSize_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormCore_reportGrainSize_Results_Promise is a wrapper for a SandstormCore_reportGrainSize_Results promised by a client call.
+type SandstormCore_reportGrainSize_Results_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormCore_reportGrainSize_Results_Promise) Struct() (SandstormCore_reportGrainSize_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormCore_reportGrainSize_Results{s}, err
+}
+
+type SandstormCore_getIdentityId_Params struct{ capnp.Struct }
+
+// SandstormCore_getIdentityId_Params_TypeID is the unique identifier for the type SandstormCore_getIdentityId_Params.
+const SandstormCore_getIdentityId_Params_TypeID = 0xf59063f154adea97
+
+func NewSandstormCore_getIdentityId_Params(s *capnp.Segment) (SandstormCore_getIdentityId_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCore_getIdentityId_Params{st}, err
+}
+
+func NewRootSandstormCore_getIdentityId_Params(s *capnp.Segment) (SandstormCore_getIdentityId_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCore_getIdentityId_Params{st}, err
+}
+
+func ReadRootSandstormCore_getIdentityId_Params(msg *capnp.Message) (SandstormCore_getIdentityId_Params, error) {
+	root, err := msg.RootPtr()
+	return SandstormCore_getIdentityId_Params{root.Struct()}, err
+}
+
+func (s SandstormCore_getIdentityId_Params) String() string {
+	str, _ := text.Marshal(0xf59063f154adea97, s.Struct)
+	return str
+}
+
+func (s SandstormCore_getIdentityId_Params) Identity() identity.Identity {
+	p, _ := s.Struct.Ptr(0)
+	return identity.Identity{Client: p.Interface().Client()}
+}
+
+func (s SandstormCore_getIdentityId_Params) HasIdentity() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s SandstormCore_getIdentityId_Params) SetIdentity(v identity.Identity) error {
+	if v.Client == nil {
+		return s.Struct.SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
+	return s.Struct.SetPtr(0, in.ToPtr())
+}
+
+// SandstormCore_getIdentityId_Params_List is a list of SandstormCore_getIdentityId_Params.
+type SandstormCore_getIdentityId_Params_List struct{ capnp.List }
+
+// NewSandstormCore_getIdentityId_Params creates a new list of SandstormCore_getIdentityId_Params.
+func NewSandstormCore_getIdentityId_Params_List(s *capnp.Segment, sz int32) (SandstormCore_getIdentityId_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormCore_getIdentityId_Params_List{l}, err
+}
+
+func (s SandstormCore_getIdentityId_Params_List) At(i int) SandstormCore_getIdentityId_Params {
+	return SandstormCore_getIdentityId_Params{s.List.Struct(i)}
+}
+
+func (s SandstormCore_getIdentityId_Params_List) Set(i int, v SandstormCore_getIdentityId_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormCore_getIdentityId_Params_Promise is a wrapper for a SandstormCore_getIdentityId_Params promised by a client call.
+type SandstormCore_getIdentityId_Params_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormCore_getIdentityId_Params_Promise) Struct() (SandstormCore_getIdentityId_Params, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormCore_getIdentityId_Params{s}, err
+}
+
+func (p SandstormCore_getIdentityId_Params_Promise) Identity() identity.Identity {
+	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+}
+
+type SandstormCore_getIdentityId_Results struct{ capnp.Struct }
+
+// SandstormCore_getIdentityId_Results_TypeID is the unique identifier for the type SandstormCore_getIdentityId_Results.
+const SandstormCore_getIdentityId_Results_TypeID = 0xcaa1479a3b9c719b
+
+func NewSandstormCore_getIdentityId_Results(s *capnp.Segment) (SandstormCore_getIdentityId_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCore_getIdentityId_Results{st}, err
+}
+
+func NewRootSandstormCore_getIdentityId_Results(s *capnp.Segment) (SandstormCore_getIdentityId_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCore_getIdentityId_Results{st}, err
+}
+
+func ReadRootSandstormCore_getIdentityId_Results(msg *capnp.Message) (SandstormCore_getIdentityId_Results, error) {
+	root, err := msg.RootPtr()
+	return SandstormCore_getIdentityId_Results{root.Struct()}, err
+}
+
+func (s SandstormCore_getIdentityId_Results) String() string {
+	str, _ := text.Marshal(0xcaa1479a3b9c719b, s.Struct)
+	return str
+}
+
+func (s SandstormCore_getIdentityId_Results) Id() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return []byte(p.Data()), err
+}
+
+func (s SandstormCore_getIdentityId_Results) HasId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s SandstormCore_getIdentityId_Results) SetId(v []byte) error {
+	d, err := capnp.NewData(s.Struct.Segment(), []byte(v))
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(0, d.List.ToPtr())
+}
+
+// SandstormCore_getIdentityId_Results_List is a list of SandstormCore_getIdentityId_Results.
+type SandstormCore_getIdentityId_Results_List struct{ capnp.List }
+
+// NewSandstormCore_getIdentityId_Results creates a new list of SandstormCore_getIdentityId_Results.
+func NewSandstormCore_getIdentityId_Results_List(s *capnp.Segment, sz int32) (SandstormCore_getIdentityId_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormCore_getIdentityId_Results_List{l}, err
+}
+
+func (s SandstormCore_getIdentityId_Results_List) At(i int) SandstormCore_getIdentityId_Results {
+	return SandstormCore_getIdentityId_Results{s.List.Struct(i)}
+}
+
+func (s SandstormCore_getIdentityId_Results_List) Set(i int, v SandstormCore_getIdentityId_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormCore_getIdentityId_Results_Promise is a wrapper for a SandstormCore_getIdentityId_Results promised by a client call.
+type SandstormCore_getIdentityId_Results_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormCore_getIdentityId_Results_Promise) Struct() (SandstormCore_getIdentityId_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormCore_getIdentityId_Results{s}, err
+}
+
 type MembraneRequirement struct{ capnp.Struct }
 type MembraneRequirement_permissionsHeld MembraneRequirement
 type MembraneRequirement_Which uint16
@@ -3519,6 +3973,9 @@ func (w MembraneRequirement_permissionsHeld_Which) String() string {
 	}
 	return "MembraneRequirement_permissionsHeld_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
 }
+
+// MembraneRequirement_TypeID is the unique identifier for the type MembraneRequirement.
+const MembraneRequirement_TypeID = 0x918db9a721f13886
 
 func NewMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
@@ -3858,6 +4315,9 @@ type SystemPersistent_addRequirements struct {
 
 type SystemPersistent_addRequirements_Params struct{ capnp.Struct }
 
+// SystemPersistent_addRequirements_Params_TypeID is the unique identifier for the type SystemPersistent_addRequirements_Params.
+const SystemPersistent_addRequirements_Params_TypeID = 0xbb5eb0bde1481587
+
 func NewSystemPersistent_addRequirements_Params(s *capnp.Segment) (SystemPersistent_addRequirements_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SystemPersistent_addRequirements_Params{st}, err
@@ -3929,6 +4389,9 @@ func (p SystemPersistent_addRequirements_Params_Promise) Struct() (SystemPersist
 }
 
 type SystemPersistent_addRequirements_Results struct{ capnp.Struct }
+
+// SystemPersistent_addRequirements_Results_TypeID is the unique identifier for the type SystemPersistent_addRequirements_Results.
+const SystemPersistent_addRequirements_Results_TypeID = 0x8488d5d569f6cffe
 
 func NewSystemPersistent_addRequirements_Results(s *capnp.Segment) (SystemPersistent_addRequirements_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -4235,6 +4698,9 @@ func (w DenormalizedGrainMetadata_Which) String() string {
 	return "DenormalizedGrainMetadata_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
 }
 
+// DenormalizedGrainMetadata_TypeID is the unique identifier for the type DenormalizedGrainMetadata.
+const DenormalizedGrainMetadata_TypeID = 0xbdd9bea5585df6c5
+
 func NewDenormalizedGrainMetadata(s *capnp.Segment) (DenormalizedGrainMetadata, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
 	return DenormalizedGrainMetadata{st}, err
@@ -4464,6 +4930,9 @@ func (w ApiTokenOwner_Which) String() string {
 	return "ApiTokenOwner_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
 }
 
+// ApiTokenOwner_TypeID is the unique identifier for the type ApiTokenOwner.
+const ApiTokenOwner_TypeID = 0xda970537e2a8a9a9
+
 func NewApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
 	return ApiTokenOwner{st}, err
@@ -4600,29 +5069,6 @@ func (s ApiTokenOwner) SetClientPowerboxRequest() {
 	s.Struct.SetUint16(0, 5)
 }
 
-func (s ApiTokenOwner_clientPowerboxRequest) GrainId() (string, error) {
-	p, err := s.Struct.Ptr(0)
-	return p.Text(), err
-}
-
-func (s ApiTokenOwner_clientPowerboxRequest) HasGrainId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s ApiTokenOwner_clientPowerboxRequest) GrainIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
-	return p.TextBytes(), err
-}
-
-func (s ApiTokenOwner_clientPowerboxRequest) SetGrainId(v string) error {
-	t, err := capnp.NewText(s.Struct.Segment(), v)
-	if err != nil {
-		return err
-	}
-	return s.Struct.SetPtr(0, t.List.ToPtr())
-}
-
 func (s ApiTokenOwner_clientPowerboxRequest) SessionId() (string, error) {
 	p, err := s.Struct.Ptr(2)
 	return p.Text(), err
@@ -4644,6 +5090,29 @@ func (s ApiTokenOwner_clientPowerboxRequest) SetSessionId(v string) error {
 		return err
 	}
 	return s.Struct.SetPtr(2, t.List.ToPtr())
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) GrainId() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) HasGrainId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) GrainIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) SetGrainId(v string) error {
+	t, err := capnp.NewText(s.Struct.Segment(), v)
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(0, t.List.ToPtr())
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) IntroducerIdentity() (string, error) {
@@ -4968,6 +5437,9 @@ func (w SupervisorObjectId_Which) String() string {
 	return "SupervisorObjectId_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
 }
 
+// SupervisorObjectId_TypeID is the unique identifier for the type SupervisorObjectId.
+const SupervisorObjectId_TypeID = 0x8e74650737dbb840
+
 func NewSupervisorObjectId(s *capnp.Segment) (SupervisorObjectId, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
 	return SupervisorObjectId{st}, err
@@ -5052,248 +5524,263 @@ func (p SupervisorObjectId_Promise) AppRef() *capnp.Pipeline {
 	return p.Pipeline.GetPipeline(0)
 }
 
-const schema_c7205d6d32c7b040 = "x\xda\xacY\x0d|TUv\xbf\xf7\xcdL^\x10\xc2" +
-	"\xe41\xa1m\xbe\x9c$$\xcaD\xbe\xa3\x05\xd9\xc5$" +
-	"\x08JXh2\x01\xc4\xf5'-/3/\xc9K\xe6" +
-	"\x8b7/\x09A)+\xd5\x0a\xbb\xb8\x16\xb7+\x0aZ" +
-	"\x95]\xaa\x88\xaeJQ7\xad\xb8F\x17?aU\xba" +
-	"\x81\xcdRW>\x96ZiYq\xb5VTx=\xe7" +
-	"\xbew\xe7\xbdL&\x84\xac\xfe\xf8%d\xce;\xef\xdc" +
-	"{\xce\xfd\x9fs\xfe\xe7\xce\xb4\xdd95\xc2t\xcfG" +
-	"U\x84,\xb9Y\xf0d\x19\x8f~tpW\xef/>" +
-	"\xf8\x1e\x91\x8a(!n\x91\x90\xaa\xf7\xf2\x17R\xe26" +
-	"\xce\xbf\xfd\x99\xda\xd7\xb7\xe1v\"\x95\xc1\x13\x0f\xc5G" +
-	"o\xe4\x1f\xa4\x84\xfa\xde\xcb\xaf&\xd4x\xe0\xccS\xbf" +
-	"\xf4\x7f\xb2\xff\x0exU0\xa6-\x9b\x15*\xed\x0d\xde" +
-	"O\x08\xad:\x97\xdfH}R\x01\xbc\xe0\xcb)\xa8\x07" +
-	"\xcdW\xe6\xbf\xb0\xa4\xfe\xa3\x96\x0dD\xf2\xa7L\x05\x0a" +
-	"^FSW\x17\xa0\xa9\xa0\xfe\xe6\xef\xbezq\xfd\x06" +
-	"\x12\xf4Sj\xec\xdc\xf9\xd8\xf1\x99\x9e-\xbf%\xe3=" +
-	"\"\xe8WE\x0b\xb6\xa2\xeaZ\xa6\xda\xf9\xc6\xa4\xf7\x7f" +
-	"\x1c\xdd4\xc0\xd6#\x05\xe3\x04P\xe8a\x0a\xde9\xaf" +
-	"\xder\xe5\x91]\x1bL\x8fL\x85\xfe\x82\xf5h\xe1$" +
-	"S\xa8\xf9\xf9\x91\x99\xa2\xa2\xff\x90\x04%X\xac\xe6\xe9" +
-	"\xd7fDW\x94\xbcF\xe6SQ\xc8\xa5U\x9e\xc22" +
-	"\xea\x1b_\x88\x9b\x97\x0a\xbb\xe0\xf7]\x85^\xe3\xde\x8d" +
-	"\xf3\x7fw(x\xd9?\x90`\x11\xe5a\xba\xa3\x90\xed" +
-	"\xea\xc7\x85h\xf3\xefg}\\\xfah\xcf]\x9b\xd3m" +
-	"\xbaE\x17\xa8>[XI}\xfb\x98\xcd\xde\xc2\xa7@" +
-	"\xfd\xf9\xdd\xcf\xfdq\xd5\xe5\x1f\xde\xe3t\xa2\xaeh\x0d" +
-	"\xda[V\x84\xf6\x9e8t\xe2\xa5M\xdd?\xfc\x91S" +
-	"\xa1\xa3\xe8MT\xd8\xc8\x14\x1e\xfan\xc9\x89\xfe\xa9_" +
-	"\xde\xeb\xf4rgQ\x13*<\xcb\x146\xfe\xf3\xd4\xde" +
-	"\x99\xd3<\xf79\x15\xfa\x8a\xdaP\xe1\x18SH\x9d\x98" +
-	"$\xb9\xec\x1d\xc3cZ|\xdc\x97S\xfc\xe7\xa0\x9f_" +
-	"|\xa7\xe0{\xf7Rx\xd5\x98\xd3\xbbe\xc5\xb9\xaa\x17" +
-	"@\xbb\x8a\x07\xa0\xe7R\x88\xba\xdb(yz\xf7\xe9\x05" +
-	"\xbd\x15\xdb\xac\xad\xba\xf0\xd13\x97>\x8e\x0b\xf5^\x8a" +
-	"\xce\x8ey\xee\x1f\xb7\xaf^\xfe\xd3m\x83\x16\x8a\xfa\xbf" +
-	"\xf0u\xfbq\xa1\x8d~Q\xf0}\\\x82\x0b\x95\xe6\x84" +
-	"\x17<@\xef|\xd04\xc7\x16\xea/9\x88\x80\xfc\xbe" +
-	"\xef\xce\xaf\xaek\xdb\xf1O\xce\x98\x1c(\xd9\xcd\x00Y" +
-	"\x82\x1em\xf67.\xe8\xf9\xf5\xbd\x0f9\x15\xce\x95|" +
-	"\x1f\x15rJQ\xa1\xeb\x9a\xe5\xdfk\xc8\xde\xf3\xb0\x03" +
-	"\xec\x93K5\xb4\xfd\x7f\xd7\xb5\x7f~\xed\xed\xff\xfd\x13" +
-	"x\xd5eo\x18\xb0\x9c_\xba\x95\xfa\xa6\x97\xe2\xd1M" +
-	".\xbd\xde\xb7\x0c\xff2v\xad\x8c\xcd\xda\xbd\xe8\xe4\xe3" +
-	"Vl\x99\xcbsJo\xc2\x85\xeaJ\xd1\xe5omZ" +
-	"\xbdmQ\xce\xb7\x9fr\x06\xffl\xe9\\T\xa0e\xb8" +
-	"\x93\xa5\xbf\xf8\xf4\xc8\x8f\x0eiO9\xbc,-\xbb\x04" +
-	"\xc3\xe9\xdb\xd5s\xf8\xc4\xaa\xdc\x1e\xa7\x13\xf9e\xdb\xf1" +
-	"\xd5\x00{\xb5l\xf7\x1f\x8a\xeb\xce\xe5\xff\xab\xc3\x89\xba" +
-	"\xb25\xe8\x84\xab\xa0v\xf6\xba\x87~\xe0|rU\xd9" +
-	"z|r\xe7\xf8\x05\xc7\xf6>\xfd\xd7\xff\xe6\xcc\xe5\xd2" +
-	"2\x06\xa7\xab\x98\xd1}\x9f\xad\xb8q\xc7\x8b\xfd{\x07" +
-	"\xe3W\x00U\xb5\xec&H\xbf2\x0cBw\x19\xfa\xe7" +
-	"\x19\xfb\xe5\x9eS\xcf\xdf\xfd\x923\x1f\xce\x96\x9db\x91" +
-	"\x9e\x80\xf6.\x19\xb3G\x97v5\xf6Z\x0a\xe6\x8a\x93" +
-	"'0|^=\xa1\x0b4\x84K6\xf5\x06\x8eOz" +
-	"9\x1d\x15U\xf7O\x18G};'\xe0b;&\x88" +
-	"\xf0s9D|O\xdf\x8b\xb7\x1e>\xbd\xe9\x95A\xda" +
-	"\x0f\xa2\xf6\x93L{\xe7\x84\xeb}}\x13\x00N\xc6\x13" +
-	"\xf3?Y{\xcbF\xe5\xb5\xcc\xe5$\xa7\x9c\x81\xb3\xb8" +
-	"\x1c=Yw:[\xfd\xe4?\xff\xeeMg\xb8{\xcb" +
-	"Yd\xfa\xca\xd1\x93\xd2pV\xebk\xee\xe4[\x99m" +
-	"\x9d-\xafd\x87Z\xf1\x01\xa8&b\x07\xd4/\x8e\xfe" +
-	"\xed[\x8e\xf8\x9f\xach\xc3\xf8\xbf\xff/\xab\xf6\xdf\xfa" +
-	"\x97\x13\xf7;\xb2\xe7\xdd\x8a\x02<n\xf7\xb6\xc7\xbf|" +
-	"9\xeb\xd8~g$\xdf\xa8\xf8#\x03u\x05\xae\xbf\xa5" +
-	"\xf0\xd6\x9d\xf7\xdc|\xed\xaf\x1cH9W\xd1\x84F\xdf" +
-	"iox\xe7\xed\xbb\xafy\xdb\xb1\xdc\x87\x15\x0c\x08\xef" +
-	"\xef;\xbf\xe1\xf0\xeb[\xfa\x1cO\xfa\xccw~\xb2w" +
-	"\\v\xeb}\x85\xfd$x\x05u\x9c\xfax7\xf3\xa6" +
-	"\xb7\x82\x95\xc9\x03\x15\x18\x999\x87\xae?\xde\xf1J}" +
-	"\x7ff\xc7\xd5\xcb\x00I\xb4j\xd5ew\xc3\x7f\xf6\xd3" +
-	"4\xf8xDVG'~\xe1+\x9e\xc8\x80<\x91\xa9" +
-	"/\xfb\xf7\xb57\xbe\xfe\xab\xbdG\x06\x9df]`\x0d" +
-	"\xf5\xad\x08\xe0K\xdf\x0d\x88\xf0\x83g\xff\x9d\xadS\x0f" +
-	"\x16\x8a\x9d\xff\xe1\x0cQ0\xc0\xd2Z\x0e`\x88^]" +
-	"\xde\x1f\xbam\xd3\xb7\x8e:\xcf\xf0\xb6\x00K\xc7\xbb\x98" +
-	"\xc2\xcc\xb9\xf3O5|\xf6\xd3\xdf;\xd3\xf1\xc9\x00\xab" +
-	"\x85=L\x81\x8e\xbe\xe6\xe4\xfd\xcf\xff\xec\x0f\x96\x05\x81" +
-	"U\x9d\x00\xab\xef\x1f\x06\x10\xad\x07\xb7\xf8\xc7m\xbb\xea" +
-	"\xbf\xce8\x8b\x9c\\\xc9\xa2\x15\xad\x84h\x9dOJ?" +
-	"\xfb\xb3M\x1f~b\x07<\xff\x0a\x96y\xd3^\xacn" +
-	";=i\xd4\xe7$XA\x1dmb\x19\x04\\\xa0\xd0" +
-	"m\xae@,V\x8d\xbf\xc2\x8fq\xc9\x1e}\xa6t\xea" +
-	"\xd9\xab?w:2g\x92\xc6\xea\xca$\xdcg\xe5\xee" +
-	"\xaf\x0e5\x9dx\xf5\xac\xe5\x08\xdb\xa7:\xe9\x1eT\xe8" +
-	"\x9e\xd4E\x0c\xeb\xdfh#\xd9\x91P\xb4N5\xe9\x8e" +
-	"kSBr\"\x96\x98\xbd\xc4\x92\x80 \xac\xc5\x13\xe5" +
-	"\x8dJ\xb2#\xa2'!\xbe\\7\xcb\xd6\xedN\xeaJ" +
-	"\xb4A\xd1\x92*\xfc\x11\xd3\xa7\xc8\xe1p\xa3\xb2\xaaC" +
-	"\xd5\x94(|LZ/\xd3d\xd0\xedr\x83\xbf\xb0\x17" +
-	")\xa7\x8c\x90`\xb6\x8b\x06\xf3\x04*\x82\x19*\xd9I" +
-	"K(\x95`\xf7\x17\xdc\xd4\xf2\xae\xae\xeb\xd4\x88\xb2D" +
-	"\x97\xf5\x0e\x9al\xa048\x86B\xed\x91\x8a+\xd9\xeb" +
-	"\xe3\x1b\xe1?A\x92\x16\x12\xe2m\x06=#\x0c\x9b\x09" +
-	"\xe9q\x8d\xd0n#\x16\xd7\xaf\x8bw\xc4\xc2$\xb37" +
-	"r,\x9c\x04\xcd\xe8\xb5qM\x99\x12jUB\xed\x03" +
-	"\x9ci\x9059\x9a$N_\xda\xc0\x971\xe0\xcbD" +
-	"\x81\x1a\x9a\xa5K\xbc\xa8M\xc7\x12\xda\xe0\xa24\xd7>" +
-	"K\xd8\xdeX\x87w\x9e\xd4\xc2\xb5\x09ui\xbc]\x89" +
-	"\xd5w\xc5\x14\x90ET0\xd0\x10\xefR\xb4\xa6\xf8\xea" +
-	"\xfa\xe6f\x97\xa2\x99k\xe6At`\xd1Fk\xd1\xbf" +
-	"\x80E\x93J2\xa9\xc6cu\x84\x86\xe9\x18\"\xc0\x8f" +
-	"\xbd\x808\x84g-\x8a\xceV\xfa\xab\xb8\xae6\xab!" +
-	"Y\x07\x03Ke\x0d\xc4\x19\xcfk\x86}^\xfe8\xbe" +
-	"\x07'v\xa6d\xda\xe1\x99\xc9\xcf\xcf\xa4\x9f\x98'\xd3" +
-	"\x89\x81\xe1\xc5\xb2\x1a\xbbAU\xbaRhr.Pi" +
-	"/\xe0\xed\x04%\xb0\xff\xc1\xf1\x96S\xf7\x1d\xdes$" +
-	"\xdd\xbe+\x83\xfd\xfa\xa66%$\xeaua\xc4B\xb6" +
-	"\xcb=\xc60\x98\xdd\xc0l\xb0[\x0ev\xa7\x09\xb4\x98" +
-	"\x9e7h\x1eV\x05i\xf2\xe3 \x9e\x06\xe2o\x0b\xb4" +
-	"ZN$\x1a\x95f:\x8e:\xd8\x1e\xac9\x0e9\x80" +
-	"\xdc\xae,\x8a\x87\xda)\x0f\x93\x17\xe3D\xb3!\xc8\xd9" +
-	"\x84\xd6\xba\xa9D\x9b\x8c\xdaD\x82-Op\xfda\xa3" +
-	"`Aw\x81\x1cj7\x03\xe1\xd2\x07Dz\xb6\x1d\x88" +
-	"\xea$\xe2;I\xbd6{\x86Px3\x86b\xb1\x12" +
-	"m\xd2\xe4\x98b\x81\xd5\x8bheya\xc7b\xfeM" +
-	"`z\x1e\x98n\x10h\x0e\xc6\x82\xda\x05GZ\xbc\x9e" +
-	"\x089\xc29#\x8f\xc2N\xa4\xab\x9b@u\x16\xa8\xce" +
-	"\x03x\xe9\x08\xcb\x1b\xe4\x08q\xa96\xbe`\xfd\xa8\x0a" +
-	"\xb0\x13\xe2\xb1\xe4\x02%\x12&\x1dIE\xabK\xd6\x86" +
-	"\xc5\xa8\x1a\x1b\x84B\xf7\x10(\xd4\x14\xfc[)o\xac" +
-	"6!q\xa1\x121\xce\xed\x02\xef\xc79\xac\x0e\x95\xb5" +
-	"M\x10\xdb\x16\x0ds\xbc6\xa4\xab\x9d\xaa\xde\xcd\xd3\x96" +
-	"\x0c\x85i\xa5\x13\xe2\x05y\xfa\x9d\xc8\xa6\x9d\xa7\x9e{" +
-	"\xe9Q\x0ct\xeepU(\xb5{\xd8\xbc8\xe2\xddg" +
-	"4\xd9%\xeb\xa1\xd6E\xf1\x16\xb4\xe9M\x8f\x88\x13\x1a" +
-	"\xad\xe0qD\x81,9:w\xe5\xca'\xca?\xbd/" +
-	"=K\x84t\xf3\"\xd8\x0f\xba\xa9s\x14\xa3\x9a\xc1+" +
-	")\xf13\xac\x05'\xba<P\x179m\xa4|>\xf2" +
-	"M\xa7MD\xf0\x05\xa8H\xed\x0eI9E\xf6\x15\xd3" +
-	"Fx:\x1e\x9e\xbaR|\x82r\x86\xe3\x1bE\x17\xc2" +
-	"S\x0aO\xdd\xbc\xf5\xd9}Z\xfa\xdf6\"H\xa7E" +
-	"\xeaI\x11E\xcay\x8et\xec <;&\xd2\xac\x14" +
-	"\x8b\xa6|\x96\x91\xfa\xe6\xc2\xb37D*\xa6\x084\xe5" +
-	"\xf3\xa9\xb4\xb7\x12\x9e=#\xd2\xec\x14\xb7\xa4|\xc4\x91" +
-	"v\xc0f\xa4\x07\xa1\xa3\xa68\x11\xe5\\X\xda\x0cN" +
-	"J\x1bE:*\xd5<)\x9f\xe6\xa4\xb5k\xe0Y\x87" +
-	"h\xf0JFD(S5\xd4hW\x94DmD\xed" +
-	"$T\x81O\xc9\xd6\x0e=\x0c\x15\x12*\x08|\x02\xdd" +
-	"\xeb5P&\xde%\xea\x1a\xc5!\x10\xf0\xf3\xf2V%" +
-	"6OmnV4%F\xf5\x1a\xba\xce\x02T\x0d\xf5" +
-	"b\xd7\xad\xc1\xfac\xc2\xc1\xb4\x96\xec\x8e\x85\x96`\x17" +
-	"\x13\xe5\x16\xcb\x18;>Rm\xd6\x93\x1a\x0a\x19?l" +
-	"\xe5w\xb4\xb3\xfa&H\xdaNh7q\xf3\x0f3M" +
-	"h2S\x11\x1b`#\x0au\xf1\xdaV5\x12f-" +
-	"\x0b^\xf3bza\xb1\xb1\xb0:\x1f\xb1Z\x03X]" +
-	"$@\x8d\xb4\xaan\xdd\x0c\xbb\x00I\x82\x90\xc7Z\xf6" +
-	"bl\x9f\x8b@\xd8\x0a\xa8N\xc8\x1a\xe6a\x0e\x94\x8f" +
-	"\x1c\xc2;M\xae\xcd\x18\xad\xac\x1ci\x97\x15\xd2\xdd\xa8" +
-	"6\xfd`\xe9`Ost\xbb\xc1\x83CytD\x08" +
-	"O\xb0\x84%\x05'\\\x94\x0f\xe4\xd2\xc7\x08\xc1\x93\x08" +
-	"zN\xf9(\x1f+\xa5~\xc8\x08\xe9]\x845\x1f\xdf" +
-	"(\xbf\x8d\x90\xf6\xfd\x16\x9e\xedC\x08r6J9s" +
-	"\x97z\x10\xbaO\"\xe4\xf9E\x08\xe5c\x87\xf4\xc8=" +
-	"&t\xed9\x9a\xf29W\xda\xbc\xc6\x84\xae\xcdO)" +
-	"\x9f\x0e\xa5\xb5m\x0c\xba\x90*\xfc\xaa\x80\xf2\xc9YR" +
-	"\xb7\xc23E\xb4\xb1g\xe0\xe1\xe2\xb9\x12\x1a3A\xc6" +
-	"\x88\x82\x90\xce\x14\\\x8an\x03\x95\x13%\xca\xa1E\x93" +
-	"\x96%\x84\x09\xa96\x81\x82\x8a\x11Y\x8d\x82\"\xf1v" +
-	"\xc0\x82 \xe0\xc5\x9a\xf2j\xed\xd2\xbb\x07\x02y\x04e" +
-	"\x9eS\x97\x91\x02\xb8Q\xf1\x0f\xea?\xce\xf6\xc0Z " +
-	"\x87\xe5E\x19\xe7v-\xde<2\xc3\x19[\x03\xaf3" +
-	"Jj\xb7\xc3ndP\xaa\x03\x8bDR\xe0fx\xe6" +
-	"\xb74\x94\x0f\x9c\x92\x84x\xf6\x88\xeb\xacr0\xf0\x18" +
-	".\xd8\x02\xb1p\xb8\x06V\x80\xb2L\x15\x00\x93}\x01" +
-	"\x08\xc3\x8e\x0a #\xd9X\x09\xc2\x08\xf4J\x0d\x98X" +
-	"\xae\x83\x87\x8d,\xe1\xcd\xfa\xb14N\xc4\x8b\x0e+\x9b" +
-	"o2\xb0zg\x03\xcf\xbc\xa9\xafA\xb19\x1d\x19\xf6" +
-	"\x04y\xba`\xb2|\x93<\xc3I\xc7\xab\xcd\xdd\xa4^" +
-	"\x18\x93\xe9\x05\xde{\xa0\xf3\xa4P\x9d\xb4\x1f_\xe4(" +
-	"\x98\x89\x86}\x9d\xf1\xc9\xf6m\x9e\x12\x83\x98\xc9\x11h" +
-	"\xaba\xd6a\x17+\xba\x1c\x96]\xbal\xb1`\x0e\xcb" +
-	"\x85N\x12l \x09N]sH\x8b\xa1\xf6\x16\x0bl" +
-	"J@\x16|\xd5\x0c{J0`JX\xaa\xea\x11\x05" +
-	"G\x83\\\xa3\xee\xf8-3\xb5\xe7W\xfc\xc0\xc2\x82W" +
-	"\x0d\xc5c~P\xa9\x1b<\x81e\x0d\x11\x7f\xb6\xcbt" +
-	"\x1a\xa0\xa7z\xa9#Bs\xed3^\x17\x8f\x84\xf1\x1d" +
-	":\x0aV\x19u\xd1l\x12\xe2.\xa2\xd1\xec\x94\xd1\x80" +
-	"\x06F'\x82\xd1+\x05\xca\xb3s:6\xedI \x9b" +
-	"%\x98u9\x12o\xa9%\xfe(\x94X\x9d/\x083" +
-	"\x89\xa6\x00G\x90\x8c\xbf9\xf1v\xa0k\xd6\xf2\x03C" +
-	"\x8fg6\x10\x16 [\xa5\x0a\x1cE\x83\xcb\x13\xcc\x86" +
-	"\xa0\xdb\xe3>qPX\x92i\xc8\x1b\x08*\xaa\xdb\x15" +
-	"\x8c\xdfTR\xfe\xf5\x83$\xc1\x18#\x8d\x12\x0d\x0e<" +
-	"j!\x0f\xe8\x13k\xf6\x9box\xe8\xc0\xd4\xd2\xb7^" +
-	"\x87\xcf\x12\xf5\x07\xdd\x82C\x04\x11\xa0\x97\xe3\xe6\xd8\x08" +
-	"\x89\xbfs\xe17\x16\x91\x01\x0cd\x84\xb3;l\x83\xb5" +
-	":\x13\x83y`\x0f@8\xd7Q\x1b\x05\x88\xfeX\xac" +
-	"\x8d[-\"t#\x16L\xa8\x8d^\x10.\xc39\x7f" +
-	")\x08W\xc2\xd9\xb7 b\x1c\x08Sc\xba\x16\x0fw" +
-	"\x84(L^aX\x12[\xa7\x0d\xbf\x0b\\\x0a\\\xfc" +
-	"uG\xc6\x06\xb6\xd0q\xf7`\xb5\x0a\x0d\xd3B\xb2\xb9" +
-	"\xd4\x90\x98\x18\x18\xaa\x16/\xba\x04qf\xa1A\xe32" +
-	"\x86\xe6f\x93\x0e\xb2\xb6\x81\x1dB\xc1(\x84A\x98\x00" +
-	"\xa1\x0bB\x03\x87/E\xd7\x800\x02\xc2\xd5\x18DW" +
-	"\x1e\xa0\x93H\x1d\x18\xc4\xd5 \xbc=C\xbc\x92r\xa7" +
-	"\xb2Hn\x02b\x13\x19\x9c\xc2\xa9h\x92jE[\x06" +
-	"N]d\x98/\x94\x7f|\x18HMs_\x8b\x9c\xf3" +
-	"\xdb\x82?\xb5\xb2d\"9\xcek\x97\xe40ue\xc0" +
-	"FS\xd7\x82\xa2\xd3-\xf7p\xad#\xbd\xd7\\8l" +
-	"V\xd9\xca\x90qC\x94{]\x9e\x82\x95\x18\xe1\xe9\xce" +
-	"\xb5\xaa\xda\xc0Q\xc4\xe2\x1cus\x9d\xa3\x08\x80\xc7\xe5" +
-	"\x1cE \x03\xab\x9b\xd1\xbe\xce\xcfy\x9d\x9cL*\xba" +
-	"\x03K\xd6\xe7\x19\xc4\xbbz^B\x1d\x04\x87\xa1\x00\xdf" +
-	"!\xc2Y\x06\x8b\\n\x0akf\xc1\x9a\xcf\xe2\xee\x9e" +
-	"\x865_\xb0\xf0.\x82\xb0\x07\x1b\xcf\x1e\x10\xbed\xd1" +
-	"\xa4l\x10\xee=\x08\xc2_\x82\xf0\x1d(H\xf0\xf6%" +
-	" ;\x80W:\xfbA\xf6\x1bPt\xbb\xf3\xe8h\x10" +
-	"\xf6ai\xff5\x08\x8f\x82\xd0\x93\x9b\x07\x1b#\xd2{" +
-	"\xe8\xf0o@\xf8{\x10fIy\x00y\"\x1d[\x0f" +
-	"\xc2\xa3 \xfc\x1fp\x98]\xe0\xa4\x1c\xf4\xeb\xd8\xecR" +
-	"~\x85\xadx\x0b\xe9\x01\xa72\xa4R\xea\xab\x01\x9eJ" +
-	",M\xf4n\xe2rD\xac#a\xb6\x0e\xe2_\xea4" +
-	"\x0d\x83GL\x8e*a8+\xe8D\xacp)\xb1\xda" +
-	"H\xa4\x96Z\xa4\x9e\xd8O\x06\x8dsVp\xab\xcd\xe8" +
-	"bc(\xb2\xef\xbb\x9c\xa1\xb5\xee\xbbR\xdf\xcf`\x88" +
-	"\x85\x1c7\xdew\xe1\xc9?\x82%\xedaP}\x02T" +
-	"=_Y\xb7`;Q\xfa\x18H\xf7\x804\xebK4" +
-	"\x90\xfa\x9eCz\xa6\x12/\xcc\xbe@a\xea\x1b$\xe9" +
-	"\xfe\xdd t\x9dEa\xea[ji\xe3v\"Tw" +
-	")M\xedJ7\xc9\xf2\xb3\xa2\x845E\xd1b\x8an" +
-	"^4\x0a\x8c\xb05kq\x90\xe2\xc5\xb4\xe8\xc5\xc30" +
-	"x#\xa1\xbc\x93\xf8\x19\x0fL\x97\xd77\x8b\x90\xe1\x19" +
-	"R\xca\xee\xbf\xf5\xb1\x96\xb8\x1ak1\x99h\xb5IE" +
-	"\x87h\xc6\x07j6\xfe\xfcH\xf1\x1d\xe7Ifv\x9a" +
-	"\xb9\xd0d\xee\x13_\xaf\xb8\xf0\x91\xe2\x9b\x9c\x9c2\x90" +
-	"+\xe7&C\xb08t1\xc7W\xbaC]l\x0fM" +
-	"\xd2\xf9\xb6\x1dT\xab\xcd\xa6Z\xa9Ih\xfav\x10^" +
-	"i\x16 F{\xe1\xdd\xa5\xc4\xcb\x9c\xe2\x19c\xb1\xe1" +
-	"0m\xb0.[\xc5x,E\x8a1)\xc6\x8eh\x18" +
-	"\xe5C\xcep3\xdap\xb74\x99\xc7\xa1o\xec\xb2f" +
-	"\xf4\xb0`\xb3\x1c\x194~\xa4\xdd\x81c\x13\x9d\xc2\xef" +
-	"\xa9!r^\xbc\xa7\x0e\xe6A\xedu\x9b\x9e\xae\x9dm" +
-	"\x93\x05F\xc3\xd0\xd3\xdb\xb0P\xde\x0a\xc2\x0d\x16\xd7\xc0" +
-	"\xfap\x07\x8e\xa8\xb7\x83\xf0a\x81\x16\x19\x86\xcbd " +
-	"\x0fb\xf5}\x00\xa4\x8f\x99_.X%}\xc7\\\xbb" +
-	"\x98\xa4U\xd5A\x94\x84o\x8fd:\xdaLet\x1d" +
-	"\xc3}\x861c\xb8+\xf6\x06\xbf\x9c\x0e\xfd\x11\xddp" +
-	"\x0c\xf9%\x86ug\xe8\x04|\xa5\xfd\xa5K\x0aV\x93" +
-	"g\xdbY\xe0M\xc8z+\xf7`\xc8\x89\xe2\xff\x03\x00" +
-	"\x00\xff\xff\xae\x15\xe0\xb0"
+const schema_c7205d6d32c7b040 = "x\xda\xacZ\x0dt\x14U\x96\xbe\xf7U7\x95hB" +
+	"\xe7\xd1ag4\x09\x0d!!\x90@\xf8\x89\x0c\x88\x83" +
+	"I\x90\x08a`I\x05\x10\x973\xccR\xe9~I\x9a" +
+	"\xf4_\xaa*\x09AYfXX`\x06\xc7\xc1\xd9\x95" +
+	"?Y\x95\x19W\x03*\xca\xa2\x0e\xb3\xe2\x10\x15\x15\x85" +
+	"QY\x03\xc3\xb0\x8c\xfc\x0c\xeb\xc2.#.\xe2\x8a\x0a" +
+	"\xb5\xe7UWuU\x92\x0e!\x07\x8f\xe7xb\xd7\xad" +
+	"\xfb\xde\xbd\xef\xbb\xdf\xfd\xee+\xc7\xd4\xf7/#c\xdd" +
+	"\xf3\xbf\x070g\x09q\xf7\xd3\x9f\xfe\xf4\xf0\x8e\xf6\xdf" +
+	"}\xf2c\xa0\xd9\x08\xe0\x12\x01Jh\xd6\x0c\x04\x97~" +
+	"\xed\xfd/\x82\x1d\x1dkV\x02\xcdE\x007\xf2GW" +
+	"o?\x8c\x80^\x9aU\x0a\xa8?vq\xe7\x9b\xbeK" +
+	"\x07W\x01\xcd&\xfa\x98y\x13\xfdC\xda\xa5M\x00X" +
+	"26\xab\x1a\xbd\x15Y\"\x80\xb7<k6\xa0\xfeF" +
+	"\xc5\xabsf\x7fZ\xb7\x06\xa8/\xe1ja\xd6\xeb\xdc" +
+	"U\xd8p%i\xef\xfe\xe9\x9b\xd7V\xac\x01\xc9\x87\xa8" +
+	"\xb7\xb5=sz\x82{\xc3\x1fa\xa0[D\x80\x92'" +
+	"\xb36s\xd3\x17\x0d\xd3\xe6\x03#?\xfe\xa7\xf0\xbaN" +
+	"\xbe:\xb2\x06\x10@\xef\x05\xc3\xc03\xf9\xad\x07\xee8" +
+	"\xbecM<\xa2\xb8Az\xf6\x0a\xee\xe1\xb6lnP" +
+	"\xf6\x9b\xe3\x13D\xa6\xfd\x1c$\x8a\xa8\x97\xbd\xf0\xf6\xb8" +
+	"\xf0\xc2\xc1oC\x05\x8a$\x03K\xee\xcc\xceEoe" +
+	"6\xdf|Ev\x0b\x80\xb7=\xdb\xa3?\xba\xb6\xe2O" +
+	"G\xa4a\xbf\x00)\x1b\xad4\xed\xc96vu\xc0\xf0" +
+	"\xf9\x0f\x13?\x1b\xf2\xf4\x9e\x87\xd6w\xf5\xe9\x12\x05\x80" +
+	"\x92s\xd9\x85\xe8\xbdb\xf8\xbc\x9c\xbd\x13P\x7fe\xd7" +
+	"\xcb\xff\xdbXp\xee\x11g\x10\xcbr\x96r\x7fks" +
+	"\xb8\xbfg\x8f\x9c\xd9\xb7\xae\xf5\xe7\xbft\x1a\xb4\xe5\xbc" +
+	"\xcb\x0d\xf6\x1a\x06\x8f\xff\xcd\xe03\xc7F\x7f\xfd\xa83" +
+	"\xca\x1395\xdc\xe0\x9ca\xb0\xf6_F\xb7O\x18\xe3" +
+	"\xde\xe84H\x1d\xb4\x98\x1b\x0c\x1c\xc4\x0d\x12'F\xa9" +
+	"`\xef\x18\xd0;~\xd0io\xf9\xa0\xef\x00\x94\xcc\x1a" +
+	"\xb4\x9ax\xd3\x07\x8b\x00\xfa\xe4\xf6\x0d\x0b\xaf\x96\xbc\xba" +
+	"\x09h\x89\x95\x80\xcb\xbe\x01\x04\\\xfa\xe0\x17v]\x98" +
+	"\xde\x9e\xbf\xc5\xdc\xaa\xc0\x1f]\xf0m\xe7\x0b]\xf5\xf1" +
+	"`\xd3^\xfe\xc7mK\xe6\xffzK\xb7\x85\xda\x06\x7f" +
+	"\xe5}i0_h\xff\xe0\xd5\xc4\xbb*\x97/4$" +
+	"=0\xfd1\\\xbd5\xee\xceX(\x9c{\x98\x03\xf2" +
+	"\xa7\xde\xd5\xdf\xdc\xbb\xf8\xa9\x7fv\xe6D\xce\xdd\xc5\x17" +
+	"j\xcc\xe5\x11\xad\xf7UO\xdf\xf3\xd1\xa3\x8f;\x0d\xd6" +
+	"\xe7\xfe\x94\x1b<i\x18\xb4\xdc=\xff\xc7U)\xbb\x9f" +
+	"p\x80\xbd=W\xe1\xbe\xff\xef\xde\x86/\xefY\xf9\xdf" +
+	"\xbf\x02\xea\x13\xec\x0d\x03\x96<\x97\xbb\x19\xbd\xfb\xf9\xce" +
+	"\xbc\xed\xb9\xd3\xbc\xe7\x8c=\xeeX\x14\x99\xb8k\xe6\xd9" +
+	"\xedfn\x8d\x90?\xcc]\xc0\x17:\x91\xcbC\xbe\xf4" +
+	"y\xebG\xe3\x7f\xd4\xfe\xbc\x81gs\xa5\x87\x86\x1a[" +
+	"\xdd:\x94\xef\xe4\xaeuK\xb6\xccL\xff\xfeN\xe7\xe9" +
+	"\xec\x1d:\x85\x1b\xec7\x0c\xe6\xfe\xee\xf3\xe3\xbf<\xa2" +
+	"\xect\xa4\xe1\xec\xd0[x\xbe\xbd;\xf6\x1c=\xd3\x98" +
+	"\xb1\xc7\x19\xe5\x89\xa1\xdb\xf8\xab\x17\x8cWsw\xfd%" +
+	"\xa7\xf2\xeam\xbfuD\x99\x9e\xb7\x94G)\xdc^>" +
+	"i\xf9\xe3?s>\xb92t\x05\x7f\xb2z\xe0\xf4S" +
+	"{_\xf8\xd1\xbf9\x8b\xfd\xecP\x03oW\x0c\xa7\xfb" +
+	"\xbfXx\xffS\xaf\x1d\xdb\xdb\x1d\xe0\x04\xa0dT\xde" +
+	"\x02\xf4\x96\xe7\xf1,M\xce\xe3\x09p\xf7\xffz\xf7\xf9" +
+	"W\x1e\xde\xe7,\x98\xbdy\x85\xbcJ;\xf2\xb8\xbf[" +
+	"\xd2vktGu\xbbi\x10_\xf1r\x9e\x01`\xcc" +
+	"o\x01\xd4\xc9-\xeb\xdaG\x9c\x1e\xf9zW\xd8\x94\xc8" +
+	"\xf9\x03\xd0\xdb\x98\xcf\x17\x0b\xe7\x8b\xdep~\x01\x80\xbe" +
+	"\xbb\xe3\xb5\x07\x8f^X\xf7F7k\xc6\xad\x9b\x0c\xeb" +
+	"\xc6\xfci\xde\xad\xf9\xdf\x01\xd0\xdf\xf5\x9e\x1a\x93\xb9`" +
+	"\xf2\x9b\x8e\xecv\xe4\xff\x96'\xe2\xd9\x8aK\xcb\x1eX" +
+	"\xcb\xdeN\xceD\xfb\xf3\x0d\\w\xe4\xf3\x18\x97_H" +
+	"\x09^\xfa\xcf\xbf\x7f\xd7y\x10\xad\xc3\x8c\x9c=4\x8c" +
+	"\xc7\xb8\xa5\xf1\xb1\xbb6O{\xb2\x93\xc1\x8b\xc3\x0c\x0f" +
+	"\xed\x86\xc1\x90@\xbf\xfa\xb7]\xea{\xc9\x17;5\xac" +
+	"\xd0(\xe7a\x9f\x00\xea\xb1\xc8\xa1\xe0W'\xff\xee=" +
+	"\xc7\xd1\x1d*X\xccw\xfc\xf1\xbf6\x1e|\xf0{\xc3" +
+	"\x0f:*sO\xc1\xed\x1c)\xae-\xdb\xbf~\xbd\xdf" +
+	"\xa9\x83\xceCx\xb1`\x1c?\x84\x03\x05|\xfd\x0dY" +
+	"\x0f\xb6=\xf2\xc3{~\xefH\xc3\xb9\x82\x1a\xee\xf4\x83" +
+	"\x86\xaa\x0f\xde\x7f\xf8\xee\xf7\x1d\xcbu\x14\x18\x18\xfax" +
+	"\xff\xb55G\xdf\xd9\xd0\xe1\xac\xa1\xf8;\xbf\xda; " +
+	"\xa5~c\xd61\x90\x8a\xd0\x01\x98\x81.#\x9a\xe7\x0a" +
+	"\x0c\x0a\xdeS\xc0S7\xf9\xc8\xb4\xd3Mo\xcc>\x96" +
+	"<\xf0y\xc3s\x11\xb0d\xe1\xf0\x87\x11\x1cO\xbb " +
+	"\xcf-\xf23\xbd:\xe2+oj!\xdf\x85\xbb\xd00" +
+	"\x9f\xf7\xef\xcb\xee\x7f\xe7\xf7{\x8fw\x03\xc2\xf8\xa2\xa5" +
+	"\xe8\xad,2\x88\xbdH\xf4V\x14q\xd8\xfc`\xf3\xe8" +
+	"\xc3Yb\xf3\x7f8S4\xb9\xc88C\xa9\x88\xa7\xe8" +
+	"\xad\xf9\xc7\xfc?Yw\xd7I\xe7\x196\x16\x19\xa5\xbe" +
+	"\xcc0\x980\xa5\xe2|\xd5\x17\xbf\xfe\xb3\xb3\x92\xb7\x16" +
+	"\x19<\xdbf\x18\xe0\xadw\x9f\xdd\xf4\xca\xf3\x7f1=" +
+	"\x10np\xa0\xc8\xe8\x1d\xc7\x8a8\xd0\x0fo\xf0\x0d\xd8" +
+	"2\xfe\xbf.:\x09T\x1aidk\xe1\xc8\x9d\x80\xd7" +
+	"T\xfa\xfc_\xad;w\xc9Nx\xea\xa8\xd7y\xc27" +
+	"\x9c\x7fn\xeeg\xfe_\\v\xee\xed\xcaH\x83\x09R" +
+	"G\x19\x14\xffZ\xe9\xe2\x0b#S\xbf\x04)\x1f\x1d=" +
+	"j\x9eKD\x82X2j\x14\xc7b\xc9\xe4Q>\x9e" +
+	"\xb8\x94[/\x0e\x19}\xe5\xce/\x9d\xdeX\xb1b\xd0" +
+	"k1\xf7V\xb8\xeb\x9b#5g\xde\xbabFj\x04" +
+	"\xb2\xbe\xf8\x11\x83^\x8b[@7\xff\x19\xa9\xabM1" +
+	"\xa64\x07UWT)\xf6\xcb\xb1Hl\xd2\x1c\xf3\x97" +
+	"\xa8R\x1cP\xa2\xb1\xbcj\xa66\x854\x15 a\xdb" +
+	"\xcf\xb6mU5\x16\xaeb\x8a\x1aT5\x16\xd1\x8a\xe5" +
+	"@\xa0\x9a56\x05\x15\x16f\x11M5_FUr" +
+	"\x09.\x00\x17\x02\xd0\xf4\\\x00)E@)\x93\xa0\xe8" +
+	"\x97cHmB\x00D\x0ax\xfdM\xcdoi\xb97" +
+	"\x18bs4YkB\xb5\x0aQJC\x02@s\x0a" +
+	"\x8d\xd7\x07V\x03 \xa1t\x06\x80\xa76\x18bz " +
+	"\xa80\xbf\x16U\x00[\xf5HT\xbb7\xda\x14\x09@" +
+	"\xf2h\xe4H@\xd5\xa2J\xf8\x9e\xa8\xc2\x8a\xfd\xf5\xcc" +
+	"\xdf\xd0)\x98*Y\x91\xc3*8cY\x0c \xa5\x09" +
+	"(\x0d'\xa8+\xa6-x\xb85\xf6\x07\xac\x12\x103" +
+	"\xec\xb3\x04\xe4?&\x16v'\x16.\x8f\x05\xe7F\x1b" +
+	"XdvK\x84)\xc5\xfeP\x90E\xb4\xaah\x0bS" +
+	"j\xa2Kf\xd7\xd6\x0aL\x89\xaf\x99\x89\x94/Zm" +
+	".\xfa]\x82\xba\xcaT5\x18\x8dT\x02\x060\x0d\x08" +
+	"\xa69\x16\x10{\x88\xac\x8ei\xc6J\x7f\x1d\xd5\x82\xb5" +
+	"A\xbf\xac\x05\xa3\x91\xb9\xb2R\xc7\xb4\xa4\xe75\xce>" +
+	"/_\x94\xbf\x87T\xbf8x\xcc\xd1\x09\xea\x97\x17\xbb" +
+	"\x9e\x98;\xd9\x89\xd51m\x96\x1c\x8c\xdc\x17d-\x09" +
+	"49\x17(\xb4\x17\xf04\x07Y\x0bR\xfd\x93\xd3u" +
+	"\xe77\x1e\xdd}\xbc\xab\x7f!\x89\xff\xd95\x8b\x99_" +
+	"\xd4*\x03\x1c\x0b)\x82+M\xd7\x0d\xbf#&\x01H" +
+	"y\x02Jc\x08\xe6\xe05\x1d39m\xd0Q\xdb\x01" +
+	"\xa41\x02J\xdf'X*\xc7b\xd5\xac\x16\x07\xa0C" +
+	"j\x02\xe0\x00.@\xe4\x0663\xeao@+M\x1e" +
+	"\x9e'L\x01\x82)\x80\xe5.\xa4X\xa3\x97\xc7b\xc6" +
+	"\xf2\xc0\xd7\xef5\x0b&t\xa7\xcb\xfe\x86x\"\x04\xad" +
+	"S\xa6'\xd9\x89(U9\xbeU\xf4\xd8\xd2\x1d\x10=" +
+	"IS1\x8b\x85k\x149\xc2L\xb0z8Z\x8d\xba" +
+	"\xb0sQ\xb1\x00@\x9a*\xa0TE0\x9d\xe7\xc2A" +
+	"8t\xd6\x0a \xe9\xe4\xaa\x9e\x89.\x00zg\x0d\x80" +
+	"4Q@i*A]\xe3\xb0\xbcO\x0e\x81\x10\xb4\xf1" +
+	"\x15cJ8\xa8\xaaA\x12\x8d\xa8\xd3Y(\x00M*" +
+	"S*\xd5\xf2\x80\x18\x0eF\xba\xa1\xd0\xd5\x03\x0a\x15\xc6" +
+	"\xfffy\xd5\xa5qH\\\x8f\"\x06\xb8\x04@\xe3T" +
+	"z\xab\xda\x1a\xd9\xdfP\xa7\xf0\x1a/\xf7k\xc1\xe6\xa0" +
+	"\xd6j\x95-\xf4\x84i\xd6\xcc\"\x1af\xe8?\x08\xad" +
+	"k;\xff\xf2\xbe\xa7y\xa23zc\xa1\xc4\xee\x99\xda" +
+	"$\xf6y\xf7I]\xb6\xc8\x9a\xbf~f\xb4\x8e\xfb\xf4" +
+	"t\xcd\x88\x13\x1a\xf5r$\x10bH\xf5\x93S\x16-" +
+	"z6\xef\xf3\x8d]\xab\x84tu/\xaaQEr\xa1" +
+	"s\x0eDE\xb7\x98\x14|\x06\xd6\xa4\xe1\x82\x1b !" +
+	"I\xd1\x1a\xce\xbcc\xb1\x06\x88w\x04\x8ah\xb7P\xb4" +
+	"\xf4\xb97\x07\xab\x81x\x07\xa2\x88BBp\xa0%\x81" +
+	"\xbc\xa98\x03\x88\x17QD\x97\xd5\x1b\xedFN/o" +
+	"\x07B?\x13\xd1\x9d\x10\xa1h\x09\xa1\xb1g\x07 \x10" +
+	"zN\xc4~\x09\x0d\x8f\xd6$EOL\x01B?\x14" +
+	"QL\xa8s\xb4\xa6c\xba\xbf\x10\x08\xdd#bJB" +
+	"\xb8\xa25`\xd1\xe7f\x00\xa1O\x89H\x12\xaa\x09-" +
+	"\xa1M7\xd5\x00\xa1\xebELMtO\xb4fI\xba" +
+	"j)\x10\xbaL\xd4-*\x031\xc8Z\xcaPo`" +
+	",V\x1e\x0a6\x03\xb22\xd4\xd5\xfa&-\x10m\x89" +
+	"\x00@\x19\xea\xd1\x1a5\x1ab\x1a\xc3iL\x9b\xa6\xc8" +
+	"\xc1\x88gNp)s<\x10\xac\x07\xfc\xf7\xf9\xf5," +
+	"25X[\xcb\x14\x16A\xad\x0c\x97\x9b\x08+C\x0f" +
+	"o\xc3e\x9c\x90\xe2\xf8\x88{W[#\xfe9\xbc\xad" +
+	"\x89r\x1dwj\xd1\x0b\x94\xc6\x09\xa6\x0c\xab\xb0\xf7V" +
+	"\xe0\xe8o\xb3kT\xa643\xa58\x1a\xff#^7" +
+	"\xa8&c\xb5N>\xc2r\x03\xbb\xa7>\x18\x0a\x18=" +
+	",\xafJ\xf6\xf0z\xe3\xecc\x82\xb7\x82\x83\xb7L@" +
+	"i&A\x8a&\x0dW\x8e\xb3\x19\x89\x12\x92i\xf4\xf0" +
+	"Y\xbc\x9f\xce\x14P\xaa'X\x1a\x93\x15^\x98\xe9@" +
+	"0\x1d\xac\xd6\x93akL\xb3L\xfb\xdavI\xd70" +
+	"J\xe3q\x18\xf5a\xcf\x96\xb8M\xb7\x92\x83Vv\xc4" +
+	"f\xa6\x98Ub)0\xb4\xae\x07\xbccq\x0a\x10o" +
+	"\xbeQ\x07\x96LDk\xcc\xf5\xdefT\x09E\x8eu" +
+	"k^D\xeb~\xc4\xeb\xc6?\x02\xf1\xba\x91\x03\xd3R" +
+	"\xb1h)~z\x85\x03\xfa\x02/\x04\xebr\x06\xady" +
+	"\x86\x9ez\x04\x08=!\xa2=\xdb\xa35{\xd3\x0f9" +
+	"h\x0f\xf0\xaa\xb5t-Z\x03)\xdd\xbb\x18\x08}\x89" +
+	"\x17\x90u}\x81\xd64O\xdb6\xc7\x8b$%1\x1b" +
+	"\xa35\x84\xd1M+\xac\"\xb1\x14-Z\xa3\x13]\xa5" +
+	"\x18Eb#W\xe7\xd0\xe0\xa8\x00\x8c\xc4!j\xe8\x0e" +
+	"\xd2Ux\x08L\xb3an\xe9.\xb4\x80\x89\xaa\xe9\x89" +
+	"\x83\x0cJ\xe30\xe3\x86!9\x18\xaef\x8d\xe0ib" +
+	"\xaaV\x86\xba\xc5\xfdh\x91\xbf\xa0\xb5\x96q\x80\xc4\xa2" +
+	"\x8a6MA\xb3\xd2 \xbe\x95\xca\x00\x8bh\xe0\x0bj" +
+	"\xad\x95\x81\xce\xc5\xd2\x87\xdeb\xe9\xa5\xbe\x16I5\xf3" +
+	"ukz\xce\x9ed\xf4]\x0b\xfa7\xe4\xdc\xf2k\x8a" +
+	"\xf5\xbe9N\xda\x8f,nc\x89\xdd\xf6\xba\x91nt" +
+	"\"0\x85+\x11\x97Q3\xd6\xbd\x14Zc0\xa5\x9c" +
+	"\xc6\xdd\xe2r\x93r:\x1f\xc3u\xfb.''\xa13" +
+	"\xcb\xe4&c\x19N(\xd3\x05\x94\x02\x0e\x96\x91\xb9\xc2" +
+	"Y$\xa0\x14\"(*\xac\x163\x1c\xe2\xafo\xa4\x12" +
+	"\xe7\xa8\xb9Q\x10\xfbr^\x16\"M@\xe6U\xf9\x0c" +
+	"\x89\xd2\xd3\x99\xd5\xb4jL\xc5T \x98\xda\xdb\x99\x19" +
+	"\x13[\x929\xc5)I\x92G|\x13C\x83%\xb0z" +
+	"\x8d\xdb\xaaX^\xaf\xdf\xa6rr\x0e\x18\xa5\xf1\xdd$" +
+	"^HK\xf6\x82\xd5<\xe5:\x96(\x19\xd5~|\x83" +
+	"\xc3m2ay3\x03\xa1\x1d\xdbT\x16\x89*a9" +
+	"\x14\\\xca\x02\x06Lf1M\x0e\xc8\x82&\x9b\xba\xde" +
+	"\xc2\xfc\x0c\xa7\xac\xd7\xb9\xacO\xdc\xec\xd0Y\x85@r" +
+	"\x881\xf7p]?~\x9c=\xf7\xe8r,67\xa8" +
+	"\x85\x18\x1fv2\xf4\xca\xd3\x0fLP^Y\xf83\x13" +
+	"\x0b\x9e\xa0?\x1a\xf1\xc9\xb1X\xe5ugJ;_\x96" +
+	"\xa0\xe9I\xcfh\x09Q\xe0\xc8\xd4\x14\xfb\xac\x97GC" +
+	"\x01\xfe\xce\x8da<\xa1\x93\xabdE\xe4NS\x12N" +
+	"G(\x00\xd2p\x01\xa5;\x08Z\x140\x96\xab\x8f\x91" +
+	"\x02J\x13I\xbcE\x84\xa2u\xe5\xe0\x0bG\x9b\"\x9a" +
+	"\xb5`\xa9\xaa)L\x0e#\xd5\xff\xf6\xcc\xfb#Z&" +
+	"\xce?\xd4\xf3\xe0i\x03b:\xd7\xe1\xc8\xaa\x10\xab\x04" +
+	"\xb7\x94\x82\xe8\xb8\xc8\x00\x878\x87d\xe3kgp\xa1" +
+	"f\xd3\xa4u\xbf\x8b\xd6W\x1dJy\xd3M\x15u\x0b" +
+	"\x80h\"\x10\xca\xd0P-\xeb\xef{\xfc\xd0\xe8!\xef" +
+	"\xbd\x03eH\xd1'\xb9\x88\xe3'\x00\x8a\x05|s\xc6" +
+	"p\xcc\xff\x9d!\xa0\xc1T\x9d\xa4T\x9f9\xcb\x1a\xdb" +
+	"\xfax\x9dQ\xcd\x1a\x8dv\xcdA\xccO(\x9d\xa3x" +
+	"\x8a\x83\xb9\x09fb\x7f\xce\xdc\x9bM)x?\xc1\x0c" +
+	"\x92\x89\x1e\x00:\xaf\x1a@\x9a+\xa0\xb4\x88\xe0\xf2:" +
+	"\xbe\x15\x07B\x83\x11M\x89\x06\x9a\xfc\xc8\x14\xa3\xb5\xf3" +
+	"\xeeo\xc3\xf7:\xd7$7~\x01\x94\xb4\xbb\xcep\xdc" +
+	"\xc6\x98}L\xe1eEm1\xd9\xf3%IW\x8a\x8d" +
+	"\xef\x9cK\x92\xa4S\xe0\xedv\xcd\xf0\x81\xbck\xbf\x11" +
+	"z8\x82:\x0f\xcf\x95\x94\x11\xbfC\xe2\x9ed\x9e\xf2" +
+	"\x1f\xc6\x85\xb6\xd1,y_d<\xbd\x01\x01\xa5\x18A" +
+	"*\x90Lt\x03\xd0\xf0R\x00)$\xa0\xb4\x84\x1f\x8e" +
+	"\x90\x89\xa9\x00\xb4\x89\x1f\xce\x12\x01\xa5\x95I\x0eB\x95" +
+	"\x9b\xd9L\xb9\x86\x01\x86\xbasK\xe2\x98\xa0\x94)\xf3" +
+	"T\xa6\xdc\xe0\xf9]\x8f\x10\xac\xb1+\x91\xb2\x9b\x1a{" +
+	"\xac\x8b\x99\x9b\xa5\xbcd\x12\xcfy\xd3\xa5\xf6Bx\x9d" +
+	"6\x9c\xb8\x89\x15\x9d\xe1\xb9z\xebm]\x9b\xe1\xf5\xd3" +
+	"g\xf2i\x12\x9c\xf6\xd0\x8f4\xb9\x98\xb7\x0a\x8e\x7fW" +
+	"\x86I\xb7\x9d\x87=SqUNq\x0e{B&\x0a" +
+	"\xcea\xef~\x82\xa5\xb5\xdc\xbff\x9d\xf7rYUy" +
+	"1$\xce\xdf\xfc\xefq\xe0Y25\x16\xec\x06\x8b\x9e" +
+	"\x80\xdf$\xaaL\x91\xb2\x05\x17\x0a\x99\xd8\x0f\x80\xbe\xc4" +
+	"w\xf7\x82\x80\xd2\xab&\xeeE\x00\xba\x87w\xc6\xdd\x02" +
+	"J\xfbL\x91\x98\x02@\xf7\x1e\x06\x90\xde\x14P\xfa\x80" +
+	"`\x86\x90\x89\xb7\x00\xd0C\x0b\x00\xa4\x83\x02J\x7f " +
+	"H]\xaeL\xbc\x15\x80v\xf0\x9e\xf3\x91\x80\xd2I\x82" +
+	"\xd4\x9d\x91\x89i\x00\xf4\x04\x0f\xf8\x0f\x02J\x7f&H" +
+	"\xfb\xd1L\xcc\x00\xa0\xa7V\x00H'\x05\x94\xfe\x87`" +
+	"\xa9qg\x96\x08\xd0\xa7\xf1n\x9c\x88+`\xe6\x9bt" +
+	"M8\xca\x98a\x7f\xae\xb1J\xca$\x0d\x10\x1c\x19k" +
+	"\x8a\xc5{\x1a\xf8\xe6:]/WXD\x0e\xb3\x00\"" +
+	"\x10D\x83\x19Y\xa4<\x14*Gs\xa4\x01\xfbI\xb7" +
+	"\x81\xd9Lni<\xbb\xbcce\xdbW\x8c\xce\xd4\x9a" +
+	"W\x8c\x89of<\xc5$\xdduU\x8f\x9f\xfc\x93\x9c" +
+	"3\x9f\x10Pz\x96`\xba\xfb\x1b\xf3\xe2\xb1\x8d\xff\xfa" +
+	"\x8c\x80\xd2n\x82\xe9\xfd\xbe\xe6\x0e\x12\xdf\x9e\xe8\x8b\x85" +
+	"@\xd2\xc9W\xfc\xc7\xc4g?\xbai\x17\x90t\xe1\x0a" +
+	"\xff1\xf1\x7f%\xd0\xb5\xdb\x80\x94\xb6\xb0\x9a\x06\xd6\x0a" +
+	"\xfd|\x069qnaJ\x84i\xf1\xbb]b(\xca" +
+	"Z%\x1a\xd1X$\x00 z\xf8a\xe8V\xa3B\xab" +
+	"S\xf9\x0c\xa1\xda\xf5\xf7\xd9\xb5b-S\x92\x94\x94-" +
+	"\x0cfG\xea\xa2\xc1H]\\*\x97\xc6\xb5r\x0f*" +
+	"\xe1P\xd9\xda\xdf\x1c\xcfYu\xad\x87/\x12\xd7'\x9c" +
+	"\xe4\x0d\xe9\xe6H\xc6\x1a\xac\xbe\xcd\xf91\x89\xfasn" +
+	"\xd2\x1fU\x18R\xe7\xa7\xfc\x1bj\x97\x9d\xa6\x09k\xdb" +
+	"\x0e-\xb8\xd8\xd6\x82\x89yp\xec6\x00\xe9\x8e8\x11" +
+	"\x19\xfa\x9c\xa9\xda\\\xf0\x18AY\x95c\xca\xf6\x00V" +
+	"\x99\xf7\xdcb4\x92P\xef\xbc8\xfa\xf7i$\xb7\xa6" +
+	"\xb1\xde&\xd5\xde\xee\xc3\x92\xcfm\xdf\xda\xb5X\xda\x0d" +
+	"\x83\xce\x0c\xa8\xfb\xbct\x1d1cI\xf5\x1etS\x82" +
+	"\xc1\x0c\xdd\xf4\xdd\x13R\xdb\xd2\x8d+\xf7\xf5\x0c\x84." +
+	"_<x\x1f/\xb6\xbeJD#\xaag:\x0b\x05\xa4" +
+	"L\xc1\x85\xaexr\x97M\xb2\xf5\x8a\xa10yr\x7f" +
+	"\xc29\xfaA\x01\xa55\xa6\xdc\xe1\xd4\xb4\xaa\x06@Z" +
+	")\xa0\xf4\x04\xc1l]\x17\xe2\"h+'\xfe\xc7\x04" +
+	"\x94\x9e\x89\x7fJ2\xbb\xc9SSl\x1e\xebB\xe8\xdd" +
+	"T\x91\xb5=H\x86\xa6d\x0c\xbe\xdc(\xb5$#X" +
+	"o\x1fTz\xb9M\xe8\xf5j\xa9\xc7OV\xe6\x85\xb0" +
+	"\xb3\xc6\x0a\xedOl\x09$\x8f\x9ad\x17\x9e'&k" +
+	"\xf5V\x04=NY\xff\x1f\x00\x00\xff\xff8\xba\xaa8"
 
 func init() {
 	schemas.Register(schema_c7205d6d32c7b040,
@@ -5321,6 +5808,7 @@ func init() {
 		0xa0b4085080573e77,
 		0xa3eb8443f86b46f7,
 		0xaae54cb2386e60ab,
+		0xaec15e35d479f4f3,
 		0xaf3c0d4c9b788c3b,
 		0xaf72d693dbf4bf54,
 		0xb91071e3d7b9ab13,
@@ -5332,8 +5820,10 @@ func init() {
 		0xc152ab1174b40c0a,
 		0xc22ce229c18c0a02,
 		0xc38cedd77cbed5b4,
+		0xc43d5a1430e113ca,
 		0xc765897b7df345ac,
 		0xca83e6f36908ed7f,
+		0xcaa1479a3b9c719b,
 		0xcb7304c768066421,
 		0xcb7ee0fa69cd6e70,
 		0xcc28367ccc71b3df,
@@ -5351,6 +5841,7 @@ func init() {
 		0xeeaeb799e53e0b01,
 		0xf0e8359b121f97d2,
 		0xf3e98c16ae117300,
+		0xf59063f154adea97,
 		0xf8092ced6a3fbe30,
 		0xf839f92f21f00b08,
 		0xf9c6e362d6fcb22a)

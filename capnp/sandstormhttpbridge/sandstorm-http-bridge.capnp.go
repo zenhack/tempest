@@ -74,6 +74,26 @@ func (c SandstormHttpBridge) GetSavedIdentity(ctx context.Context, params func(S
 	}
 	return SandstormHttpBridge_getSavedIdentity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
+func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(SandstormHttpBridge_saveIdentity_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_saveIdentity_Results_Promise {
+	if c.Client == nil {
+		return SandstormHttpBridge_saveIdentity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      3,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "saveIdentity",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_saveIdentity_Params{Struct: s}) }
+	}
+	return SandstormHttpBridge_saveIdentity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
 
 type SandstormHttpBridge_Server interface {
 	GetSandstormApi(SandstormHttpBridge_getSandstormApi) error
@@ -81,6 +101,8 @@ type SandstormHttpBridge_Server interface {
 	GetSessionContext(SandstormHttpBridge_getSessionContext) error
 
 	GetSavedIdentity(SandstormHttpBridge_getSavedIdentity) error
+
+	SaveIdentity(SandstormHttpBridge_saveIdentity) error
 }
 
 func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server) SandstormHttpBridge {
@@ -90,7 +112,7 @@ func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server) SandstormH
 
 func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 3)
+		methods = make([]server.Method, 0, 4)
 	}
 
 	methods = append(methods, server.Method{
@@ -135,6 +157,20 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      3,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "saveIdentity",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := SandstormHttpBridge_saveIdentity{c, opts, SandstormHttpBridge_saveIdentity_Params{Struct: p}, SandstormHttpBridge_saveIdentity_Results{Struct: r}}
+			return s.SaveIdentity(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
+	})
+
 	return methods
 }
 
@@ -162,7 +198,18 @@ type SandstormHttpBridge_getSavedIdentity struct {
 	Results SandstormHttpBridge_getSavedIdentity_Results
 }
 
+// SandstormHttpBridge_saveIdentity holds the arguments for a server call to SandstormHttpBridge.saveIdentity.
+type SandstormHttpBridge_saveIdentity struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  SandstormHttpBridge_saveIdentity_Params
+	Results SandstormHttpBridge_saveIdentity_Results
+}
+
 type SandstormHttpBridge_getSandstormApi_Params struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSandstormApi_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSandstormApi_Params.
+const SandstormHttpBridge_getSandstormApi_Params_TypeID = 0x86d490c59f64c564
 
 func NewSandstormHttpBridge_getSandstormApi_Params(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -210,6 +257,9 @@ func (p SandstormHttpBridge_getSandstormApi_Params_Promise) Struct() (SandstormH
 }
 
 type SandstormHttpBridge_getSandstormApi_Results struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSandstormApi_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSandstormApi_Results.
+const SandstormHttpBridge_getSandstormApi_Results_TypeID = 0xc174fe273bd649ac
 
 func NewSandstormHttpBridge_getSandstormApi_Results(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -281,6 +331,9 @@ func (p SandstormHttpBridge_getSandstormApi_Results_Promise) Api() grain.Sandsto
 
 type SandstormHttpBridge_getSessionContext_Params struct{ capnp.Struct }
 
+// SandstormHttpBridge_getSessionContext_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionContext_Params.
+const SandstormHttpBridge_getSessionContext_Params_TypeID = 0xc2a480fa3863a3fa
+
 func NewSandstormHttpBridge_getSessionContext_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormHttpBridge_getSessionContext_Params{st}, err
@@ -350,6 +403,9 @@ func (p SandstormHttpBridge_getSessionContext_Params_Promise) Struct() (Sandstor
 }
 
 type SandstormHttpBridge_getSessionContext_Results struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSessionContext_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionContext_Results.
+const SandstormHttpBridge_getSessionContext_Results_TypeID = 0xb84ffa3322e48dbd
 
 func NewSandstormHttpBridge_getSessionContext_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -421,6 +477,9 @@ func (p SandstormHttpBridge_getSessionContext_Results_Promise) Context() grain.S
 
 type SandstormHttpBridge_getSavedIdentity_Params struct{ capnp.Struct }
 
+// SandstormHttpBridge_getSavedIdentity_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSavedIdentity_Params.
+const SandstormHttpBridge_getSavedIdentity_Params_TypeID = 0x930d8201947c86bf
+
 func NewSandstormHttpBridge_getSavedIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormHttpBridge_getSavedIdentity_Params{st}, err
@@ -491,6 +550,9 @@ func (p SandstormHttpBridge_getSavedIdentity_Params_Promise) Struct() (Sandstorm
 
 type SandstormHttpBridge_getSavedIdentity_Results struct{ capnp.Struct }
 
+// SandstormHttpBridge_getSavedIdentity_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSavedIdentity_Results.
+const SandstormHttpBridge_getSavedIdentity_Results_TypeID = 0xc2ba6a7e9ab2e369
+
 func NewSandstormHttpBridge_getSavedIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormHttpBridge_getSavedIdentity_Results{st}, err
@@ -559,48 +621,179 @@ func (p SandstormHttpBridge_getSavedIdentity_Results_Promise) Identity() identit
 	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
 }
 
-const schema_ac137d236832bb1e = "x\xda2X\xc3\xea\xc0d\xc8\xda\xaf\xce\xc0\x10|\x86" +
-	"\x91\x95\xed\x7f\xca\xd1\x94\xf9G'\\ic\x104`" +
-	"d``ag`0^+l\xc5\xc4\xc0\xf2\x7f\x7f" +
-	"[\xcd\x14\xc6&\xde\xc9\x10\x19VF\x90\xd4Ra'" +
-	"&\x06F\xe1\xbd\xc2\xf6\x0c\x8c\xff\xbbn\xee\xe5\xe4\xed" +
-	"O_\xcb (\xc3\xfc_n\xb7Q\x86r\xad\xf0\x1a" +
-	"\x06\x06F\xe3\x87\xc2M\x8c\xc2_\x85\x81\x1a\x84?\x0a" +
-	"\x1f\x17\xae\x15\x01\xb2\xfe\xef\xed}\xa2d\xfc\xcb\x7f\x07" +
-	"\xb2q\xa9\"A \xe3\x1aE@\xc6\xad\xf1\xbcf\xad" +
-	"\xfe\xaf\xe4 \xb2\x82\x85\"`\xfbv\x82\x15\xfcZ\x9c" +
-	"l\xf1\xaba\xc9!d\x057E\xbc@\x0a\xbe\x82\x15" +
-	"d>\xde4\xab.k\x17\x8a\x02QQ\xb0\x02CQ" +
-	"{\x86\xffP\xb8\xf4\x7fqb^JqI~\x11{" +
-	"\xaenFII\x81nRQfJz\xaa^rb" +
-	"A^\x81U0T2\xd7\x03(\xe5\x04\x91IO-" +
-	"\x81\x0b;\x16d\xaa\xd8\x07$\x16%\xe6\x16\xc3\x0d\xe2" +
-	" \xc9\xa0\xb2\xd4\x14\xcf\x94\xd4\xbc\x92\xcc\x92J\x15\x88" +
-	"A\x0c\x81,\xcc,\xc0\xe0\x07:[\x907\x8a\x81!" +
-	"\x90\x87\x991P\x82\x09\xe8%\xa8:\x06f\xcf\x14F" +
-	"\x1e\x06& f\x84\xdb\xcaJ\xa4\xad\x0c\x01\x8c\x8c@" +
-	"\x13Y\x81\xb1\x00\x8bnFXh\x0b\x06610\x09" +
-	"z\xb23\"\xc2\x97\x11\x16U\x82\xb6\x93\x80r\x96\xec" +
-	"\x8cL\xf0\xc4\xc0\x08\x0bcA\xdd.\xa0\x9c&\xfb\x7f" +
-	"X\xd00B\xc3\x86\xc1\x81\x11,\x96Z\\\x9c\xc9\x98" +
-	"\x9f\xe7\x9c\x9fW\x92Z\xc1X\x02\x15\x05\xf9\x9d\x11\xe6" +
-	"y\x06\xa0Z\xa0\xd3\xc8\x0bE\x90\xf90\xe3KT\x82" +
-	"R\x8bKsJ\x18\x8b\x91\xc3\xd1\x09\x18\x8e\x1c\xc0p" +
-	"\x14ab\xacO\x86\xa8c\x14\xfco\xf699J\xd6" +
-	"\xc1n?0\xa12\x0a2\x90i9rZ\x80X\x8d" +
-	"\x1a\x85J\x08\xab\xd9\x13\x0b2\x81\xd6\x9ef*\xd0:" +
-	"\xef\x9fz\x89\"kQ\xfd\x0cM:(\x16K!," +
-	"f\xce\xc4L1\xe4\xa7S\x98/Ql\xf3\xc2\x96R" +
-	"\x81>\x14\xfc/q7pe\xd5\x8c\x96\x03P\xef\x02" +
-	"\x02\x00\x00\xff\xff\x1e)f\xef"
+type SandstormHttpBridge_saveIdentity_Params struct{ capnp.Struct }
+
+// SandstormHttpBridge_saveIdentity_Params_TypeID is the unique identifier for the type SandstormHttpBridge_saveIdentity_Params.
+const SandstormHttpBridge_saveIdentity_Params_TypeID = 0xd274ecd8fd2907d0
+
+func NewSandstormHttpBridge_saveIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_saveIdentity_Params{st}, err
+}
+
+func NewRootSandstormHttpBridge_saveIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_saveIdentity_Params{st}, err
+}
+
+func ReadRootSandstormHttpBridge_saveIdentity_Params(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Params, error) {
+	root, err := msg.RootPtr()
+	return SandstormHttpBridge_saveIdentity_Params{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) String() string {
+	str, _ := text.Marshal(0xd274ecd8fd2907d0, s.Struct)
+	return str
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) Identity() identity.Identity {
+	p, _ := s.Struct.Ptr(0)
+	return identity.Identity{Client: p.Interface().Client()}
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) HasIdentity() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) SetIdentity(v identity.Identity) error {
+	if v.Client == nil {
+		return s.Struct.SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
+	return s.Struct.SetPtr(0, in.ToPtr())
+}
+
+// SandstormHttpBridge_saveIdentity_Params_List is a list of SandstormHttpBridge_saveIdentity_Params.
+type SandstormHttpBridge_saveIdentity_Params_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_saveIdentity_Params creates a new list of SandstormHttpBridge_saveIdentity_Params.
+func NewSandstormHttpBridge_saveIdentity_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_saveIdentity_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormHttpBridge_saveIdentity_Params_List{l}, err
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params_List) At(i int) SandstormHttpBridge_saveIdentity_Params {
+	return SandstormHttpBridge_saveIdentity_Params{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params_List) Set(i int, v SandstormHttpBridge_saveIdentity_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormHttpBridge_saveIdentity_Params_Promise is a wrapper for a SandstormHttpBridge_saveIdentity_Params promised by a client call.
+type SandstormHttpBridge_saveIdentity_Params_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormHttpBridge_saveIdentity_Params_Promise) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormHttpBridge_saveIdentity_Params{s}, err
+}
+
+func (p SandstormHttpBridge_saveIdentity_Params_Promise) Identity() identity.Identity {
+	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+}
+
+type SandstormHttpBridge_saveIdentity_Results struct{ capnp.Struct }
+
+// SandstormHttpBridge_saveIdentity_Results_TypeID is the unique identifier for the type SandstormHttpBridge_saveIdentity_Results.
+const SandstormHttpBridge_saveIdentity_Results_TypeID = 0xb1b610269c6a2190
+
+func NewSandstormHttpBridge_saveIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormHttpBridge_saveIdentity_Results{st}, err
+}
+
+func NewRootSandstormHttpBridge_saveIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormHttpBridge_saveIdentity_Results{st}, err
+}
+
+func ReadRootSandstormHttpBridge_saveIdentity_Results(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Results, error) {
+	root, err := msg.RootPtr()
+	return SandstormHttpBridge_saveIdentity_Results{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results) String() string {
+	str, _ := text.Marshal(0xb1b610269c6a2190, s.Struct)
+	return str
+}
+
+// SandstormHttpBridge_saveIdentity_Results_List is a list of SandstormHttpBridge_saveIdentity_Results.
+type SandstormHttpBridge_saveIdentity_Results_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_saveIdentity_Results creates a new list of SandstormHttpBridge_saveIdentity_Results.
+func NewSandstormHttpBridge_saveIdentity_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_saveIdentity_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return SandstormHttpBridge_saveIdentity_Results_List{l}, err
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results_List) At(i int) SandstormHttpBridge_saveIdentity_Results {
+	return SandstormHttpBridge_saveIdentity_Results{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results_List) Set(i int, v SandstormHttpBridge_saveIdentity_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// SandstormHttpBridge_saveIdentity_Results_Promise is a wrapper for a SandstormHttpBridge_saveIdentity_Results promised by a client call.
+type SandstormHttpBridge_saveIdentity_Results_Promise struct{ *capnp.Pipeline }
+
+func (p SandstormHttpBridge_saveIdentity_Results_Promise) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return SandstormHttpBridge_saveIdentity_Results{s}, err
+}
+
+const schema_ac137d236832bb1e = "x\xda\xa4\x93Oh\x13O\x14\xc7\xdf\x9bM\xba\xfdA" +
+	"K;$\x1b\xca\x0f\x15\xac\xd5\xd2B\xa5\xb5(R\xd1" +
+	"\xc6z1\x85\xd2l{\xb2\xe0a\xcd.\xed\x86&Y" +
+	"\xb3\xd3\xa2\xe2?\x82\x14,\x88E=\x88\x08\x1e\xf4\"" +
+	"\xb4\x07=\x88(\xa1*\xe4\xe4A)\"\x06\xecA\xf4" +
+	"\xe0\xc1\x8bx\x10\x03:2\xd9?\xd9\xa8\x07\x1b\xc9%" +
+	"\xbc\xf7\xdd\xf7\x99y\xdf\xef\xf4w7\xc5\xc9@\xf8k" +
+	"\x0f\xc0\xe4G\x0c7q\xbd\xa4\xdf*-\xbdZ\x00\xda" +
+	"\x8f\x00!\x19`\xf0]t\x88@\x88\xaf.\x9c\xbe\x86" +
+	"\x85\xd6\xabN'\x8c\xa2U\x8e\x8e\x10\xc0\xc8\xe7\xe80" +
+	" _,\x17\xffk\xbd<\xbd\x02t\x93\xc4\xb7<\xde" +
+	"5\xb3\xedLd\x19\x00\x07\x15\xa5\x80\x91\x1eE|\xb0" +
+	"]\x911\xb2.\xfe\xf2\xa5\xad\xe9\x9b;\xda\x1f\xdc\x0b" +
+	"\x90JJ\xaf \x15/}\xe8\x1c\xac\x8c?\x0c\x92\x8a" +
+	"\xca\x84 \x95\x15AZN\xbc\xde\xd7\xfd\x83=\x0d\x0a" +
+	"\xbe)\xd5\xa3\xd0\x98\x10Tn\xa7\xf6V\xce\xdfy\x16" +
+	"\x14\x0c\xc4F\x85`\xac*0\xdf\xdf\xbfq6\xfd\xa8" +
+	"N\x90q\x04\x17\xab\x82\x97r\xcf\xf77\x9f\xd8ZP" +
+	"\xb0\x12\xeb\x14\x82Rl\x18\xb8\xfb{\xcbm-\xab\xdb" +
+	",\x97\x973}3\x8cY}\xc7\xf2\xa6>m\xecL" +
+	"iV\xd6\x1a\x9at\x9b\x99\xc3\x8cY#Ng\xda`" +
+	"~\xf9\xa0ev\x0d'\xb5\xbc\x96\xb1\xfdA\xcd\x1b\x1a" +
+	"4o\xe8\x09\xdd\xc82\x93\x9d\xecr\x06\x81\x1a\x92B" +
+	"\x00!\x04\xa0\xadS\x00j\x8b\x84j\x07An\xba:" +
+	"\x90\x12:\xb6\x00\xc1\x16@\x9f\x1a\xfeK*$\x11\xd5" +
+	"v)\x0c\xe0G\x05=;\xe8\xf1\x02\x10j\xcaX3" +
+	"\x00=/\xe9\xd1+@\xe8\x11\x19\x89\x1f$\xf4L\xa0" +
+	"c\x8b@hBF\xc9_;z\xe9\xa0\xfb\xd3@\xe8" +
+	"n\x99{kCwo\x10\xc7j\xcd\xb0m\x13s\xd9" +
+	"C\xb9,3N s\xabb/\xe8-\x06\x84\xd6\xd6" +
+	"\xe6\x0dQ\x806Q\x8ac\x12q\xe3\xdeyC\xaa\xeb" +
+	"\x9e0\xec\xb6\xb9Y\xd6\xa0s\xe2\xdc\xde\xb1\x99\x985" +
+	"7\xcb\xd0\x0ez7\x02\xa06K\xa8F\x09\x9eK9" +
+	":\xa4|\xcf\x97\xd4\xd4\xe6\xf8\x81U\x00D\x1a0\xb0" +
+	"\xb9\xd1\xfc9\xe8\xfa\xd8t\xd6\xd0\xb2f\x99H\xf9s" +
+	"b\xf5\xbe\x187\xd6\xfe\x09[\x7fg7\xaeu\xe0\xff" +
+	"k`\xc9\xfc=\xa5\x8d\xbf\x0d\xef\x96u\xb4\xd1?\xbd" +
+	"\x0e\x00\xa4\xbcc]\xbd{\xea\xfa\x85'\xbf^\xb7\xb1" +
+	"\xa4$\xb5\xbc\xace\xec\x86\xd0?\x03\x00\x00\xff\xffH" +
+	"4\xc7b"
 
 func init() {
 	schemas.Register(schema_ac137d236832bb1e,
 		0x86d490c59f64c564,
 		0x930d8201947c86bf,
 		0xad678f0d09bdd98a,
+		0xb1b610269c6a2190,
 		0xb84ffa3322e48dbd,
 		0xc174fe273bd649ac,
 		0xc2a480fa3863a3fa,
-		0xc2ba6a7e9ab2e369)
+		0xc2ba6a7e9ab2e369,
+		0xd274ecd8fd2907d0)
 }

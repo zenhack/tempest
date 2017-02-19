@@ -1,0 +1,13 @@
+diff --git a/capnp/package.capnp b/capnp/package.capnp
+index 6faf244..121bcdf 100644
+--- a/capnp/package.capnp
++++ b/capnp/package.capnp
+@@ -549,7 +549,7 @@ struct CategoryInfo {
+   title @0 :Text;
+ }
+
+-annotation categoryInfo @0x8d51dd236606d205 (enumerant) :CategoryInfo;
++annotation categoryInfo @0x8d51dd236606d205 (enumerant) :CategoryInfo $Go.name("CategoryInfoAnnotation");
+
+ enum Category {
+   # ------------------------------------

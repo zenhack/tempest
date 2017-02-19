@@ -1,5 +1,5 @@
-# Copyright (c) 2016 Ian Denhardt <ian@zenhack.net>
-#
+# Sandstorm - Personal Cloud Sandbox
+# Copyright (c) 2017 Sandstorm Development Group, Inc. and contributors
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-find $(dirname $0) -name '*.capnp' -delete
-find $(dirname $0) -name '*.capnp.go' -delete
-find $(dirname $0) -type d -empty -delete
+
+@0xbf72526e76ecd73b;
+
+$import "/capnp/c++.capnp".namespace("sandstorm");
+using Util = import "util.capnp";
+
+struct ProxyClaimRequestRequest {
+  requestToken @0 :Text;
+  requiredPermissions @1 :List(Text);
+  label @2 :Util.LocalizedText;
+}
+
+struct ProxyClaimRequestResponse {
+  cap @0 :Text;
+}
+using Go = import "/go.capnp";
+$Go.package("bridgeproxy");
+$Go.import("zenhack.net/go/sandstorm/capnp/bridgeproxy");

@@ -4,6 +4,7 @@ package ip
 
 import (
 	context "golang.org/x/net/context"
+	strconv "strconv"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zombiezen.com/go/capnproto2"
@@ -119,7 +120,170 @@ type IpNetwork_getRemoteHostByName struct {
 	Results IpNetwork_getRemoteHostByName_Results
 }
 
+type IpNetwork_PowerboxTag struct{ capnp.Struct }
+
+// IpNetwork_PowerboxTag_TypeID is the unique identifier for the type IpNetwork_PowerboxTag.
+const IpNetwork_PowerboxTag_TypeID = 0xcf9e3f33950df819
+
+func NewIpNetwork_PowerboxTag(s *capnp.Segment) (IpNetwork_PowerboxTag, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return IpNetwork_PowerboxTag{st}, err
+}
+
+func NewRootIpNetwork_PowerboxTag(s *capnp.Segment) (IpNetwork_PowerboxTag, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return IpNetwork_PowerboxTag{st}, err
+}
+
+func ReadRootIpNetwork_PowerboxTag(msg *capnp.Message) (IpNetwork_PowerboxTag, error) {
+	root, err := msg.RootPtr()
+	return IpNetwork_PowerboxTag{root.Struct()}, err
+}
+
+func (s IpNetwork_PowerboxTag) String() string {
+	str, _ := text.Marshal(0xcf9e3f33950df819, s.Struct)
+	return str
+}
+
+func (s IpNetwork_PowerboxTag) Encryption() (IpNetwork_PowerboxTag_Encryption, error) {
+	p, err := s.Struct.Ptr(0)
+	return IpNetwork_PowerboxTag_Encryption{Struct: p.Struct()}, err
+}
+
+func (s IpNetwork_PowerboxTag) HasEncryption() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s IpNetwork_PowerboxTag) SetEncryption(v IpNetwork_PowerboxTag_Encryption) error {
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+}
+
+// NewEncryption sets the encryption field to a newly
+// allocated IpNetwork_PowerboxTag_Encryption struct, preferring placement in s's segment.
+func (s IpNetwork_PowerboxTag) NewEncryption() (IpNetwork_PowerboxTag_Encryption, error) {
+	ss, err := NewIpNetwork_PowerboxTag_Encryption(s.Struct.Segment())
+	if err != nil {
+		return IpNetwork_PowerboxTag_Encryption{}, err
+	}
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	return ss, err
+}
+
+// IpNetwork_PowerboxTag_List is a list of IpNetwork_PowerboxTag.
+type IpNetwork_PowerboxTag_List struct{ capnp.List }
+
+// NewIpNetwork_PowerboxTag creates a new list of IpNetwork_PowerboxTag.
+func NewIpNetwork_PowerboxTag_List(s *capnp.Segment, sz int32) (IpNetwork_PowerboxTag_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return IpNetwork_PowerboxTag_List{l}, err
+}
+
+func (s IpNetwork_PowerboxTag_List) At(i int) IpNetwork_PowerboxTag {
+	return IpNetwork_PowerboxTag{s.List.Struct(i)}
+}
+
+func (s IpNetwork_PowerboxTag_List) Set(i int, v IpNetwork_PowerboxTag) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// IpNetwork_PowerboxTag_Promise is a wrapper for a IpNetwork_PowerboxTag promised by a client call.
+type IpNetwork_PowerboxTag_Promise struct{ *capnp.Pipeline }
+
+func (p IpNetwork_PowerboxTag_Promise) Struct() (IpNetwork_PowerboxTag, error) {
+	s, err := p.Pipeline.Struct()
+	return IpNetwork_PowerboxTag{s}, err
+}
+
+func (p IpNetwork_PowerboxTag_Promise) Encryption() IpNetwork_PowerboxTag_Encryption_Promise {
+	return IpNetwork_PowerboxTag_Encryption_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+}
+
+type IpNetwork_PowerboxTag_Encryption struct{ capnp.Struct }
+type IpNetwork_PowerboxTag_Encryption_Which uint16
+
+const (
+	IpNetwork_PowerboxTag_Encryption_Which_none IpNetwork_PowerboxTag_Encryption_Which = 0
+	IpNetwork_PowerboxTag_Encryption_Which_tls  IpNetwork_PowerboxTag_Encryption_Which = 1
+)
+
+func (w IpNetwork_PowerboxTag_Encryption_Which) String() string {
+	const s = "nonetls"
+	switch w {
+	case IpNetwork_PowerboxTag_Encryption_Which_none:
+		return s[0:4]
+	case IpNetwork_PowerboxTag_Encryption_Which_tls:
+		return s[4:7]
+
+	}
+	return "IpNetwork_PowerboxTag_Encryption_Which(" + strconv.FormatUint(uint64(w), 10) + ")"
+}
+
+// IpNetwork_PowerboxTag_Encryption_TypeID is the unique identifier for the type IpNetwork_PowerboxTag_Encryption.
+const IpNetwork_PowerboxTag_Encryption_TypeID = 0xe2d94cf90fe4078d
+
+func NewIpNetwork_PowerboxTag_Encryption(s *capnp.Segment) (IpNetwork_PowerboxTag_Encryption, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return IpNetwork_PowerboxTag_Encryption{st}, err
+}
+
+func NewRootIpNetwork_PowerboxTag_Encryption(s *capnp.Segment) (IpNetwork_PowerboxTag_Encryption, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return IpNetwork_PowerboxTag_Encryption{st}, err
+}
+
+func ReadRootIpNetwork_PowerboxTag_Encryption(msg *capnp.Message) (IpNetwork_PowerboxTag_Encryption, error) {
+	root, err := msg.RootPtr()
+	return IpNetwork_PowerboxTag_Encryption{root.Struct()}, err
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) String() string {
+	str, _ := text.Marshal(0xe2d94cf90fe4078d, s.Struct)
+	return str
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) Which() IpNetwork_PowerboxTag_Encryption_Which {
+	return IpNetwork_PowerboxTag_Encryption_Which(s.Struct.Uint16(0))
+}
+func (s IpNetwork_PowerboxTag_Encryption) SetNone() {
+	s.Struct.SetUint16(0, 0)
+
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) SetTls() {
+	s.Struct.SetUint16(0, 1)
+
+}
+
+// IpNetwork_PowerboxTag_Encryption_List is a list of IpNetwork_PowerboxTag_Encryption.
+type IpNetwork_PowerboxTag_Encryption_List struct{ capnp.List }
+
+// NewIpNetwork_PowerboxTag_Encryption creates a new list of IpNetwork_PowerboxTag_Encryption.
+func NewIpNetwork_PowerboxTag_Encryption_List(s *capnp.Segment, sz int32) (IpNetwork_PowerboxTag_Encryption_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return IpNetwork_PowerboxTag_Encryption_List{l}, err
+}
+
+func (s IpNetwork_PowerboxTag_Encryption_List) At(i int) IpNetwork_PowerboxTag_Encryption {
+	return IpNetwork_PowerboxTag_Encryption{s.List.Struct(i)}
+}
+
+func (s IpNetwork_PowerboxTag_Encryption_List) Set(i int, v IpNetwork_PowerboxTag_Encryption) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// IpNetwork_PowerboxTag_Encryption_Promise is a wrapper for a IpNetwork_PowerboxTag_Encryption promised by a client call.
+type IpNetwork_PowerboxTag_Encryption_Promise struct{ *capnp.Pipeline }
+
+func (p IpNetwork_PowerboxTag_Encryption_Promise) Struct() (IpNetwork_PowerboxTag_Encryption, error) {
+	s, err := p.Pipeline.Struct()
+	return IpNetwork_PowerboxTag_Encryption{s}, err
+}
+
 type IpNetwork_getRemoteHost_Params struct{ capnp.Struct }
+
+// IpNetwork_getRemoteHost_Params_TypeID is the unique identifier for the type IpNetwork_getRemoteHost_Params.
+const IpNetwork_getRemoteHost_Params_TypeID = 0xdd1700c1eb725eb4
 
 func NewIpNetwork_getRemoteHost_Params(s *capnp.Segment) (IpNetwork_getRemoteHost_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -197,6 +361,9 @@ func (p IpNetwork_getRemoteHost_Params_Promise) Address() IpAddress_Promise {
 
 type IpNetwork_getRemoteHost_Results struct{ capnp.Struct }
 
+// IpNetwork_getRemoteHost_Results_TypeID is the unique identifier for the type IpNetwork_getRemoteHost_Results.
+const IpNetwork_getRemoteHost_Results_TypeID = 0xb57bd5aef30c4b61
+
 func NewIpNetwork_getRemoteHost_Results(s *capnp.Segment) (IpNetwork_getRemoteHost_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return IpNetwork_getRemoteHost_Results{st}, err
@@ -266,6 +433,9 @@ func (p IpNetwork_getRemoteHost_Results_Promise) Host() IpRemoteHost {
 }
 
 type IpNetwork_getRemoteHostByName_Params struct{ capnp.Struct }
+
+// IpNetwork_getRemoteHostByName_Params_TypeID is the unique identifier for the type IpNetwork_getRemoteHostByName_Params.
+const IpNetwork_getRemoteHostByName_Params_TypeID = 0x9d5f1f6efcf7bbc4
 
 func NewIpNetwork_getRemoteHostByName_Params(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -337,6 +507,9 @@ func (p IpNetwork_getRemoteHostByName_Params_Promise) Struct() (IpNetwork_getRem
 
 type IpNetwork_getRemoteHostByName_Results struct{ capnp.Struct }
 
+// IpNetwork_getRemoteHostByName_Results_TypeID is the unique identifier for the type IpNetwork_getRemoteHostByName_Results.
+const IpNetwork_getRemoteHostByName_Results_TypeID = 0xd14a2ec2bad45f69
+
 func NewIpNetwork_getRemoteHostByName_Results(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return IpNetwork_getRemoteHostByName_Results{st}, err
@@ -406,6 +579,9 @@ func (p IpNetwork_getRemoteHostByName_Results_Promise) Host() IpRemoteHost {
 }
 
 type IpAddress struct{ capnp.Struct }
+
+// IpAddress_TypeID is the unique identifier for the type IpAddress.
+const IpAddress_TypeID = 0xeeb98f9937d32c0b
 
 func NewIpAddress(s *capnp.Segment) (IpAddress, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
@@ -572,6 +748,9 @@ type IpInterface_listenUdp struct {
 
 type IpInterface_listenTcp_Params struct{ capnp.Struct }
 
+// IpInterface_listenTcp_Params_TypeID is the unique identifier for the type IpInterface_listenTcp_Params.
+const IpInterface_listenTcp_Params_TypeID = 0xfd226ae4c6bd2b1e
+
 func NewIpInterface_listenTcp_Params(s *capnp.Segment) (IpInterface_listenTcp_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
 	return IpInterface_listenTcp_Params{st}, err
@@ -650,6 +829,9 @@ func (p IpInterface_listenTcp_Params_Promise) Port() TcpPort {
 
 type IpInterface_listenTcp_Results struct{ capnp.Struct }
 
+// IpInterface_listenTcp_Results_TypeID is the unique identifier for the type IpInterface_listenTcp_Results.
+const IpInterface_listenTcp_Results_TypeID = 0x9381253786627ecf
+
 func NewIpInterface_listenTcp_Results(s *capnp.Segment) (IpInterface_listenTcp_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return IpInterface_listenTcp_Results{st}, err
@@ -719,6 +901,9 @@ func (p IpInterface_listenTcp_Results_Promise) Handle() util.Handle {
 }
 
 type IpInterface_listenUdp_Params struct{ capnp.Struct }
+
+// IpInterface_listenUdp_Params_TypeID is the unique identifier for the type IpInterface_listenUdp_Params.
+const IpInterface_listenUdp_Params_TypeID = 0xa1d8815a262abc49
 
 func NewIpInterface_listenUdp_Params(s *capnp.Segment) (IpInterface_listenUdp_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
@@ -797,6 +982,9 @@ func (p IpInterface_listenUdp_Params_Promise) Port() UdpPort {
 }
 
 type IpInterface_listenUdp_Results struct{ capnp.Struct }
+
+// IpInterface_listenUdp_Results_TypeID is the unique identifier for the type IpInterface_listenUdp_Results.
+const IpInterface_listenUdp_Results_TypeID = 0xcb83a480981bc290
 
 func NewIpInterface_listenUdp_Results(s *capnp.Segment) (IpInterface_listenUdp_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -974,6 +1162,9 @@ type IpRemoteHost_getUdpPort struct {
 
 type IpRemoteHost_getTcpPort_Params struct{ capnp.Struct }
 
+// IpRemoteHost_getTcpPort_Params_TypeID is the unique identifier for the type IpRemoteHost_getTcpPort_Params.
+const IpRemoteHost_getTcpPort_Params_TypeID = 0xed10beb11e7383e9
+
 func NewIpRemoteHost_getTcpPort_Params(s *capnp.Segment) (IpRemoteHost_getTcpPort_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
 	return IpRemoteHost_getTcpPort_Params{st}, err
@@ -1028,6 +1219,9 @@ func (p IpRemoteHost_getTcpPort_Params_Promise) Struct() (IpRemoteHost_getTcpPor
 }
 
 type IpRemoteHost_getTcpPort_Results struct{ capnp.Struct }
+
+// IpRemoteHost_getTcpPort_Results_TypeID is the unique identifier for the type IpRemoteHost_getTcpPort_Results.
+const IpRemoteHost_getTcpPort_Results_TypeID = 0xd77df9f44cfcde33
 
 func NewIpRemoteHost_getTcpPort_Results(s *capnp.Segment) (IpRemoteHost_getTcpPort_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1099,6 +1293,9 @@ func (p IpRemoteHost_getTcpPort_Results_Promise) Port() TcpPort {
 
 type IpRemoteHost_getUdpPort_Params struct{ capnp.Struct }
 
+// IpRemoteHost_getUdpPort_Params_TypeID is the unique identifier for the type IpRemoteHost_getUdpPort_Params.
+const IpRemoteHost_getUdpPort_Params_TypeID = 0xb62b02486ebe26ed
+
 func NewIpRemoteHost_getUdpPort_Params(s *capnp.Segment) (IpRemoteHost_getUdpPort_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
 	return IpRemoteHost_getUdpPort_Params{st}, err
@@ -1153,6 +1350,9 @@ func (p IpRemoteHost_getUdpPort_Params_Promise) Struct() (IpRemoteHost_getUdpPor
 }
 
 type IpRemoteHost_getUdpPort_Results struct{ capnp.Struct }
+
+// IpRemoteHost_getUdpPort_Results_TypeID is the unique identifier for the type IpRemoteHost_getUdpPort_Results.
+const IpRemoteHost_getUdpPort_Results_TypeID = 0xf53aa3a93e49003b
 
 func NewIpRemoteHost_getUdpPort_Results(s *capnp.Segment) (IpRemoteHost_getUdpPort_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1286,6 +1486,9 @@ type TcpPort_connect struct {
 
 type TcpPort_connect_Params struct{ capnp.Struct }
 
+// TcpPort_connect_Params_TypeID is the unique identifier for the type TcpPort_connect_Params.
+const TcpPort_connect_Params_TypeID = 0x8a60e53250a32321
+
 func NewTcpPort_connect_Params(s *capnp.Segment) (TcpPort_connect_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return TcpPort_connect_Params{st}, err
@@ -1355,6 +1558,9 @@ func (p TcpPort_connect_Params_Promise) Downstream() util.ByteStream {
 }
 
 type TcpPort_connect_Results struct{ capnp.Struct }
+
+// TcpPort_connect_Results_TypeID is the unique identifier for the type TcpPort_connect_Results.
+const TcpPort_connect_Results_TypeID = 0xcdd1222d14073645
 
 func NewTcpPort_connect_Results(s *capnp.Segment) (TcpPort_connect_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1488,6 +1694,9 @@ type UdpPort_send struct {
 
 type UdpPort_send_Params struct{ capnp.Struct }
 
+// UdpPort_send_Params_TypeID is the unique identifier for the type UdpPort_send_Params.
+const UdpPort_send_Params_TypeID = 0xc6ca13f7c8dbd102
+
 func NewUdpPort_send_Params(s *capnp.Segment) (UdpPort_send_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
 	return UdpPort_send_Params{st}, err
@@ -1576,6 +1785,9 @@ func (p UdpPort_send_Params_Promise) ReturnPort() UdpPort {
 
 type UdpPort_send_Results struct{ capnp.Struct }
 
+// UdpPort_send_Results_TypeID is the unique identifier for the type UdpPort_send_Results.
+const UdpPort_send_Results_TypeID = 0x8e43fd8e213b1811
+
 func NewUdpPort_send_Results(s *capnp.Segment) (UdpPort_send_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return UdpPort_send_Results{st}, err
@@ -1622,6 +1834,9 @@ func (p UdpPort_send_Results_Promise) Struct() (UdpPort_send_Results, error) {
 }
 
 type IpPortPowerboxMetadata struct{ capnp.Struct }
+
+// IpPortPowerboxMetadata_TypeID is the unique identifier for the type IpPortPowerboxMetadata.
+const IpPortPowerboxMetadata_TypeID = 0x856e71a6a4f22bba
 
 func NewIpPortPowerboxMetadata(s *capnp.Segment) (IpPortPowerboxMetadata, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
@@ -2027,95 +2242,105 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 	return methods
 }
 
-const schema_f44732d435305f86 = "x\xda\xacVkl\x14U\x14\xbewv\x97\xa5\xbb3" +
-	"]\xc6iyh\xa0..\xe8\x16\xd8\xb4\xbc-\x09\xad" +
-	"K\x08\x14-\xee6*\xb1\x89\xb6CwxHwv" +
-	"\x99\x99\xcd\x02\x8a\xb5\x12 TE\x88\x7f\x80\xc4\x1f\xc8" +
-	"#\xc1\x18\x13\x10L@%\x01\x95\x88\xa6\"\x11Dc" +
-	"P\x12\xc4\x04p\x8d \x0d)\x81\x8c\xe7\xde\xd9yl" +
-	"w\xa1U\xfc1\xc9\xcc\xbdg\xce\xf9\xcew\xbes\xee" +
-	"\xad9\xe3n`j=OW \x14\xff\xc33D?" +
-	"2\xe1\xfa\xee\xbd+\xe5\xf5(^\x86\xb1\xbe\xa1\xb5f" +
-	"\xda\x99\xc9\xf3n \x0f\xf6\"4\x85\xf31X\x18\xe5" +
-	"\x83W\xa1\xd2\x97EX\x0f>\xb2+6\xf9R[7" +
-	"\xe2y\x8c\xf2Fk\xc1\x08a\xa1\xcbW\x0f\x06\xfc\xc8" +
-	"Y\xc1\xcdw\xe6l6\x0c\xdc\xe4\xcf=\xbe\xeb\xc8\xad" +
-	"\xd7\xd4\xbe\x11^q\xee\x85-\x88/s\xd9a\xe0\xbf" +
-	"M\xbe\x03\xc2V\x1a\xe2-\xdfF\xe1\x12y\xd3O\xbd" +
-	"\xbax\xc3\x8cq]\xef \xbe\xd2\x0a\xd3\xe3\xab#a" +
-	"\xce\xd20_|r\xf3\xb6\\\xd5\xfa.\xe2\x05\xcb\xa0" +
-	"\xd7\xa7\x10\x03\xec'\x06\x8d\x9fV\x8fo\xe9\xfaq'" +
-	"\x8aWb\xcb\"\xe8\x9fL,\xc2~\x92\xca\xf5\x99\x17" +
-	"\xda\x9e\x0b~\xb4\xa7\x08\xd0z\xff\x15a\xab\x9f\x02\xf2" +
-	"{\xe1y\x14\x005<\\\xbdf\xc5\xa2\xd7\xf7\x950" +
-	"\xdeA\xcc\xc0x\x93\x1f\xd0\x937]|\x92\xfd\xfb\xc3" +
-	"\xb3/\x1fr\x82\xeb\xf1/ \xa1\x7f\xa2\xe0r\xe3\x8f" +
-	"\xca\xf3\x99\x09\x1f\xa3\xf8p\x9cgiJ\x9f?J\xd1" +
-	"\xb3\xc4\xe0[\xfc\xdd\x88\x07\"\xc1\x13E\xe1\x82l\xb7" +
-	"\x10fI\xb8q\xec<\xa1\x89\xbc\xe9\xcc\xe9\x9f\xbf\xba" +
-	")|}\"_\x13\x86\xecNc\xaf\x80\xf5\xe3,I" +
-	"t\xcb\xf1\x87\xb6\xbd\xb6{\xdd7N2\xb7\xb3\x94\xcc" +
-	"\x9d4\xda\xdc\xe9\xde\x8aIcO\xf78\x8bz\x8c\xf5" +
-	"\x11\x83\x93\xd4\xe0\xe0\xb5\xbd{~\xbf:\xe7T\x11\x9c" +
-	"\x1c{K\xe8\xa3pzY/<\x84\xaa\xe5\xadg\x8e" +
-	"\x1c\x8f,8\xed\xcc>\xc7\xae!\xde\xfa\xa8\xb7)\xbf" +
-	"\xdc~\xeaF\xdf\xdas\x88\x1fn\x19\x8c\xe2(=\xe3" +
-	"80\xf8\xf5\xe0\x8b\xca\xd5c#\xce;\xfe\x9f\xcbQ" +
-	"r\x9a\xc8\xb6~\xeb\x87\xd9\x97\xe5\xd8\xc4\x8bEh\x92" +
-	"\xdc\xfbB\x86#hVr\x1b\x85\x93\xe4M?8d" +
-	"\xd5_\x0f\x96\x1f\xb8Rd\xbc\x9f\xeb\x16\x0eS\xe3C" +
-	"\xdc<\xe1<5\xbe\xbcN\x1d\xb3\xff\xe8\xb0\x9c\xb3." +
-	"_\x1a\xa1{hh\xff\xc4\xefgl\x7f\xfb\xf0\x9f\xa4" +
-	"Y\x18\xdb\x1d\x95y\x8e\xdb!\xf4R\x87\xd78\xa0\xfd" +
-	"\xce\xac\xc6\xd9\xfbv\xd5\xf5:\x92l*\xa7I>_" +
-	"N\\\x8d\x99\xf0\xd9\x89\xdf^\x1a{\xa7@\xa0\xab\xcb" +
-	"\xa9@\xbb\xca\xb3HGY}y:\xd2.\xa6\xe5\xb4" +
-	"\xab\xae1\x1dK)Z,\x95\x95\x94\xc5\xa9UM\x92" +
-	"&&DMD1\x8c\xe3C]n\x80\x0a.\xf8p" +
-	"7\xf4\xf4D\x17\x8e\xcfd0\xc6\x15\xc4-?M\x81" +
-	"\xb5\xa9\xb0\xd6\xc0`=\xadHK$E\x91p\x82x" +
-	"[\x98I\x02\x11^\xc4\xc0c\xef\xa1\xaa\xc4\xfc\x94\xaa" +
-	"a\x16\xd6YX\xb71<\xd3NAD\xdaS\xb2," +
-	"\xb5k\xa1\x98\xa8\x88I\x15\xc5\xdd\x16\x00\xae\x05\x82\xb1" +
-	"\x10l$\x04K\xa4\xb2\xb2\xaa\x81C\x97\x98\xc4\xbc\xde" +
-	"z\xf1T8;sQ\x0f\x84\xc4\xbc\xc3/S\xf7l" +
-	"\xc2\xf0\xabJr\"\xd4,U\xa9\x99\x0eM\xb5\xf61" +
-	"\xe4\xde,%SZ\x95Dp\x19\x19{\x1c\xc5\xc2\xa6" +
-	"\x9e\xf8\xda\x16\xc4\xf0a/\xb6\x1b\x0c\xcfB\xf9*\x8c" +
-	"&{\x95^}\xa9\xa4\xd1<\x90K\xd1\x1a0\xf9\xa4" +
-	"\xe1\x8dOp^\xc0y\xa3\xacI\xca\x12\xb1]\x8at" +
-	",W5I\x86?C\xcd\xf5\x12\x05\xe8L\xbb\x0e\xd2" +
-	"\x1e\x0aiW0\xb8~\x99(':$H\xf8B\xb4" +
-	"\xad\xed\x83\xd0\x8dm\xfd\x13v\x83\xe3\x85\x92\x96M)" +
-	"+\"\x10\x9e\xe6FS\x8b\xae^(&\xa5P\xac\x8a" +
-	"\xf2\xea\xf4\x1f\xb5\xfdw\x8a\x89\x84\"\xa9j\x89\xfa\x14" +
-	"\xe3\x85\xd4,w\x0e\x99\x10w!pWc\xcbdR" +
-	"5\xac=\x06kS!D\xda\x10\x87)\x8d\x00\xf9\x86" +
-	"\x84\xac\xa1TT\xc1\x98\xa4\xa84\xa0FS\x0b\x90\xdc" +
-	"\x80\xcb\x98\xcb\x13\x1f\x0a\x94Z\xc3\x93\xf4\xe3\xd9\xa3\xaf" +
-	"\x9c\xcb\xbd\xf99yw\x96\x982\xe2\xa2\xbf\x19\xf55" +
-	"\xa7\x80c\x9a\xd6*f}\xcd\xf1\x8f\xcda\xc3\x8f~" +
-	"\x0f\xf6F\xd1\xfaRF\x91!\x17\xa3\xc4t\x05\x9b$" +
-	"{\x81\xe5\xc2Z\xdf\xb5$ GZlT\xa0\xf2j" +
-	"\xbb\x1c\x81e\xa4Wx\xfbt+Ql\xdb]\xc4\x94" +
-	"\x9bR\xb2{\x9ce\xeeW\x03\x07Wy\x07\x886\xbf" +
-	"\x9b\xb6\x82y\x02`\xf3\xf4\xe5\xf9j\xa0\xc3\xe3\x0d\x90" +
-	"\x9e*\xcc\xb5_\xbf\xc5\xc4\xc0=\xe4\xc1[\xfah\xb1" +
-	"GKg\x12\xf4'.\x950\x07\xd88\xc0\xa6HZ" +
-	"F\x91\x8d&\xba\x87N\xee\xa6\xd0\xfb\xee\xa8\xe2\xd1T" +
-	"\xb2l\x0b\x1c\xc3)\x93&\xa3I\x84\x01\x88\xee9\x9b" +
-	"\x9c\xca\x06\xec\xf5\x06x\x87\xb6\xad\xc3\xe8.\xda\x1e\xa8" +
-	"\xdbK%\x7f_\xfa\xcaS1\xb0r\xf3]m\x1d\x90" +
-	"\x83\x1dS\x03)\xd7\x1cP\xc3\xec\xd3\x12\\\x0f+\xd0" +
-	"p^\x08\x81<\x99\xf9\x89n\x1e\x89\xd8\xbc\xfe\xf1\xb5" +
-	"\xcdf\xc7\x9b\xf79l\xdef\xf8\xd1\xcd\xc6D7G" +
-	"3\xc2i\xe8vSV\xf4\xcb\xa9{l\x8a\xc4\xd98" +
-	"\xe6u\x16\x9bW \x9e\x8f\xd2\xc6\xe9\xcc+\xa9xN" +
-	"\x94f\xfb?wsc\xfa\x09\xc2\x97KU\xfb\x9d\xe5" +
-	"%\xbb0\xea\x98\xd2\x1d\xe420}*.\x03\x9fe" +
-	"\x08wf\xd2i\xe7\xf7 F\xd0`%\xf2o\x1a\x9a" +
-	"\x1c\x91\xff\xdf\x91\xd3O\x9c\xff\x04\x00\x00\xff\xffR\x89" +
-	"\x80 "
+const schema_f44732d435305f86 = "x\xda\xacW{l\x14\xe5\x16?gv\xb7C\xf7\xd9" +
+	"\xb9S^\xf7\x06z\xcb-\xdc\xdb\x02\x9b\x96\xf2J\xc9" +
+	"\xa5\xa5H`\x11\xc8NS$6\xa9\xed\xb4;\x94\xda" +
+	"\xee\xec03\xcd\x02\x8a\xb5\x12 TA\x881A\x12" +
+	"L\x90G\x821&\"\x98\x88B\x02*\x11\x0dV\"" +
+	"\x15\x89AQ\xa8I!5\x825\x08\xa1\x8e\xf9\xbe\xdd" +
+	"\xd9\x99v\xb7\x05\xc4\xff\xe6\xdb9s\x9e\xbf\xdf\xef|" +
+	"[\x1ctU0%.#\x17@\xe8we\x19\xc7\xa7" +
+	"\xde:ph\xad\xbc\x19\x84lDcK]\xf1\xac\x0b" +
+	"3\x16\xf7\x83\x0bY\x80R\xc9\xcd \xbf\xd6\xcd\x02\xf0" +
+	"Qw\x1c\xd0\xc8\xff\xcf\xfe\xf0\x8c\x9e\xfaN\xe08\x84" +
+	"\xa4Q\xb7\x9bA@\xfe\x92\xbb\x1c\xd0\xe0\xc6\xcd\xcb\xdf" +
+	"1\xb0pG\xc2\xc0I\xbe\x1cp\xdf\x02\xa7Q\\\xf2" +
+	"ba\xcb\xc5\xda\x9d\xc0e;\xac0\x80\xfc\x0f\xee#" +
+	"|/\x0d\xd1\xe3\xde\xca\xff\xdf\xc3\x02\x18]\xcf5l" +
+	"\x993\xb9\xe3\x15\xe0F\xa7\xc2L\xf6\x94\x910\xd3=" +
+	"$\xcc\xc7\x1f\xdc\xbe'\xe7\xd5\xed\x05\x8eO\x19,\xf7" +
+	"\xa8\xc4\xe0Ij\x10\xfa\xb0hJM\xc77\xfb@\x18" +
+	"\x8d)\x8b\xf5\x9e\x19\xc4\xa2\xc3CJ\xb95\xf7J\xfd" +
+	"\x13\xf9\xef\x1eLK\xe8\xb2\xe7:\xdf\xeb\xa1\x09yX" +
+	"\xbe\xc7\xf3_\x00\xa3\xe2\xdfE\x1bZV\xbdp8\x83" +
+	"\xf1\x1e\xbe\xc73\x16\x80\xbf\xe9\xd9\xca/\xf7\x92\xec\xc5" +
+	"\xc7\xbd\xbf\xbe\xdd\xfd\xcc1{r\xb3\xbcKI\xe8\x05" +
+	"^\x92\\\xdf\x94\x93\xf2\x12f\xea{ \x8c\xc1d\x97" +
+	"JEo%1h\xa6\x06_\xe0\x97c\xff\x11\xcc?" +
+	"\x93\x16n\x9b\xb7\x93\xdfE\x82\xf0\xdb\xbd\x8b\xf9c4" +
+	"\x1cs\xfe\xdbOo\xf3\x9f\x9dI\xce\x84!o\xf7z" +
+	"\xaf\x03\xf2\xfb\xbc\xa4\xd0\x9d\xa7\xff\xb5\xfb\xf9\x03\x9b>" +
+	"\xb77\x13}\xb4\x99\xd9>\x12m\xd1l6w\xfa\xa4" +
+	"\xf3\xe7\xecC-\xf4\xb9\x89A\x0958z\xf3\xd0\xc1" +
+	"\x9fn,\xecJKg\xa5\xef./\xfaH\xc0Z\x1f" +
+	"\xcb\xd7\xfaH\xab\xc6\xff\xee{\xb5\xb4\xfc\xf5.R\xbd" +
+	"\xd57\xea5iO\xba\x15\xa5\x8e\x9b\xeb.\x1c?\x1d" +
+	"\\z\xde\xde\xa9]\xbe\x0d$\xf2^jP\xfa\xdd\xbd" +
+	"e\xfdw6^\x04nL\xca\xe0\x84\x8f\xb6\xf2,1" +
+	"\xf8\xfe\xe8S\xea\x8dSc/\xdb\xbe\xef\xf5\xd1F\xde" +
+	"\xa4\xdfog\xaf\x05\xee,\xbb\xf4#\x08y\x88Vj" +
+	"\x8f\xb1\x0c@)\xe7\xafB~\xb2\x9f$\x96\xef'\x9d" +
+	"\xba\xfb\xf5\xfc^9<\xedjZ\x9d\x1b\xfdo\xf2\x9b" +
+	"\xa9a\x87\x7f+\x7f\x89<\x19G\xb3\xd6\xfd\xf2O\xff" +
+	"\x91\xebi\xc6\xa7\xfc\x9d\xfcYj\xfc\x89\x7f1\xdfG" +
+	"\x8d{7i\x13\xdf9\x99\xd3g\x9fx\xb7\x9f&z" +
+	"\xd9O\x12\xf5L\xfbj\xcek/\xbf\xff3\xa1!c" +
+	"\xb9K\x10\xc8\xbf\x87w\x05\xc8\x13\x06\xe2\x80\x03\xf3B" +
+	"\xf3\x0f\xef/\xfb\xcd\xd6\x92\xda\x00mIs\x80\xb8\x9a" +
+	"8\xf5\xc4\x99kOO\x1a\x18\x04\xfdm\x01\x0a\xfd]" +
+	"\x818\x18\x107\x9a\x95`\xa3\xa8\xc8\x8a\xa3,\xa4\x84" +
+	"c\xaa\x1e\x8e\xc5%\xb5!\xb6n\xb9\xa4\x8b\x11Q\x17" +
+	"!\x8c(\x8cr8\x01\x9c\x08\xc0\x15v\x02\x08\xd3\x1c" +
+	"(\xcce\x101\x97\xb8\xe5f\xa9\x00\xc2L\x07\x0a\x15" +
+	"\x0c\x1a\x8a*\xad\x96TU\xc2\x08\xf1\xb6\xa2-\x0a\x80" +
+	",0\xc8\x82\xf5\x0e\xf2\"Kb\x9a\x8e^`\xd0K" +
+	"\x86\x9f\xca\xa1\xba\x91&\x11l\x8c\xc9\xb2\xd4\xa8\x17\x84" +
+	"EU\x8cj 8S\x09\xf8j\x00\x04\xaf\x03\x85q" +
+	"\x0c\x1a\x91X\\\xd6tU\x02\x87\x18E\xce\xa8\xbb\xda" +
+	"U\x18\x9f\xbb\xea\x1c\x00\"g\xf3\xcb\x94\xad\x8c$\xfc" +
+	"j\x92\x1c)\xa8\x92\xf2\xb4\xb6V]K\xbd\xc7\xb2\x90" +
+	"R%Ecz\x9eD\xf2JT\xec\xb2\x0d\x0bM\xf4" +
+	"q%5\xc0p\x85,Z\xd4\xc5y\x90\x9c\xc2\x04\xf2" +
+	"n4k4I:\xad\x03\x1c\xaa^\x81\xe4H\xc3'" +
+	"\x8ea\xc4A=\x0f\xc9\xba\xa4\xae\x16\x1b\xa5`k\xb3" +
+	"\xa6Kru\xa3RPU.\xd1\x04\xede\x97\x01\x08" +
+	"\xa3\x1c(\xe42X\xbeF\x94#\xad\x12r\xc6\x95\xca" +
+	"\xfa\xfa\xb7\x0a\xfaw\x0f-\xd8Y\x16RVHz<" +
+	"\xa6\xb6\x04\x9b$\x9d\xd6FK\xab\\\xbfB\x8cJ\x05" +
+	"\xe1<\xdaW\xbb\xffJ\xcb\x7f\xbb\x18\x89\xa8\x92\xa6e" +
+	"\x98Oz\xbe+#J\xca\x9d\x0d&\xc4]\x81\x03\x85" +
+	"b\x0b&\xd3\x8b\x00\x84\xff9P\x98\xc9`\xbb\x92\x00" +
+	"\x87\x09\x8d\x009#g\xc9]\xda\x04\xc3\x92\xaa\xd1\x80" +
+	":--@j\x0b#\x86\x1d.a\x14\xda\xe4\x85\xf0" +
+	"\xb1\xfb\xe4\xb3\x17\xfb^\xfa\x88<\xdbGL;\xe2P" +
+	"[\x04\xa7]\x018l0L\xd0\x03[-6%f" +
+	"o\xea\x89M\xc3KTs\xf6\xe6\xd2AS\xb6\xb8\x09" +
+	"o\x00\xc3\x8d\xa7\xb3\xa7\xdd\x86\x04\x94\x12\xe3\xa7\xbf\xa0" +
+	"9\x00V\x8cJ\x83q0\xec\xb8\x0a\xaa\x12@\x80A" +
+	"\x0c(\xb2F\x15XCx\xc4Y;5\x03\x10,w" +
+	"A\x13\x8ajFf\xd9!0d>\xb6>&\x1d\x00" +
+	"\x15\x06'\xa5\x89\xb9w\xd0\xdc\xf9\x1cW\x04\x0c\xe7b" +
+	"\x03\x84o\x83k\x1d\xc2\xc5\xb0\x18\x18\x01:\\\x0a;" +
+	"5\x96\xec\xb4G%M\x13\x9b$\xf4\x01\x83>@C" +
+	"\x95\xf46UN\x10l\x04\x0c\x0d\x87\xdeGf[\xba" +
+	"le\x1c\xdbR\x9bp\xb5)D\xb6\xc4(\x00\x8c\xa8" +
+	"[v\xd4\x87d\xbd<\x91\xbc\x0d\xf7\xa9E5\x0c\xee" +
+	"\x19\x1b\xb4(\xca\xcb\x1bb\xeb\x08\xc8\x09\x07R;\x91" +
+	"\xc3\x1ac\x91\xdc\xa8\xaeW\xf4fp\xc4\xe4\xe1\xf4V" +
+	"\xb2\xd9`\x8e\xf5= \xe6<\x84\xfcd\xea\xf8#\x81" +
+	":\xd9\xff\xfb\xd3%)3\xa9\x8d\xfd\xa0\xbay?\xba" +
+	"\x98\x8a\x99c\xad\xef\x11zb\xcaM\xb5\xd8\x144\xdb" +
+	"\x1eC9\xb9i\xbd\x86\x91 B\x91E\x04\x1f\xfea" +
+	"$\x990\xc9R\xd1\x80\x1c\x93%\xc8b\xf5V\x0d\xb2" +
+	"\x06I\x1d\xc5y \x89\x95\xe423o\x03h\xde\xa9" +
+	"\xb9\x92*S\xd0\xccK2\x9aWDnBUb\x99" +
+	"\x99[\x09P\xa9@\xc3d\x0d=\xd9i\x8d&\x07\xec" +
+	"\xba`\xfeG@\xf3^\xc9q\x95T\x17\xda\x93DI" +
+	"\x97\xc1\xccs\xfd\xcbb\x15R\x16\x90\xc984m\xc8" +
+	"5&\xa3\xc8T\xda\x16T+\x99\xd1\xec\x99\x98\x0d\x0c" +
+	"f\x03\xb6\xb7)\x8a\xfd\xfc\x00\x0a\xfb\xa0`|\x18\xbd" +
+	"\"\xb7\x83\xbfo\xdb\x0e\xa1\xc1\x9f\x01\x00\x00\xff\xff\x0e" +
+	"\x9d\xe44"
 
 func init() {
 	schemas.Register(schema_f44732d435305f86,
@@ -2135,9 +2360,11 @@ func init() {
 		0xcb83a480981bc290,
 		0xcdd1222d14073645,
 		0xcf43ebe6a5a6f1b4,
+		0xcf9e3f33950df819,
 		0xd14a2ec2bad45f69,
 		0xd77df9f44cfcde33,
 		0xdd1700c1eb725eb4,
+		0xe2d94cf90fe4078d,
 		0xe32c506ee93ed6fa,
 		0xeab20e1af07806b4,
 		0xed10beb11e7383e9,

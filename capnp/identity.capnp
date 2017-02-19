@@ -23,7 +23,7 @@ using Util = import "util.capnp";
 using PermissionSet = List(Bool);
 # Set of permission IDs, represented as a bitfield.
 
-interface Identity {
+interface Identity @0xc084987aa951dd18  {
   # Represents a user identity.
   #
   # Things you can do:
@@ -38,13 +38,25 @@ interface Identity {
   # This capability is always persistable.
 
   # TODO(someday): Public key info? Ability to seal messages / check signatures?
+
+  struct PowerboxTag {
+    # Tag to be used in a `PowerboxDescriptor` to describe an `Identity`.
+
+    permissions @0 :PermissionSet;
+    # In a query, the permissions that the requester wishes to be held by the identity. When
+    # the powerbox UI asks the user to select a role, it hides any roles that do not provide all of
+    # these permissions.
+    #
+    # In a fulfillment, the current permissions actually held by the identity.
+  }
+
+  getProfile @0 () -> (profile: Profile);
+  # Get the identity's current profile.
 }
 
-struct UserInfo @0x94b9d1efb35d11d3 {
-  # Information about the user opening a new session.
-  #
-  # TODO(soon):  More details:
-  # - Sharing/authority chain:  "Carol (via Bob, via Alice)"
+struct Profile @0xd3d0c34d7201fcef {
+  # Personal information provided by a user, intended to be displayed to other users when
+  # they come in contact.
 
   displayName @0 :Util.LocalizedText;
   # Name by which to identify this user within the user interface.  For example, if two users are
@@ -54,20 +66,14 @@ struct UserInfo @0x94b9d1efb35d11d3 {
   # Display names are NOT unique nor stable:  two users could potentially have the same display
   # name and a user's display name could change.
 
-  preferredHandle @4 :Text;
+  preferredHandle @1 :Text;
   # The user's preferred "handle", as set in their account settings. This is guaranteed to be
   # composed only of lowercase English letters, digits, and underscores, and will not start with
   # a digit. It is NOT guaranteed to be unique; if your app dislikes duplicate handles, it must
   # check for them and do something about them.
 
-  pictureUrl @6 :Text;
-  # URL of the user's profile picture, appropriate for displaying in a 64x64 context.
-  #
-  # TODO(security) TODO(apibump): If we allow UserInfo to come from untrusted sources then this
-  #   field is XSS-prone. Currently UserInfo only comes from the front-end.
-
-  pronouns @5 :Pronouns;
-  # Indicates which pronouns the user prefers you use to refer to them.
+  picture @2 :Util.StaticAsset;
+  # The user's profile picture, appropriate for displaying in a 64x64 context.
 
   enum Pronouns {
     neutral @0;  # "they"
@@ -75,6 +81,33 @@ struct UserInfo @0x94b9d1efb35d11d3 {
     female @2;   # "she" / "her"
     robot @3;    # "it"
   }
+
+  pronouns @3 :Pronouns;
+  # Indicates which pronouns the user prefers you use to refer to them.
+}
+
+struct UserInfo @0x94b9d1efb35d11d3 {
+  # Information about the user opening a new session, including a snapshot of the user's
+  # profile.
+  #
+  # TODO(soon):  More details:
+  # - Sharing/authority chain:  "Carol (via Bob, via Alice)"
+
+  displayName @0 :Util.LocalizedText;
+  # The current value of `identity.getProfile().displayName`, provided here for convenience.
+
+  preferredHandle @4 :Text;
+  # The current value of `identity.getProfile().preferredHandle`, provided here for convenience.
+
+  pictureUrl @6 :Text;
+  # The current value of `identity.getProfile().staticAsset.getUrl()`, provided here for
+  # convenience.
+  #
+  # TODO(security) TODO(apibump): If we allow UserInfo to come from untrusted sources then this
+  #   field is XSS-prone. Currently UserInfo only comes from the front-end.
+
+  pronouns @5 :Profile.Pronouns;
+  # The current value of `identity.getProfile().pronouns`, provided here for convenience.
 
   deprecatedPermissionsBlob @1 :Data;
   permissions @3 :PermissionSet;
@@ -108,7 +141,7 @@ struct UserInfo @0x94b9d1efb35d11d3 {
   # safely truncate it down to some shorter prefix according to its own security/storage trade-off
   # needs.
   #
-  # If the user is not logged in, `userId` is null.
+  # If the user is not logged in, `identityId` is null.
 
   identity @7 :Identity;
   # The identity capability for this user. null if the user is not logged in.

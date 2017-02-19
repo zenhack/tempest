@@ -321,6 +321,26 @@ func (c Backend) Ping(ctx context.Context, params func(Backend_ping_Params) erro
 	}
 	return Backend_ping_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
 }
+func (c Backend) GetGrainStorageUsage(ctx context.Context, params func(Backend_getGrainStorageUsage_Params) error, opts ...capnp.CallOption) Backend_getGrainStorageUsage_Results_Promise {
+	if c.Client == nil {
+		return Backend_getGrainStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0xc1b0e9713ac1ad4f,
+			MethodID:      15,
+			InterfaceName: "backend.capnp:Backend",
+			MethodName:    "getGrainStorageUsage",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_getGrainStorageUsage_Params{Struct: s}) }
+	}
+	return Backend_getGrainStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
 
 type Backend_Server interface {
 	StartGrain(Backend_startGrain) error
@@ -352,6 +372,8 @@ type Backend_Server interface {
 	DeleteUser(Backend_deleteUser) error
 
 	Ping(Backend_ping) error
+
+	GetGrainStorageUsage(Backend_getGrainStorageUsage) error
 }
 
 func Backend_ServerToClient(s Backend_Server) Backend {
@@ -361,7 +383,7 @@ func Backend_ServerToClient(s Backend_Server) Backend {
 
 func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 15)
+		methods = make([]server.Method, 0, 16)
 	}
 
 	methods = append(methods, server.Method{
@@ -574,6 +596,20 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xc1b0e9713ac1ad4f,
+			MethodID:      15,
+			InterfaceName: "backend.capnp:Backend",
+			MethodName:    "getGrainStorageUsage",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := Backend_getGrainStorageUsage{c, opts, Backend_getGrainStorageUsage_Params{Struct: p}, Backend_getGrainStorageUsage_Results{Struct: r}}
+			return s.GetGrainStorageUsage(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
+	})
+
 	return methods
 }
 
@@ -695,6 +731,14 @@ type Backend_ping struct {
 	Options capnp.CallOptions
 	Params  Backend_ping_Params
 	Results Backend_ping_Results
+}
+
+// Backend_getGrainStorageUsage holds the arguments for a server call to Backend.getGrainStorageUsage.
+type Backend_getGrainStorageUsage struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  Backend_getGrainStorageUsage_Params
+	Results Backend_getGrainStorageUsage_Results
 }
 
 type Backend_PackageUploadStream struct{ Client capnp.Client }
@@ -869,6 +913,9 @@ type Backend_PackageUploadStream_saveAs struct {
 
 type Backend_PackageUploadStream_saveAs_Params struct{ capnp.Struct }
 
+// Backend_PackageUploadStream_saveAs_Params_TypeID is the unique identifier for the type Backend_PackageUploadStream_saveAs_Params.
+const Backend_PackageUploadStream_saveAs_Params_TypeID = 0x86ca17d397d72d2b
+
 func NewBackend_PackageUploadStream_saveAs_Params(s *capnp.Segment) (Backend_PackageUploadStream_saveAs_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_PackageUploadStream_saveAs_Params{st}, err
@@ -938,6 +985,9 @@ func (p Backend_PackageUploadStream_saveAs_Params_Promise) Struct() (Backend_Pac
 }
 
 type Backend_PackageUploadStream_saveAs_Results struct{ capnp.Struct }
+
+// Backend_PackageUploadStream_saveAs_Results_TypeID is the unique identifier for the type Backend_PackageUploadStream_saveAs_Results.
+const Backend_PackageUploadStream_saveAs_Results_TypeID = 0xa019dbe64a38e85d
 
 func NewBackend_PackageUploadStream_saveAs_Results(s *capnp.Segment) (Backend_PackageUploadStream_saveAs_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -1060,6 +1110,9 @@ func (p Backend_PackageUploadStream_saveAs_Results_Promise) Manifest() spk.Manif
 }
 
 type Backend_startGrain_Params struct{ capnp.Struct }
+
+// Backend_startGrain_Params_TypeID is the unique identifier for the type Backend_startGrain_Params.
+const Backend_startGrain_Params_TypeID = 0xadfbf90ef9c01c9a
 
 func NewBackend_startGrain_Params(s *capnp.Segment) (Backend_startGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
@@ -1191,6 +1244,14 @@ func (s Backend_startGrain_Params) SetDevMode(v bool) {
 	s.Struct.SetBit(1, v)
 }
 
+func (s Backend_startGrain_Params) MountProc() bool {
+	return s.Struct.Bit(2)
+}
+
+func (s Backend_startGrain_Params) SetMountProc(v bool) {
+	s.Struct.SetBit(2, v)
+}
+
 // Backend_startGrain_Params_List is a list of Backend_startGrain_Params.
 type Backend_startGrain_Params_List struct{ capnp.List }
 
@@ -1221,6 +1282,9 @@ func (p Backend_startGrain_Params_Promise) Command() spk.Manifest_Command_Promis
 }
 
 type Backend_startGrain_Results struct{ capnp.Struct }
+
+// Backend_startGrain_Results_TypeID is the unique identifier for the type Backend_startGrain_Results.
+const Backend_startGrain_Results_TypeID = 0xac9557813c4f78cf
 
 func NewBackend_startGrain_Results(s *capnp.Segment) (Backend_startGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1291,6 +1355,9 @@ func (p Backend_startGrain_Results_Promise) Supervisor() supervisor.Supervisor {
 }
 
 type Backend_getGrain_Params struct{ capnp.Struct }
+
+// Backend_getGrain_Params_TypeID is the unique identifier for the type Backend_getGrain_Params.
+const Backend_getGrain_Params_TypeID = 0xe4d3afafc9fe1acf
 
 func NewBackend_getGrain_Params(s *capnp.Segment) (Backend_getGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1385,6 +1452,9 @@ func (p Backend_getGrain_Params_Promise) Struct() (Backend_getGrain_Params, erro
 
 type Backend_getGrain_Results struct{ capnp.Struct }
 
+// Backend_getGrain_Results_TypeID is the unique identifier for the type Backend_getGrain_Results.
+const Backend_getGrain_Results_TypeID = 0xea0b2836fb52aee9
+
 func NewBackend_getGrain_Results(s *capnp.Segment) (Backend_getGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_getGrain_Results{st}, err
@@ -1454,6 +1524,9 @@ func (p Backend_getGrain_Results_Promise) Supervisor() supervisor.Supervisor {
 }
 
 type Backend_deleteGrain_Params struct{ capnp.Struct }
+
+// Backend_deleteGrain_Params_TypeID is the unique identifier for the type Backend_deleteGrain_Params.
+const Backend_deleteGrain_Params_TypeID = 0xd0669675481ed533
 
 func NewBackend_deleteGrain_Params(s *capnp.Segment) (Backend_deleteGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1548,6 +1621,9 @@ func (p Backend_deleteGrain_Params_Promise) Struct() (Backend_deleteGrain_Params
 
 type Backend_deleteGrain_Results struct{ capnp.Struct }
 
+// Backend_deleteGrain_Results_TypeID is the unique identifier for the type Backend_deleteGrain_Results.
+const Backend_deleteGrain_Results_TypeID = 0x9aa99e08dd1161ff
+
 func NewBackend_deleteGrain_Results(s *capnp.Segment) (Backend_deleteGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_deleteGrain_Results{st}, err
@@ -1595,6 +1671,9 @@ func (p Backend_deleteGrain_Results_Promise) Struct() (Backend_deleteGrain_Resul
 
 type Backend_installPackage_Params struct{ capnp.Struct }
 
+// Backend_installPackage_Params_TypeID is the unique identifier for the type Backend_installPackage_Params.
+const Backend_installPackage_Params_TypeID = 0xa98fd02dd93dd26b
+
 func NewBackend_installPackage_Params(s *capnp.Segment) (Backend_installPackage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_installPackage_Params{st}, err
@@ -1641,6 +1720,9 @@ func (p Backend_installPackage_Params_Promise) Struct() (Backend_installPackage_
 }
 
 type Backend_installPackage_Results struct{ capnp.Struct }
+
+// Backend_installPackage_Results_TypeID is the unique identifier for the type Backend_installPackage_Results.
+const Backend_installPackage_Results_TypeID = 0x8829b2e76d8325f1
 
 func NewBackend_installPackage_Results(s *capnp.Segment) (Backend_installPackage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1712,6 +1794,9 @@ func (p Backend_installPackage_Results_Promise) Stream() Backend_PackageUploadSt
 
 type Backend_tryGetPackage_Params struct{ capnp.Struct }
 
+// Backend_tryGetPackage_Params_TypeID is the unique identifier for the type Backend_tryGetPackage_Params.
+const Backend_tryGetPackage_Params_TypeID = 0xfb4cd9916f42104c
+
 func NewBackend_tryGetPackage_Params(s *capnp.Segment) (Backend_tryGetPackage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_tryGetPackage_Params{st}, err
@@ -1781,6 +1866,9 @@ func (p Backend_tryGetPackage_Params_Promise) Struct() (Backend_tryGetPackage_Pa
 }
 
 type Backend_tryGetPackage_Results struct{ capnp.Struct }
+
+// Backend_tryGetPackage_Results_TypeID is the unique identifier for the type Backend_tryGetPackage_Results.
+const Backend_tryGetPackage_Results_TypeID = 0xef241fd6058030cf
 
 func NewBackend_tryGetPackage_Results(s *capnp.Segment) (Backend_tryGetPackage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -1904,6 +1992,9 @@ func (p Backend_tryGetPackage_Results_Promise) Manifest() spk.Manifest_Promise {
 
 type Backend_deletePackage_Params struct{ capnp.Struct }
 
+// Backend_deletePackage_Params_TypeID is the unique identifier for the type Backend_deletePackage_Params.
+const Backend_deletePackage_Params_TypeID = 0xb61fc18674ca994f
+
 func NewBackend_deletePackage_Params(s *capnp.Segment) (Backend_deletePackage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_deletePackage_Params{st}, err
@@ -1974,6 +2065,9 @@ func (p Backend_deletePackage_Params_Promise) Struct() (Backend_deletePackage_Pa
 
 type Backend_deletePackage_Results struct{ capnp.Struct }
 
+// Backend_deletePackage_Results_TypeID is the unique identifier for the type Backend_deletePackage_Results.
+const Backend_deletePackage_Results_TypeID = 0xea9f82a07e11b6d7
+
 func NewBackend_deletePackage_Results(s *capnp.Segment) (Backend_deletePackage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_deletePackage_Results{st}, err
@@ -2020,6 +2114,9 @@ func (p Backend_deletePackage_Results_Promise) Struct() (Backend_deletePackage_R
 }
 
 type Backend_backupGrain_Params struct{ capnp.Struct }
+
+// Backend_backupGrain_Params_TypeID is the unique identifier for the type Backend_backupGrain_Params.
+const Backend_backupGrain_Params_TypeID = 0x87a6a96b0a4edd21
 
 func NewBackend_backupGrain_Params(s *capnp.Segment) (Backend_backupGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
@@ -2166,6 +2263,9 @@ func (p Backend_backupGrain_Params_Promise) Info() grain.GrainInfo_Promise {
 
 type Backend_backupGrain_Results struct{ capnp.Struct }
 
+// Backend_backupGrain_Results_TypeID is the unique identifier for the type Backend_backupGrain_Results.
+const Backend_backupGrain_Results_TypeID = 0xcd9c9fab5f637827
+
 func NewBackend_backupGrain_Results(s *capnp.Segment) (Backend_backupGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_backupGrain_Results{st}, err
@@ -2212,6 +2312,9 @@ func (p Backend_backupGrain_Results_Promise) Struct() (Backend_backupGrain_Resul
 }
 
 type Backend_restoreGrain_Params struct{ capnp.Struct }
+
+// Backend_restoreGrain_Params_TypeID is the unique identifier for the type Backend_restoreGrain_Params.
+const Backend_restoreGrain_Params_TypeID = 0x9d88f29f0318d4bb
 
 func NewBackend_restoreGrain_Params(s *capnp.Segment) (Backend_restoreGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -2329,6 +2432,9 @@ func (p Backend_restoreGrain_Params_Promise) Struct() (Backend_restoreGrain_Para
 
 type Backend_restoreGrain_Results struct{ capnp.Struct }
 
+// Backend_restoreGrain_Results_TypeID is the unique identifier for the type Backend_restoreGrain_Results.
+const Backend_restoreGrain_Results_TypeID = 0x8b790707193ea7ff
+
 func NewBackend_restoreGrain_Results(s *capnp.Segment) (Backend_restoreGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_restoreGrain_Results{st}, err
@@ -2405,6 +2511,9 @@ func (p Backend_restoreGrain_Results_Promise) Info() grain.GrainInfo_Promise {
 
 type Backend_uploadBackup_Params struct{ capnp.Struct }
 
+// Backend_uploadBackup_Params_TypeID is the unique identifier for the type Backend_uploadBackup_Params.
+const Backend_uploadBackup_Params_TypeID = 0xf2ccecff0178227b
+
 func NewBackend_uploadBackup_Params(s *capnp.Segment) (Backend_uploadBackup_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_uploadBackup_Params{st}, err
@@ -2475,6 +2584,9 @@ func (p Backend_uploadBackup_Params_Promise) Struct() (Backend_uploadBackup_Para
 
 type Backend_uploadBackup_Results struct{ capnp.Struct }
 
+// Backend_uploadBackup_Results_TypeID is the unique identifier for the type Backend_uploadBackup_Results.
+const Backend_uploadBackup_Results_TypeID = 0xbc51d6bc865a8fcf
+
 func NewBackend_uploadBackup_Results(s *capnp.Segment) (Backend_uploadBackup_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Backend_uploadBackup_Results{st}, err
@@ -2544,6 +2656,9 @@ func (p Backend_uploadBackup_Results_Promise) Stream() util.ByteStream {
 }
 
 type Backend_downloadBackup_Params struct{ capnp.Struct }
+
+// Backend_downloadBackup_Params_TypeID is the unique identifier for the type Backend_downloadBackup_Params.
+const Backend_downloadBackup_Params_TypeID = 0x916d32f140971035
 
 func NewBackend_downloadBackup_Params(s *capnp.Segment) (Backend_downloadBackup_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -2638,6 +2753,9 @@ func (p Backend_downloadBackup_Params_Promise) Stream() util.ByteStream {
 
 type Backend_downloadBackup_Results struct{ capnp.Struct }
 
+// Backend_downloadBackup_Results_TypeID is the unique identifier for the type Backend_downloadBackup_Results.
+const Backend_downloadBackup_Results_TypeID = 0x9e90498484bab87d
+
 func NewBackend_downloadBackup_Results(s *capnp.Segment) (Backend_downloadBackup_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_downloadBackup_Results{st}, err
@@ -2684,6 +2802,9 @@ func (p Backend_downloadBackup_Results_Promise) Struct() (Backend_downloadBackup
 }
 
 type Backend_deleteBackup_Params struct{ capnp.Struct }
+
+// Backend_deleteBackup_Params_TypeID is the unique identifier for the type Backend_deleteBackup_Params.
+const Backend_deleteBackup_Params_TypeID = 0xd0d6ed6a5ed70e62
 
 func NewBackend_deleteBackup_Params(s *capnp.Segment) (Backend_deleteBackup_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2755,6 +2876,9 @@ func (p Backend_deleteBackup_Params_Promise) Struct() (Backend_deleteBackup_Para
 
 type Backend_deleteBackup_Results struct{ capnp.Struct }
 
+// Backend_deleteBackup_Results_TypeID is the unique identifier for the type Backend_deleteBackup_Results.
+const Backend_deleteBackup_Results_TypeID = 0xaf88ad00c801b00d
+
 func NewBackend_deleteBackup_Results(s *capnp.Segment) (Backend_deleteBackup_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_deleteBackup_Results{st}, err
@@ -2801,6 +2925,9 @@ func (p Backend_deleteBackup_Results_Promise) Struct() (Backend_deleteBackup_Res
 }
 
 type Backend_getUserStorageUsage_Params struct{ capnp.Struct }
+
+// Backend_getUserStorageUsage_Params_TypeID is the unique identifier for the type Backend_getUserStorageUsage_Params.
+const Backend_getUserStorageUsage_Params_TypeID = 0xaaef1f8c301b865d
 
 func NewBackend_getUserStorageUsage_Params(s *capnp.Segment) (Backend_getUserStorageUsage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2872,6 +2999,9 @@ func (p Backend_getUserStorageUsage_Params_Promise) Struct() (Backend_getUserSto
 
 type Backend_getUserStorageUsage_Results struct{ capnp.Struct }
 
+// Backend_getUserStorageUsage_Results_TypeID is the unique identifier for the type Backend_getUserStorageUsage_Results.
+const Backend_getUserStorageUsage_Results_TypeID = 0xa1c73384bc38ab4b
+
 func NewBackend_getUserStorageUsage_Results(s *capnp.Segment) (Backend_getUserStorageUsage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
 	return Backend_getUserStorageUsage_Results{st}, err
@@ -2926,6 +3056,9 @@ func (p Backend_getUserStorageUsage_Results_Promise) Struct() (Backend_getUserSt
 }
 
 type Backend_transferGrain_Params struct{ capnp.Struct }
+
+// Backend_transferGrain_Params_TypeID is the unique identifier for the type Backend_transferGrain_Params.
+const Backend_transferGrain_Params_TypeID = 0xcce40aee6005d381
 
 func NewBackend_transferGrain_Params(s *capnp.Segment) (Backend_transferGrain_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -3043,6 +3176,9 @@ func (p Backend_transferGrain_Params_Promise) Struct() (Backend_transferGrain_Pa
 
 type Backend_transferGrain_Results struct{ capnp.Struct }
 
+// Backend_transferGrain_Results_TypeID is the unique identifier for the type Backend_transferGrain_Results.
+const Backend_transferGrain_Results_TypeID = 0x86362c69f5c42997
+
 func NewBackend_transferGrain_Results(s *capnp.Segment) (Backend_transferGrain_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_transferGrain_Results{st}, err
@@ -3089,6 +3225,9 @@ func (p Backend_transferGrain_Results_Promise) Struct() (Backend_transferGrain_R
 }
 
 type Backend_deleteUser_Params struct{ capnp.Struct }
+
+// Backend_deleteUser_Params_TypeID is the unique identifier for the type Backend_deleteUser_Params.
+const Backend_deleteUser_Params_TypeID = 0xfa7238e0a9345914
 
 func NewBackend_deleteUser_Params(s *capnp.Segment) (Backend_deleteUser_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -3160,6 +3299,9 @@ func (p Backend_deleteUser_Params_Promise) Struct() (Backend_deleteUser_Params, 
 
 type Backend_deleteUser_Results struct{ capnp.Struct }
 
+// Backend_deleteUser_Results_TypeID is the unique identifier for the type Backend_deleteUser_Results.
+const Backend_deleteUser_Results_TypeID = 0x9145c7ea308343d9
+
 func NewBackend_deleteUser_Results(s *capnp.Segment) (Backend_deleteUser_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_deleteUser_Results{st}, err
@@ -3206,6 +3348,9 @@ func (p Backend_deleteUser_Results_Promise) Struct() (Backend_deleteUser_Results
 }
 
 type Backend_ping_Params struct{ capnp.Struct }
+
+// Backend_ping_Params_TypeID is the unique identifier for the type Backend_ping_Params.
+const Backend_ping_Params_TypeID = 0xcb56f444d1311800
 
 func NewBackend_ping_Params(s *capnp.Segment) (Backend_ping_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -3254,6 +3399,9 @@ func (p Backend_ping_Params_Promise) Struct() (Backend_ping_Params, error) {
 
 type Backend_ping_Results struct{ capnp.Struct }
 
+// Backend_ping_Results_TypeID is the unique identifier for the type Backend_ping_Results.
+const Backend_ping_Results_TypeID = 0xe3a9cebde9177d60
+
 func NewBackend_ping_Results(s *capnp.Segment) (Backend_ping_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Backend_ping_Results{st}, err
@@ -3297,6 +3445,160 @@ type Backend_ping_Results_Promise struct{ *capnp.Pipeline }
 func (p Backend_ping_Results_Promise) Struct() (Backend_ping_Results, error) {
 	s, err := p.Pipeline.Struct()
 	return Backend_ping_Results{s}, err
+}
+
+type Backend_getGrainStorageUsage_Params struct{ capnp.Struct }
+
+// Backend_getGrainStorageUsage_Params_TypeID is the unique identifier for the type Backend_getGrainStorageUsage_Params.
+const Backend_getGrainStorageUsage_Params_TypeID = 0xe06fe4e0d4e93178
+
+func NewBackend_getGrainStorageUsage_Params(s *capnp.Segment) (Backend_getGrainStorageUsage_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return Backend_getGrainStorageUsage_Params{st}, err
+}
+
+func NewRootBackend_getGrainStorageUsage_Params(s *capnp.Segment) (Backend_getGrainStorageUsage_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return Backend_getGrainStorageUsage_Params{st}, err
+}
+
+func ReadRootBackend_getGrainStorageUsage_Params(msg *capnp.Message) (Backend_getGrainStorageUsage_Params, error) {
+	root, err := msg.RootPtr()
+	return Backend_getGrainStorageUsage_Params{root.Struct()}, err
+}
+
+func (s Backend_getGrainStorageUsage_Params) String() string {
+	str, _ := text.Marshal(0xe06fe4e0d4e93178, s.Struct)
+	return str
+}
+
+func (s Backend_getGrainStorageUsage_Params) OwnerId() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s Backend_getGrainStorageUsage_Params) HasOwnerId() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s Backend_getGrainStorageUsage_Params) OwnerIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s Backend_getGrainStorageUsage_Params) SetOwnerId(v string) error {
+	t, err := capnp.NewText(s.Struct.Segment(), v)
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(0, t.List.ToPtr())
+}
+
+func (s Backend_getGrainStorageUsage_Params) GrainId() (string, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.Text(), err
+}
+
+func (s Backend_getGrainStorageUsage_Params) HasGrainId() bool {
+	p, err := s.Struct.Ptr(1)
+	return p.IsValid() || err != nil
+}
+
+func (s Backend_getGrainStorageUsage_Params) GrainIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s Backend_getGrainStorageUsage_Params) SetGrainId(v string) error {
+	t, err := capnp.NewText(s.Struct.Segment(), v)
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(1, t.List.ToPtr())
+}
+
+// Backend_getGrainStorageUsage_Params_List is a list of Backend_getGrainStorageUsage_Params.
+type Backend_getGrainStorageUsage_Params_List struct{ capnp.List }
+
+// NewBackend_getGrainStorageUsage_Params creates a new list of Backend_getGrainStorageUsage_Params.
+func NewBackend_getGrainStorageUsage_Params_List(s *capnp.Segment, sz int32) (Backend_getGrainStorageUsage_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	return Backend_getGrainStorageUsage_Params_List{l}, err
+}
+
+func (s Backend_getGrainStorageUsage_Params_List) At(i int) Backend_getGrainStorageUsage_Params {
+	return Backend_getGrainStorageUsage_Params{s.List.Struct(i)}
+}
+
+func (s Backend_getGrainStorageUsage_Params_List) Set(i int, v Backend_getGrainStorageUsage_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// Backend_getGrainStorageUsage_Params_Promise is a wrapper for a Backend_getGrainStorageUsage_Params promised by a client call.
+type Backend_getGrainStorageUsage_Params_Promise struct{ *capnp.Pipeline }
+
+func (p Backend_getGrainStorageUsage_Params_Promise) Struct() (Backend_getGrainStorageUsage_Params, error) {
+	s, err := p.Pipeline.Struct()
+	return Backend_getGrainStorageUsage_Params{s}, err
+}
+
+type Backend_getGrainStorageUsage_Results struct{ capnp.Struct }
+
+// Backend_getGrainStorageUsage_Results_TypeID is the unique identifier for the type Backend_getGrainStorageUsage_Results.
+const Backend_getGrainStorageUsage_Results_TypeID = 0x809d3d6d45c4c37d
+
+func NewBackend_getGrainStorageUsage_Results(s *capnp.Segment) (Backend_getGrainStorageUsage_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Backend_getGrainStorageUsage_Results{st}, err
+}
+
+func NewRootBackend_getGrainStorageUsage_Results(s *capnp.Segment) (Backend_getGrainStorageUsage_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Backend_getGrainStorageUsage_Results{st}, err
+}
+
+func ReadRootBackend_getGrainStorageUsage_Results(msg *capnp.Message) (Backend_getGrainStorageUsage_Results, error) {
+	root, err := msg.RootPtr()
+	return Backend_getGrainStorageUsage_Results{root.Struct()}, err
+}
+
+func (s Backend_getGrainStorageUsage_Results) String() string {
+	str, _ := text.Marshal(0x809d3d6d45c4c37d, s.Struct)
+	return str
+}
+
+func (s Backend_getGrainStorageUsage_Results) Size() uint64 {
+	return s.Struct.Uint64(0)
+}
+
+func (s Backend_getGrainStorageUsage_Results) SetSize(v uint64) {
+	s.Struct.SetUint64(0, v)
+}
+
+// Backend_getGrainStorageUsage_Results_List is a list of Backend_getGrainStorageUsage_Results.
+type Backend_getGrainStorageUsage_Results_List struct{ capnp.List }
+
+// NewBackend_getGrainStorageUsage_Results creates a new list of Backend_getGrainStorageUsage_Results.
+func NewBackend_getGrainStorageUsage_Results_List(s *capnp.Segment, sz int32) (Backend_getGrainStorageUsage_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
+	return Backend_getGrainStorageUsage_Results_List{l}, err
+}
+
+func (s Backend_getGrainStorageUsage_Results_List) At(i int) Backend_getGrainStorageUsage_Results {
+	return Backend_getGrainStorageUsage_Results{s.List.Struct(i)}
+}
+
+func (s Backend_getGrainStorageUsage_Results_List) Set(i int, v Backend_getGrainStorageUsage_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// Backend_getGrainStorageUsage_Results_Promise is a wrapper for a Backend_getGrainStorageUsage_Results promised by a client call.
+type Backend_getGrainStorageUsage_Results_Promise struct{ *capnp.Pipeline }
+
+func (p Backend_getGrainStorageUsage_Results_Promise) Struct() (Backend_getGrainStorageUsage_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return Backend_getGrainStorageUsage_Results{s}, err
 }
 
 type SandstormCoreFactory struct{ Client capnp.Client }
@@ -3362,6 +3664,9 @@ type SandstormCoreFactory_getSandstormCore struct {
 }
 
 type SandstormCoreFactory_getSandstormCore_Params struct{ capnp.Struct }
+
+// SandstormCoreFactory_getSandstormCore_Params_TypeID is the unique identifier for the type SandstormCoreFactory_getSandstormCore_Params.
+const SandstormCoreFactory_getSandstormCore_Params_TypeID = 0xe8ac8c6560747234
 
 func NewSandstormCoreFactory_getSandstormCore_Params(s *capnp.Segment) (SandstormCoreFactory_getSandstormCore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -3433,6 +3738,9 @@ func (p SandstormCoreFactory_getSandstormCore_Params_Promise) Struct() (Sandstor
 
 type SandstormCoreFactory_getSandstormCore_Results struct{ capnp.Struct }
 
+// SandstormCoreFactory_getSandstormCore_Results_TypeID is the unique identifier for the type SandstormCoreFactory_getSandstormCore_Results.
+const SandstormCoreFactory_getSandstormCore_Results_TypeID = 0xea75b020e3e6c12a
+
 func NewSandstormCoreFactory_getSandstormCore_Results(s *capnp.Segment) (SandstormCoreFactory_getSandstormCore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCoreFactory_getSandstormCore_Results{st}, err
@@ -3501,149 +3809,158 @@ func (p SandstormCoreFactory_getSandstormCore_Results_Promise) Core() supervisor
 	return supervisor.SandstormCore{Client: p.Pipeline.GetPipeline(0).Client()}
 }
 
-const schema_dcbc0d702b1b47a5 = "x\xda\xccX}PT\xd7\xd9?\xe7^\xd6\x15#\xca" +
-	"}/\x89\xc6\xbc\xe9\x96\x05fe?\"\x8a\xc9\x10\xc6" +
-	"\x14\xdc\x84\x10\x88D\x16Bm\x98Z\xb9\xb0\x17Xd" +
-	"?\xbcwW\xd8tRc4\xd4\xa6fR;\xb1\xd6" +
-	"\xb4FtL[\x1a\xa9\xc6I\x9c\xb4\x95\x99\x90ij" +
-	"\xb5I\xd1Zul\xebL\xad\x89\x09N[\x8bS\xff" +
-	"H\xad\xb9}\xce\xd9=w\xcf\x06V\xc0\xb43\x1d\xc7" +
-	"\x81\xfb|\x9d\xe7\xeb<\xe7\xf7P\"\xe7T\x0a\x8b-" +
-	"\xb6*\x84\x1a\x0bE\xcb\x0c#\x7f\xf93U%\xca\x97" +
-	"7!\xe9\x8e,c\xe5\xe0p\xf9\xba\xd1\x83\xc3\x08\xe1" +
-	"\xd2\x98}\x16\x96\x9f\xb5[A\xf0i\xbb\x88\x1b\xb7\xda" +
-	"\x05\x8c\x90\xb1\xa3\xf8\x17\xd7\x02\xee\xfb\xfa@\x1e>\xb3" +
-	"\x80]\xfa\xbc\xbd\x15\xa3,\xc3\xe59\xbb\xe3\xd4\xbc\xe3" +
-	"\xc0q\x02\xc7\x82\x09+n\x7f\x1b#,\x7f\xc3^\x81" +
-	"\xb0\x91\x7f\xfe\xb1Yk\x07~\xf0\xf5\x84\xaa\x85\xea\x0e" +
-	"\xdak\x89\xc0O\xed\x1f\x82\xc0X\xd1\xa6\xe0\x87\x87\x8a" +
-	"\xb7$\x05\xa8\x85m\x05]D`W\x01\xb1`\xfc\xf0" +
-	"\x0bwZ\xad\xf1o\xf2\x02C\x05\xcdD\xe0\x18\x158" +
-	"\xf7\xe0\xa6\x92\xcbG\xab\xb6q\xde\x8d\x16\xd4\x12\xef\xee" +
-	"\xcd\xddQ9\xb6$\x98\xe4X\x04\xc2:]\xd0JT" +
-	"/\x14\xf4\x10\xdb\x8at~\xe6\xcb\x03/q\xaa\xcb\x0b" +
-	"\x1b\x88\xea\xcf\x7f7_\xdc}u\xcb\xae\xa4\xaaHX" +
-	"\x1e\xc2\xc2\xf2\xfd\x85\x07@\xf5\xa97\x7f\xb6ys\xcd" +
-	"\xb7^\xe6TO\x17v\x11\xd5\xd5\x1f\x95\xd5^\xfa\xc3" +
-	"\x9d\xfd\xc9\x9cP\xd5\xe1\xc2\xe3D\xf54U}\xf4\xd5" +
-	"\xb2#\x9bK\x8f\xeeA\xbe;0\xd3\x8d\x17}\x9b&" +
-	"\xad\x88D\xb4\xf6\xb7\x0f\x9c\xf3\x9cxa\x80\xb3=P" +
-	"D\xf3\xbd\xba\xef\xae\x92\xad\xb6+?\xe6\x93\xb1\xbd\xe8" +
-	"9\xa2\xfa\x0aU\x1d\xe9]\xb9l\xe3\xaa\xed\xfby\x81" +
-	"w\x8ah\xbeOR\x81\x97\xfe\xff\xad\x8f\xe7||}" +
-	"0yx\xa2\"\xd7\x8a\xbc Qz\xa3h\x15\xfc\xb8" +
-	"\x92s\x10\xffjp\xcb\x81\xd4\xe1u\x8efr\xf8\xb2" +
-	"u{sV\x9f\xda\xf8:\xd8\x16\xd3\xda\xe6~G\x03" +
-	"\x96\xeb\x1c *\xd78\xaa\xe5u\x8ey\xd04+w" +
-	"\x1e\x8f\xf6\x0d\xdb\x0e\xf3\x9e(\x0eZ\xb7\xa0\x83\xba\xfa" +
-	"Bs\xdf\x913\xbe#i\x95O\x08\xec\xa2\x02\xe6\x11" +
-	"\xd2\x1c\xd1x\xa5\xfa.W$\xe7\xc8\x1f\xe1<y\xc8" +
-	"qH~\xc7\xe1\x00\xf9\x0f\x1cGE9\xee\x04\xd5O" +
-	"\xe6/>\xf9\xd0?\xbe\xf8\xeb\x94\xd7\x8a\xf3\xff\x88\xd7" +
-	"\x1bOYZ\xfe6\xeb\xfdw\xf9J\xd68\xe91M" +
-	"NR\x0eGo\xdb\x9aWw\x7f\xff=.\xdbcN" +
-	"\xda\x04\xa5\xa7?\xf7H\xec;\xed'\xf8\xfe9\xef\xa4" +
-	"\xc9\x1cu\x92\xfei\x9ds\xf6+]\x7f=s\x82\x0f" +
-	"\xa1\xcaE\xbb\xc4\xe7\"!\xb4<5ot\xe87\x03" +
-	"\x179\xdb1\xd7\x02b{d\xc1'\xc7\x0e\x1c8\xf5" +
-	">o{\xb5k\x09QU]\xc4\xf6R-\xda\xa2n" +
-	"\xdd\xff\x11\x92\x0aL\xdb\xc3\xae\xdf\xd36\xa2\xb6G\x7f" +
-	"\xd2p\xfd\xbe\x85\xb7]\xe6\x0f\xbf\xe6*'\x027\xa8" +
-	"\x80s\xf8\xd2\xc5\xcf\x1f\x8c]\xe6-\xe4\xbb\xffL\x04" +
-	"\xeeu\x13\x81\xb3\x87\xa5\xaf\xf5?\xb3\xfb2\xe7]\x93" +
-	"\x9b\xf6\xd9H\xc9\xd3\x963\xb6\xc2+|\xd2\x96\xbb\xe9" +
-	"\xcd\xa9s\x93\xa4\xb9\x82E\xed\x15\xeeM\x7f\xfftm" +
-	"J\xc7\xdc\x0b\xb0\x8c=\xa4\x17n\xb8\xabe\x0f\xf9\xcd" +
-	"\xf8\xaa\xbd\x17\x1b\x7fy\xf7*\xef\xea\xed\x1e\x9a\xa7|" +
-	"\x0f\xf1$\xef\x89\xa5\x03\x7f*\xd3\xfe\x99\x96H\x8f\x97" +
-	"\x9eG\x05V\xe4z\xc3\xdb\xce\xad\xb8\xce\x0b\x04=\xb4" +
-	"\x8aq\x100\xd2\xfe\x09F\xab\xd2\xb6V\x0d\xf9\xef\x11" +
-	"\xdb\x94H(R\xeeM~\xeaa\xf8\x19\xadW\xa2\x9d" +
-	"\x08\xd5c\x8cg#\x01\xfe#\x09_5\x16\xadW\xb4" +
-	"E\xba\x12\x12\xfcz4\xac\x05\x17%D\x17\xb5*6" +
-	"\xaajZ\xccJ\xb7\x18\xd5\x94\x90\xde\xaej\xd5\x9a\x12" +
-	"\x08\x156\xa8z\xcc\xda\x1d\xd5M\xe9\x19\xe9\xd2\xf5\xf0" +
-	"S\xe9P\x9b\"\xdda\xc5\xdf\x18\xd5T%x\x8f\xae" +
-	"\xacW\x97\xeb\x85\xf5\x8a\xa6\x04u\xe4\xcb\x12\xb3\xa0\x14" +
-	"\x10\xa3\x94\xd3\x80\x90o\xb6\x88}\xf3\x05lD\x12\x9a" +
-	"5\x08\xfb\x93^\xe3L.\x11r,\x92p(i\x15" +
-	"\xf9rM\xb3J-|\xb6\x80\xd9n\x01K\x18\xe7\x91" +
-	") \x05\xbc@\xf4\x031\x02DA\xc8\xc3\x02\x10\x83" +
-	"\x84\xd8\x09\xc4(\x10E1\x0f\x8b@\\\xe7\x04b7" +
-	"\x10{\x85\x84\x07\xb1H\x8d\x1fA\xe5\x93^m\x08\xf7" +
-	"\x84T\xad\xc6\xf4rC\x07q$\xf5=7\x10j\x0f" +
-	"\xe3\\\xa3\xf3\xee\x8e\xc6\x0bo\xfd\xeb\x0d\xd0\xc4\xb9\x99" +
-	"\x83\x09\x84\xf4\xa8\xd2\xdd\x9dL\x1cI\xf0\xdc\x18$\x98" +
-	"OS984\x13\x1c\xca\x13p\x85Ns\x8a\xa5\xd4" +
-	"\xac\x02\xf3Rf\xf3\x9aJ\xaa\xad\xa6\xaa\xd7-\xa6\x1b" +
-	"w\xa6\x8cO\xd3s\xbf\xda\xadF\xd5&]\xd5\x12\x86" +
-	"\xa3P\x86\x8c\xb2\x904\xd2\x12^\x9aOR5+\x94" +
-	"\x0d\x0ef~\x14\x93\xa2-\x04?\x96rE[L\"" +
-	"w\x03\xb1l\xe2R\xa4\xb2\xb1\xe6\xe2HqO\xd9\xaa" +
-	"\xf7&\xc9F\xc2e.\x19Q\xacO)s\xb4\xcd\xb0" +
-	"\x0e\xdd\xca\x1c\xae\"\x0e?\x04\xbe\xd5s\x0e\xd7\x91\x86" +
-	"z\x04\x88\x8fs]\xe6#\xc4\x15@\xfc\xd2\xad5\xd4" +
-	"\x14s\xca:\xe7\x16\xae\xa6Y>>\xbe%\xf0Y\x09" +
-	"^\xaf\xe0\xe2\xab\xa9\x9d(\xbe\xb7\x81\xf88\x10[\x04" +
-	"lS\"\x11\xce\xf3\xa0\x12\x0a\xb4C\x1eI\xb4\xb9\xc6" +
-	"\xf1\x0b\x97\x02]\xc5k\x9ee}\xa5\xc4\xa2\x9da\xad" +
-	"\xbeC\x88<\xaa\xc6\x1f\x0e\x84:T-\xa2\x05BQ" +
-	"4.rKz(\x1dj\x94\xb4]#\xd4\x87D\xa4" +
-	"'/\x0e-g\xa6\xde\xd6\x03O\xaa8\x1b\xecfO" +
-	"\xf9.&\xbbt:^\x98\xe3(\xc3\xf5\x8d\xe9|\xa5" +
-	"3\xf9\x01^hQ\xbeK?e\xb1\x99\x9b\x9bz," +
-	"\xa2j\xeb\x03:\x12\xc3\x1a\\\x84\x92\xa6\xb2\xb6\xfca" +
-	"\xdf\xceI.\x02w\x02\x9b\xcb\xf3M\xfb;I\xc3\xbe" +
-	"\x08\xf6\xfb\xb9\xd2\xef\"\xc4\xef\x02q\x1fW\xfa=d" +
-	"\x82\xf7\x03q?7@\x07\x88\xe4> \x1e\x140\xce" +
-	"\xca\xc3`V\x1a$\xdd\xf4#\xa0\xbd\x0e\x82\x160i" +
-	"\x01\xf7^#\x82\xfb\x81\xf8\xa60\xf9%\x98\xe0}\xd8" +
-	"\xd0\x16\x0eB\x87\xf9\xa1\xb5F\xfa\x16\xf6\x1f\xf2\xd5\xfc" +
-	"2\xd9Z\xb6\x80\xfe\x98\xda\x03~\x83\x07 \xe7W\xd7" +
-	"\xd7\x85\xfd*\xfb\xbe\xf9tH]':+3\x09\x8f" +
-	"\xbfN8\x08/.\x94\xc9\x02c\x90\xad\x0d\x98ae" +
-	"I*G\x82d\xb1V$\xae\\%\x08b\xcc\x8d-" +
-	"ts\xa7\xb8\x96T\xc4\xa0\xfe\x1fxDc\x91\xf4\xd9" +
-	"1\xeea\x98\xf0\xd5\xc94g13\x9e\x00\x13\xbe\x99" +
-	"\x10\\j\x09\xcbn\xe6\xa0u\xf6^\x83\xa1\x14$F" +
-	";\x0d\x96H\xcc2i\x85\xa3|\xcbD\xe8\x10\x13\xcb" +
-	"c\x86\xfa\xe5\x93\xb8\x19\x09\xf21l\xc5\x82\x8901" +
-	"\x03\x8a\xf2\x10\xae\x05\xee\x1b\xc0\x15Ml\x8b\xd9\x0e$" +
-	"\x0f\xe0V\xe0\xee\x01\xee\x0cs\x03\xc1l=\x93\xb7\xe3" +
-	"'\x81\xfb<p\xad&\x18\xc3\x0c&\xca\x1b\xb1\x06\xdc" +
-	"8pg\x9a\xc0\x1f3x)\x07)W\x05n\xb6\xb9" +
-	"\x10b\x06\xbb\xe5'\xe8\xb9>\xe0\xce2\xd7.\xcc\xb6" +
-	">\xb9\x0aw\x01\xf7\x01\xe0\xdef\xc2H\xccV\x07y" +
-	"1\xe5\x16\x03w\xb6\xb9\xeda\xb6\x9a\xc9wS\x9fo" +
-	"\x07n\x8e\x09\xd51\xd9n\x10\xac7r6\xd5\xc5\xc0" +
-	"\x9dc\xeeU\x98\xedf\xd2\xb5\xbd\xd0\x90cV\x9cZ" +
-	" 0[\x83\xa5\x0f \x1c\xe9\xbc\x15[L\xdc\x8a\xd9" +
-	"\x12*\x9d\x84\x02H\xc7\xb8\x85\x84\xdb\x01\x86\x9c\xc0{" +
-	"\xcdj\xb0\xf1\x82\xc4@\xa8\x12\x1b0)\xe9\xac\x816" +
-	"\x87/\xf6\x08#\xabB\xb9l\xea\xa2\x8aD'\x00)" +
-	"\xaa\xc5\xabi\x83\xd8\x18\x85]\x83\x14\x85\xa1@f\x86" +
-	"\xbd\xd7h\xae\x96 \xb0\x0eGs\x89 \xb1\x91|0" +
-	"QE\xa2\xedM\xb3\x9c\x0c\x1b\xea\x98Mu+\xf3(" +
-	"\x01\x83\x91\xad:i\x9e\xc1\x1f$\xaaZ%\x9e\x1b\x81" +
-	"\xf7\xab\x12\xc3\x04\xc8\x04\xcd\x89\x00\xc3\x11S\x03\xdb\xec" +
-	"\xb2s\x8f\xb2w\xa2G\xd9\xcb!\x116\x99\xeb\x9aS" +
-	"\xa0c\xd2\xd9\x1aR{V\x12\x11$\xd6L\x0b|O" +
-	"\x06\xa1x\xb8e\xbe\x8c\x1c\xe6#\x8e\x17\x82\x8f%\\" +
-	"4\x1eo\x0a\x08\xde22\xe2\x079\x83n\xdch\xab" +
-	"\xe5F\xe6\x04\x80\xec\xa6\x15\x1c\xf7.\x88\xe3PA2" +
-	"`\x1b\x8d\xf8\xbf\x12o\x12\xda5\xc2\xe3G\x97\xb9\x07" +
-	"\xa1\xf1\x1fV\xda\xe0\xd78q \x8d>\xd1\x9b\xe1M" +
-	"\xcd\xf6\x8cgd\x8a\xab\xa1\"\x01I># \x99V" +
-	"\x08l\xed\xcc\x04\xee\xda@\x08\xce\x9a}\xf8\xc5\xbd\xbd" +
-	"\xab\xf6}oJ[\x00\xb7q\xa5\xaf\xb4\xe3\xeedb" +
-	"\x16\xa5K\xff\xaf\"e1SZE-\x9e\x82'\xec" +
-	"O/\x98\xfd\x05E\x92\x9e\x83\xc9\x9dc5X\xea1" +
-	"S&#\x9b\x9fj7\x83\x11\x9f\xe1\xaae\xde-'" +
-	"\xf8\xbb\xc1\xf4\x11uz\x11\xa7\x8f\xa2\xfe\x1d\x00\x00\xff" +
-	"\xff\xeb\x81E\xd6"
+const schema_dcbc0d702b1b47a5 = "x\xda\xccX}pTW\x15?\xe7\xdd]\x1e\xa1\x09" +
+	"\xc9\xf3\xa5|\xb5\x1a\xd1\x0da!\xc9.\x04:\x91)" +
+	"&\xa4\xa5!)\x94\xbc\xa4\x88fDxI\x1e\xc9B" +
+	"\xf6#\xef\xbd%I\x1d\xa4\x14\x88X\xdbA\x1c\x91\x01" +
+	"\xa5|\x8c\xd5I\xdb\x082\x85\x11\x0d3\xa4\x82\x05\x04" +
+	"\x01\xa10\xd4f\x86\xcaG\x1b\xc6\x8a0\xfa\x07\xa2}" +
+	"\xce}\xbb\xf7\xed\xddf\x17\x08\xb53\x0e\xff\x90\xfb\xce" +
+	"9\xf7|\xdds~\xbf\xf5\xbf\x9bU.Lqo\x98" +
+	"\x03P7\x97\xb8\x87Y+\x7fwxvp\xe6\xb6\xe7" +
+	"A\x19\x85\x08\xe0\x12\x01J\x8a<[\x11P\x9e\xe9)" +
+	"\x03\xb4\xc6\xcfza\xb6_\xfd\xe6\x1a\x90F\xb9\xac\xf9" +
+	"=}3\xda\x06\xf6\xf4\x01`\xc9\"\xcf\x08\x94\x83\x1e" +
+	"\x11\xa0\xae\xc5C\xb0\xce\xf4\x08\x08`m\xf6\x1e\xfeg" +
+	"\xa0\xf0\xb1.\x90F1{QO\x03\x82\xcb\x9a\\t" +
+	"a\xf3\xd9\xd1\xc7\xbb@\x9a\x84\x00n\xa4\x9fT\xcf[" +
+	"\xf4\xaa\xb6\xd8U\xfd\xcf\x8cX\xde\xfd\xf3\xef\xc6T\xdd" +
+	"\xb6\xee&O5\x15\xd8\xe9\xf9\x00\xd0\xba\x99\xbf&\xf8" +
+	"\xc1^\xef\xfa\xb8\x80m\xa13\x7f\x19\x15X\x97O-" +
+	"X\xbf\xf8\xeaXQ\xec\xfc>/\xf0j~=\x15\xf8" +
+	"\x95-p\xf1\x895\xfe\xebo\xcf\xde\xc8yw&\xbf" +
+	"\x9az7=gs\xf9\xcd\xa9\xc1\xf8\x17\xb7@?\x1d" +
+	"\xcco\xa0\xaa\xc7\xf2\xdb\xa9mU\xea\x1f\xfeJ\xf7V" +
+	"N\xd5;\xa1\x96\xaa\xfe\xf6\xdc\x18\xb2\xfd\xd6\xfamq" +
+	"UB?=L?\xa1<~\xc2n@k\xe5\xaf\x7f" +
+	"\xb3vm\xd5\x0f^\xe1T\x0fNXFU\x17}X" +
+	"Z}\xed\xcfcw\xc4sb\xabvO8NU\x0f" +
+	"\xda\xaaO\xbf^\xda\xbb\xb6\xe4\xed\x9d|}\xd4\x82\x1f" +
+	"\xdaI+\xa0\x11-\xff\xd3\xcc\x8bE\xa77ts\xb6" +
+	"7\x16\xd8\xf9^\xd4\xf5\x88\xff\xa5\xbc\x1b\xaf\xf1\xc9X" +
+	"Y\xf0\"U}\xd9V=\xd51\xff\xf1\xd5\x0b7\xbd" +
+	"\xc1\x0b\xf4\x14\xd8\xf9>`\x0bl}\xf4\xd0\xed\x91\xb7" +
+	"\xef\xf4\xc4/\x8fU\xa4\xbf\xa0\x02\x01K\xae\x16l@" +
+	"\xc0\x1bY{\xf0h\xcf\xfa\xdd\\\xb1\xbd\xf5\xf4\xf2\xc7" +
+	"\xdbve-:\xbb\xfaM\x90F\x91\xa4\xb6Q\xbd\xb5" +
+	"(G\xbd\"\x80\xdc\xe6\xad\x94\xb7xG\x03X\xf3\xb7" +
+	"\x1c7\xbb\xfa\xf2\xf6\xf3\x9e|\xcfk\xd7m\x93\xd7v" +
+	"uC}W\xefy\xa5\x97\x178\x10\x138b\x0b8" +
+	"WH#\x89\xf5j\xe5#\x93#Y\xbd\xef\x01\xa0|" +
+	"\xd5\xbbW\xfe\xc8[\x00P\x925It\xc9g\x0aE" +
+	"\x80\x8f\xc7L9\xf3\xe4?\xbe\xf6\x87\x84\xd7\x07\x0a?" +
+	"G\xbd^}\xd6\xbd\xe4o#\xae\x9c\xe0+\xb9\xb3\xd0" +
+	"\xbe\xa6\xa7\x90\x96\xa3\xa0\xa3q\xf1\xeb\xdb\x7fz\x92\xcb" +
+	"vU\x91\xdd\x04%\xef|aN\xf4\xc7KO\xf3\xfd" +
+	"3\xbd\xc8N\xe6\xac\"\xda?\x0d#/|k\xd9G" +
+	"\xe7O\xf3!l+\xb2\xbb\xa4\xbb\x88\x86\xd01e\xe0" +
+	"\xdc\xa5+\xe1K\xbc\x85\x93Ev\xa9\xfbm\x0bKV" +
+	"\x8e\x1e8\xf8\xc7\xee\xcb\xdc\xe5_)\x1eG/?5" +
+	"\xee\xe3c\xbbw\x9f\xbd\xc2\xab\x8e/\x9eJU\xbd\xc5" +
+	"Tu\x9an.\xd1^z\xe3C\x90\xbe\xec\\\xbe\xae" +
+	"\xf8]*\xb0\xa5\x98^>\xf0\xcb\xda;\x8fM|\xe8" +
+	"zR\x82\x8bgP\x81>[`R\xdf\xb5\xcb_\xdc" +
+	"\x13\xbd\xce[\xb8Z\xfc\x17*p\xdb\x16\xb8\xb0_\xfa" +
+	"\xce\x8e\x17\xb6_\xe7\xbc\x1b\xeb\xb3\x1b\xf1\x94\xffy\xf7" +
+	"\xf9<\xcf\x0d>\xabn\x9f\xfd\xb4$\x1f\xcd\xea\xe4`" +
+	"\xfe\xd2\xb2\xc25\x7f\xffd\xf1J\xf6\xf9\xc6\xa1|\xc4" +
+	"G\x9b\xa5\xcfW)\xdf\xa4\xff\xb3\xbe\xfd\xa5\x0e\xb4\xfe" +
+	"z\xe2\x16\xef\xeaE\x9f\x9d\xc8\xab>\xeaI\xee7\xa6" +
+	"u_*\xd5\xff\xc5\x0bd\xf8+\xec\xfb\xfcT`n" +
+	"NEx\xe3\xc5\xb9wx\x81)~\xbb\xcc3\xfde" +
+	"`%\xfd\xab\xb7\x1a\xd4\xc6\xe5Z\xa8\xa9\xd8\xdd\xa8F" +
+	"B\x91\x19\x15\xf1?\x9b5\xb3RW\x03\xa1:3\xac" +
+	"\xab\xcd\xda\x02Cm\xd6<\xb5\x9a\x11m%\xa6\xa1\xb8" +
+	"\x88\x0b\xc0\x85\x00R\xd6$\x00e8A%W\xc0l" +
+	"#\xf0\x9c\x86\x19 `\x06m\x89\xb8%\x92l\xd8\x08" +
+	"7.\xd7\xcc\x1a\xd5l\x01\xa8A\xc4L\x100\x13@" +
+	"\xc2[\x96o\x85\xaa\xfb\x0c5$4\x19fX\x0f\xfa" +
+	"b\xa2\xbe\x065\xcfVu,\xba\x92-\x9a\xba\x1a2" +
+	"\x96j\xba\xed\xaf\xed\xa3\xd8j\x1a\x8e\xf4\xb0d\xe9\x1a" +
+	"\xb5q9\x0d(\xd2\x1aV\x9b\xeaL]S\x83\xc5\x86" +
+	"\xbaB\x9bexjT]\x0d\x1a\xc0GW\x0b\xa0d" +
+	"\x12T\xc6\x08hEb\x9aU\x80Mq\xaf1\x9dK" +
+	"\xf48\x1a\x899\x14\xb7\x0aJ\x8ecV\xad\x06P\x96" +
+	"\x10TZ\x05\x94\x10s\xe9\xfc\x91\x02\x15\x00J\x13A" +
+	"%\"\xa0$\x08\xb9(\x00HAz\xd8BP1\x05" +
+	"\x94\x08\xc9E\x02 \xb5\xd1\x9c\xb7\x12T:\x84\x98\x07" +
+	"\xd1HU\x13\x000\xafV\x85\xdbC\x9a^\xe5x\xb9" +
+	"\xaa\x99:\x92\xf8;;\x10Z\x1a\xc6\x1c\xab\xe5\xf3\xcd" +
+	"u\xef\x1f\xfa\xf7>\x00\xc4\x9c\xf4\xc1\x04B\x86\xa9\xb6" +
+	"\xb6\xc6\x13G\x13\x9c\x1dmMn\x82\x19\x89&(3" +
+	"\xec\x9c\xa2\x94\x98\x92\x80(\xa57\xafk\xb4\xdaZ\xa2" +
+	"zw\xeb\xb0\xa1y\xde\xa4\xb5j\xa6\xb6\xc0\xd0\xf4\x98" +
+	"a\xd3\x00H+\x1bn\x0f\xd1\x96\xa8\xb0\xf3I\xab&" +
+	"\xaaAC\x19\xee\xf8\xe1\xa5E\x9bHP\x99\xc6\x15m" +
+	"\x0a\x8d\xbc\x90\xa0R\x9a\xba\x14\x89l,\xbe|\xca\xdb" +
+	"^\xba\xf0\xe4=\xb2\x11s\x99K\x86\x89\xc6}e\xce" +
+	"n34\x94L\xc7\xe1\xd9\xd4\xe1'\x09*5\x9c\xc3" +
+	"\xf3hC\xcd!\xa8<\xcbu\x99B\x0f\xe7\x12T\xbe" +
+	"\xfe`\x0du\x9f9e\x9d\xf3\x00O\xd3)\x1f\x1f\xdf" +
+	"T\x00\xa5\x9c\xa02\x97\x8b\xaf\xaa:U|o\x01(" +
+	"\xcf\x12T\x96\x08\x98\xa7F\"\x9c\xe7A5\x14X\xaa" +
+	"\x19&\x8d6\xc7:\xfe\xfe\xb5\xc02\xef\xe2u\xac\xaf" +
+	"\xd4\xa8\xd9\x12\xd6k\x9a\x85\xc8\xd3Z\xe7S\x81P\xb3" +
+	"\xa6G\xf4@\xc8\x84A\x91\x0f\x1e\x9f\xb4\xed\x06OO" +
+	"\x13\x876=\xef\xfe\x16\xe3]:\x14/\x9cq\x94\xe6" +
+	"\xf9F\x0d\xbe\xd2\xe9\xfc0LU7\xf9.\xfd\x84\xc5" +
+	"znn\x1a\xd1\x88\xa6\xaf\x08\x18@\xc2:J\x96\x7f" +
+	"Ai\xe3\xf8>e\xcb=\x1e\x02w\x03\x9b\xcb\x8f:" +
+	"\xf6\xf7\xd1\x86\xddCP\xe9\xe5J\x7f\x80\x1e\xbeIP" +
+	"9\xc4\x95\xfe \x9d\xe0\xbd\x04\x95\xa3\xdc\x00=B%" +
+	"\x0f\x11TN\x08\x88\xae\\t\x01H\xc7h7\x1d&" +
+	"\xa8\x9c\x16Prc.\xba\x11\xa5\x93T\xf0(A\xe5" +
+	"\x9c\x80\xd20!\x17\x87!Jg\xa8\xc9\xd3\x04\x95\xf7" +
+	"\x84{\xbf\x8c\x14KcUc8\x18TCM\x98c" +
+	"\x9d\xea\x9a\xb8c\xafR\xf5\xfbx\xbf\xe5\x05\x8cg\xb4" +
+	"vD\x10\x10\x01W5i+\xe6\x85\x9b4\xf6\xb7\x15" +
+	"\x0cGCf\x8d\x1e\x06lt\xce\xee:F\x12\xef\xce" +
+	"\x1e\xaa\xe9\x84\x07\xbf;\x0c\xd6 *.\xe2\x06p\x98" +
+	"\x0d28/I3@\x90\xdcbY\xecm\x96\xa3\xe2" +
+	"B\xe4\xe6\x1b\xdc\xdd)\xaewU\x124\xfe\x07\xdb6" +
+	"\x1aI\x1e2\x836H\xca\xf5\x94n #3\x1eC" +
+	"\x1d\xcap\xe4ybF=\x87\xfe3vY\x0c\xce\x00" +
+	"1[,\x96Hd\x99\x1455\xa8\x94\x137&\xe8" +
+	"\x062b\"\xdf\xc4z\x10\xe4\x01\x14Qp0.2" +
+	"\xa8*\xf7c5\x08\xf2;(\"q\xe072\x9a&" +
+	"\x1f\xc3\x06\x10\xe4>\x14q\x98C\x92\x901Hy\x1f" +
+	">\x07\x82\xdc\x83\"\x8a\x0e\x1cD\x06T\xe5\x9d\xa8\x83" +
+	" oA\x11\x87;\xdc\x04\x19\xc0\x95_\xb6\xbf\xaeC" +
+	"\x113\x1c\xce\x8a\x8c\x19\xc8\x9d\xf6\xbdm(\xe2\x08\x87" +
+	"\x19\"#\xa6\xb2\x86\xcb@\x90\x17\xa1\x88\x0f9@\x16" +
+	"\x19\xbb\x91\x15\xfbk\x15\x8a\x98\xe9\x10Rd\xecQ\x9e" +
+	"i\xfb<\x1dE\xccr\xd8\x04R\x02\x06=\xebw\xcb" +
+	"^[w<\x8a8\xd2\xa1~\xc8\xe8\xa3\xfc0\xee\x02" +
+	"A\x96P\xc4\x04\xcbA\xc6\xd5e7\x8dH\xfa\x8f\x88" +
+	"n\x07<#\xa3\xca\xd2\xcdz\x10\xa4\x01\x8e6qD" +
+	"\xa4\x7f\x12\x08\xd2\x19\x11\xb3\x1d\xf6\x82\xec\x17\x05\xe9\xc8" +
+	"k H}\xa2\xc5\xc6\x14\x90@\xa8\x1c-\x06\x9b\x01" +
+	"\xa0\x1c-\xb6\xccAT\xed\xaflzCY\xacQ\xca" +
+	"\xd12\xf5\xceJ\xbb\x7f\xf2\xd8\x09{%\x89\x13\x86&" +
+	"\x99\x19\xb6\xf7![\x8f\x1d\xb0\x07\x00\xd9T\x90\xda\x88" +
+	"/^(\x8b\xbd\x0a\xc7,'\xc3\x96\x03\xb2\xed 2" +
+	"\x8fbp\x1a\xf2*\xe3\xe6\x19\x8c\x02\xa2\xe9\xe5\x98\x1d" +
+	"\x09\x84\x9a\xb9P\x91\xad\x97l\xc36P\x83i\xb1?" +
+	"\xd5d@\xe5\xfe\xd0<\x1b\x12\xdc\xd6\xafH\xb5\xf5+" +
+	"8\xa8\xc3F\xff\xbc\xfa\x04\xaa\xb9\xe7\x9c\x0ei\xed\xf3" +
+	"\xa9\x08\x90\xaa!\xa1\xfb{a4\x1e\xcf9\xab\x97\x03" +
+	"\x95\xd4q\x0fA\xc5\xcfEST\x91@\x9a\x0f\x0c\xbd" +
+	"\xf8\x05\xc0\xb0!7\x12\xab\xb9Q\x9b\x02\xf1\x0d\x89\x16" +
+	"2\xf3\x9fEX\xa9:h\xd0>#\xa9\x9d\xf4\xd4\xe4" +
+	"\xd9\x19\xffL\x1c\x8bc\xd7:5\x14c\xabO\x84u" +
+	"\xed)\xb5\xd1\x0c\xeb\x9d\xd4\x81\xa4\xf3T\xbb\xae\"\xb1" +
+	"\x93\xee7x'\xae\xda\xb2\x18\xe6\xfa\x94\x88kH!" +
+	"0^\x9d\x0e\xbd6\x86u\x0d%+s\xff\x8fvu" +
+	",\xfc\xd9O\xee\x8b\xe6p\x942\x99\xb3\x0f\x9a\x09\xb1" +
+	"!\x99,\xfd\xffJ\x05H\xba\xb4\x12\xbd3\x01\xab\xd8" +
+	"\x8fV\xc8~{\x92\xa4\x17A\x90\xb2D\x8b\xa5\x1e\x99" +
+	"2\xdd%\xfcT\xbd\x1b\xfc\xf9\x14O==yN\xf1" +
+	"\xc3\xc8\xd0)Cr\x11\x87\x8e\xfe\xfe\x1b\x00\x00\xff\xff" +
+	"\x8bZ\xaf\x02"
 
 func init() {
 	schemas.Register(schema_dcbc0d702b1b47a5,
+		0x809d3d6d45c4c37d,
 		0x835c613045824121,
 		0x86362c69f5c42997,
 		0x86ca17d397d72d2b,
@@ -3671,6 +3988,7 @@ func init() {
 		0xcd9c9fab5f637827,
 		0xd0669675481ed533,
 		0xd0d6ed6a5ed70e62,
+		0xe06fe4e0d4e93178,
 		0xe3a9cebde9177d60,
 		0xe4d3afafc9fe1acf,
 		0xe8ac8c6560747234,

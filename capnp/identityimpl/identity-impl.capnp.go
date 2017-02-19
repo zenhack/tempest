@@ -4,6 +4,7 @@ package identityimpl
 
 import (
 	context "golang.org/x/net/context"
+	identity "zenhack.net/go/sandstorm/capnp/identity"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	capnp "zombiezen.com/go/capnproto2"
 	schemas "zombiezen.com/go/capnproto2/schemas"
@@ -13,6 +14,26 @@ import (
 
 type PersistentIdentity struct{ Client capnp.Client }
 
+func (c PersistentIdentity) GetProfile(ctx context.Context, params func(identity.Identity_getProfile_Params) error, opts ...capnp.CallOption) identity.Identity_getProfile_Results_Promise {
+	if c.Client == nil {
+		return identity.Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0xc084987aa951dd18,
+			MethodID:      0,
+			InterfaceName: "identity.capnp:Identity",
+			MethodName:    "getProfile",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(identity.Identity_getProfile_Params{Struct: s}) }
+	}
+	return identity.Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
 func (c PersistentIdentity) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
 	if c.Client == nil {
 		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
@@ -57,6 +78,8 @@ func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Per
 }
 
 type PersistentIdentity_Server interface {
+	GetProfile(identity.Identity_getProfile) error
+
 	AddRequirements(supervisor.SystemPersistent_addRequirements) error
 
 	Save(persistent.Persistent_save) error
@@ -69,8 +92,22 @@ func PersistentIdentity_ServerToClient(s PersistentIdentity_Server) PersistentId
 
 func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 2)
+		methods = make([]server.Method, 0, 3)
 	}
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xc084987aa951dd18,
+			MethodID:      0,
+			InterfaceName: "identity.capnp:Identity",
+			MethodName:    "getProfile",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := identity.Identity_getProfile{c, opts, identity.Identity_getProfile_Params{Struct: p}, identity.Identity_getProfile_Results{Struct: r}}
+			return s.GetProfile(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
+	})
 
 	methods = append(methods, server.Method{
 		Method: capnp.Method{
@@ -103,16 +140,16 @@ func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Se
 	return methods
 }
 
-const schema_acf10e4407376d3f = "x\xda2\xf0gt`2d\xfd\xcf\xc9\xc0\x10X\xc2" +
-	"\xca\xf6\xbf\xea\xaf\xf9\xc1\xa7\xdb\xde\xacb\x10\x14a\xfe" +
-	"o\x9fk\xce\xee\xc2\xf7q\x0d\x03\x03\xa3\xf1S\x16+" +
-	"F\xe1\xaf,\xec\x0c\x0c\xc2\x1fY\xd8\x81X\x9d\xe1?" +
-	"\x83\xc9\xff\xcc\x94\xd4\xbc\x92\xcc\x92Jf\xdd\xcc\xdc\x82" +
-	"\x1c\xbd\xe4\xc4\x82\xbc\x02\xab\x80\xd4\xa2\xe2\xcc\xe2\x12\xa0" +
-	"\x8cg\x8a=D>\x80\x911\x80\x995\x90\x83\x91\xf1" +
-	"\xbf\xc4\xdd\xc0\x95U3Z\x0e000\xfc\xdfru" +
-	"_\xcd\xf5\xb7=\x87\x81l@\x00\x00\x00\xff\xff~\xbe" +
-	"0\xe9"
+const schema_acf10e4407376d3f = "x\xda2X\xce\xe8\xc0d\xc8\xba\x9f\x87\x81!p\x0a" +
+	"+\xdb\xff\xaa\xbf\xe6\x07\x9fn{\xb3\x8aAP\x84\xf9" +
+	"\xbf}\xae9\xbb\x0b\xdf\xc75\x0c\x0c\x8c\xc6\xaelV" +
+	"\x8c\xc2\xa1l\xec\x0c\x0c\xc2\x81l\xec\xc2\x81l\xea\x0c" +
+	"\xff\x19z\xfeg\xa6\xa4\xe6\x95d\x96T2\xebf\xe6" +
+	"\x16\xe4\xe8%'\x16\xe4\x15X\x05\xa4\x16\x15g\x16\x97" +
+	"\xa4\xe6\x95x\xa6\xd8C\xe4\x03\x18\x19\x03\x98Y\x039" +
+	"\x18\x19\xffK\xdc\x0d\\Y5\xa3\xe5\x00\x03\x03\xc3\xff" +
+	"-W\xf7\xd5\\\x7f\xdbs\x98\x81\x81\x01\x10\x00\x00\xff" +
+	"\xff\xdc\x0f/\x04"
 
 func init() {
 	schemas.Register(schema_acf10e4407376d3f,

@@ -50,12 +50,10 @@ interface Supervisor {
   # Shut down the grain immediately.  Useful e.g. when upgrading to a newer app version.  This
   # call will never return successfully because the process kills itself.
 
-  getGrainSize @3 () -> (size :UInt64);
-  # Get the total storage size of the grain.
-
-  getGrainSizeWhenDifferent @4 (oldSize :UInt64) -> (size :UInt64);
-  # Wait until the storage size of the grain is different from `oldSize` and then return the new
-  # size. May occasionally return prematurely, with `size` equal to `oldSize`.
+  obsoleteGetGrainSize @3 () -> (size :UInt64);
+  obsoleteGetGrainSizeWhenDifferent @4 (oldSize :UInt64) -> (size :UInt64);
+  # OBSOLETE: We used to pull the grain size from the supervisor. Now the supervisor pushes the
+  #   size through SandstormCore.
 
   restore @5 (ref :SupervisorObjectId, requirements :List(MembraneRequirement), parentToken :Data)
           -> (cap :Capability);
@@ -181,6 +179,14 @@ interface SandstormCore {
 
   backgroundActivity @7 (event :Activity.ActivityEvent);
   # Implements SandstormApi.backgroundActivity().
+
+  reportGrainSize @8 (bytes :UInt64);
+  # Reports the current disk storage usage of the grain. The supervisor monitors storage usage
+  # while the grain runs and calls this method periodically. In order to avoid unnecessary traffic,
+  # the supervisor may choose not to report insignificant changes.
+
+  getIdentityId @9 (identity :Identity.Identity) -> (id :Data);
+  # Gets the ID of the identity, as it would appear in UserInfo.identityId.
 }
 
 struct MembraneRequirement {
@@ -299,16 +305,14 @@ struct ApiTokenOwner {
       # The token will be automatically deleted after a short amount of time. Before then, the
       # grain must call `SandstormApi.claimRequest()` to get a proper sturdyref.
 
-      grainId @13 :Text;
-      # Grain ID owning the ref.
-
       sessionId @15 :Text;
       # The ID of the session that created this token.
 
+      grainId @13 :Text;
+      # Obsolete. (The owning grain is the one associated with sessionId.)
+
       introducerIdentity @14 :Text;
-      # The identity ID through which a user's powerbox action caused the grain to receive this
-      # token. This is the identity against which the `requiredPermissions` parameter
-      # to `claimRequest()` will be checked.
+      # Obsolete. (The introducer identity can be derived from sessionId instead.)
     }
 
     clientPowerboxOffer :group {

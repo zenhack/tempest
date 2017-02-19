@@ -828,6 +828,9 @@ type HackSessionContext_getUiViewForEndpoint struct {
 
 type HackSessionContext_TokenInfo struct{ capnp.Struct }
 
+// HackSessionContext_TokenInfo_TypeID is the unique identifier for the type HackSessionContext_TokenInfo.
+const HackSessionContext_TokenInfo_TypeID = 0xf910658ae8c6674d
+
 func NewHackSessionContext_TokenInfo(s *capnp.Segment) (HackSessionContext_TokenInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
 	return HackSessionContext_TokenInfo{st}, err
@@ -950,6 +953,9 @@ func (p HackSessionContext_TokenInfo_Promise) UserInfo() identity.UserInfo_Promi
 
 type HackSessionContext_getPublicId_Params struct{ capnp.Struct }
 
+// HackSessionContext_getPublicId_Params_TypeID is the unique identifier for the type HackSessionContext_getPublicId_Params.
+const HackSessionContext_getPublicId_Params_TypeID = 0xe706d835e9cd64af
+
 func NewHackSessionContext_getPublicId_Params(s *capnp.Segment) (HackSessionContext_getPublicId_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_getPublicId_Params{st}, err
@@ -996,6 +1002,9 @@ func (p HackSessionContext_getPublicId_Params_Promise) Struct() (HackSessionCont
 }
 
 type HackSessionContext_getPublicId_Results struct{ capnp.Struct }
+
+// HackSessionContext_getPublicId_Results_TypeID is the unique identifier for the type HackSessionContext_getPublicId_Results.
+const HackSessionContext_getPublicId_Results_TypeID = 0xe96193c522f6c05d
 
 func NewHackSessionContext_getPublicId_Results(s *capnp.Segment) (HackSessionContext_getPublicId_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
@@ -1121,6 +1130,9 @@ func (p HackSessionContext_getPublicId_Results_Promise) Struct() (HackSessionCon
 
 type HackSessionContext_httpGet_Params struct{ capnp.Struct }
 
+// HackSessionContext_httpGet_Params_TypeID is the unique identifier for the type HackSessionContext_httpGet_Params.
+const HackSessionContext_httpGet_Params_TypeID = 0xe54437a7b8f52843
+
 func NewHackSessionContext_httpGet_Params(s *capnp.Segment) (HackSessionContext_httpGet_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return HackSessionContext_httpGet_Params{st}, err
@@ -1190,6 +1202,9 @@ func (p HackSessionContext_httpGet_Params_Promise) Struct() (HackSessionContext_
 }
 
 type HackSessionContext_httpGet_Results struct{ capnp.Struct }
+
+// HackSessionContext_httpGet_Results_TypeID is the unique identifier for the type HackSessionContext_httpGet_Results.
+const HackSessionContext_httpGet_Results_TypeID = 0xb44df810894a44f4
 
 func NewHackSessionContext_httpGet_Results(s *capnp.Segment) (HackSessionContext_httpGet_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -1279,6 +1294,9 @@ func (p HackSessionContext_httpGet_Results_Promise) Struct() (HackSessionContext
 
 type HackSessionContext_getUserAddress_Params struct{ capnp.Struct }
 
+// HackSessionContext_getUserAddress_Params_TypeID is the unique identifier for the type HackSessionContext_getUserAddress_Params.
+const HackSessionContext_getUserAddress_Params_TypeID = 0xa15e445037d1834c
+
 func NewHackSessionContext_getUserAddress_Params(s *capnp.Segment) (HackSessionContext_getUserAddress_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_getUserAddress_Params{st}, err
@@ -1325,6 +1343,9 @@ func (p HackSessionContext_getUserAddress_Params_Promise) Struct() (HackSessionC
 }
 
 type HackSessionContext_obsoleteGenerateApiToken_Params struct{ capnp.Struct }
+
+// HackSessionContext_obsoleteGenerateApiToken_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGenerateApiToken_Params.
+const HackSessionContext_obsoleteGenerateApiToken_Params_TypeID = 0x837afa61d880beb6
 
 func NewHackSessionContext_obsoleteGenerateApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
@@ -1432,6 +1453,9 @@ func (p HackSessionContext_obsoleteGenerateApiToken_Params_Promise) UserInfo() i
 }
 
 type HackSessionContext_obsoleteGenerateApiToken_Results struct{ capnp.Struct }
+
+// HackSessionContext_obsoleteGenerateApiToken_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGenerateApiToken_Results.
+const HackSessionContext_obsoleteGenerateApiToken_Results_TypeID = 0xc9973f31a90887f9
 
 func NewHackSessionContext_obsoleteGenerateApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
@@ -1549,6 +1573,9 @@ func (p HackSessionContext_obsoleteGenerateApiToken_Results_Promise) Struct() (H
 
 type HackSessionContext_obsoleteListApiTokens_Params struct{ capnp.Struct }
 
+// HackSessionContext_obsoleteListApiTokens_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteListApiTokens_Params.
+const HackSessionContext_obsoleteListApiTokens_Params_TypeID = 0xfe777c71f871f413
+
 func NewHackSessionContext_obsoleteListApiTokens_Params(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_obsoleteListApiTokens_Params{st}, err
@@ -1595,6 +1622,9 @@ func (p HackSessionContext_obsoleteListApiTokens_Params_Promise) Struct() (HackS
 }
 
 type HackSessionContext_obsoleteListApiTokens_Results struct{ capnp.Struct }
+
+// HackSessionContext_obsoleteListApiTokens_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteListApiTokens_Results.
+const HackSessionContext_obsoleteListApiTokens_Results_TypeID = 0xe9e4890dae20b03c
 
 func NewHackSessionContext_obsoleteListApiTokens_Results(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1668,6 +1698,9 @@ func (p HackSessionContext_obsoleteListApiTokens_Results_Promise) Struct() (Hack
 
 type HackSessionContext_obsoleteRevokeApiToken_Params struct{ capnp.Struct }
 
+// HackSessionContext_obsoleteRevokeApiToken_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteRevokeApiToken_Params.
+const HackSessionContext_obsoleteRevokeApiToken_Params_TypeID = 0x845e8081686d8a0f
+
 func NewHackSessionContext_obsoleteRevokeApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return HackSessionContext_obsoleteRevokeApiToken_Params{st}, err
@@ -1738,6 +1771,9 @@ func (p HackSessionContext_obsoleteRevokeApiToken_Params_Promise) Struct() (Hack
 
 type HackSessionContext_obsoleteRevokeApiToken_Results struct{ capnp.Struct }
 
+// HackSessionContext_obsoleteRevokeApiToken_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteRevokeApiToken_Results.
+const HackSessionContext_obsoleteRevokeApiToken_Results_TypeID = 0xaea67098dc479ce6
+
 func NewHackSessionContext_obsoleteRevokeApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_obsoleteRevokeApiToken_Results{st}, err
@@ -1785,6 +1821,9 @@ func (p HackSessionContext_obsoleteRevokeApiToken_Results_Promise) Struct() (Hac
 
 type HackSessionContext_obsoleteGetIpNetwork_Params struct{ capnp.Struct }
 
+// HackSessionContext_obsoleteGetIpNetwork_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpNetwork_Params.
+const HackSessionContext_obsoleteGetIpNetwork_Params_TypeID = 0x97f9d7a51ffe0741
+
 func NewHackSessionContext_obsoleteGetIpNetwork_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_obsoleteGetIpNetwork_Params{st}, err
@@ -1831,6 +1870,9 @@ func (p HackSessionContext_obsoleteGetIpNetwork_Params_Promise) Struct() (HackSe
 }
 
 type HackSessionContext_obsoleteGetIpNetwork_Results struct{ capnp.Struct }
+
+// HackSessionContext_obsoleteGetIpNetwork_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpNetwork_Results.
+const HackSessionContext_obsoleteGetIpNetwork_Results_TypeID = 0xa9502e5fdabb8b07
 
 func NewHackSessionContext_obsoleteGetIpNetwork_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1902,6 +1944,9 @@ func (p HackSessionContext_obsoleteGetIpNetwork_Results_Promise) Network() ip.Ip
 
 type HackSessionContext_obsoleteGetIpInterface_Params struct{ capnp.Struct }
 
+// HackSessionContext_obsoleteGetIpInterface_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpInterface_Params.
+const HackSessionContext_obsoleteGetIpInterface_Params_TypeID = 0xecebff1662ba10a1
+
 func NewHackSessionContext_obsoleteGetIpInterface_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return HackSessionContext_obsoleteGetIpInterface_Params{st}, err
@@ -1948,6 +1993,9 @@ func (p HackSessionContext_obsoleteGetIpInterface_Params_Promise) Struct() (Hack
 }
 
 type HackSessionContext_obsoleteGetIpInterface_Results struct{ capnp.Struct }
+
+// HackSessionContext_obsoleteGetIpInterface_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpInterface_Results.
+const HackSessionContext_obsoleteGetIpInterface_Results_TypeID = 0xb9147a48c12c807d
 
 func NewHackSessionContext_obsoleteGetIpInterface_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2019,6 +2067,9 @@ func (p HackSessionContext_obsoleteGetIpInterface_Results_Promise) Interface() i
 
 type HackSessionContext_getUiViewForEndpoint_Params struct{ capnp.Struct }
 
+// HackSessionContext_getUiViewForEndpoint_Params_TypeID is the unique identifier for the type HackSessionContext_getUiViewForEndpoint_Params.
+const HackSessionContext_getUiViewForEndpoint_Params_TypeID = 0xb45bb2d206694fe6
+
 func NewHackSessionContext_getUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return HackSessionContext_getUiViewForEndpoint_Params{st}, err
@@ -2088,6 +2139,9 @@ func (p HackSessionContext_getUiViewForEndpoint_Params_Promise) Struct() (HackSe
 }
 
 type HackSessionContext_getUiViewForEndpoint_Results struct{ capnp.Struct }
+
+// HackSessionContext_getUiViewForEndpoint_Results_TypeID is the unique identifier for the type HackSessionContext_getUiViewForEndpoint_Results.
+const HackSessionContext_getUiViewForEndpoint_Results_TypeID = 0xfdc944999b9296df
 
 func NewHackSessionContext_getUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2247,98 +2301,99 @@ func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server
 	return methods
 }
 
-const schema_bf6889795837d1e0 = "x\xda\xacV{l\x14U\x17\xbfg\xa6\xdbi\x13J" +
-	";\xdf\x16\xbaKi\x16\x1a\xc2\xc7G\xa0\xf9( B" +
-	"\x0c\xbb\x85VX,\xba[\x1e\"\x0a:m/t\xd2" +
-	"\xdd\x9deg\x96B\xa3i\x01\x1f\x01\xff0>\xc1\xe0" +
-	"?\xfc\x01\xa6D@\x91\x1a\xc1\x076\x06MI4)" +
-	"\x06A\x85((b\x151F$\x94\xa4\x8c\xe7\xce\xee" +
-	"\xcc^\x17J\xa95\xcd6\x99\xf3\xfc\xdds\xee\xf9\x9d" +
-	"\xfb\xffG\xf2\x02\xc24\xd7\xa7\x15\x84,\x19'\xb8r" +
-	"\xcdw>l?\xad\\o\xddB\xc2\x13\x01\x08q\x09" +
-	"\x12!\xd3\x83%\x95\x02\x01\xb7Rr\x80\x80Y\xb8-" +
-	"\xda\xb4\xa9}\xf5\x93D\x9e\xc8\x0c\x80\x19\xf4\x97\x943" +
-	"\x83Q\x1e?\x1aTI7|\xbbO\xf5mO\x19\xe4" +
-	"0\xfdL\xcf\x7f\x04\x92c\xd6n\xe9\x99\x15\xaa^\xbd" +
-	"\x8b\xd3L\xf5\x9c\x07\xd4H\xcf\xbe\xf7\xf5\xa3\x15\xa1\x0e" +
-	">\xe8x\xcf\x18\x16t\xb6\x15\xf4\xc7\xd7\x16\x9c\xd9\x11" +
-	"\xdf\xb3\x9fs}\xc83\x99\x05\xbdR\xbdhk\xd1\xb5" +
-	"\xc5\x87\xd2\xae\x16\xe0\xb0\xe7 0\xc0\x9e\x16\xe6\xfa\x80" +
-	"\x9a{\xe2\xe0\xc3\x87\xf8\xd8]\x0c\x10\xb8\xbf\xb2b?" +
-	"\xd1>\xa5kak\xf1a\xde\xa0\x8f\x05\x07\xb7\xece" +
-	"\x06{r\xee\x9bq\xea\xf3\xce\x8f\x89\xec\x16\xcd\xefz" +
-	"f\xad\xd8\xb8\xb5\xe9(!0}\xa6\xb7\x1c\xdc5^" +
-	"tpWy%\xfc\xfd\x97\x10\xb3\xef\x99\xbc\x8ei\xfe" +
-	"\xed\xdd\xe9p\"\x0b7\xdb;\x87\x85\x0b{Y\x05\x9f" +
-	"\xdb9j\xfc\x12_\xed\xb9\x9b\xc2\xfd\xea\xad\x04w\xbf" +
-	"\xb7\x04\x1d\xf2\xc7,\x10\xdc\xfbJY\xbc\xf9\x93\xfe|" +
-	"\xf7\xf5Y\xd5\x17xx\xbbK\xf7\xb2\x03v\x962x" +
-	"\x07\x1a?\xeb\x9dy:\xf7\"W\x9b\x93\xa5\xc7YY" +
-	"W}t\xb5\xfc\xd8\x8bJ\xaf\xddM\x0bKw\xe9\x09" +
-	"\xe6{\xb6\xf4\"\xfa\xde\xf3\xe6\xb8\xfd\x05[\x7f\xe8\xe5" +
-	"\x83\x7f0\xd6\xea\xe6\xc9\xb1,\xf8\xae\xa2#\xf5\xa3\xcd" +
-	"_.q\xc1]e\xe5\xac\xf0\x8b\xd7~\xf2\xd36Z" +
-	"\xd4\xc74\x993\xa5r\xf4\x8f\xdd\x8c\xc5+c\x85)" +
-	"(cg\xfe\xf6\x95\x17v\xbeZ\xdd\xdd\xcf\xe7\xe9(" +
-	"\xb3\x1a\xdcU\xc6\xf2\xb8\xaf\xac\xbb\xb6\xee\xf1\x96\x1b\\" +
-	"\x9esLo:\x7f\xc4lR\x1a\x9a\xa7\xeaT\x97t" +
-	"U\x8bU4(\xf1X|\xceB\x94-\xa1:\x93\xcc" +
-	"\xd7b\x06\xdd`Th\xf5\xba\x16\xa1\x06]@c4" +
-	"\xa1\x18\xb4*\xae.\xd5\x9ailB\xc8\xa7$\x94\xa8" +
-	"\x1e\x1e!\xe6`\x0aL#\xd7\xcc#$\x1c\x10!\\" +
-	"+\x80\x0cP\xcc\xaa$\x07\x17\xa1p!\x0a\x97\x0a\x00" +
-	"B1\xe0\x7f9\xcc\x0ckQ\xb6B\x80\xb685b" +
-	"J\x94\xc2\x08\"\xe0\x0f\xcc\xa4N\x13\xc1\xd8\x1a\x8d`" +
-	"\x13\x8b\xcc/\xe4Uo\xff\xd6s\xf8%\xfc\x80\"\x02" +
-	"mtC\\MP\x1d\xf2\xd1:\x1f\xad\x87x\x8a:" +
-	"\xba\x1e\xc1g\xce\xa0$$v\x86\x1c\xe7\x0c\x05\x0cZ" +
-	"\x1eB+Fh\x063\x0a6:\xd0\x86\\2#\x18" +
-	"\xbf\x9f\x1a-Z\xa2\x99\xa5R\xa2\xa0;1ro\x1f" +
-	"c-5\x96a!\xaa\x1a\x1b\xf1\xb4\xba\x0dtX\x08" +
-	"\xea\xa8\x9e\x8c\x88\xc6\x80\xa7\x8d\xa5\xec@6\x03\xe3&" +
-	"\xb76?\xb8\xb9\x83\x15]\x1ev\x911oa2b" +
-	"d\xc0\xbbn\x1f\xa6\xc90\xe2\x08\x1c\xfd|:\xf3C" +
-	"\x806\xde\xff\xb1\xcb4\x09\xf1\xce\xe0n\xd84v\x88" +
-	")(\xbc[\x003\xaaF\xe9\xd2\x8dq\xcanO\xba" +
-	"mm\x0d,p\xcc\x80\x02\xfc.\xb8\xf3\xe3\xb0\x16\xa8" +
-	"\xcbU\xdar\xaf\x96\xa8\x895\xc655f\xd8m\xe4" +
-	"kX\x9e\xa9\xa1\x94LD\x86u[\x82(K\xacQ" +
-	"\x1a\xa8S5>S\x1df\x1a\x81\x99<xP5m" +
-	"I\x80b\xc7\xae\x7f9\xb77\x16\x9a\xf2}v\xc7\xc4" +
-	"\xac\xdc5QE\x8d0\x00\x12\xcaC\x00!\xd1\x15\xce" +
-	"\x030\xb5\xd1\x9d+.WU^\xc5\xb2\x99\xc7\xdf\xef" +
-	"\xae=Z\xb6\xe5\x12\xf9\x17H\xa2\xceOS=\xe4X" +
-	"\xa2\xf2V,Q\x9fa\x09Y`4\x81B\x9e&|" +
-	"\xd6,:\xb5\xa5\xe9~\x10iY\xa6\xe2\x03\xce\xab8" +
-	"\x10z\x9f\x05?\x9c\x83\x15\xc8\x100\xd4\x99\x16x$" +
-	"!\x02Zx\x82\xe8\xc2B\xd8k\x01\xec-\xe0\x96\xa1" +
-	"\x9e\x08\xee|\x90\xd0\xd9\xde*`\xefO\xb9\x7f\x1e\x11" +
-	"\xe4\xdf%\x10\x9c=\x0d\xe7\xe6.\x7f\xfa\xf2\x99}o" +
-	"\xc8\x17ZQwV\x02\xd1y \x80\xbd\xe6\xe4\x9e\xe3" +
-	"\xa8\xeb\x91 \xc7\xe1p\xb0\xb7\x8a|\xec \xea\xba$" +
-	"p9\xcf\x06\xb07\xb9\xdcy\x04uoI 9/" +
-	"\x06\xb0\x9f\x01\xf2\xee\xbd\xa8\xdb%A\x9e\xb3\x7f\xc0\xde" +
-	"\xd2\xf2\xcb\xcc\xefy\x09r\x9d\xcd\x0e\xf6v\x91\x9fb" +
-	"~\x9b$\x13\x07!\x94\xac\x8f\xa8Dj\x086\x06\xa0" +
-	"-=\xa0\x010m\x96\"\xfe\x14O\xa1\xc8\xbe\x0aB" +
-	"\xf6] \x84\xd3B\xad\xaa\x1bL\xe3c*\xde\x0fl" +
-	"\xf6\xf0\xa7\xdcx\x95Mg\x85\x8c\xa7nR\xe0\xec\xf8" +
-	"S\xc3\x93F\xc6\x86\x17\xec\xe9-d\xd7%\x00\xd6m" +
-	"\xbf\xeb\x8f\x86\x95e\x81\xb9G\x07\xba\xedwHP!" +
-	"\xa50\x91\xb5=\x06\xe3\x82\xc1Y\xdf\xaa4\xd69\xc5" +
-	"4:\x87j\x08\xbe\x16\xd5\x1bHSE\x0e4\x85Q" +
-	"\xe7c\x08-\xc2\x8d\x9d\xca\x84M(4\xb8\xb1[\xc7" +
-	"\xc6.\x82\xc2\x0d\xb8\xab\xc5b\x10Q\x96\\\x892\x03" +
-	"e\xedH=\xf1t\x1a\x8ec\xcd&M\xb7\xd68\xcf" +
-	"\xbbJ\xd2\xd0\xb8\xf14U\xbd\x9aF\xb5e:\x11i" +
-	"\x02\xd3c\xf4\xa1\xb3\xa4}o\xackc\x9dS\xca\"" +
-	"\xc99\xe9\x16L\x10\xc0o\x11\x82\x0e#\x09\x12\x1d\xbe" +
-	"\x1f2C\x8e49r\xd8\x14\x9d\xbd\x94\x07\xb966" +
-	"\xa9h\x04\x89w\xd0g\x13\x13V\xa30\xc4uf\xf1" +
-	"\"\xee\xdd\x94EvC{G\x0dk\x07\xde\xea!1" +
-	"9s\xf1\x0b\xd7\xa3=\xee\xa4\x8b\xe7\xd7\xfe\xbc\xe3\xd4" +
-	"\xa1o\xfe\xe1+\xe2\xef\x9df\xd3 F\xf5\xbf\x02\x00" +
-	"\x00\xff\xff\xc5\xae\x0c\xf7"
+const schema_bf6889795837d1e0 = "x\xda\xa4Vml\x14U\x17>\xe7\xce\xb6S\x92\xf6" +
+	"m\x87\xed\x0b\xbbMK\xa1ix\xa1)\xbc\xb6\xa0(" +
+	"1t\x0b\xade\xb1\xd5\x9d\xf2!`@\xa7\xdbK;" +
+	"\xe9\xee\xccvgJ\xa1\x91\xb4\x05?R\x8c1\xa8\x08" +
+	"\x04\xff\xf0\x03\x0cDA\x10\x8cE\x11\x89\xa9II\xd0" +
+	"\x14\x83\x10\x85((b\x95`\x8cH\x80\x04\xc6\xdc\xd9" +
+	"\x9d\xe9\xa5PJm\xf6\xcff\xce9\xcf=\x9f\xcf9" +
+	"\x0f\xadK\x0b\x90\x92\x94\xaf\xff\x0f\xb0\xb0\x98\xa4\xa4Z" +
+	"\x1f}\xd6qF\xb9\xd9\xb6\x01\xe4\xc9\x88\x00)D\x04" +
+	"\x98qb|)\x01\xf4^\x1c\xbf\x0f\xd0\xca\xdc\x18m" +
+	"\xec\xecX\xf9\"H\x93\x99\x022\x85N_\x01S\xd8" +
+	"\xe6+\x03\xb4\xca\xc5\xdb\xf9;O\xdf\xd8\x92P\xf00" +
+	"y\xb7o,\x01\x8fU\xbd\xa1oV\xa8b\xe5\x0eN" +
+	"\xb2\xdfw\x01\xc1c\x89\xaf~\xf2\xdds\xd3C\xbby" +
+	"\xd0\x9d\xbe\x1c\x06z\xc4\x06\xfd\xe5\x9d\xaa\xb3[c\xbb" +
+	"\xf6r\xa6\xe7|E\x0c\xf4j\xc5\x82\xae\xac\xeb5\x07" +
+	"\x93\xa6\xb6\xc3\xa7|\x07\x909\xecke\xa6O\xab\xa9" +
+	"'\x0f<{\x90\xc7\xae\xf4\x8fe\xd8+\xfc\x0c{]" +
+	"G\xf1\xb1\xf9m\xd9\xdd\xbc\xc2:\x7f\x11S\xd8l+" +
+	"\xec\xf2<9\xf3\xf4W\x87\xbe\x00\xc9+X?\xf6\xcd" +
+	"Z\xba\xb6\xab\xf1(\x00\xce\xe8\xf6\x17\xa0\xb7\xd7/\x02" +
+	"x{\xfc\xa2\xb7\xc7\xff?\x00\xeb\xc6+i\xbbK\xca" +
+	"\xb6\xf4&\xe1\x04\x06w\xc4?\x9b\xc1\x9d\xf2\xb3\x0c\xbe" +
+	"\xbe\xfd\xbf\x93\x16\xe6W\x9f\xbf\x0b\xae9\xa7\x14\xbd\x9d" +
+	"9\xe3\x01f\xbc\x96SE\xbc%\xb9\x0co\xde\x94\xbf" +
+	"?~wV\xc5E\xde\xbd\xa9\xb9{X\x80\x8f\xe52" +
+	"\xf7\xf6\xd5\x9f\xe8\x7f\xf8L\xea%.7\xcbr\x8f\xb3" +
+	"\xb4\xae\xf8\xfcZA\xcf\x9bJ\xbfSM\xdb\x97\x9a\xdc" +
+	"\x93\xccV\xc9\xbd\x04h=\xfe\xc1\xc4\xbd\x19]?\xf7" +
+	"\xf3\xe0\xe5yv5\x97\xe51\xf0\x1dY\x87\xeb\xc6Y" +
+	"\xbf_\xe6\xc0\xbb\x98\xdcc\xd54|\xf9\xebF\x9au" +
+	"\x83I\x06bJ\xbc\xd1\x99\xb7\x1e\xbd\x9b\xf3Xb6" +
+	"\xe5\xb1\x98\x7fx\xfb\x8d\xed\xdb*zo\xf1\xefL\x9b" +
+	"`\x17\xb8r\x02{\xc7{\xb5\xf9z\xf3\x0b\xad\xb7\xb9" +
+	"w(\x93[\xeeo\x92\xd5\xa8\x84\x9b\xa6\x19\xd4\x10\x0d" +
+	"U\xd7\xa6\x87\x95\x98\x16\x9b=_\x097-\xa4\x06\xfb" +
+	"2O\xd7L\xba\xc6\x9c\xae\xd7\x19z\x84\x9a\xb4\x8aj" +
+	"4\xae\x98\xb4<\xa6.\xd2\x9b\xa8V\x18\xcaW\xe2J" +
+	"\xd4\x90\xd3\x05\x0f\x80\x07\x01\xa4\xca\xb9\x00r@@\xb9" +
+	"\x9a\xa0\x84\x98\xcd\xb2$\x05\x17\x00\xc8\xf3\x05\x94\x17\x11" +
+	"D\x92\x8d\x04Q\x92\x99b\xb5\x80\xf2R\x82\xed1j" +
+	"jJ\x94b:\x10L\x07\xb4Z\x0c\x1a\x0fj\xabt" +
+	"\x00\xc0,\xeb\x1bi\xc5\x87\x7f\xf4u\xbf\x05\x80\x98\x05" +
+	"\xd8N\xd7\xc4\xd485p\x0c\x10\x1c\x038\xd2(j" +
+	"\xe9j\xbd\x89\x8bA\x89\x8b,\x06\x8f\x1bC\x06s-" +
+	"M@9\x9b`\xbb\xc9\x94\x82\xf5\xaek#N\x99\x19" +
+	"\x8c=E\xcdV=\xde\xc4\x9eR\xa2h\xb8\x18\xa9\xf7" +
+	"\xc7h\xa0\xe6b\x83\xc6\xcb\xeb\xeb\xe3\xd40\x1cGG" +
+	"\xe5A-5Z\"\x829d\xb4ZB\x0f%+0" +
+	"\xb1\xa8\xad\xe9\x99\xf5\xbbY\xd2\xa5Q'\xb9\x96\x1a\x99" +
+	"-\x11s\xc0\xf9\x94\xfb\xc34\x9af\xac\x8a\x9a\x85\xb5" +
+	"4\xdf`vr\x9a\xeb\xefT\xd6LS\x04\x94gr" +
+	"\x1dV\xc2\x82(\x16P~\x94\xa0\x15U\xa3t\xd1\xda" +
+	"\x18e\xdd\x93,[{\x98\x01k&f\x00\xc1\x8c\x07" +
+	"\x0f\x87\x95@]\xa2\xd2\xd6'\xf4x\xa5V\x1f\xd3U" +
+	"\xcdt\xca\xc8\xe7\xb0` \x87bK<2\xaan\x09" +
+	"j&\x8d\xafR\xc2\xd4\xcd\x1a\xffR-\x80\x9c.\xa0" +
+	"\xec#h\xa9IM@\x8a\x92u\xf3\xdb9\xfdZ\xa8" +
+	"\xf8\xa7\xc1\x15\x13\x06\xbd]\x19U\xd4\x08s@Tu" +
+	"-\x84\x18\x12R\xe44DK\x1fwh\xe9\x95\xf2\xd2" +
+	"k\x00`\x1d\xff\xb4\xb7\xfah\xde\x86\xcb\xec\xffhI" +
+	"\xa2\xb6\x8c&j\xc8\xb1D\xe9\xbdX\xa2n\x80%$" +
+	"\xc2h\x02\xe0\x0e\x9a\xc8\xb7g\xd1\xcd-M\xd6\x03\xc4" +
+	"\xc5\x03\x19\x1fr^\x85\xa1\xbc\xcf\xb7\xdd\x97=\x88\x1c" +
+	"\x01c\xade;\x1f\xd4V\x01\xear\xa1\x90\x02\xe0\xae" +
+	"\x05t\xb6\x80W\xc2: \xde1(\"\xba[\x05\x9d" +
+	"\xfd)\xdd\x9a\x0bD\xfaSD\xe2\xeei<?g\xc9" +
+	"\xcbW\xce\xbe\xff\x9et\xb1\x0d\x88tND\xc1=\x10" +
+	"\xd0YsR\xdfq R\x9f\x88\x1e\x97\xc3\xd1\xd9*" +
+	"R\xcf\x01 \xd21\x11S\xdc\xb3\x01\x9dM.\x1d:" +
+	"\x0cD\xda/\xa2\xe8^\x0c\xe8\x9c\x01\xd2\xce=@\xa4" +
+	"\x1d\"\xa6\xb9\xfb\x07\x9d--mfv\x9bDLu" +
+	"7;:\xdbEz\x89\xd9u\x8aV\x035C-u" +
+	"\x11\x15\xc4p\xb0>\x80\xed\xc9\x01\x0d\xa0\xe5\xb0\x14\x94" +
+	"%x*\x80\x96\xd3\x0adp/\x00pR\xacV\x0d" +
+	"\x93I\xf2\x99\x88\xb7C\x87=\xca\x12f\xbc\xc8\xa1\xb3" +
+	"L\xc6Sw\x09\x82\x9aY\x96\x18\x9e\xa4glx\xd1" +
+	"\x99\xdeL\xd6.\x01\xb4\xbb\xfd\x91\xbf\xc2\xcb\xf3\x02s" +
+	"\x8e\x0e\xd5\xed\x0fHP!%3>h{\x0c\xc7\x05" +
+	"\xc3\xb3\xbe\x9d\xe9p\xb0>\xc14\x06\xe7\xd5\x08lm" +
+	"\xaa7\xd1\x90\xb3\\\xd7\x14F\x9d\xcf\x0b(G\xb8\xb1" +
+	"S\xd9\xc7F\x01e\x93\x1b\xbbf6v\x11\x01\xe55" +
+	"\x04Q\xc8F\x01@jY\x0e \x9b\x02\xca\x1d\x04\xad" +
+	"X\xf2\x19\x8ec\xadF\xdd\xb0\xd78\xcf\xbbJ\x8b\xa9" +
+	"s\xe3i\xa9F\x05\x8d\xea\x8b\x0d\x10h\x1c\x11\x08\xe2" +
+	"\xc8Y\xd2\xe9\x1b\xbbm\xec8\xc5A$9;Y\x82" +
+	"B\x82e6!\x18\xf8\x1f\xc0\x90\x80\x9850\xe4\x80" +
+	"\xec\xe3()z\xf0R\x1e\xa6m\x1cR\xd1!\x848" +
+	"\xec\xd9\xc4>V\x08(\x87\xb8\xca\xd4,\xe0\xee\xa6A" +
+	"d7\xb2;jT;\xf0^\x87D\xd1@\xe3g\xae" +
+	"Vi+J\xd6\xa5\x0b\x0d\xbfm=}\xf0\xfb\x7fy" +
+	"E\xdcYi6\x0dB\xd4\xf8'\x00\x00\xff\xff\x81N" +
+	"\x0f|"
 
 func init() {
 	schemas.Register(schema_bf6889795837d1e0,

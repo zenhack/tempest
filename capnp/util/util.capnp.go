@@ -12,6 +12,9 @@ import (
 
 type KeyValue struct{ capnp.Struct }
 
+// KeyValue_TypeID is the unique identifier for the type KeyValue.
+const KeyValue_TypeID = 0x94a081e4abb13424
+
 func NewKeyValue(s *capnp.Segment) (KeyValue, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
 	return KeyValue{st}, err
@@ -100,6 +103,9 @@ func (p KeyValue_Promise) Struct() (KeyValue, error) {
 }
 
 type LocalizedText struct{ capnp.Struct }
+
+// LocalizedText_TypeID is the unique identifier for the type LocalizedText.
+const LocalizedText_TypeID = 0x8b5db772377be249
 
 func NewLocalizedText(s *capnp.Segment) (LocalizedText, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -191,6 +197,9 @@ func (p LocalizedText_Promise) Struct() (LocalizedText, error) {
 }
 
 type LocalizedText_Localization struct{ capnp.Struct }
+
+// LocalizedText_Localization_TypeID is the unique identifier for the type LocalizedText_Localization.
+const LocalizedText_Localization_TypeID = 0xa4f5ae06dd1b7791
 
 func NewLocalizedText_Localization(s *capnp.Segment) (LocalizedText_Localization, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -453,6 +462,9 @@ type ByteStream_expectSize struct {
 
 type ByteStream_write_Params struct{ capnp.Struct }
 
+// ByteStream_write_Params_TypeID is the unique identifier for the type ByteStream_write_Params.
+const ByteStream_write_Params_TypeID = 0x97ed122121126ff2
+
 func NewByteStream_write_Params(s *capnp.Segment) (ByteStream_write_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return ByteStream_write_Params{st}, err
@@ -518,6 +530,9 @@ func (p ByteStream_write_Params_Promise) Struct() (ByteStream_write_Params, erro
 
 type ByteStream_write_Results struct{ capnp.Struct }
 
+// ByteStream_write_Results_TypeID is the unique identifier for the type ByteStream_write_Results.
+const ByteStream_write_Results_TypeID = 0xecde2a9c6f3f84c9
+
 func NewByteStream_write_Results(s *capnp.Segment) (ByteStream_write_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return ByteStream_write_Results{st}, err
@@ -564,6 +579,9 @@ func (p ByteStream_write_Results_Promise) Struct() (ByteStream_write_Results, er
 }
 
 type ByteStream_done_Params struct{ capnp.Struct }
+
+// ByteStream_done_Params_TypeID is the unique identifier for the type ByteStream_done_Params.
+const ByteStream_done_Params_TypeID = 0xbc1426493658b76e
 
 func NewByteStream_done_Params(s *capnp.Segment) (ByteStream_done_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -612,6 +630,9 @@ func (p ByteStream_done_Params_Promise) Struct() (ByteStream_done_Params, error)
 
 type ByteStream_done_Results struct{ capnp.Struct }
 
+// ByteStream_done_Results_TypeID is the unique identifier for the type ByteStream_done_Results.
+const ByteStream_done_Results_TypeID = 0xd0d8d935ee30b219
+
 func NewByteStream_done_Results(s *capnp.Segment) (ByteStream_done_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return ByteStream_done_Results{st}, err
@@ -658,6 +679,9 @@ func (p ByteStream_done_Results_Promise) Struct() (ByteStream_done_Results, erro
 }
 
 type ByteStream_expectSize_Params struct{ capnp.Struct }
+
+// ByteStream_expectSize_Params_TypeID is the unique identifier for the type ByteStream_expectSize_Params.
+const ByteStream_expectSize_Params_TypeID = 0x8c9a3c7674c761d3
 
 func NewByteStream_expectSize_Params(s *capnp.Segment) (ByteStream_expectSize_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
@@ -713,6 +737,9 @@ func (p ByteStream_expectSize_Params_Promise) Struct() (ByteStream_expectSize_Pa
 }
 
 type ByteStream_expectSize_Results struct{ capnp.Struct }
+
+// ByteStream_expectSize_Results_TypeID is the unique identifier for the type ByteStream_expectSize_Results.
+const ByteStream_expectSize_Results_TypeID = 0xf35749d82a51479b
 
 func NewByteStream_expectSize_Results(s *capnp.Segment) (ByteStream_expectSize_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
@@ -911,6 +938,9 @@ type Blob_getSlice struct {
 
 type Blob_getSize_Params struct{ capnp.Struct }
 
+// Blob_getSize_Params_TypeID is the unique identifier for the type Blob_getSize_Params.
+const Blob_getSize_Params_TypeID = 0x8ee5f62e1fab915d
+
 func NewBlob_getSize_Params(s *capnp.Segment) (Blob_getSize_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Blob_getSize_Params{st}, err
@@ -957,6 +987,9 @@ func (p Blob_getSize_Params_Promise) Struct() (Blob_getSize_Params, error) {
 }
 
 type Blob_getSize_Results struct{ capnp.Struct }
+
+// Blob_getSize_Results_TypeID is the unique identifier for the type Blob_getSize_Results.
+const Blob_getSize_Results_TypeID = 0x8e48cb1497f3d6f4
 
 func NewBlob_getSize_Results(s *capnp.Segment) (Blob_getSize_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
@@ -1012,6 +1045,9 @@ func (p Blob_getSize_Results_Promise) Struct() (Blob_getSize_Results, error) {
 }
 
 type Blob_writeTo_Params struct{ capnp.Struct }
+
+// Blob_writeTo_Params_TypeID is the unique identifier for the type Blob_writeTo_Params.
+const Blob_writeTo_Params_TypeID = 0x9f0719e9a9dccc4b
 
 func NewBlob_writeTo_Params(s *capnp.Segment) (Blob_writeTo_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
@@ -1091,6 +1127,9 @@ func (p Blob_writeTo_Params_Promise) Stream() ByteStream {
 
 type Blob_writeTo_Results struct{ capnp.Struct }
 
+// Blob_writeTo_Results_TypeID is the unique identifier for the type Blob_writeTo_Results.
+const Blob_writeTo_Results_TypeID = 0xdb3152bd3bc2aa40
+
 func NewBlob_writeTo_Results(s *capnp.Segment) (Blob_writeTo_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Blob_writeTo_Results{st}, err
@@ -1161,6 +1200,9 @@ func (p Blob_writeTo_Results_Promise) Handle() Handle {
 
 type Blob_getSlice_Params struct{ capnp.Struct }
 
+// Blob_getSlice_Params_TypeID is the unique identifier for the type Blob_getSlice_Params.
+const Blob_getSlice_Params_TypeID = 0x8edb5f3937d96b8a
+
 func NewBlob_getSlice_Params(s *capnp.Segment) (Blob_getSlice_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
 	return Blob_getSlice_Params{st}, err
@@ -1223,6 +1265,9 @@ func (p Blob_getSlice_Params_Promise) Struct() (Blob_getSlice_Params, error) {
 }
 
 type Blob_getSlice_Results struct{ capnp.Struct }
+
+// Blob_getSlice_Results_TypeID is the unique identifier for the type Blob_getSlice_Results.
+const Blob_getSlice_Results_TypeID = 0xc65caf9a2d389078
 
 func NewBlob_getSlice_Results(s *capnp.Segment) (Blob_getSlice_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1545,6 +1590,9 @@ type Assignable_Getter_subscribe struct {
 
 type Assignable_Getter_get_Params struct{ capnp.Struct }
 
+// Assignable_Getter_get_Params_TypeID is the unique identifier for the type Assignable_Getter_get_Params.
+const Assignable_Getter_get_Params_TypeID = 0xb19fdbd356844119
+
 func NewAssignable_Getter_get_Params(s *capnp.Segment) (Assignable_Getter_get_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Assignable_Getter_get_Params{st}, err
@@ -1591,6 +1639,9 @@ func (p Assignable_Getter_get_Params_Promise) Struct() (Assignable_Getter_get_Pa
 }
 
 type Assignable_Getter_get_Results struct{ capnp.Struct }
+
+// Assignable_Getter_get_Results_TypeID is the unique identifier for the type Assignable_Getter_get_Results.
+const Assignable_Getter_get_Results_TypeID = 0x97ef2da226123492
 
 func NewAssignable_Getter_get_Results(s *capnp.Segment) (Assignable_Getter_get_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1664,6 +1715,9 @@ func (p Assignable_Getter_get_Results_Promise) Value() *capnp.Pipeline {
 
 type Assignable_Getter_subscribe_Params struct{ capnp.Struct }
 
+// Assignable_Getter_subscribe_Params_TypeID is the unique identifier for the type Assignable_Getter_subscribe_Params.
+const Assignable_Getter_subscribe_Params_TypeID = 0xf02783ef982ecea9
+
 func NewAssignable_Getter_subscribe_Params(s *capnp.Segment) (Assignable_Getter_subscribe_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Assignable_Getter_subscribe_Params{st}, err
@@ -1733,6 +1787,9 @@ func (p Assignable_Getter_subscribe_Params_Promise) Setter() Assignable_Setter {
 }
 
 type Assignable_Getter_subscribe_Results struct{ capnp.Struct }
+
+// Assignable_Getter_subscribe_Results_TypeID is the unique identifier for the type Assignable_Getter_subscribe_Results.
+const Assignable_Getter_subscribe_Results_TypeID = 0x84e0f802c9af605b
 
 func NewAssignable_Getter_subscribe_Results(s *capnp.Segment) (Assignable_Getter_subscribe_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -1866,6 +1923,9 @@ type Assignable_Setter_set struct {
 
 type Assignable_Setter_set_Params struct{ capnp.Struct }
 
+// Assignable_Setter_set_Params_TypeID is the unique identifier for the type Assignable_Setter_set_Params.
+const Assignable_Setter_set_Params_TypeID = 0x98d0372787b787d1
+
 func NewAssignable_Setter_set_Params(s *capnp.Segment) (Assignable_Setter_set_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return Assignable_Setter_set_Params{st}, err
@@ -1938,6 +1998,9 @@ func (p Assignable_Setter_set_Params_Promise) Value() *capnp.Pipeline {
 
 type Assignable_Setter_set_Results struct{ capnp.Struct }
 
+// Assignable_Setter_set_Results_TypeID is the unique identifier for the type Assignable_Setter_set_Results.
+const Assignable_Setter_set_Results_TypeID = 0xdbfbb635d3e6abab
+
 func NewAssignable_Setter_set_Results(s *capnp.Segment) (Assignable_Setter_set_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Assignable_Setter_set_Results{st}, err
@@ -1985,6 +2048,9 @@ func (p Assignable_Setter_set_Results_Promise) Struct() (Assignable_Setter_set_R
 
 type Assignable_get_Params struct{ capnp.Struct }
 
+// Assignable_get_Params_TypeID is the unique identifier for the type Assignable_get_Params.
+const Assignable_get_Params_TypeID = 0xbbfd27b5d2515662
+
 func NewAssignable_get_Params(s *capnp.Segment) (Assignable_get_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Assignable_get_Params{st}, err
@@ -2031,6 +2097,9 @@ func (p Assignable_get_Params_Promise) Struct() (Assignable_get_Params, error) {
 }
 
 type Assignable_get_Results struct{ capnp.Struct }
+
+// Assignable_get_Results_TypeID is the unique identifier for the type Assignable_get_Results.
+const Assignable_get_Results_TypeID = 0xb351b437cd426a4f
 
 func NewAssignable_get_Results(s *capnp.Segment) (Assignable_get_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
@@ -2127,6 +2196,9 @@ func (p Assignable_get_Results_Promise) Setter() Assignable_Setter {
 
 type Assignable_asGetter_Params struct{ capnp.Struct }
 
+// Assignable_asGetter_Params_TypeID is the unique identifier for the type Assignable_asGetter_Params.
+const Assignable_asGetter_Params_TypeID = 0xf907945b872b26cf
+
 func NewAssignable_asGetter_Params(s *capnp.Segment) (Assignable_asGetter_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Assignable_asGetter_Params{st}, err
@@ -2173,6 +2245,9 @@ func (p Assignable_asGetter_Params_Promise) Struct() (Assignable_asGetter_Params
 }
 
 type Assignable_asGetter_Results struct{ capnp.Struct }
+
+// Assignable_asGetter_Results_TypeID is the unique identifier for the type Assignable_asGetter_Results.
+const Assignable_asGetter_Results_TypeID = 0x8c3d547ef2930e96
 
 func NewAssignable_asGetter_Results(s *capnp.Segment) (Assignable_asGetter_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2244,6 +2319,9 @@ func (p Assignable_asGetter_Results_Promise) Getter() Assignable_Getter {
 
 type Assignable_asSetter_Params struct{ capnp.Struct }
 
+// Assignable_asSetter_Params_TypeID is the unique identifier for the type Assignable_asSetter_Params.
+const Assignable_asSetter_Params_TypeID = 0xa01f603357f3b349
+
 func NewAssignable_asSetter_Params(s *capnp.Segment) (Assignable_asSetter_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return Assignable_asSetter_Params{st}, err
@@ -2290,6 +2368,9 @@ func (p Assignable_asSetter_Params_Promise) Struct() (Assignable_asSetter_Params
 }
 
 type Assignable_asSetter_Results struct{ capnp.Struct }
+
+// Assignable_asSetter_Results_TypeID is the unique identifier for the type Assignable_asSetter_Results.
+const Assignable_asSetter_Results_TypeID = 0xc6cbc10181c4f397
 
 func NewAssignable_asSetter_Results(s *capnp.Segment) (Assignable_asSetter_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
@@ -2359,117 +2440,377 @@ func (p Assignable_asSetter_Results_Promise) Setter() Assignable_Setter {
 	return Assignable_Setter{Client: p.Pipeline.GetPipeline(0).Client()}
 }
 
-const schema_ecd50d792c3d9992 = "x\xda\xacW}lTY\x15\xbfgf\xda7_\xa5" +
-	"}}\xdd5]%\x936]\xba[\x99\xb1\x1f`\xa1" +
-	"n3\x9dIVh\x97\xcdv\xda.\xac\xee6\xf4\xb5" +
-	"}\xe0\xc0\xb4S\xe6\xbdR\x8aQ\xac6iT\x82\x94" +
-	"\x0f\x0b\x08\x81\x10\x8db\x8d\x84/\x09Q\xfe\xd0\x08\xa4" +
-	"\"B%\x10H\xc5\x80Z\x13\x08\x8a\xb6H\x04c\xc6" +
-	"s\xef\xbc\xfb\xe6M;\xd3Z\xf4\x8fIf\xe6\xfd\xde" +
-	"9\xbf\xf3;\x1f\xf7\xdc\xf2\x1f\xd8\xea,\x15Y\xd1\x1c" +
-	"BB\x87\xb3\xb2\xe3%\xc1\xdbm\xcd\xcf\xa6\xbeB\xc4" +
-	"W\xad\xf1\x83\xc3\xc5\x07\xce\xbe?\xf5\x88\x10\x92\x07\xd2" +
-	"\x91\xecG\xd2\x89l\x81\x10\xe9{\xd9CR\xbd\x80\xdf" +
-	"\xe2\x1f\xb6\x9d\x1c\xb3\xfc\xf3\xfe \x11\x17\x03!Y " +
-	"\xe4AU\x85\xb0\x1d\x08H\xb5\x82\x9f@\xbc\xfe\x0f_" +
-	"\xac\x8e\x9do\xfd&\x11]\x10\xdfs\xb0vi\x7f\xce" +
-	"\xad\xc7$\xcbB\xcd\xb4\x0a\xbf\x92\xc2\xc2\xc7\xf0[\xaf" +
-	"\xd0\x87\xd8o/\xda;\xf5\xe5\x96\xda\x9d\xe8\xdb0\xf6" +
-	"P\xa8\xa1\xc6\xfe\xce\x8c\xdd\x94\xafh[\xdf:\xb4\x93" +
-	"\x84^\x05D\xd8\xd0H\xd5\xeb\xf6 \x05x\xed\x14\xf0" +
-	"\xf4\xf6\xf4H\xc1\xd5\xd5\xbbH(\xcf\x00\xbck\xb7P" +
-	"@\x88\x01\xbe\xb1\xf9n\xf5\xca\xf5\x13\x0c`\xd1\x01[" +
-	"\x12\x80^;\xe5\xd0:<\xea\xf1=\x9b\xdcE\xc4<" +
-	"\xdd\x804n\x7fAl\xf1\x92e\xa7F\xff4pl" +
-	"_\xba@\xce\xd9\x8fK\x17\xed\xf4\xdb\x05fd*\x9a" +
-	"_T\x94\xff\x97\x11#\x10\xf4\xf2\x8a\xe35\xeae\xb1" +
-	"\x83\xd2\xd8\xb3,\x7f\xc9q\xef\x93\x11\xb3l\xb5\x8e\x06" +
-	"\x0a\xa8g\x80\xf1\xa1\xf3C\xa5\xd57\x0e\x98\x01a\x07" +
-	"\x8bt\x0b\x03\xdc\x0f\xb6\xb5\xfd\xa8\xe4)\x02\\\xd6$" +
-	"\x1d|<\xec\xd8#\x1dtP.\xfb\x1d\x02\xfd`\x96" +
-	"\xde\xf9\xf5\xefN<,\x14\x8e\xea\xb20B\xd2\x97\x1c" +
-	"/\x10>\xe0\xa0\x84\xeb\xcfL\xaf\xabj\xf3\x1cK\x10" +
-	"\xb6Qo\x0f\x1c\x95\x80a\x0f\xf7}\xfc^\xf6\x8f\xff" +
-	"\xf1]\"\x16\x9a\x92\xc9\xc2\xae\x1aC\x88t\x97\xf9\xba" +
-	"\xc5\xcc\x14\x06\x06\xd7\xde\x9c8z*\xc1\x9a\x99\xa9p" +
-	"\x06\xa9\x99\xf76\x05\xafU\x9f\x0d\x9d\xd1\x15\xb1\xd0G" +
-	"\x85\xce|\x1aO\x91\x93\xbe\xda\xbe6\xf4\xdbs\xa5\xff" +
-	"\xfe\xa9\x89\xc1\xb0\xd3I_\xed>\xff\xc1\xa7\xeb\x97\x14" +
-	"\xfc\x8c?A\xc7\xfd\xf4M[|\xdb\xee\x15\xdeC'" +
-	"?\xba\x9c\xc8UBf\x99\xbe\x04R\xd8IE\x1a\x99" +
-	"\xfe\xe5\x00\xfc\xfc\xeaesA}\xdd\xc9\x0aj\x98\x01" +
-	"\xd6\xff\xf1\xfa\x9b}+\xd6]\x9b\xa5\xe2%\xe7i\xe9" +
-	"\x9a\x93F6\xe6\xbc\"\xbd\xed\xa2*\x16\x9e.\xff\xeb" +
-	"\xf2\xbbwn\x98\x88x]\xafQ\"\x9f:\xf2\xc1^" +
-	"\xff\xa6\xd7o\xa5i\x9aW\\\x8f\xa4\"\xfa\xba\xb4\xd8" +
-	"\xb5J\xeab\x86\xea~\xf8\x8b\xcf\\l\xaa\x980\xf3" +
-	"~\xdf\xc5\x8a\xf0s.Jkt\xf4\xcf7\x97\xff\xe4" +
-	"_\x13&\x1d\xfb]\x0d\xd4\xd3\xb7\x0aw\xb7~\xbft" +
-	"\xf9\xe4,\xc2\x8a\xeb\xabR\x98\xf9Q\\W\xa4\x07\xcc" +
-	"\x8f\xc1$\x15Li\x8d\xb9NK\xe3\xaeR\x84O\"" +
-	"\xfc\x9e[\xc0On|l\xd0\x1f=\\\xf6\xfb\xc7\xa6" +
-	"\x08\xc7\xdd\xc5\xd4\xef\x89\xdf\xf8\x0e<\xf9Z\xe9\xdf\xcc" +
-	"\xf5x\xc1\x1d\xa3\x94/\xb9)\xe5\xef\xac\x0a\x95\xdd\xa9" +
-	"_7mz\xf5\xb9\x9bQ\xbe\xbe\xe4\x93C\x1f\xee\x13" +
-	"\x9e\x9b2;\xe9\xc6\xda\xfal\xbcW\x0bG|\x1dr" +
-	"\x8f\xa5\xbb\xa7&\xa0\xaa\xe1\x8d\xddr{D\xf1\xadR" +
-	"r5M\x895\x02\x84\xec\xd6,*\xbc^V\xc0\xdb" +
-	"F\xac(&$\xb0\x14\x02o\x81\xf8\xae\x00`\xd0\x03" +
-	">\x8f\xc4@\x13\"\xea \xd0\x08\xa2,\x08\x1b\x15M" +
-	"\x04O\xc8f\x81\xa4(\xb4\x13\xd2\xfeY\x07q\xb5\xb7" +
-	"]\xed\x88\x85\xdb\x09(\x0by\x0f)\x1bA\xd9f\x06" +
-	"Ec\xf2q\xc3JI\x93_Q{#\x9a\x1a\xb2Y" +
-	"m(\x0b5\x9aS\x83C\xd8n\x85P\x81\x05\xfc_" +
-	"\x90\xbb;#\x0a\x88\xc9NG'\"\x81\x14\xd5\xd6D" +
-	";\xe4Hx\xbb\xd2\xd9\xa2l\xd3\xf0e\x1b\x12Hv" +
-	",l\x8a\xeb\x00\x99\xe4j\xe1h7\x1a\xe7\xbe\xdel" +
-	"G\xf8\x1b\xe8k\x99\x05D\x80\x02\x16UE\x0c\xff," +
-	"\xc7?\xd7`l\x9d\xca\x06\x19\x09\xb6\x10\x01m\x83\x9b" +
-	"X\xf0\x03\xf1\x087\xe8\xa1\x06UXD\xa0\xd1\x0a\x90" +
-	"\x97t\x8b4\x17\x99hZSu\x90\xd5\x84\x12s\xc6" +
-	"\xff\x06\xc6\xbf\x91\xc10~\xe3D\xa2\x0a\xa7\x15>E" +
-	"\x16\xaa{\xb0_S\x9a\xb5\x98\"w\xf9\x94m=J" +
-	"\x87\xd6\x8c\x1a\x954\xca1\xb9K%f\x87eI\xc1" +
-	"sU\xc4\x80\x03\xc3t\xcc`\x1f\x8cD\xdb}H\x87" +
-	"\x19iJ\xb0\xfe\x1f\xacD\xc2\x1dI.\xa6\x84\xd0\xe0" +
-	"K\xd0J9M\x88%\x91\x10oY2K\xfe\xe8\x86" +
-	"\x0d\xaa\xa2q\xe3\x09Ov\xfca\x9fQ\x14)|\xfd" +
-	"\x09O\x06\x00\x10\xf0\x8e\xd2\xbfV\x16\"\xbdJ\xa2\xc5" +
-	"\x0c\x06\xc5f\x06zIx+\x93\x0c\x84\xcdJ?/" +
-	"\x04\xcfV\x19\x0d\x18e\x91\x12iR\xfd\xbeXXK" +
-	"\x04k\xedR3I\xd6)k2\xe4\xa0\xa1\x1c2_" +
-	"\xfb`TF\x06RRP\x99\xb4\xa73\xcb\x070\x8f" +
-	"b\xc8\xcfl\xbcY\xefM4\x9e\xa6F\x16f\x9a\xea" +
-	"\xbb\x9a\xb6.Pu\x1b\xadY\xe6\x99`d\x87\xe9\xd2" +
-	"\x12\xe5\xd9\xc9P\x06,\x07\xd8\xf4^\xda\x96K\xf1\xbf" +
-	"\x15X\x05*S\x16\xfb\xc28\xbb\xf4\xb9\xa0jrL" +
-	"\x0bh\xef\x11OJ\x9ddn\xc4D\xd8%\x8d\x9e\xd4" +
-	"\x0a\xb1\xce\x9c+>\xfd\x97G\xa6-?\xa3fj\xd2" +
-	"\xd5\x8c\xb9j\xd9\xc00\x0a%W3\x0f\x13\xee\xd2\x9e" +
-	"1\xd9z>80\x15\x97\xac\x06H\x91\xb02\x1d\xa7" +
-	"\x1a\x9d\xd3\xea\xb9\xd2\xe8W\xf9\xd41\x8e\xf4\xffn\xea" +
-	"Xg3\xd3\xa9\x93L\xbd\xd1\x19\xed\xd6\xe7\x00\xa8s" +
-	"L\x8a\xb4\xe5>o\xfbdJ\xf6|S\xf7e\xe3\x07" +
-	"\x1e\x9b\x87\x05G\x8b\xc4\xcd\xcen\xbe\x0a\x03\xdf-\xc4" +
-	"P%\xb1\x88o\xd3S\x9bov\xc07+qe\x19" +
-	">\xf3\x0a`1V}\xe0\x8b\x85X\xf4y|V(" +
-	"xX\xef\xd4a\xdc\xa8\x1f\x1e\xd5|\xc0\x13\xebv%" +
-	"\xf5\x04N\xa77S\xd3\xaa\xa9\x99v\x8f\xe6\xe4\xeea" +
-	"c\xfc\xf9\"\x0e|'\x13E\xba{\xb8!\xf0\x09l" +
-	"LAP\x17\xb6Y\xcc\xe2g\x9e\x06\xe9\xce\x96\x05\xad" +
-	"\x04\x99\xe7\x9aQE\xa9\x19C\xef$\x99+~\xf7\x01" +
-	"~\x8d\x12CA\x9e+~\x85\x00\xbe\xbc\x8a+\x83<" +
-	"W\xfcR\x05|!\x17\x8b\x1aX\xaev\xe8\xa7P\x1d" +
-	"\xec\xd0c\xc4\x84\xf1\xca&3\xf5\x00\xce\xde\xc3\xe8\x87" +
-	"\xec\xf8,y\x1du\xd4\x98\xd6\xec\xac\x1a\x7fbH\xf8" +
-	"\x131\xea\x01\xf0K\x04\xf0\xeb\x86\x18\xa2\xc9Z\x03\x81" +
-	"\x8f@\xec\xa2a\xf0e\x14\xf8]S\x94\x1b\x10\xd1\x06" +
-	"\x81\x1e\x10\x07h0\xfc*\x04\xfc\xf2 \xf6R\x84\x06" +
-	"\x81A\x10\xf7/|\x95\xe4\x0b\x0f\xc9\x00\xc9\xfc^\xf3" +
-	"\xcb\xbc\x87\x82\x06l\xd8\xb0\xf9\xd02\xf7\xa1L+B" +
-	"\x88\x98:a\xbe\x85U?'\xfe\xdf\x93#\xf3\xbe6" +
-	"\xbbf3\xed\x92:\xb5\xff\x04\x00\x00\xff\xff\xacu\xbd" +
-	"\xee"
+type StaticAsset struct{ Client capnp.Client }
+
+func (c StaticAsset) GetUrl(ctx context.Context, params func(StaticAsset_getUrl_Params) error, opts ...capnp.CallOption) StaticAsset_getUrl_Results_Promise {
+	if c.Client == nil {
+		return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
+	}
+	call := &capnp.Call{
+		Ctx: ctx,
+		Method: capnp.Method{
+			InterfaceID:   0xfabb5e621fa9a23f,
+			MethodID:      0,
+			InterfaceName: "util.capnp:StaticAsset",
+			MethodName:    "getUrl",
+		},
+		Options: capnp.NewCallOptions(opts),
+	}
+	if params != nil {
+		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		call.ParamsFunc = func(s capnp.Struct) error { return params(StaticAsset_getUrl_Params{Struct: s}) }
+	}
+	return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+}
+
+type StaticAsset_Server interface {
+	GetUrl(StaticAsset_getUrl) error
+}
+
+func StaticAsset_ServerToClient(s StaticAsset_Server) StaticAsset {
+	c, _ := s.(server.Closer)
+	return StaticAsset{Client: server.New(StaticAsset_Methods(nil, s), c)}
+}
+
+func StaticAsset_Methods(methods []server.Method, s StaticAsset_Server) []server.Method {
+	if cap(methods) == 0 {
+		methods = make([]server.Method, 0, 1)
+	}
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xfabb5e621fa9a23f,
+			MethodID:      0,
+			InterfaceName: "util.capnp:StaticAsset",
+			MethodName:    "getUrl",
+		},
+		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
+			call := StaticAsset_getUrl{c, opts, StaticAsset_getUrl_Params{Struct: p}, StaticAsset_getUrl_Results{Struct: r}}
+			return s.GetUrl(call)
+		},
+		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 1},
+	})
+
+	return methods
+}
+
+// StaticAsset_getUrl holds the arguments for a server call to StaticAsset.getUrl.
+type StaticAsset_getUrl struct {
+	Ctx     context.Context
+	Options capnp.CallOptions
+	Params  StaticAsset_getUrl_Params
+	Results StaticAsset_getUrl_Results
+}
+
+type StaticAsset_Protocol uint16
+
+// Values of StaticAsset_Protocol.
+const (
+	StaticAsset_Protocol_https StaticAsset_Protocol = 0
+	StaticAsset_Protocol_http  StaticAsset_Protocol = 1
+)
+
+// String returns the enum's constant name.
+func (c StaticAsset_Protocol) String() string {
+	switch c {
+	case StaticAsset_Protocol_https:
+		return "https"
+	case StaticAsset_Protocol_http:
+		return "http"
+
+	default:
+		return ""
+	}
+}
+
+// StaticAsset_ProtocolFromString returns the enum value with a name,
+// or the zero value if there's no such value.
+func StaticAsset_ProtocolFromString(c string) StaticAsset_Protocol {
+	switch c {
+	case "https":
+		return StaticAsset_Protocol_https
+	case "http":
+		return StaticAsset_Protocol_http
+
+	default:
+		return 0
+	}
+}
+
+type StaticAsset_Protocol_List struct{ capnp.List }
+
+func NewStaticAsset_Protocol_List(s *capnp.Segment, sz int32) (StaticAsset_Protocol_List, error) {
+	l, err := capnp.NewUInt16List(s, sz)
+	return StaticAsset_Protocol_List{l.List}, err
+}
+
+func (l StaticAsset_Protocol_List) At(i int) StaticAsset_Protocol {
+	ul := capnp.UInt16List{List: l.List}
+	return StaticAsset_Protocol(ul.At(i))
+}
+
+func (l StaticAsset_Protocol_List) Set(i int, v StaticAsset_Protocol) {
+	ul := capnp.UInt16List{List: l.List}
+	ul.Set(i, uint16(v))
+}
+
+type StaticAsset_getUrl_Params struct{ capnp.Struct }
+
+// StaticAsset_getUrl_Params_TypeID is the unique identifier for the type StaticAsset_getUrl_Params.
+const StaticAsset_getUrl_Params_TypeID = 0xa75ecf12570b2966
+
+func NewStaticAsset_getUrl_Params(s *capnp.Segment) (StaticAsset_getUrl_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return StaticAsset_getUrl_Params{st}, err
+}
+
+func NewRootStaticAsset_getUrl_Params(s *capnp.Segment) (StaticAsset_getUrl_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return StaticAsset_getUrl_Params{st}, err
+}
+
+func ReadRootStaticAsset_getUrl_Params(msg *capnp.Message) (StaticAsset_getUrl_Params, error) {
+	root, err := msg.RootPtr()
+	return StaticAsset_getUrl_Params{root.Struct()}, err
+}
+
+func (s StaticAsset_getUrl_Params) String() string {
+	str, _ := text.Marshal(0xa75ecf12570b2966, s.Struct)
+	return str
+}
+
+// StaticAsset_getUrl_Params_List is a list of StaticAsset_getUrl_Params.
+type StaticAsset_getUrl_Params_List struct{ capnp.List }
+
+// NewStaticAsset_getUrl_Params creates a new list of StaticAsset_getUrl_Params.
+func NewStaticAsset_getUrl_Params_List(s *capnp.Segment, sz int32) (StaticAsset_getUrl_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return StaticAsset_getUrl_Params_List{l}, err
+}
+
+func (s StaticAsset_getUrl_Params_List) At(i int) StaticAsset_getUrl_Params {
+	return StaticAsset_getUrl_Params{s.List.Struct(i)}
+}
+
+func (s StaticAsset_getUrl_Params_List) Set(i int, v StaticAsset_getUrl_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// StaticAsset_getUrl_Params_Promise is a wrapper for a StaticAsset_getUrl_Params promised by a client call.
+type StaticAsset_getUrl_Params_Promise struct{ *capnp.Pipeline }
+
+func (p StaticAsset_getUrl_Params_Promise) Struct() (StaticAsset_getUrl_Params, error) {
+	s, err := p.Pipeline.Struct()
+	return StaticAsset_getUrl_Params{s}, err
+}
+
+type StaticAsset_getUrl_Results struct{ capnp.Struct }
+
+// StaticAsset_getUrl_Results_TypeID is the unique identifier for the type StaticAsset_getUrl_Results.
+const StaticAsset_getUrl_Results_TypeID = 0xa5c3aa75d6b648e2
+
+func NewStaticAsset_getUrl_Results(s *capnp.Segment) (StaticAsset_getUrl_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return StaticAsset_getUrl_Results{st}, err
+}
+
+func NewRootStaticAsset_getUrl_Results(s *capnp.Segment) (StaticAsset_getUrl_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return StaticAsset_getUrl_Results{st}, err
+}
+
+func ReadRootStaticAsset_getUrl_Results(msg *capnp.Message) (StaticAsset_getUrl_Results, error) {
+	root, err := msg.RootPtr()
+	return StaticAsset_getUrl_Results{root.Struct()}, err
+}
+
+func (s StaticAsset_getUrl_Results) String() string {
+	str, _ := text.Marshal(0xa5c3aa75d6b648e2, s.Struct)
+	return str
+}
+
+func (s StaticAsset_getUrl_Results) Protocol() StaticAsset_Protocol {
+	return StaticAsset_Protocol(s.Struct.Uint16(0))
+}
+
+func (s StaticAsset_getUrl_Results) SetProtocol(v StaticAsset_Protocol) {
+	s.Struct.SetUint16(0, uint16(v))
+}
+
+func (s StaticAsset_getUrl_Results) HostPath() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s StaticAsset_getUrl_Results) HasHostPath() bool {
+	p, err := s.Struct.Ptr(0)
+	return p.IsValid() || err != nil
+}
+
+func (s StaticAsset_getUrl_Results) HostPathBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s StaticAsset_getUrl_Results) SetHostPath(v string) error {
+	t, err := capnp.NewText(s.Struct.Segment(), v)
+	if err != nil {
+		return err
+	}
+	return s.Struct.SetPtr(0, t.List.ToPtr())
+}
+
+// StaticAsset_getUrl_Results_List is a list of StaticAsset_getUrl_Results.
+type StaticAsset_getUrl_Results_List struct{ capnp.List }
+
+// NewStaticAsset_getUrl_Results creates a new list of StaticAsset_getUrl_Results.
+func NewStaticAsset_getUrl_Results_List(s *capnp.Segment, sz int32) (StaticAsset_getUrl_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	return StaticAsset_getUrl_Results_List{l}, err
+}
+
+func (s StaticAsset_getUrl_Results_List) At(i int) StaticAsset_getUrl_Results {
+	return StaticAsset_getUrl_Results{s.List.Struct(i)}
+}
+
+func (s StaticAsset_getUrl_Results_List) Set(i int, v StaticAsset_getUrl_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+// StaticAsset_getUrl_Results_Promise is a wrapper for a StaticAsset_getUrl_Results promised by a client call.
+type StaticAsset_getUrl_Results_Promise struct{ *capnp.Pipeline }
+
+func (p StaticAsset_getUrl_Results_Promise) Struct() (StaticAsset_getUrl_Results, error) {
+	s, err := p.Pipeline.Struct()
+	return StaticAsset_getUrl_Results{s}, err
+}
+
+const schema_ecd50d792c3d9992 = "x\xda\xacX}l\x14\xd7\x11\x9f\xd9\xbb\xcb\xde\xa7\xcf" +
+	"\xcfk\x059mu2\xb2qp\xf1\x15\xdbP\xe3+" +
+	"\xe8|W\xb5\x80\x03\xca\xad? iB\xe2\xb5\xbd\x98" +
+	"#g\x9f{\xbb\x17\xb0\xab6\xa5\xa5Bi\xa34\x90" +
+	"\xa4\x86\xb4Q\x12\xd4*\"D\x8dB\xd2 5\xed\x1f" +
+	"\xfd\x0a\xa2)%\x14\x19aQ\xaa\x90\x96JEq\xd3" +
+	"@\x88\x0aU\xb4\xd5{\xbbow\xcf\xbe\x838\xed\x1f" +
+	" \xdb7o\xdeo~\xf3\x9by3\xb7\xbc\xde\xd7%" +
+	"\xb4\xfaNV\x01\xc8/\xfan1\x1a\xd2g\x06z?" +
+	"\xbc\xfcM \xb7z\x8c\x03{\x17\xef\x7f\xb5\xff\xf2%" +
+	"\x00\xa8Fi\xa3xI\xba[\x14\x01\xa4~q\x8ft" +
+	"\x8d\xfed\xdc3\xf0\xd2q\xe1\xdfo\xef\x06\xf2\x19\x04" +
+	"\xf0\xa1X\x8d\xed\x17\xc4I\x04\x94f\xc5$\xa0\xb1\xfe" +
+	"\x9d\xafu\x14\x8en\xf9\x1e\x90\x10\x1a\xfb\x0e\xacY6" +
+	"\x11\x99~\x17|\x02u\x13\xf1\xff^\xaa\xf3/\x02\x90" +
+	"\x1a\xfd;\x00\x8d\x1fT=~\xf9\x1b}k\x1e\x01r" +
+	"\xab\xed\xec\x80?A\x9d=\xe7\xa7\xceN+\xc7\xf4\x07" +
+	"W?\xf5\x08\xc8\xb7\"\x02xE\x80\xf6i\x7f\x9a\x1a" +
+	"\x9cg\x06\x1f\x9c\xb92U\xfb\xe6\xbaGA\xae\xb6\x0d" +
+	">\xf2\x0b\xd4\x00\x03\xd4\xe0\xbb\x0f\xcctt\xde\x7f\x8e" +
+	"\x19\x08\x96A}\x80\x194\x06(\x86-{\x0f\xc7\xe2" +
+	"\x1f^|\x14H\xb5\xe5@\xda\x15\xb8\x0e^\xa3a\xc5" +
+	"\xcb\x87\xff\xb6\xeb\xd9'\xca\x05\xa2\x06\x0eJ\xa3\x01\xfa" +
+	"S\x969\xe9\x0c\x9f\xfdr\xf1\x8b\xb5S@\x16\x09F" +
+	"\xf2\xe0\xa1\xd8\xe0}\xaf_\x07\xc0\xf6\xdf\x05\x04\x94N" +
+	"1\xcb\x13\x81\x0e@\xe3r\xbe\xa6\xbe\xbefv\xca\x0e" +
+	"\x19\xa0\xfdT\xe06\x8ag\x86\x01\xde\xb7\xa2f\xc9\xc1" +
+	"\x96\xf7\xa6\xdc\x04_\x0btS\x03_\x90\x1a\x9c\xdas" +
+	"tOS\xc7[\xfb\xdd\x06\x8dA\xc6I\x0b3x;" +
+	"=0\xf0b\xc3\x07\xfb\x81\x84<\x0ep@icp" +
+	"\x9f\xd4\x1f\xa4X\xe4\xa0H\xff\x01\x18w\xfc\xe1\xcf\x87" +
+	"\xfeQ'>c\x11\xc8\x00I\x9d\xc1\xeb\x80\xd2\x9a " +
+	"\x0dm\xfd+W6\xb7\x0f\xc4\x9e5\x01{\xe9mO" +
+	"\x07\xdb\x10\xbc\xc6\xde\x1d\x9f:\x7f\xcbO\xaf\xfe\x18H" +
+	"\x9d+\xed\x8c\xa0\xf6\xef\x04\xdbPz\x92\xdd\xb5\x97\xb9" +
+	"yg\xddkg\x8a/\xfc\xe6' /\xb2\xefi\x9f" +
+	"\xa5\x8eP\xba\xca,\xb6.\x0dm\xae9y\xdf\xf3@" +
+	"\x16\xf1L\xde\x1dj\xa6\x17\xd5\xa5vo:}\xee\x99" +
+	"\x97\xcd\x88\x19\x84T(M?\xb9s{\xfaD\xc7\xab" +
+	"\xf2+\x16\x9b\x02\xfdhi\xa8\x86:m\x0dQ\xa7\x83" +
+	"\x9b\xe4?\xfd\xac\xe9\xa3\xd7]\xe8\x9f\x0b\x05\xe9\xd1\xb1" +
+	"\xa3w}~\xfd\x92\xda_\xf0O\x00\xda\x1f\xa6'\xbd" +
+	"\xc6\xce\xc7V\xb5<\xf5\xd2\xbdo\x98\x8a0\x91~\x95" +
+	"\x1eBi\"D\x09\x9e\xba\xf2\xdb]\xf8\xab7\xdf(" +
+	"\x91m\xc8\x94-3\xb8\xff\xaf'\x97\xeeX\xb5\xf9\xc4" +
+	"\xbc\x0cL\x87\x8eH\xe7C\x94\x95\x99\xd01\xa9?L" +
+	"3Pwd\xf9?W\xce\x9c}\xcb\x05dM\xf86" +
+	"\x0a\xe4sO\xdf\xf5xr{\xe3t\x99\xd2l\x0c_" +
+	"\x92Z\xe9q\xa9%\xbcV\xfa:s\xd4\xf5\xc2\xaf\xbf" +
+	"\xf0\xcb\x9e\xd6sn\xdcj\x98I=\x1b\xa6\xb0\x0e\x1f" +
+	"\xfe\xfb\xe9\x95\xaf\xfd\xe7\x9c\x8b\xc7\x87\xc3\xdd\xf4\xa6\xef" +
+	"\xd7=\xb6\xe5\xf9\xa6\x95\x17\xe7\x01.\x86\xbf%M\xb0" +
+	"{\x8a\xe1c\xd2\xfb\xec\x1e\x1bI\xa91\x855\x13>" +
+	"\"]\x087\x01HW\xc3\xc7\xa4\xd9\x88(\xcdF\xa2" +
+	"\xc6\xf1\xdd\xc9\xfc\x8f\x9a\xff\xf2\xae+\xc2\x0b\x91\xc5\xf4" +
+	"\xdeC\x7f\x8c\xef\x7f\xef\xdbM\xffrk\xf9x\xa4@" +
+	"!OG(\xe4\x1f\xae\x95\x9b\xcf\xae\xdf|\xc5u4" +
+	"P\xc5 \x9f\\\xf2\xd9=\xf7<!^se\xf6j" +
+	"\x84\xe9\xd2\xae\xbf\xb9\xc1\x9c\x8f\xfc\\\xba\x18\xa1\xed\xe7" +
+	"\xfd\xc8Z\xa9\xaeJ\x84\xb4Q\xd4\xb3\xb9\xf8\x902." +
+	"\x8c\x8d'R\x9a\x96\x1d\x19S\x06sj|\xad\x1a\xd5" +
+	"u\xb5\x90A\x94\xfd\x1e\x1f\xcd\x92\xa5A\xe4\xf5IZ" +
+	"\x17\x03\xa4\x96aj5\x92\x8d\"\xa2\x1d\x0b\xf2\x16I" +
+	"R=\x00\xa9.Le\x90(\xa28\xa2\xea\x04c\xb2" +
+	"W@\x87AZ\x0ae\xff\xd8\x85\x86V\x1c\xd4\x86\x0a" +
+	"\xd9A@u!\xe72\x88vP\xde\xb9A\xd1\x98\xe2" +
+	"\xdc\xb1\xda\xd0\x93T\xb5bN\xd7d\xaf\xc7\x0b\xe0\xa5" +
+	"N#\x09\x00\xd9\xefA\xb9V\xc0\xe46el8\xa7" +
+	"\"qZ\x0a \x12\xc0\x12\xd66\xe4\x87\x94\\vR" +
+	"\x1d\xeeSw\xea\x00\xb2\x17\xd1\xd5\x1ap\xbba\x19(" +
+	"\x10\xd5\xb3\xf91\xd9o\xdf\xb5t\x10@\xbe\xdd\x83\xf2" +
+	"\x0a\x01\x09b-\x8b\xaa\xb5\x00 /\xf7\xa0\xbcA@" +
+	"cX\xdd\xaa\x14sz\x1f\x88\xeaN\x1d\xc3 `\x18" +
+	"\xd0\xc8q\x871\xeaP\xc3*\xc0\x8c\x07\xb1\xda\xb9\x16" +
+	"\x90\xfe\xd1\x86\xe9)\xe5A\xd1L&n\x18\xff\xed\x02" +
+	"&G\x98\x19\x12\xe7\x91\xa4\x0c\x97%\xbe\x84\x16\xca{" +
+	"zBW{\xf5\x82\xaa\x8c\xc6\xd5\x9d\xe3\xea\x90\xde\x9b" +
+	"\x9dT\x1b2JA\x19\xd5\xc0}a\xb3CxT\xcb" +
+	"N\xaa\x18\x00\x01\x03s\xd0\xa7s\xf9\xc1\xf8\x88j:" +
+	"\xe91Q\xff\x0f^r\xd9!\x07\x8b+!4\xf8\x06" +
+	"\x0f\xca\xcbiB\x043!-\xcdN\x96\x92\xf9\xad[" +
+	"5U\xe7\xce\xcd\x9b\xfc \xa0\x7f\x8e(J\xf0&\xcd" +
+	"\x9bl\x03\x1c\x1bO\xdc\xa1NlR\xc4\\Q5K" +
+	"\xccF\xb0\xd8\x8d\xc0\x92DK\x9b\x83@|@\x9d\xe0" +
+	"B\x88=\xa8\xe4\x8a\xaa-\x0bw\xa4\xbd\xba\xa2g\x87" +
+	"R\x9a\xa6\xea\xf1L!\xaf\xe7\x87\xf29`W\xd1)" +
+	"\x80\x906\xa6\xe4@3@l\x9b\xae\x8fkQ\xfa\x7f" +
+	")WN\xfev\x14\xb2\xbaI\x97gT\xabD\xfa\xb0" +
+	"\xa2+\x18\x01\x01#p\xb3\x02\x1cQu;\x87%I" +
+	"ls\xfcY\xb1\xd5 \xba;?\xd6Tv\xdekU" +
+	"\xb7\xaa\x97S\xd9\xc2\\\xd3\x0c\xad\xa3\xc5\x8f4?\x19" +
+	"\x8f\xcf\xddU\xec\xfc2^\xfa\xf2<\xbf\x15\x84\xc4\xb2" +
+	"\x88HZha/\xf3\xa0\xbcJ\xc0\xa4\xc6\x98E\xe2" +
+	"<\x95Vg\xd1t\xa5\xa0\xa7\xf4;!V\xa2\xb4\xca" +
+	"\xa5l\x86\xdd\x90\x89\x95j\xcc3\xb73\xc5\xad\xdfb" +
+	"\x0am\x1asT\x97(\xa7:\xb7\xeeY\xcb\xb1\xa5\x16" +
+	"\xd5\xdd\xed\xa8\x92\xeeFT\xbd\xbf\x90k\xe8Qcf" +
+	"\x93q\xdd\xd7\xed\xb8\xb6\xfb^\xb7\xd5\xf7V\x0bh\x8c" +
+	"s\xc9\x02`\xd4\x99.\x011\x0ahl\xcbkzF" +
+	"\xd1\xb7\xd1O?&\x88\x8c\x12-\xa1\xc7_Q\x98\x96" +
+	"v\xb8a\xa9\x9d\xa3\\,\x89\xa7\xad\x1c\x7f\x09+\xc8" +
+	"u7\x92\\R\xe3=\xd6\x9ev>^\x8f\xf5\xccG" +
+	"fA\x87Ju<\x9c\x1f\xb3\xba\x1ej7\xe8\x8be" +
+	"K\xf3\xa6\xa5^I\x987{c>i\xfc\xc8c\x8b" +
+	"\xb1\xe0\xa8\xa0\xc3lR\xe1\x1b\x06\xf2\xb1\x8b\xc8m " +
+	"\x90/\xd1\x19\x85\x0f\xbd\xc8\x87N\xd2\xd9\x0c\x02i\x11" +
+	"Q\xb0w-\xe43\x17\xa9\xff\x0a\x08\xa4N\x8c\xb1:" +
+	"\xef\xc2(\xe5\xaf\x0b\x0d\xfe\x9c\x81gR-\x9d7\xca" +
+	"\xf1\xcd\xd8\xf4\xe8Z\xa5I\xab\xd7\x99\xb4\xbc\x0c?\xdf" +
+	"o\x90\x8f\xab\x84\xd0I+\x8c\xa9O#i\x11Em" +
+	"as\xd4<|\xee\xceU\xee%]\xd0\x00T\xb9\x07" +
+	"\xdb**\xcdX.?\x08N\xae\xf8\xf2\x89|\x8f%" +
+	"r\x9a\xe7\x8aof\xc8\xe7z\xd2\x99\xe6\xb9\xe2[-" +
+	"\xf2]\x85\xd4w\xb3\\=d\xbd\xb9]\xf8\x90\x15c" +
+	"\x17\x1a\\\xd90\x97\x0f\xe4\xe8c\x0c\xbe\xecGt}" +
+	"\x1f\x10H\xb86\x10_\"i6\x89\xa4\x19\xa3\x15\x00" +
+	"\xdf\xaf\x90obD\xa6\xc9\xda\x80\xa9{\x91\x8c\xd20" +
+	"\xf8\x9c\x8e|\xd9'J7@j\x00S\xe3Hv\xd1" +
+	"`\xf8\x86\x89|\xaf\"Ej\xa1cj7\x92'\x17" +
+	">8\xf3\xf1\x0e*\x98T>\xd7\xfbI\xcee\x10S" +
+	"^$X\x83}7\x1e \xa8\"\xc4\x9c\xab\x12n6" +
+	"\x9e[o\xda\xff\xbbsT\x9eN\xe7k\xb6\xd2\xe4<" +
+	"\xf7\xb9E\xfe\xec$\xcdw\x87m\x01\xce\xb7\"\xd8m" +
+	"d\x9c'\xcd*t\xbe\xf0#\xffn\x80\x90\x04\x08\xc4" +
+	"'&\xcdG\x8bQ\xfb\xdf\x00\x00\x00\xff\xff\xb1WG" +
+	"\xb8"
 
 func init() {
 	schemas.Register(schema_ecd50d792c3d9992,
@@ -2482,6 +2823,7 @@ func init() {
 		0x8edb5f3937d96b8a,
 		0x8ee5f62e1fab915d,
 		0x94a081e4abb13424,
+		0x9714437546d80c39,
 		0x97ed122121126ff2,
 		0x97ef2da226123492,
 		0x98d0372787b787d1,
@@ -2489,6 +2831,8 @@ func init() {
 		0x9f0719e9a9dccc4b,
 		0xa01f603357f3b349,
 		0xa4f5ae06dd1b7791,
+		0xa5c3aa75d6b648e2,
+		0xa75ecf12570b2966,
 		0xb19fdbd356844119,
 		0xb351b437cd426a4f,
 		0xbbfd27b5d2515662,
@@ -2505,5 +2849,6 @@ func init() {
 		0xecde2a9c6f3f84c9,
 		0xf02783ef982ecea9,
 		0xf35749d82a51479b,
-		0xf907945b872b26cf)
+		0xf907945b872b26cf,
+		0xfabb5e621fa9a23f)
 }
