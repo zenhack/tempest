@@ -5,14 +5,10 @@ package websession_pogs
 // TODO: default values?
 
 import (
+	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/util/pogs"
 )
-
-// TODO: this is from util, we should move it there.
-type KeyValue struct {
-	Key   string
-	Value string
-}
 
 type AcceptedEncoding struct {
 	ContentCoding string
@@ -29,8 +25,8 @@ type CachePolicy struct {
 }
 
 type Context struct {
-	Cookies          []KeyValue
-	ResponseStream   struct{} // TODO: interface?
+	Cookies          []util_pogs.KeyValue
+	ResponseStream   util.ByteStream
 	Accept           []AcceptedType
 	AcceptEncoding   []AcceptedEncoding
 	ETagPrecondition struct {
@@ -76,7 +72,7 @@ type Response struct {
 		Body       struct {
 			Which  websession.WebSession_Response_content_body_Which
 			Bytes  []byte
-			Stream struct{} // TODO: how do we put interfaces here?
+			Stream util.Handle
 		}
 		Disposition struct {
 			Which    websession.WebSession_Response_content_disposition_Which
