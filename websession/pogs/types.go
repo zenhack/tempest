@@ -21,7 +21,10 @@ type AcceptedType struct {
 }
 
 type CachePolicy struct {
-	Scope websession.WebSession_CachePolicy
+	WithCheck      websession.WebSession_CachePolicy_Scope
+	Permanent      websession.WebSession_CachePolicy_Scope
+	VariesOnCookie bool
+	VariesOnAccept bool
 }
 
 type Context struct {
@@ -59,27 +62,31 @@ type Header struct {
 	Value string
 }
 
+type Response_content struct {
+	StatusCode  websession.WebSession_Response_SuccessCode
+	Encoding    string
+	Language    string
+	MimeType    string
+	ETag        ETag
+	Body        Response_content_body
+	Disposition struct {
+		Which    websession.WebSession_Response_content_disposition_Which
+		Download string
+	}
+}
+
+type Response_content_body struct {
+	Which  websession.WebSession_Response_content_body_Which
+	Bytes  []byte
+	Stream util.Handle
+}
+
 type Response struct {
 	SetCookies  []Cookie
 	CachePolicy CachePolicy
 	Which       websession.WebSession_Response_Which
-	Content     struct {
-		StatusCode websession.WebSession_Response_SuccessCode
-		Encoding   string
-		Language   string
-		MimeType   string
-		ETag       ETag
-		Body       struct {
-			Which  websession.WebSession_Response_content_body_Which
-			Bytes  []byte
-			Stream util.Handle
-		}
-		Disposition struct {
-			Which    websession.WebSession_Response_content_disposition_Which
-			Download string
-		}
-	}
-	NoContent struct {
+	Content     Response_content
+	NoContent   struct {
 		ShouldResetForm bool
 		ETag            ETag
 	}

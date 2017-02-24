@@ -3,12 +3,15 @@ package websession
 import (
 	"golang.org/x/net/context"
 	"net/http"
+	"testing"
+	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/websession/pogs"
 	"zombiezen.com/go/capnproto2/pogs"
 )
 
 type testCase struct {
+	name     string
 	handler  http.Handler
 	request  testRequest
 	response websession_pogs.Response
@@ -34,9 +37,44 @@ func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (webse
 
 var testCases = []testCase{
 	{
+		name: "Simple 200 OK",
 		request: GetHeadReq{
 			Path:       "/",
 			IgnoreBody: false,
 		},
+		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		}),
+		response: websession_pogs.Response{
+			Which: websession.WebSession_Response_Which_content,
+			Content: websession_pogs.Response_content{
+				StatusCode: websession.WebSession_Response_SuccessCode_ok,
+				Body: websession_pogs.Response_content_body{
+					Which:  websession.WebSession_Response_content_body_Which_stream,
+					Stream: util.Handle_ServerToClient(struct{}{}),
+				},
+			},
+		},
 	},
+}
+
+func TestTable(t *testing.T) {
+	for _, v := range testCases {
+		ctx := context.TODO()
+		handlerWS := websession.WebSession_ServerToClient(FromHandler(ctx, v.handler))
+		resp, err := v.request.Call(ctx, handlerWS)
+		if err != nil {
+			t.Errorf("Error in v.reqeust.Call in table test case %q: %v",
+				v.name, err)
+			continue
+		}
+		if !responseEq(v.response, resp) {
+			t.Errorf("Unexpect response in table test case %q: "+
+				"Got %v but wanted %v", resp, v.response)
+			continue
+		}
+	}
+}
+
+func responseEq(expected, actual websession_pogs.Response) bool {
+	return true
 }
