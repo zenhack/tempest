@@ -1,6 +1,7 @@
 package websession
 
 import (
+	"github.com/kr/pretty"
 	"golang.org/x/net/context"
 	"net/http"
 	"testing"
@@ -68,8 +69,8 @@ func TestTable(t *testing.T) {
 			continue
 		}
 		if !responseEq(v.response, resp) {
-			t.Errorf("Unexpect response in table test case %q: "+
-				"Got %v but wanted %v", resp, v.response)
+			t.Errorf("Unexpected response in table test case %q", v.name)
+			pretty.Ldiff(t, resp, v.response)
 			continue
 		}
 	}
