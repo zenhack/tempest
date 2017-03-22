@@ -1,13 +1,16 @@
 package websession
 
 import (
+	"bytes"
 	"github.com/kr/pretty"
 	"golang.org/x/net/context"
+	"io"
 	"net/http"
 	"reflect"
 	"testing"
-	"zenhack.net/go/sandstorm/capnp/util"
+	util_capnp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/util"
 	"zenhack.net/go/sandstorm/websession/pogs"
 	"zombiezen.com/go/capnproto2/pogs"
 )
@@ -16,24 +19,44 @@ type testCase struct {
 	name     string
 	handler  http.Handler
 	request  testRequest
-	response websession_pogs.Response
+	response testResponse
 }
 
 type testRequest interface {
-	Call(ctx context.Context, ws websession.WebSession) (websession_pogs.Response, error)
+	Call(ctx context.Context, ws websession.WebSession) (testResponse, error)
+}
+
+type testResponse struct {
+	resp       websession_pogs.Response
+	streamBody []byte
 }
 
 type GetHeadReq websession_pogs.Get_args
 
-func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (websession_pogs.Response, error) {
+func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testResponse, error) {
+	r, w := io.Pipe()
+	buf := &bytes.Buffer{}
+	done := make(chan struct{})
+	go func() {
+		io.Copy(buf, r)
+		done <- struct{}{}
+	}()
+	req.Context.ResponseStream = util_capnp.ByteStream_ServerToClient(
+		&util.WriteCloserByteStream{w},
+	)
 	resp, err := ws.Get(ctx, func(p websession.WebSession_get_Params) error {
 		return pogs.Insert(websession.WebSession_get_Params_TypeID, p.Struct, req)
 	}).Struct()
 	if err != nil {
-		return websession_pogs.Response{}, err
+		return testResponse{}, err
 	}
-	goResp := websession_pogs.Response{}
-	err = pogs.Extract(&goResp, websession.WebSession_Response_TypeID, resp.Struct)
+	goResp := testResponse{
+		resp: websession_pogs.Response{},
+	}
+	err = pogs.Extract(&goResp.resp, websession.WebSession_Response_TypeID, resp.Struct)
+	r.Close()
+	<-done
+	goResp.streamBody = buf.Bytes()
 	return goResp, err
 }
 
@@ -46,15 +69,18 @@ var testCases = []testCase{
 		},
 		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		}),
-		response: websession_pogs.Response{
-			Which: websession.WebSession_Response_Which_content,
-			Content: websession_pogs.Response_content{
-				StatusCode: websession.WebSession_Response_SuccessCode_ok,
-				Body: websession_pogs.Response_content_body{
-					Which:  websession.WebSession_Response_content_body_Which_stream,
-					Stream: util.Handle_ServerToClient(struct{}{}),
+		response: testResponse{
+			resp: websession_pogs.Response{
+				Which: websession.WebSession_Response_Which_content,
+				Content: websession_pogs.Response_content{
+					StatusCode: websession.WebSession_Response_SuccessCode_ok,
+					Body: websession_pogs.Response_content_body{
+						Which:  websession.WebSession_Response_content_body_Which_stream,
+						Stream: util_capnp.Handle_ServerToClient(struct{}{}),
+					},
 				},
 			},
+			streamBody: []byte{},
 		},
 	},
 }
@@ -77,19 +103,23 @@ func TestTable(t *testing.T) {
 	}
 }
 
-func responseEq(expected, actual websession_pogs.Response) bool {
+func responseEq(expected, actual testResponse) bool {
 	// reflect.DeepEqual does what we want for *most* of the data,
 	// but not the interfaces. So, we set those to nil before the check,
 	// then restore them.
-	eStream := expected.Content.Body.Stream
-	aStream := actual.Content.Body.Stream
-	expected.Content.Body.Stream.Client = nil
-	actual.Content.Body.Stream.Client = nil
-	eq := reflect.DeepEqual(expected, actual)
-	expected.Content.Body.Stream = eStream
-	actual.Content.Body.Stream = aStream
+	eStream := &expected.resp.Content.Body.Stream
+	aStream := &actual.resp.Content.Body.Stream
+	eClient := eStream.Client
+	aClient := aStream.Client
+	eStream.Client = nil
+	aStream.Client = nil
+	defer func() {
+		eStream.Client = eClient
+		aStream.Client = aClient
+	}()
 
-	// either the clients should both be nil, or neither of them
-	// should be.
-	return eq && (eStream.Client == nil) == (aStream.Client == nil)
+	return reflect.DeepEqual(expected, actual) &&
+		// either the clients should both be nil, or neither of them
+		// should be:
+		(eClient == nil) == (aClient == nil)
 }
