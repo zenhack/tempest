@@ -62,27 +62,41 @@ func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testR
 
 var testCases = []testCase{
 	{
-		name: "Simple 200 OK",
-		request: GetHeadReq{
-			Path:       "/",
-			IgnoreBody: false,
-		},
+		name:    "Simple 200 OK",
+		request: GetHeadReq{Path: "/", IgnoreBody: false},
 		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		}),
 		response: testResponse{
-			resp: websession_pogs.Response{
-				Which: websession.WebSession_Response_Which_content,
-				Content: websession_pogs.Response_content{
-					StatusCode: websession.WebSession_Response_SuccessCode_ok,
-					Body: websession_pogs.Response_content_body{
-						Which:  websession.WebSession_Response_content_body_Which_stream,
-						Stream: util_capnp.Handle_ServerToClient(struct{}{}),
-					},
-				},
-			},
+			resp:       mkOkResponse(),
 			streamBody: []byte{},
 		},
 	},
+	{
+		name:    "Hello, World!",
+		request: GetHeadReq{Path: "/", IgnoreBody: false},
+		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Write([]byte("Hello, World!"))
+		}),
+		response: testResponse{
+			resp:       mkOkResponse(),
+			streamBody: []byte("Hello, World!"),
+		},
+	},
+}
+
+// Return a bare-bones capnp response object.
+func mkOkResponse() websession_pogs.Response {
+	return websession_pogs.Response{
+		Which: websession.WebSession_Response_Which_content,
+		Content: websession_pogs.Response_content{
+			StatusCode: websession.WebSession_Response_SuccessCode_ok,
+			Body: websession_pogs.Response_content_body{
+				Which:  websession.WebSession_Response_content_body_Which_stream,
+				Stream: util_capnp.Handle_ServerToClient(struct{}{}),
+			},
+		},
+	}
+
 }
 
 func TestTable(t *testing.T) {
