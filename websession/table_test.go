@@ -4,6 +4,7 @@ import (
 	"github.com/kr/pretty"
 	"golang.org/x/net/context"
 	"net/http"
+	"reflect"
 	"testing"
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -77,5 +78,18 @@ func TestTable(t *testing.T) {
 }
 
 func responseEq(expected, actual websession_pogs.Response) bool {
-	return true
+	// reflect.DeepEqual does what we want for *most* of the data,
+	// but not the interfaces. So, we set those to nil before the check,
+	// then restore them.
+	eStream := expected.Content.Body.Stream
+	aStream := actual.Content.Body.Stream
+	expected.Content.Body.Stream.Client = nil
+	actual.Content.Body.Stream.Client = nil
+	eq := reflect.DeepEqual(expected, actual)
+	expected.Content.Body.Stream = eStream
+	actual.Content.Body.Stream = aStream
+
+	// either the clients should both be nil, or neither of them
+	// should be.
+	return eq && (eStream.Client == nil) == (aStream.Client == nil)
 }
