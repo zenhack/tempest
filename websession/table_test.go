@@ -82,6 +82,46 @@ var testCases = []testCase{
 			streamBody: []byte("Hello, World!"),
 		},
 	},
+	{
+		name:    "Basic routing",
+		request: GetHeadReq{Path: "/foo", IgnoreBody: false},
+		handler: func() http.Handler {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/foo", func(w http.ResponseWriter, req *http.Request) {
+				w.Write([]byte("Visited Foo"))
+			})
+			mux.HandleFunc("/bar", func(w http.ResponseWriter, req *http.Request) {
+				w.Write([]byte("Visited Bar"))
+			})
+			return mux
+		}(),
+		response: testResponse{
+			resp:       mkOkResponse(),
+			streamBody: []byte("Visited Foo"),
+		},
+	},
+	{
+		name:    "GET vs HEAD (GET)",
+		request: GetHeadReq{Path: "/", IgnoreBody: false},
+		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Write([]byte(req.Method))
+		}),
+		response: testResponse{
+			resp:       mkOkResponse(),
+			streamBody: []byte("GET"),
+		},
+	},
+	{
+		name:    "GET vs HEAD (HEAD)",
+		request: GetHeadReq{Path: "/", IgnoreBody: true},
+		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Write([]byte(req.Method))
+		}),
+		response: testResponse{
+			resp:       mkOkResponse(),
+			streamBody: []byte("HEAD"),
+		},
+	},
 }
 
 // Return a bare-bones capnp response object.
