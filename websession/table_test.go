@@ -54,7 +54,6 @@ func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testR
 		resp: websession_pogs.Response{},
 	}
 	err = pogs.Extract(&goResp.resp, websession.WebSession_Response_TypeID, resp.Struct)
-	r.Close()
 	<-done
 	goResp.streamBody = buf.Bytes()
 	return goResp, err
