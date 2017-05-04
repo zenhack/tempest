@@ -2,9 +2,11 @@ package websession
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/kr/pretty"
 	"golang.org/x/net/context"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"testing"
@@ -32,8 +34,9 @@ type testResponse struct {
 }
 
 type GetHeadReq websession_pogs.Get_args
+type PostReq websession_pogs.Post_args
 
-func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testResponse, error) {
+func doCall(wsCtx *websession_pogs.Context, f func() (websession.WebSession_Response, error)) (testResponse, error) {
 	r, w := io.Pipe()
 	buf := &bytes.Buffer{}
 	done := make(chan struct{})
@@ -41,12 +44,10 @@ func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testR
 		io.Copy(buf, r)
 		done <- struct{}{}
 	}()
-	req.Context.ResponseStream = util_capnp.ByteStream_ServerToClient(
+	wsCtx.ResponseStream = util_capnp.ByteStream_ServerToClient(
 		&util.WriteCloserByteStream{w},
 	)
-	resp, err := ws.Get(ctx, func(p websession.WebSession_get_Params) error {
-		return pogs.Insert(websession.WebSession_get_Params_TypeID, p.Struct, req)
-	}).Struct()
+	resp, err := f()
 	if err != nil {
 		return testResponse{}, err
 	}
@@ -57,6 +58,22 @@ func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testR
 	<-done
 	goResp.streamBody = buf.Bytes()
 	return goResp, err
+}
+
+func (req GetHeadReq) Call(ctx context.Context, ws websession.WebSession) (testResponse, error) {
+	return doCall(&req.Context, func() (websession.WebSession_Response, error) {
+		return ws.Get(ctx, func(p websession.WebSession_get_Params) error {
+			return pogs.Insert(websession.WebSession_get_Params_TypeID, p.Struct, req)
+		}).Struct()
+	})
+}
+
+func (req PostReq) Call(ctx context.Context, ws websession.WebSession) (testResponse, error) {
+	return doCall(&req.Context, func() (websession.WebSession_Response, error) {
+		return ws.Post(ctx, func(p websession.WebSession_post_Params) error {
+			return pogs.Insert(websession.WebSession_post_Params_TypeID, p.Struct, req)
+		}).Struct()
+	})
 }
 
 var testCases = []testCase{
@@ -119,6 +136,46 @@ var testCases = []testCase{
 		response: testResponse{
 			resp:       mkOkResponse(),
 			streamBody: []byte("HEAD"),
+		},
+	},
+	{
+		name: "POST",
+		request: PostReq{
+			Path: "/post-test",
+			Content: websession_pogs.PContent{
+				MimeType: "text/plain",
+				Content:  []byte("The Data."),
+				Encoding: "utf-8",
+			},
+		},
+		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			if req.URL.Path != "/post-test" {
+				w.Write([]byte("bad path"))
+				return
+			}
+			body, err := ioutil.ReadAll(req.Body)
+			if err != nil {
+				return
+				w.Write([]byte("ReadAll error: " + err.Error()))
+			}
+			contentType := req.Header.Get("Content-Type")
+			if contentType != "text/plain" {
+				fmt.Printf("Unexpected Content-Type: %q", contentType)
+				return
+			}
+			contentEncoding := req.Header.Get("Content-Encoding")
+			if contentEncoding != "utf-8" {
+				fmt.Printf("Unexpected Content-Encoding: %q", contentEncoding)
+			}
+			if string(body) != "The Data." {
+				fmt.Fprintf(w, "Unexpected request body: %q", body)
+				return
+			}
+			w.Write([]byte("ok"))
+		}),
+		response: testResponse{
+			resp:       mkOkResponse(),
+			streamBody: []byte("ok"),
 		},
 	},
 }

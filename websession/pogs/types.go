@@ -113,3 +113,26 @@ type Get_args struct {
 	Context    Context
 	IgnoreBody bool
 }
+
+type Post_args struct {
+	Path    string
+	Content PContent
+	Context Context
+}
+
+// Post/Put Content
+type PContent struct {
+	MimeType string
+	Content  []byte
+	Encoding string
+}
+
+type (
+	Put_args   Post_args
+	Patch_args Post_args
+)
+
+type Delete_args struct {
+	Path    string
+	Context Context
+}
