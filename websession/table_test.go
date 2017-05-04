@@ -145,7 +145,7 @@ var testCases = []testCase{
 			Content: websession_pogs.PContent{
 				MimeType: "text/plain",
 				Content:  []byte("The Data."),
-				Encoding: "utf-8",
+				Encoding: "identity",
 			},
 		},
 		handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -164,7 +164,7 @@ var testCases = []testCase{
 				return
 			}
 			contentEncoding := req.Header.Get("Content-Encoding")
-			if contentEncoding != "utf-8" {
+			if contentEncoding != "identity" {
 				fmt.Printf("Unexpected Content-Encoding: %q", contentEncoding)
 			}
 			if string(body) != "The Data." {
