@@ -35,13 +35,12 @@ import (
 	"zenhack.net/go/sandstorm/internal/errors"
 )
 
-func FromHandler(ctx context.Context, h http.Handler) HandlerWebSession {
-	return HandlerWebSession{ctx, h}
+func FromHandler(h http.Handler) HandlerWebSession {
+	return HandlerWebSession{h}
 }
 
 type HandlerWebSession struct {
-	Ctx context.Context
-	http.Handler
+	handler http.Handler
 }
 
 // make path an absolute path, by prepending a slash if it is not already
@@ -71,7 +70,7 @@ func contextPopulateRequest(wsCtx *capnp.WebSession_Context, req *http.Request) 
 	return nil
 }
 
-func (h HandlerWebSession) handleRequest(method string, args requestArgs,
+func (h HandlerWebSession) handleRequest(goCtx context.Context, method string, args requestArgs,
 	headers map[string][]string,
 	body io.ReadCloser,
 	wsResponse *capnp.WebSession_Response) error {
@@ -84,7 +83,7 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 	if err != nil {
 		return err
 	}
-	ctx, err := args.Context()
+	wsCtx, err := args.Context()
 	if err != nil {
 		return err
 	}
@@ -96,12 +95,12 @@ func (h HandlerWebSession) handleRequest(method string, args requestArgs,
 		Body:       body,
 	}
 	request.URL, err = url.ParseRequestURI(request.RequestURI)
-	if err = contextPopulateRequest(&ctx, &request); err != nil {
+	if err = contextPopulateRequest(&wsCtx, &request); err != nil {
 		return err
 	}
 
-	runHandler(h, &request, func(response *http.Response) {
-		buildCapnpResponse(h.Ctx, response, &ctx, wsResponse)
+	runHandler(h.handler, &request, func(response *http.Response) {
+		buildCapnpResponse(goCtx, response, &wsCtx, wsResponse)
 	})
 	return nil
 }
@@ -129,7 +128,7 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	} else {
 		method = "GET"
 	}
-	return h.handleRequest(method, args.Params, nil, nil, &args.Results)
+	return h.handleRequest(args.Ctx, method, args.Params, nil, nil, &args.Results)
 }
 
 func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
@@ -137,11 +136,11 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 	if err != nil {
 		return err
 	}
-	return h.handleP("POST", args.Params, content, &args.Results)
+	return h.handleP(args.Ctx, "POST", args.Params, content, &args.Results)
 }
 
 // Request handling logic common to Put, Post, and Patch.
-func (h HandlerWebSession) handleP(method string, args requestArgs, content pContent,
+func (h HandlerWebSession) handleP(ctx context.Context, method string, args requestArgs, content pContent,
 	wsResponse *capnp.WebSession_Response) error {
 
 	payload, err := content.Content()
@@ -160,7 +159,7 @@ func (h HandlerWebSession) handleP(method string, args requestArgs, content pCon
 	if err == nil {
 		headers["Content-Encoding"] = []string{encoding}
 	}
-	return h.handleRequest(method, args, headers, body, wsResponse)
+	return h.handleRequest(ctx, method, args, headers, body, wsResponse)
 }
 
 func (h HandlerWebSession) Put(args capnp.WebSession_put) error {
@@ -168,11 +167,11 @@ func (h HandlerWebSession) Put(args capnp.WebSession_put) error {
 	if err != nil {
 		return err
 	}
-	return h.handleP("PUT", args.Params, content, &args.Results)
+	return h.handleP(args.Ctx, "PUT", args.Params, content, &args.Results)
 }
 
 func (h HandlerWebSession) Delete(args capnp.WebSession_delete) error {
-	return h.handleRequest("DELETE", args.Params, nil, nil, &args.Results)
+	return h.handleRequest(args.Ctx, "DELETE", args.Params, nil, nil, &args.Results)
 }
 
 func (h HandlerWebSession) Patch(args capnp.WebSession_patch) error {
@@ -180,7 +179,7 @@ func (h HandlerWebSession) Patch(args capnp.WebSession_patch) error {
 	if err != nil {
 		return err
 	}
-	return h.handleP("PATCH", args.Params, content, &args.Results)
+	return h.handleP(args.Ctx, "PATCH", args.Params, content, &args.Results)
 }
 
 // Websession stubs:
@@ -245,11 +244,10 @@ func (h HandlerWebSession) GetViewInfo(p grain.UiView_getViewInfo) error {
 }
 
 func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
-	handler := WithSessionContext(h.Handler, p.Params.Context())
+	handler := WithSessionContext(h.handler, p.Params.Context())
 
 	client := capnp.WebSession_ServerToClient(HandlerWebSession{
-		Handler: handler,
-		Ctx:     h.Ctx,
+		handler: handler,
 	}).Client
 	p.Results.SetSession(grain.UiSession{Client: client})
 	return nil

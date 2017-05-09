@@ -105,9 +105,8 @@ func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 	clientStream := p.Params.ClientStream()
 	capnpResponseBody := &WebSocketStreamWriteCloser{
 		WebSession_WebSocketStream: clientStream,
-		Ctx: h.Ctx,
 	}
-	runHandler(h, &request, func(resp *http.Response) {
+	runHandler(h.handler, &request, func(resp *http.Response) {
 		// TODO: handle multiple instances of the header
 		protoSlice := strings.Split(resp.Header.Get("Sec-Websocket-Protocol"), ",")
 		protoList, err := p.Results.NewProtocol(int32(len(protoSlice)))

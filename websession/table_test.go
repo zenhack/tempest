@@ -198,7 +198,7 @@ func mkOkResponse() websession_pogs.Response {
 func TestTable(t *testing.T) {
 	for _, v := range testCases {
 		ctx := context.TODO()
-		handlerWS := websession.WebSession_ServerToClient(FromHandler(ctx, v.handler))
+		handlerWS := websession.WebSession_ServerToClient(FromHandler(v.handler))
 		resp, err := v.request.Call(ctx, handlerWS)
 		if err != nil {
 			t.Errorf("Error in v.reqeust.Call in table test case %q: %v",

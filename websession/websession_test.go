@@ -20,7 +20,7 @@ func TestGET200(t *testing.T) {
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("Hello!\n"))
 	})
-	webSession := websession.WebSession_ServerToClient(FromHandler(ctx, mux))
+	webSession := websession.WebSession_ServerToClient(FromHandler(mux))
 	buf := &bytes.Buffer{}
 	pipeReader, pipeWriter := io.Pipe()
 	go webSession.Get(ctx, func(p websession.WebSession_get_Params) error {
@@ -66,7 +66,7 @@ func TestConcurrent(t *testing.T) {
 		done <- struct{}{}
 	})
 
-	uiView := grain.UiView_ServerToClient(FromHandler(ctx, mux))
+	uiView := grain.UiView_ServerToClient(FromHandler(mux))
 
 	get := func(path string) {
 		sess := uiView.NewSession(ctx, func(p grain.UiView_newSession_Params) error {
