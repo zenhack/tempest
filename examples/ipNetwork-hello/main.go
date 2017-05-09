@@ -66,14 +66,13 @@ var thePage = `<!doctype html>
 `
 
 type myUiView struct {
-	Ctx context.Context
 }
 
 func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 	mux := http.NewServeMux()
 	sessionCtx := p.Params.Context()
 	dialer := &ip.IpNetworkDialer{}
-	dialer.Ctx = v.Ctx
+	dialer.Ctx = p.Ctx
 
 	checkErr := func(err error) bool {
 		if err != nil {
@@ -92,7 +91,7 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 			return
 		}
 		results, err := sessionCtx.ClaimRequest(
-			v.Ctx,
+			p.Ctx,
 			func(p grain_capnp.SessionContext_claimRequest_Params) error {
 				p.SetRequestToken(string(buf))
 				return nil
@@ -122,7 +121,7 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 		defer conn.Close()
 		conn.Write([]byte(message))
 	})
-	client := ws_capnp.WebSession_ServerToClient(websession.FromHandler(v.Ctx, mux)).Client
+	client := ws_capnp.WebSession_ServerToClient(websession.FromHandler(mux)).Client
 	p.Results.SetSession(grain_capnp.UiSession{Client: client})
 	return nil
 }
@@ -141,7 +140,7 @@ func (v myUiView) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
 
 func main() {
 	ctx := context.Background()
-	_, err := grain.ConnectAPI(ctx, myUiView{ctx})
+	_, err := grain.ConnectAPI(ctx, myUiView{})
 	if err != nil {
 		log.Fatalln(err)
 	}

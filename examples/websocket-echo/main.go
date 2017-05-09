@@ -1,12 +1,9 @@
 package main
 
 import (
-	"golang.org/x/net/context"
 	"golang.org/x/net/websocket"
 	"io"
-	"log"
 	"net/http"
-	"zenhack.net/go/sandstorm/grain"
 	"zenhack.net/go/sandstorm/websession"
 )
 
@@ -49,7 +46,6 @@ var mainPage = []byte(`<!doctype html>
 `)
 
 func main() {
-
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Write(mainPage)
 	})
@@ -58,10 +54,5 @@ func main() {
 		io.Copy(conn, conn)
 	}))
 
-	ctx := context.Background()
-	_, err := grain.ConnectAPI(ctx, websession.FromHandler(ctx, http.DefaultServeMux))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	<-ctx.Done()
+	websession.ListenAndServe(nil)
 }
