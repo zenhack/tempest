@@ -30,10 +30,26 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"zenhack.net/go/sandstorm/capnp/grain"
+	grain_capnp "zenhack.net/go/sandstorm/capnp/grain"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/grain"
 	"zenhack.net/go/sandstorm/internal/errors"
 )
+
+// ListenAndServe connects to the sandstorm API and serves handler. If handler is nil,
+// it defaults to http.DefaultServeMux.
+func ListenAndServe(handler http.Handler) error {
+	if handler == nil {
+		handler = http.DefaultServeMux
+	}
+	ctx := context.Background()
+	_, err := grain.ConnectAPI(ctx, FromHandler(handler))
+	if err != nil {
+		return err
+	}
+	<-ctx.Done()
+	return nil
+}
 
 func FromHandler(h http.Handler) HandlerWebSession {
 	return HandlerWebSession{h}
@@ -239,24 +255,24 @@ func (h HandlerWebSession) Options(capnp.WebSession_options) error {
 
 // UiView stubs.
 
-func (h HandlerWebSession) GetViewInfo(p grain.UiView_getViewInfo) error {
+func (h HandlerWebSession) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) NewSession(p grain.UiView_newSession) error {
+func (h HandlerWebSession) NewSession(p grain_capnp.UiView_newSession) error {
 	handler := WithSessionContext(h.handler, p.Params.Context())
 
 	client := capnp.WebSession_ServerToClient(HandlerWebSession{
 		handler: handler,
 	}).Client
-	p.Results.SetSession(grain.UiSession{Client: client})
+	p.Results.SetSession(grain_capnp.UiSession{Client: client})
 	return nil
 }
 
-func (h HandlerWebSession) NewRequestSession(p grain.UiView_newRequestSession) error {
+func (h HandlerWebSession) NewRequestSession(p grain_capnp.UiView_newRequestSession) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) NewOfferSession(p grain.UiView_newOfferSession) error {
+func (h HandlerWebSession) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
 	return errors.NotImplemented
 }
