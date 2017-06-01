@@ -44,7 +44,7 @@ func ListenAndServe(handler http.Handler) error {
 		handler = http.DefaultServeMux
 	}
 	ctx := context.Background()
-	_, err := grain.ConnectAPI(ctx, FromHandler(handler))
+	_, err := grain.ConnectAPI(ctx, grain_capnp.UiView_ServerToClient(FromHandler(handler)))
 	if err != nil {
 		return err
 	}

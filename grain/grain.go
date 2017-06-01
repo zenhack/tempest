@@ -31,14 +31,13 @@ import (
 // will be the case if the program was launched directly as a sandstorm app.
 //
 // TODO: explain error cases.
-func ConnectAPI(ctx context.Context, uiview capnp.UiView_Server) (capnp.SandstormApi, error) {
+func ConnectAPI(ctx context.Context, uiview capnp.UiView) (capnp.SandstormApi, error) {
 	file := os.NewFile(3, "<sandstorm-api-socket>")
 	conn, err := net.FileConn(file)
 	if err != nil {
 		return capnp.SandstormApi{}, err
 	}
-	uiviewClient := capnp.UiView_ServerToClient(uiview)
 	transport := rpc.StreamTransport(conn)
-	client := rpc.NewConn(transport, rpc.MainInterface(uiviewClient.Client)).Bootstrap(ctx)
+	client := rpc.NewConn(transport, rpc.MainInterface(uiview.Client)).Bootstrap(ctx)
 	return capnp.SandstormApi{Client: client}, nil
 }
