@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"zenhack.net/go/sandstorm/capnp/grain"
 	util_capnp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/util"
@@ -198,7 +199,19 @@ func mkOkResponse() websession_pogs.Response {
 func TestTable(t *testing.T) {
 	for _, v := range testCases {
 		ctx := context.TODO()
-		handlerWS := websession.WebSession_ServerToClient(FromHandler(v.handler))
+		handlerUiView := grain.UiView_ServerToClient(FromHandler(v.handler))
+		results, err := handlerUiView.NewSession(
+			ctx,
+			func(p grain.UiView_newSession_Params) error {
+				return nil
+			}).Struct()
+		uiSession := results.Session()
+		handlerWS := websession.WebSession{Client: uiSession.Client}
+		if err != nil {
+			t.Errorf("Error in NewSession in table test case %q: %v",
+				v.name, err)
+			continue
+		}
 		resp, err := v.request.Call(ctx, handlerWS)
 		if err != nil {
 			t.Errorf("Error in v.reqeust.Call in table test case %q: %v",

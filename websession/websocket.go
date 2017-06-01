@@ -59,7 +59,7 @@ func makeWebSocketKey() string {
 	return buf.String()
 }
 
-func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
+func (h handlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
 	path, err := p.Params.Path()
 	if err != nil {
 		return err

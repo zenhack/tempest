@@ -51,12 +51,18 @@ func ListenAndServe(handler http.Handler) error {
 	return nil
 }
 
-func FromHandler(h http.Handler) HandlerWebSession {
-	return HandlerWebSession{h}
+func FromHandler(h http.Handler) HandlerUiView {
+	// TODO: name is a bit confusing, since what we hand back isn't actually a websession.
+	return HandlerUiView{h}
 }
 
-type HandlerWebSession struct {
-	handler http.Handler
+type HandlerUiView struct {
+	http.Handler
+}
+
+type handlerWebSession struct {
+	handler        http.Handler
+	sessionContext grain_capnp.SessionContext
 }
 
 // make path an absolute path, by prepending a slash if it is not already
@@ -86,7 +92,7 @@ func contextPopulateRequest(wsCtx *capnp.WebSession_Context, req *http.Request) 
 	return nil
 }
 
-func (h HandlerWebSession) handleRequest(goCtx context.Context, method string, args requestArgs,
+func (h handlerWebSession) handleRequest(goCtx context.Context, method string, args requestArgs,
 	headers map[string][]string,
 	body io.ReadCloser,
 	wsResponse *capnp.WebSession_Response) error {
@@ -136,7 +142,7 @@ type pContent interface {
 	Encoding() (string, error)
 }
 
-func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
+func (h handlerWebSession) Get(args capnp.WebSession_get) error {
 	ignoreBody := args.Params.IgnoreBody()
 	method := ""
 	if ignoreBody {
@@ -147,7 +153,7 @@ func (h HandlerWebSession) Get(args capnp.WebSession_get) error {
 	return h.handleRequest(args.Ctx, method, args.Params, nil, nil, &args.Results)
 }
 
-func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
+func (h handlerWebSession) Post(args capnp.WebSession_post) error {
 	content, err := args.Params.Content()
 	if err != nil {
 		return err
@@ -156,7 +162,7 @@ func (h HandlerWebSession) Post(args capnp.WebSession_post) error {
 }
 
 // Request handling logic common to Put, Post, and Patch.
-func (h HandlerWebSession) handleP(ctx context.Context, method string, args requestArgs, content pContent,
+func (h handlerWebSession) handleP(ctx context.Context, method string, args requestArgs, content pContent,
 	wsResponse *capnp.WebSession_Response) error {
 
 	payload, err := content.Content()
@@ -178,7 +184,7 @@ func (h HandlerWebSession) handleP(ctx context.Context, method string, args requ
 	return h.handleRequest(ctx, method, args, headers, body, wsResponse)
 }
 
-func (h HandlerWebSession) Put(args capnp.WebSession_put) error {
+func (h handlerWebSession) Put(args capnp.WebSession_put) error {
 	content, err := args.Params.Content()
 	if err != nil {
 		return err
@@ -186,11 +192,11 @@ func (h HandlerWebSession) Put(args capnp.WebSession_put) error {
 	return h.handleP(args.Ctx, "PUT", args.Params, content, &args.Results)
 }
 
-func (h HandlerWebSession) Delete(args capnp.WebSession_delete) error {
+func (h handlerWebSession) Delete(args capnp.WebSession_delete) error {
 	return h.handleRequest(args.Ctx, "DELETE", args.Params, nil, nil, &args.Results)
 }
 
-func (h HandlerWebSession) Patch(args capnp.WebSession_patch) error {
+func (h handlerWebSession) Patch(args capnp.WebSession_patch) error {
 	content, err := args.Params.Content()
 	if err != nil {
 		return err
@@ -200,79 +206,90 @@ func (h HandlerWebSession) Patch(args capnp.WebSession_patch) error {
 
 // Websession stubs:
 
-func (h HandlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
+func (h handlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
+func (h handlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 	return errors.NotImplemented
 }
 
 //// In websocket.go:
-// func (h HandlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
+// func (h handlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error {
 
 // WEBDAV stuff
 
-func (h HandlerWebSession) Propfind(capnp.WebSession_propfind) error {
+func (h handlerWebSession) Propfind(capnp.WebSession_propfind) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Proppatch(capnp.WebSession_proppatch) error {
+func (h handlerWebSession) Proppatch(capnp.WebSession_proppatch) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Mkcol(capnp.WebSession_mkcol) error {
+func (h handlerWebSession) Mkcol(capnp.WebSession_mkcol) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Copy(capnp.WebSession_copy) error {
+func (h handlerWebSession) Copy(capnp.WebSession_copy) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Move(capnp.WebSession_move) error {
+func (h handlerWebSession) Move(capnp.WebSession_move) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Lock(capnp.WebSession_lock) error {
+func (h handlerWebSession) Lock(capnp.WebSession_lock) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Unlock(capnp.WebSession_unlock) error {
+func (h handlerWebSession) Unlock(capnp.WebSession_unlock) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Acl(capnp.WebSession_acl) error {
+func (h handlerWebSession) Acl(capnp.WebSession_acl) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Report(capnp.WebSession_report) error {
+func (h handlerWebSession) Report(capnp.WebSession_report) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) Options(capnp.WebSession_options) error {
+func (h handlerWebSession) Options(capnp.WebSession_options) error {
 	return errors.NotImplemented
 }
 
 // UiView stubs.
 
-func (h HandlerWebSession) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
+type sessionResults interface {
+	SetSession(grain_capnp.UiSession) error
+}
+
+func makeSession(
+	h HandlerUiView,
+	sessionContext grain_capnp.SessionContext,
+	results sessionResults,
+) error {
+	return results.SetSession(grain_capnp.UiSession{
+		Client: capnp.WebSession_ServerToClient(&handlerWebSession{
+			handler:        h.Handler,
+			sessionContext: sessionContext,
+		}).Client,
+	})
+}
+
+func (h HandlerUiView) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
 	return errors.NotImplemented
 }
 
-func (h HandlerWebSession) NewSession(p grain_capnp.UiView_newSession) error {
-	handler := WithSessionContext(h.handler, p.Params.Context())
-
-	client := capnp.WebSession_ServerToClient(HandlerWebSession{
-		handler: handler,
-	}).Client
-	p.Results.SetSession(grain_capnp.UiSession{Client: client})
-	return nil
+func (h HandlerUiView) NewSession(p grain_capnp.UiView_newSession) error {
+	return makeSession(h, p.Params.Context(), p.Results)
 }
 
-func (h HandlerWebSession) NewRequestSession(p grain_capnp.UiView_newRequestSession) error {
-	return errors.NotImplemented
+func (h HandlerUiView) NewRequestSession(p grain_capnp.UiView_newRequestSession) error {
+	return makeSession(h, p.Params.Context(), p.Results)
 }
 
-func (h HandlerWebSession) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
-	return errors.NotImplemented
+func (h HandlerUiView) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
+	return makeSession(h, p.Params.Context(), p.Results)
 }
