@@ -25,6 +25,12 @@ import (
 	"zombiezen.com/go/capnproto2/rpc"
 )
 
+type ctxKey int
+
+const (
+	sessionCtxKey ctxKey = iota
+)
+
 // Connect to the sandstorm API, give it a capability to uiview and return the api object.
 //
 // This assumes that file descriptor #3 is a socket with the API on the other end. This
@@ -43,8 +49,21 @@ func ConnectAPI(ctx context.Context, uiview capnp.UiView_Server) (capnp.Sandstor
 	return capnp.SandstormApi{Client: client}, nil
 }
 
-// A HasSessionContext has a SessionContext associated with it, which may be retrieved by
-// calling GetSessionContext().
-type HasSessionContext interface {
-	GetSessionContext() capnp.SessionContext
+// Add `sessionCtx` to the values of `parent`, returning the new context.
+//
+// `sessionCtx` can be retrieved using `GetSessionContext`, below.
+func WithSessionContext(parent context.Context, sessionCtx capnp.SessionContext) context.Context {
+	return context.WithValue(parent, sessionCtxKey, sessionCtx)
+}
+
+// Retrieve the SessionContext from `ctx`'s values, which must have been previously set via
+// `WithSessionContext`.
+//
+// panics if there is no SessionContext.
+func GetSessionContext(ctx context.Context) capnp.SessionContext {
+	val := ctx.Value(sessionCtxKey)
+	if val == nil {
+		panic("No Session Context")
+	}
+	return val.(capnp.SessionContext)
 }
