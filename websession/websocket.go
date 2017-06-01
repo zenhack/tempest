@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strings"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
-	"zenhack.net/go/sandstorm/grain"
+	grain_ctx "zenhack.net/go/sandstorm/grain/context"
 )
 
 // Types to convert between WebSocketStream and WriteCloser:
@@ -102,7 +102,9 @@ func (h handlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		},
 		Body: reqPipeReader,
 	}
-	request = request.WithContext(grain.WithSessionContext(p.Ctx, h.sessionContext))
+	ctx := grain_ctx.WithSessionContext(p.Ctx, h.sessionContext)
+	ctx = grain_ctx.WithParams(ctx, h.params)
+	request = request.WithContext(ctx)
 
 	clientStream := p.Params.ClientStream()
 	capnpResponseBody := &WebSocketStreamWriteCloser{

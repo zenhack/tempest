@@ -33,6 +33,7 @@ import (
 	grain_capnp "zenhack.net/go/sandstorm/capnp/grain"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/grain"
+	grain_ctx "zenhack.net/go/sandstorm/grain/context"
 	"zenhack.net/go/sandstorm/internal/errors"
 )
 
@@ -53,16 +54,18 @@ func ListenAndServe(handler http.Handler) error {
 
 func FromHandler(h http.Handler) HandlerUiView {
 	// TODO: name is a bit confusing, since what we hand back isn't actually a websession.
-	return HandlerUiView{h}
+	return HandlerUiView{Handler: h}
 }
 
 type HandlerUiView struct {
 	http.Handler
+	getViewInfo func(p grain_capnp.UiView_getViewInfo) error
 }
 
 type handlerWebSession struct {
 	handler        http.Handler
 	sessionContext grain_capnp.SessionContext
+	params         interface{}
 }
 
 // make path an absolute path, by prepending a slash if it is not already
@@ -116,7 +119,9 @@ func (h handlerWebSession) handleRequest(goCtx context.Context, method string, a
 		Header:     headers,
 		Body:       body,
 	}
-	request = request.WithContext(grain.WithSessionContext(goCtx, h.sessionContext))
+	goCtx = grain_ctx.WithSessionContext(goCtx, h.sessionContext)
+	goCtx = grain_ctx.WithParams(goCtx, h.params)
+	request = request.WithContext(goCtx)
 	request.URL, err = url.ParseRequestURI(request.RequestURI)
 	if err = contextPopulateRequest(&wsCtx, request); err != nil {
 		return err
@@ -260,37 +265,46 @@ func (h handlerWebSession) Options(capnp.WebSession_options) error {
 	return errors.NotImplemented
 }
 
-// UiView stubs.
-
+// Abstracts out the result types for New*Session.
 type sessionResults interface {
 	SetSession(grain_capnp.UiSession) error
+}
+
+func (h HandlerUiView) WithViewInfo(f func(p grain_capnp.UiView_getViewInfo) error) HandlerUiView {
+	h.getViewInfo = f
+	return h
 }
 
 func makeSession(
 	h HandlerUiView,
 	sessionContext grain_capnp.SessionContext,
+	params interface{},
 	results sessionResults,
 ) error {
 	return results.SetSession(grain_capnp.UiSession{
 		Client: capnp.WebSession_ServerToClient(&handlerWebSession{
 			handler:        h.Handler,
 			sessionContext: sessionContext,
+			params:         params,
 		}).Client,
 	})
 }
 
 func (h HandlerUiView) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
-	return errors.NotImplemented
+	if h.getViewInfo == nil {
+		return errors.NotImplemented
+	}
+	return h.getViewInfo(p)
 }
 
 func (h HandlerUiView) NewSession(p grain_capnp.UiView_newSession) error {
-	return makeSession(h, p.Params.Context(), p.Results)
+	return makeSession(h, p.Params.Context(), p.Params, p.Results)
 }
 
 func (h HandlerUiView) NewRequestSession(p grain_capnp.UiView_newRequestSession) error {
-	return makeSession(h, p.Params.Context(), p.Results)
+	return makeSession(h, p.Params.Context(), p.Params, p.Results)
 }
 
 func (h HandlerUiView) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
-	return makeSession(h, p.Params.Context(), p.Results)
+	return makeSession(h, p.Params.Context(), p.Params, p.Results)
 }
