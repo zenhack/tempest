@@ -203,6 +203,8 @@ func TestTable(t *testing.T) {
 		results, err := handlerUiView.NewSession(
 			ctx,
 			func(p grain.UiView_newSession_Params) error {
+				// TODO: We'll need to pass in a SessionContext if
+				// we're to test any related functionality.
 				return nil
 			}).Struct()
 		uiSession := results.Session()

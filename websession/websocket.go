@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strings"
 	capnp "zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/grain"
 )
 
 // Types to convert between WebSocketStream and WriteCloser:
@@ -85,7 +86,7 @@ func (h handlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		}
 	}
 
-	request := http.Request{
+	request := &http.Request{
 		Method: "GET",
 		URL: &url.URL{
 			Path: makeAbsolute(path),
@@ -101,12 +102,13 @@ func (h handlerWebSession) OpenWebSocket(p capnp.WebSession_openWebSocket) error
 		},
 		Body: reqPipeReader,
 	}
+	request = request.WithContext(grain.WithSessionContext(p.Ctx, h.sessionContext))
 
 	clientStream := p.Params.ClientStream()
 	capnpResponseBody := &WebSocketStreamWriteCloser{
 		WebSession_WebSocketStream: clientStream,
 	}
-	runHandler(h.handler, &request, func(resp *http.Response) {
+	runHandler(h.handler, request, func(resp *http.Response) {
 		// TODO: handle multiple instances of the header
 		protoSlice := strings.Split(resp.Header.Get("Sec-Websocket-Protocol"), ",")
 		protoList, err := p.Results.NewProtocol(int32(len(protoSlice)))

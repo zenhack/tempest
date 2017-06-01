@@ -110,18 +110,19 @@ func (h handlerWebSession) handleRequest(goCtx context.Context, method string, a
 		return err
 	}
 
-	request := http.Request{
+	request := &http.Request{
 		Method:     method,
 		RequestURI: makeAbsolute(path),
 		Header:     headers,
 		Body:       body,
 	}
+	request = request.WithContext(grain.WithSessionContext(goCtx, h.sessionContext))
 	request.URL, err = url.ParseRequestURI(request.RequestURI)
-	if err = contextPopulateRequest(&wsCtx, &request); err != nil {
+	if err = contextPopulateRequest(&wsCtx, request); err != nil {
 		return err
 	}
 
-	runHandler(h.handler, &request, func(response *http.Response) {
+	runHandler(h.handler, request, func(response *http.Response) {
 		buildCapnpResponse(goCtx, response, &wsCtx, wsResponse)
 	})
 	return nil
