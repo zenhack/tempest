@@ -7,8 +7,8 @@ import (
 	"net/http"
 	grain_capnp "zenhack.net/go/sandstorm/capnp/grain"
 	ip_capnp "zenhack.net/go/sandstorm/capnp/ip"
-	ws_capnp "zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/grain"
+	grain_ctx "zenhack.net/go/sandstorm/grain/context"
 	"zenhack.net/go/sandstorm/ip"
 	"zenhack.net/go/sandstorm/websession"
 	"zombiezen.com/go/capnproto2"
@@ -65,14 +65,10 @@ var thePage = `<!doctype html>
 </html>
 `
 
-type myUiView struct {
-}
-
-func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
+func NewUiView() grain_capnp.UiView_Server {
 	mux := http.NewServeMux()
-	sessionCtx := p.Params.Context()
 	dialer := &ip.IpNetworkDialer{}
-	dialer.Ctx = p.Ctx
+	dialer.Ctx = context.TODO()
 
 	checkErr := func(err error) bool {
 		if err != nil {
@@ -90,8 +86,9 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 		if checkErr(err) {
 			return
 		}
+		sessionCtx := grain_ctx.GetSessionContext(req.Context())
 		results, err := sessionCtx.ClaimRequest(
-			p.Ctx,
+			req.Context(),
 			func(p grain_capnp.SessionContext_claimRequest_Params) error {
 				p.SetRequestToken(string(buf))
 				return nil
@@ -121,26 +118,12 @@ func (v myUiView) NewSession(p grain_capnp.UiView_newSession) error {
 		defer conn.Close()
 		conn.Write([]byte(message))
 	})
-	client := ws_capnp.WebSession_ServerToClient(websession.FromHandler(mux)).Client
-	p.Results.SetSession(grain_capnp.UiSession{Client: client})
-	return nil
-}
-
-func (v myUiView) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
-	return nil
-}
-
-func (v myUiView) NewRequestSession(p grain_capnp.UiView_newRequestSession) error {
-	return nil
-}
-
-func (v myUiView) NewOfferSession(p grain_capnp.UiView_newOfferSession) error {
-	return nil
+	return websession.FromHandler(mux)
 }
 
 func main() {
 	ctx := context.Background()
-	_, err := grain.ConnectAPI(ctx, myUiView{})
+	_, err := grain.ConnectAPI(ctx, grain_capnp.UiView_ServerToClient(NewUiView()))
 	if err != nil {
 		log.Fatalln(err)
 	}
