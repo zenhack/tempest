@@ -212,12 +212,12 @@ func (h handlerWebSession) Patch(args capnp.WebSession_patch) error {
 
 // Websession stubs:
 
-func (h handlerWebSession) PostStreaming(capnp.WebSession_postStreaming) error {
-	return errors.NotImplemented
+func (h handlerWebSession) PostStreaming(p capnp.WebSession_postStreaming) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
-	return errors.NotImplemented
+func (h handlerWebSession) PutStreaming(p capnp.WebSession_putStreaming) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
 //// In websocket.go:
@@ -225,44 +225,44 @@ func (h handlerWebSession) PutStreaming(capnp.WebSession_putStreaming) error {
 
 // WEBDAV stuff
 
-func (h handlerWebSession) Propfind(capnp.WebSession_propfind) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Propfind(p capnp.WebSession_propfind) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Proppatch(capnp.WebSession_proppatch) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Proppatch(p capnp.WebSession_proppatch) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Mkcol(capnp.WebSession_mkcol) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Mkcol(p capnp.WebSession_mkcol) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Copy(capnp.WebSession_copy) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Copy(p capnp.WebSession_copy) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Move(capnp.WebSession_move) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Move(p capnp.WebSession_move) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Lock(capnp.WebSession_lock) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Lock(p capnp.WebSession_lock) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Unlock(capnp.WebSession_unlock) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Unlock(p capnp.WebSession_unlock) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Acl(capnp.WebSession_acl) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Acl(p capnp.WebSession_acl) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Report(capnp.WebSession_report) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Report(p capnp.WebSession_report) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
-func (h handlerWebSession) Options(capnp.WebSession_options) error {
-	return errors.NotImplemented
+func (h handlerWebSession) Options(p capnp.WebSession_options) error {
+	return errors.UnImplementedExn(p.Results.Struct.Segment())
 }
 
 // Abstracts out the result types for New*Session.
@@ -292,7 +292,7 @@ func makeSession(
 
 func (h HandlerUiView) GetViewInfo(p grain_capnp.UiView_getViewInfo) error {
 	if h.getViewInfo == nil {
-		return errors.NotImplemented
+		return errors.UnImplementedExn(p.Results.Struct.Segment())
 	}
 	return h.getViewInfo(p)
 }
