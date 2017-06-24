@@ -6,6 +6,23 @@ import (
 	util_capnp "zenhack.net/go/sandstorm/capnp/util"
 )
 
+// ByteStreamPipe is like io.Pipe, except that the write end is a ByteStream.
+//
+// The ByteStream's ExpectSize method is a noop.
+//
+// Once Done is called on the ByteStream, reads will return io.EOF.
+//
+// If all references to the ByteStream are dropped before Done is called, reads
+// will return io.ErrUnexpectedEOF.
+func ByteStreamPipe() (*io.PipeReader, util_capnp.ByteStream) {
+	r, w := io.Pipe()
+	return r, util_capnp.ByteStream_ServerToClient(&byteStreamPipeWriter{
+		w:        w,
+		isClosed: false,
+	})
+}
+
+// The type that powers ByteStreamPipe; see the comments there for an overview.
 type byteStreamPipeWriter struct {
 	w        *io.PipeWriter
 	isClosed bool
@@ -46,12 +63,4 @@ func (w *byteStreamPipeWriter) Close() error {
 		w.isClosed = true
 	}
 	return nil
-}
-
-func ByteStreamPipe() (*io.PipeReader, util_capnp.ByteStream) {
-	r, w := io.Pipe()
-	return r, util_capnp.ByteStream_ServerToClient(&byteStreamPipeWriter{
-		w:        w,
-		isClosed: false,
-	})
 }
