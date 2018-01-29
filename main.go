@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"mime"
@@ -108,7 +109,15 @@ func SetAppHeaders(w http.ResponseWriter) {
 
 func main() {
 	r := mux.NewRouter()
-	//rootR := r.Host(rootDomain).Subrouter()
+	rootR := r.Host(rootDomain).Subrouter()
+	rootR.Path("/.rpc/ListApps").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		appNames := make([]string, 0, len(apps))
+		for k, _ := range apps {
+			appNames = append(appNames, k)
+		}
+		json.NewEncoder(w).Encode(appNames)
+	})
+	rootR.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 
 	r.Host("{app}." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		SetAppHeaders(w)
