@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func spawnErr(fn func() error) <-chan error {
@@ -22,11 +21,8 @@ func withMyOuts(cmd *exec.Cmd) *exec.Cmd {
 }
 
 func buildElm() error {
-	cmd := exec.Command("elm-make", "Main.elm", "--output", "../static/index.html")
+	cmd := exec.Command("elm-make", "Main.elm", "--yes", "--output", "../static/index.html")
 	cmd.Dir = "elm"
-	// In case elm-make prompts us about installing dependencies (which happens on
-	// first run):
-	cmd.Stdin = strings.NewReader("Y\n")
 	return withMyOuts(cmd).Run()
 }
 
