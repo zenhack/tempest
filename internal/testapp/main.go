@@ -7,13 +7,13 @@ import (
 	"os"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
-	"zenhack.net/go/sandstorm/websession/handler"
+	"zenhack.net/go/sandstorm/exp/websession"
 
 	"zombiezen.com/go/capnproto2/rpc"
 )
 
 type UiView struct {
-	*handler.HandlerUiView
+	*websession.HandlerUiView
 }
 
 func (*UiView) GetViewInfo(grain.UiView_getViewInfo) error { return nil }
@@ -26,7 +26,7 @@ func main() {
 	}
 	transport := rpc.StreamTransport(conn)
 	rpc.NewConn(transport, rpc.MainInterface(grain.UiView_ServerToClient(&UiView{
-		HandlerUiView: &handler.HandlerUiView{
+		HandlerUiView: &websession.HandlerUiView{
 			Handler: http.DefaultServeMux,
 		},
 	}).Client))

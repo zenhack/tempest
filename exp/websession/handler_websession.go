@@ -1,6 +1,9 @@
 package websession
 
 import (
+	"fmt"
+	"log"
+	"mime"
 	"net/http"
 
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -13,9 +16,97 @@ type handlerWebSession struct {
 	handler     http.Handler
 }
 
+// Copy the information from the context into the request.
+func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) error {
+	// cookies
+
+	cookies, err := wsCtx.Cookies()
+	if err != nil {
+		return err
+	}
+	numCookies := cookies.Len()
+	for i := 0; i < numCookies; i++ {
+		kv := cookies.At(i)
+		key, err := kv.Key()
+		if err != nil {
+			return err
+		}
+		val, err := kv.Value()
+		if err != nil {
+			return err
+		}
+		req.AddCookie(&http.Cookie{
+			Name:  key,
+			Value: val,
+		})
+	}
+
+	// accept
+
+	accept, err := wsCtx.Accept()
+	if err != nil {
+		return err
+	}
+	numAccept := accept.Len()
+	acceptHeaders := make([]string, numAccept)
+	for i := 0; i < numAccept; i++ {
+		str, err := formatAccept(accept.At(i))
+		if err != nil {
+			return err
+		}
+		acceptHeaders[i] = str
+	}
+	req.Header["Accept"] = acceptHeaders
+
+	// TODO:
+	//
+	// responseStream
+	// acceptEncoding
+	// eTagPrecondition
+	// additionalHeaders
+
+	return nil
+}
+
+// format the argument as expected for the value of the "Accept" header.
+func formatAccept(typ websession.WebSession_AcceptedType) (string, error) {
+	mimeType, err := typ.MimeType()
+	if err != nil {
+		return "", err
+	}
+	param := map[string]string{
+		"q": fmt.Sprint(typ.QValue()),
+	}
+	return mime.FormatMediaType(mimeType, param), nil
+}
+
+func (h *handlerWebSession) Get(p websession.WebSession_get) error {
+	req := &http.Request{
+		Header: http.Header{},
+	}
+
+	if p.Params.IgnoreBody() {
+		req.Method = "HEAD"
+	} else {
+		req.Method = "GET"
+	}
+
+	wsCtx, err := p.Params.Context()
+	if err != nil {
+		return err
+	}
+
+	err = copyContextInfo(req, wsCtx)
+	if err != nil {
+		return err
+	}
+
+	log.Println(req)
+	return nil
+}
+
 // Stubs for unimplemented websession methods:
 
-func (*handlerWebSession) Get(websession.WebSession_get) error       { panic("Not implemented") }
 func (*handlerWebSession) Post(websession.WebSession_post) error     { panic("Not implemented") }
 func (*handlerWebSession) Put(websession.WebSession_put) error       { panic("Not implemented") }
 func (*handlerWebSession) Delete(websession.WebSession_delete) error { panic("Not implemented") }
