@@ -1,8 +1,8 @@
 @0x9cd7bc7194780111;
 
 using Go = import "/go.capnp";
-$Go.package("handler");
-$Go.import("zenhack.net/go/sandstorm/websession/handler");
+$Go.package("websession");
+$Go.import("zenhack.net/go/sandstorm/exp/websession");
 
 using Grain = import "/grain.capnp";
 using Identity = import "/identity.capnp";

@@ -1,4 +1,4 @@
-package handler
+package websession
 
 import (
 	"net/http"
