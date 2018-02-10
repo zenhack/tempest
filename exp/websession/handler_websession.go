@@ -1,19 +1,67 @@
 package websession
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"mime"
 	"net/http"
+	"net/url"
 
 	"zenhack.net/go/sandstorm/capnp/websession"
 )
+
+// Parameters common to all websession request methods
+type commonParams interface {
+	Path() (string, error)
+	Context() (websession.WebSession_Context, error)
+}
 
 // Our UiSession implementation; this implements WebSession, and holds both the
 // SessionData from the new*Session call and the http.Handler to invoke.
 type handlerWebSession struct {
 	sessionData SessionData
 	handler     http.Handler
+}
+
+//// Helpers for common parts of request handling ////
+
+// Intialize a request with the data common to all webession request methods.
+//
+// The request will have a Context that is derived from ctx, but includes the
+// SessionData in its Values.
+func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams) (*http.Request, error) {
+	path, err := params.Path()
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Path:", path)
+
+	wsCtx, err := params.Context()
+	if err != nil {
+		return nil, err
+	}
+
+	// Sandstorm gives us a path no leading slash, but Go's http library
+	// expects one:
+	parsedUrl, err := url.ParseRequestURI("/" + path)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx = context.WithValue(ctx, sessionDataKey, h.sessionData)
+	req := &http.Request{
+		Header: http.Header{},
+		URL:    parsedUrl,
+	}
+
+	req = req.WithContext(ctx)
+	err = copyContextInfo(req, wsCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // Copy the information from the context into the request.
@@ -80,9 +128,12 @@ func formatAccept(typ websession.WebSession_AcceptedType) (string, error) {
 	return mime.FormatMediaType(mimeType, param), nil
 }
 
+//// Actual WebSession methods ////
+
 func (h *handlerWebSession) Get(p websession.WebSession_get) error {
-	req := &http.Request{
-		Header: http.Header{},
+	req, err := h.initRequest(p.Ctx, p.Params)
+	if err != nil {
+		return err
 	}
 
 	if p.Params.IgnoreBody() {
@@ -91,21 +142,19 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 		req.Method = "GET"
 	}
 
-	wsCtx, err := p.Params.Context()
-	if err != nil {
-		return err
-	}
-
-	err = copyContextInfo(req, wsCtx)
-	if err != nil {
-		return err
+	w := &basicResponseWriter{
+		statusCode: 0,
+		header:     http.Header{},
+		response:   p.Results,
 	}
 
 	log.Println(req)
+
+	h.handler.ServeHTTP(w, req)
 	return nil
 }
 
-// Stubs for unimplemented websession methods:
+//// Stubs for unimplemented WebSession methods ////
 
 func (*handlerWebSession) Post(websession.WebSession_post) error     { panic("Not implemented") }
 func (*handlerWebSession) Put(websession.WebSession_put) error       { panic("Not implemented") }

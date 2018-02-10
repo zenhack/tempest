@@ -19,6 +19,9 @@ type UiView struct {
 func (*UiView) GetViewInfo(grain.UiView_getViewInfo) error { return nil }
 
 func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("Hello, World!"))
+	})
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
 	conn, err := net.FileConn(file)
 	if err != nil {
