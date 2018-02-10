@@ -156,8 +156,8 @@ var testCases = []testCase{
 			}
 			body, err := ioutil.ReadAll(req.Body)
 			if err != nil {
-				return
 				w.Write([]byte("ReadAll error: " + err.Error()))
+				return
 			}
 			contentType := req.Header.Get("Content-Type")
 			if contentType != "text/plain" {

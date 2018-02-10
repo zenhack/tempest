@@ -152,6 +152,7 @@ func TestSendCookie(t *testing.T) {
 	chkfatal(t, err)
 	body := &echoBody{}
 	err = json.NewDecoder(resp.Body).Decode(body)
+	chkfatal(t, err)
 	found := false
 	for _, cookie := range body.Cookies {
 		if cookie.Name == "test-cookie" && cookie.Value == "milk and" {

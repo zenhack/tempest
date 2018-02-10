@@ -38,7 +38,7 @@ func GetSessionContext(ctx context.Context) grain.SessionContext {
 	return val.(grain.SessionContext)
 }
 
-// Add a New*Session method's paramters to the context's Values.
+// Add a New*Session method's parameters to the context's Values.
 //
 // `p` must be one of the grain.UiView_new*Session_Params types.
 // If it is not, `parent` will be returned unchanged.

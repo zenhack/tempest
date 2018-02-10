@@ -117,7 +117,7 @@ type sessionArgs interface {
 	SessionParams() (capnp.Pointer, error)
 	TabId() ([]byte, error)
 
-	// Params always has this, and it's a convienient place to allocate the
+	// Params always has this, and it's a convenient place to allocate the
 	// SessionData:
 	Segment() *capnp.Segment
 }
