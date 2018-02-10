@@ -48,7 +48,6 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		// * language
 		// * mimeType
 		// * eTag
-		// * body
 		// * disposition
 	// TODO: other status codes.
 	default:

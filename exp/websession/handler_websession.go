@@ -111,7 +111,6 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 
 	// TODO:
 	//
-	// responseStream
 	// acceptEncoding
 	// eTagPrecondition
 	// additionalHeaders
