@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -40,7 +39,6 @@ func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Path:", path)
 
 	wsCtx, err := params.Context()
 	if err != nil {
