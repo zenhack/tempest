@@ -44,6 +44,14 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/set-cookie", func(w http.ResponseWriter, req *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "bob",
+			Value:  "chocolate chip",
+			Secure: true,
+		})
+	})
+
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
 	conn, err := net.FileConn(file)
 	if err != nil {

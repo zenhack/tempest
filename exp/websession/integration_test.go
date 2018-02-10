@@ -101,6 +101,29 @@ func TestAcceptHeader(t *testing.T) {
 	}
 }
 
+func TestSetCookie(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	resp, err := http.Get(baseUrl + "set-cookie")
+	chkfatal(t, err)
+	cookies := resp.Cookies()
+	defer func() {
+		if t.Failed() {
+			t.Log("Response:", resp)
+			t.Log("Cookies:", cookies)
+		}
+	}()
+	if len(cookies) != 1 {
+		t.Fatal("Wrong number of cookies; expected 1 but got", len(cookies))
+	}
+	if cookies[0].Name != "bob" {
+		t.Error("Wrong cookie name:", cookies[0].Name)
+	}
+	if cookies[0].Value != "chocolate chip" {
+		t.Error("Wrong cookie name:", cookies[0].Value)
+	}
+}
+
 func TestSendCookie(t *testing.T) {
 	baseUrl := getAppUrl(t)
 
