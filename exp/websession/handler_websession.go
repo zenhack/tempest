@@ -1,10 +1,8 @@
 package websession
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"mime"
 	"net/http"
 	"net/url"
@@ -140,7 +138,7 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	}
 
 	// Just so it's not nil:
-	req.Body = ioutil.NopCloser(&bytes.Buffer{})
+	req.Body = http.NoBody
 
 	// TODO: probably factor this out.
 	wsCtx, err := p.Params.Context()
