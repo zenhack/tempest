@@ -52,6 +52,10 @@ func main() {
 		})
 	})
 
+	http.HandleFunc("/no-op-handler", func(w http.ResponseWriter, req *http.Request) {
+		// Make sure stuff works even if we don't do anything in the handler.
+	})
+
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
 	conn, err := net.FileConn(file)
 	if err != nil {

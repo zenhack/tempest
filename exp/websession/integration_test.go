@@ -101,6 +101,16 @@ func TestAcceptHeader(t *testing.T) {
 	}
 }
 
+func TestNoOpHandler(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	resp, err := http.Get(baseUrl + "no-op-handler")
+	chkfatal(t, err)
+	if resp.StatusCode != 200 {
+		t.Fatal("Non-200 status. Response:", resp)
+	}
+}
+
 func TestSetCookie(t *testing.T) {
 	baseUrl := getAppUrl(t)
 
