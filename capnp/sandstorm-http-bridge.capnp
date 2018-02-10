@@ -40,6 +40,13 @@ interface SandstormHttpBridge {
   saveIdentity @3 (identity :Identity.Identity);
   # If BridgeConfig.saveIdentityCaps is true for this app, adds the given identity to the
   # grain's database, allowing it to be fetched later with `getSavedIdentity()`.
+
+  setPersistHook @4 (hook :PersistHook);
+}
+
+interface PersistHook {
+  restore @0 (objectId :AnyPointer) -> (cap :Capability);
+  drop @1 (objectId: AnyPointer);
 }
 using Go = import "/go.capnp";
 $Go.package("sandstormhttpbridge");
