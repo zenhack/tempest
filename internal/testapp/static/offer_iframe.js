@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	window.parent.postMessage({
 		renderTemplate: {
 			rpcId: "0",
-			template: "export GO_SANDSTORM_TEST_APP='" +
+			template: "export GO_SANDSTORM_TEST_APP=" +
 				window.location.protocol +
-				"//$API_HOST/.sandstorm-token/$API_TOKEN/'",
+				"//$API_HOST/.sandstorm-token/$API_TOKEN/",
 			clipboardButton: 'left',
 		}
 	}, "*");
