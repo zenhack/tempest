@@ -18,14 +18,17 @@ func getAppUrl(t *testing.T) string {
 	return url
 }
 
-func TestBasicGet(t *testing.T) {
+func TestBasicGetHead(t *testing.T) {
 	baseUrl := getAppUrl(t)
-	resp, err := http.Get(baseUrl + "echo-request/hello")
-	if err != nil {
-		t.Fatal("Making http request:", err)
+	successfulResponse := func(resp *http.Response, err error) {
+		if err != nil {
+			t.Fatal("Making http request:", err)
+		}
+		t.Log("Response:", resp)
+		if resp.StatusCode != 200 {
+			t.Fatal("Got non-200 status code from app")
+		}
 	}
-	t.Log("Response:", resp)
-	if resp.StatusCode != 200 {
-		t.Fatal("Got non-200 status code from app")
-	}
+	successfulResponse(http.Get(baseUrl + "echo-request/hello"))
+	successfulResponse(http.Head(baseUrl + "echo-request/hello"))
 }
