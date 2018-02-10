@@ -21,11 +21,11 @@ func getAppUrl(t *testing.T) string {
 }
 
 type echoBody struct {
-	Method  string              `json:"method"`
-	Url     *url.URL            `json:"url"`
-	Headers map[string][]string `json:"headers"`
-	Body    []byte              `json:"body"`
-	Cookies []*http.Cookie      `json:"cookies"`
+	Method  string         `json:"method"`
+	Url     *url.URL       `json:"url"`
+	Headers http.Header    `json:"headers"`
+	Body    []byte         `json:"body"`
+	Cookies []*http.Cookie `json:"cookies"`
 }
 
 func chkfatal(t *testing.T, err error) {
@@ -71,5 +71,32 @@ func TestGetCorrectInfo(t *testing.T) {
 	}
 	if body.Url.Path != "/echo-request/hello" {
 		t.Error("Wrong path:", body.Url.Path)
+	}
+}
+
+func TestAcceptHeader(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	req, err := http.NewRequest("GET", baseUrl+"echo-request/acceptheader", nil)
+	chkfatal(t, err)
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	chkfatal(t, err)
+	defer func() {
+		if t.Failed() {
+			t.Log("Response:", resp)
+		}
+	}()
+	if resp.StatusCode != 200 {
+		t.Fatal("Bad status code.")
+	}
+	body := &echoBody{}
+	err = json.NewDecoder(resp.Body).Decode(body)
+	chkfatal(t, err)
+	sawAccept := body.Headers.Get("Accept")
+	if sawAccept != "application/json; q=1" {
+		t.Fatalf("Server did not see correct value for Accept header; "+
+			"wanted \"application/json; q=1\" but got %q", sawAccept)
 	}
 }
