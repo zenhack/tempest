@@ -8,7 +8,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
+	"zenhack.net/go/sandstorm/exp/util/bytestream"
+	"zenhack.net/go/sandstorm/exp/util/handle"
 )
 
 // Parameters common to all websession request methods
@@ -131,10 +134,18 @@ func formatAccept(typ websession.WebSession_AcceptedType) (string, error) {
 //// Actual WebSession methods ////
 
 func (h *handlerWebSession) Get(p websession.WebSession_get) error {
-	req, err := h.initRequest(p.Ctx, p.Params)
+	ctx, cancel := handle.WithCancel(p.Ctx)
+	req, err := h.initRequest(ctx, p.Params)
 	if err != nil {
 		return err
 	}
+
+	// TODO: probably factor this out.
+	wsCtx, err := p.Params.Context()
+	if err != nil {
+		return err
+	}
+	responseStream := wsCtx.ResponseStream()
 
 	if p.Params.IgnoreBody() {
 		req.Method = "HEAD"
@@ -145,12 +156,15 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	w := &basicResponseWriter{
 		statusCode: 0,
 		header:     http.Header{},
+		cancel:     cancel,
+		bodyWriter: bytestream.ToWriteCloser(req.Context(), responseStream),
 		response:   p.Results,
 	}
 
-	log.Println(req)
-
 	h.handler.ServeHTTP(w, req)
+	responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
+		return nil
+	})
 	return nil
 }
 
