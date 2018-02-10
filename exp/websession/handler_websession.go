@@ -162,6 +162,9 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	}
 
 	h.handler.ServeHTTP(w, req)
+	if w.statusCode == 0 {
+		w.WriteHeader(200)
+	}
 	responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
 		return nil
 	})
