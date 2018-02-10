@@ -11,6 +11,7 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/sandstorm/exp/util/handle"
+	"zenhack.net/go/sandstorm/internal/errors"
 )
 
 // Parameters common to all websession request methods
@@ -173,26 +174,70 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 
 //// Stubs for unimplemented WebSession methods ////
 
-func (*handlerWebSession) Post(websession.WebSession_post) error     { panic("Not implemented") }
-func (*handlerWebSession) Put(websession.WebSession_put) error       { panic("Not implemented") }
-func (*handlerWebSession) Delete(websession.WebSession_delete) error { panic("Not implemented") }
-func (*handlerWebSession) Patch(websession.WebSession_patch) error   { panic("Not implemented") }
-func (*handlerWebSession) PostStreaming(websession.WebSession_postStreaming) error {
-	panic("Not implemented")
+func (*handlerWebSession) Post(p websession.WebSession_post) error {
+	return errors.UnImplementedExn(p.Results.Segment())
 }
-func (*handlerWebSession) PutStreaming(websession.WebSession_putStreaming) error {
-	panic("Not implemented")
+
+func (*handlerWebSession) Put(p websession.WebSession_put) error {
+	return errors.UnImplementedExn(p.Results.Segment())
 }
-func (*handlerWebSession) OpenWebSocket(websession.WebSession_openWebSocket) error {
-	panic("Not implemented")
+
+func (*handlerWebSession) Delete(p websession.WebSession_delete) error {
+	return errors.UnImplementedExn(p.Results.Segment())
 }
-func (*handlerWebSession) Propfind(websession.WebSession_propfind) error   { panic("Not implemented") }
-func (*handlerWebSession) Proppatch(websession.WebSession_proppatch) error { panic("Not implemented") }
-func (*handlerWebSession) Mkcol(websession.WebSession_mkcol) error         { panic("Not implemented") }
-func (*handlerWebSession) Copy(websession.WebSession_copy) error           { panic("Not implemented") }
-func (*handlerWebSession) Move(websession.WebSession_move) error           { panic("Not implemented") }
-func (*handlerWebSession) Lock(websession.WebSession_lock) error           { panic("Not implemented") }
-func (*handlerWebSession) Unlock(websession.WebSession_unlock) error       { panic("Not implemented") }
-func (*handlerWebSession) Acl(websession.WebSession_acl) error             { panic("Not implemented") }
-func (*handlerWebSession) Report(websession.WebSession_report) error       { panic("Not implemented") }
-func (*handlerWebSession) Options(websession.WebSession_options) error     { panic("Not implemented") }
+
+func (*handlerWebSession) Patch(p websession.WebSession_patch) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) PutStreaming(p websession.WebSession_putStreaming) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) OpenWebSocket(p websession.WebSession_openWebSocket) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Propfind(p websession.WebSession_propfind) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Proppatch(p websession.WebSession_proppatch) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Mkcol(p websession.WebSession_mkcol) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Copy(p websession.WebSession_copy) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Move(p websession.WebSession_move) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Lock(p websession.WebSession_lock) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Unlock(p websession.WebSession_unlock) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Acl(p websession.WebSession_acl) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Report(p websession.WebSession_report) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
+
+func (*handlerWebSession) Options(p websession.WebSession_options) error {
+	return errors.UnImplementedExn(p.Results.Segment())
+}
