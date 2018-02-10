@@ -49,7 +49,7 @@ func TestBasicGetHead(t *testing.T) {
 	successfulResponse(http.Head(baseUrl + "echo-request/hello"))
 }
 
-func TestCorrectInfo(t *testing.T) {
+func TestGetCorrectInfo(t *testing.T) {
 	baseUrl := getAppUrl(t)
 
 	resp, err := http.Get(baseUrl + "echo-request/hello")
