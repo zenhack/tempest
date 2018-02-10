@@ -37,6 +37,7 @@ func main() {
 			"method":  req.Method,
 			"headers": req.Header,
 			"body":    body,
+			"cookies": req.Cookies(),
 		})
 		if err != nil {
 			panic(err)
