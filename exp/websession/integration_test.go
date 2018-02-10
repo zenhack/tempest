@@ -100,3 +100,35 @@ func TestAcceptHeader(t *testing.T) {
 			"wanted \"application/json; q=1\" but got %q", sawAccept)
 	}
 }
+
+func TestSendCookie(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	req, err := http.NewRequest("GET", baseUrl+"echorequest/sendcookie", nil)
+	chkfatal(t, err)
+
+	req.AddCookie(&http.Cookie{
+		Name:   "testcookie",
+		Value:  "milk_and",
+		Secure: true,
+	})
+
+	t.Log(req)
+
+	resp, err := http.DefaultClient.Do(req)
+	chkfatal(t, err)
+	body := &echoBody{}
+	err = json.NewDecoder(resp.Body).Decode(body)
+	found := false
+	for _, cookie := range body.Cookies {
+		if cookie.Name == "test-cookie" && cookie.Value == "milk and" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Log("cookie header:", body.Headers.Get("Cookie"))
+		t.Log(body)
+		t.Fatal("The cookie we sent was not found!")
+	}
+}
