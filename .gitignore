@@ -1,3 +1,4 @@
 *.swp
 *.capnp.orig
+node_modules
 vendor
