@@ -74,12 +74,12 @@ func TestGetCorrectInfo(t *testing.T) {
 	}
 }
 
-func TestAcceptHeader(t *testing.T) {
+func testHeader(t *testing.T, name, sendVal, wantRecvVal string) {
 	baseUrl := getAppUrl(t)
 
-	req, err := http.NewRequest("GET", baseUrl+"echo-request/acceptheader", nil)
+	req, err := http.NewRequest("GET", baseUrl+"echo-request/"+name+"-header", nil)
 	chkfatal(t, err)
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set(name, sendVal)
 
 	resp, err := http.DefaultClient.Do(req)
 	chkfatal(t, err)
@@ -88,17 +88,28 @@ func TestAcceptHeader(t *testing.T) {
 			t.Log("Response:", resp)
 		}
 	}()
+
 	if resp.StatusCode != 200 {
 		t.Fatal("Bad status code.")
 	}
 	body := &echoBody{}
 	err = json.NewDecoder(resp.Body).Decode(body)
 	chkfatal(t, err)
-	sawAccept := body.Headers.Get("Accept")
-	if sawAccept != "application/json; q=1" {
-		t.Fatalf("Server did not see correct value for Accept header; "+
-			"wanted \"application/json; q=1\" but got %q", sawAccept)
+	gotRecvVal := body.Headers.Get(name)
+	if gotRecvVal != wantRecvVal {
+		t.Fatalf("Server did not see correct value for %s header; "+
+			"wanted %q but got %q", name, wantRecvVal, gotRecvVal)
 	}
+}
+
+func TestAcceptHeader(t *testing.T) {
+	testHeader(t, "Accept", "application/json", "application/json; q=1")
+}
+
+func TestAcceptEncodingHeader(t *testing.T) {
+	testHeader(t, "Accept-Encoding", "something-non-standard", "something-non-standard;q=1")
+	testHeader(t, "Accept-Encoding", "gzip", "gzip;q=1")
+	testHeader(t, "Accept-Encoding", "*;q=1", "*;q=1")
 }
 
 func TestNoOpHandler(t *testing.T) {

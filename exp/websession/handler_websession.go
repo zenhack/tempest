@@ -107,9 +107,25 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 	}
 	req.Header["Accept"] = acceptHeaders
 
+	acceptEncoding, err := wsCtx.AcceptEncoding()
+	if err != nil {
+		return err
+	}
+	acceptEncodingHeaders := make([]string, acceptEncoding.Len())
+	for i := range acceptEncodingHeaders {
+		encoding, err := acceptEncoding.At(i).ContentCoding()
+		if err != nil {
+			return err
+		}
+		acceptEncodingHeaders[i] = fmt.Sprintf(
+			"%s;q=%v",
+			encoding,
+			acceptEncoding.At(i).QValue())
+	}
+	req.Header["Accept-Encoding"] = acceptEncodingHeaders
+
 	// TODO:
 	//
-	// acceptEncoding
 	// eTagPrecondition
 	// additionalHeaders
 
