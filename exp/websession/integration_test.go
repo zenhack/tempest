@@ -118,6 +118,22 @@ func TestAdditionalHeaders(t *testing.T) {
 	testHeader(t, "OC-Total-Length", "234", "234")
 }
 
+func TestETagPrecondition(t *testing.T) {
+	testHeader(t, "If-Match", "*", "*")
+	testHeader(t, "If-None-Match", `"foobarbaz"`, `"foobarbaz"`)
+	testHeader(t, "If-None-Match", `W/"foobarbaz"`, `W/"foobarbaz"`)
+	testHeader(t, "If-None-Match", `W/"foobarbaz", "quux"`, `W/"foobarbaz", "quux"`)
+
+	// "net/http" won't magically deal with the etag header unless we use
+	// http.FileSystem, so even though the following should arguably
+	// return "Precondition Failed," we can ignore it to check whether the
+	// header is getting through:
+	testHeader(t, "If-None-Match", "*", "*")
+	testHeader(t, "If-Match", `"foobarbaz"`, `"foobarbaz"`)
+	testHeader(t, "If-Match", `W/"foobarbaz"`, `W/"foobarbaz"`)
+	testHeader(t, "If-Match", `W/"foobarbaz", "quux"`, `W/"foobarbaz", "quux"`)
+}
+
 func TestNoOpHandler(t *testing.T) {
 	baseUrl := getAppUrl(t)
 

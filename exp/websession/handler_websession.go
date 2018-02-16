@@ -7,6 +7,7 @@ import (
 	"mime"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -19,6 +20,8 @@ var specialRequestHeaders = map[string]struct{}{
 	"Accept":          {},
 	"Accept-Encoding": {},
 	"Cookie":          {},
+	"If-Match":        {},
+	"If-None-Match":   {},
 }
 
 // Parameters common to all websession request methods
@@ -131,7 +134,34 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 	}
 	req.Header["Accept-Encoding"] = acceptEncodingHeaders
 
-	// TODO: eTagPrecondition
+	eTagPrecondition := wsCtx.ETagPrecondition()
+	switch eTagPrecondition.Which() {
+	case websession.WebSession_Context_eTagPrecondition_Which_none:
+	case websession.WebSession_Context_eTagPrecondition_Which_exists:
+		req.Header.Set("If-Match", "*")
+	case websession.WebSession_Context_eTagPrecondition_Which_doesntExist:
+		req.Header.Set("If-None-Match", "*")
+	case websession.WebSession_Context_eTagPrecondition_Which_matchesOneOf:
+		etags, err := eTagPrecondition.MatchesOneOf()
+		if err != nil {
+			return err
+		}
+		etagString, err := formatETags(etags)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("If-Match", etagString)
+	case websession.WebSession_Context_eTagPrecondition_Which_matchesNoneOf:
+		etags, err := eTagPrecondition.MatchesNoneOf()
+		if err != nil {
+			return err
+		}
+		etagString, err := formatETags(etags)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("If-None-Match", etagString)
+	}
 
 	additionalHeaders, err := wsCtx.AdditionalHeaders()
 	if err != nil {
@@ -145,7 +175,7 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 		}
 		value, err := hdr.Value()
 		if err != nil {
-
+			return err
 		}
 		_, ok := specialRequestHeaders[name]
 		if ok {
@@ -168,6 +198,25 @@ func formatAccept(typ websession.WebSession_AcceptedType) (string, error) {
 		"q": fmt.Sprint(typ.QValue()),
 	}
 	return mime.FormatMediaType(mimeType, param), nil
+}
+
+func formatETags(etags websession.WebSession_ETag_List) (string, error) {
+	etagStrings := make([]string, etags.Len())
+	for i := range etagStrings {
+		etag := etags.At(i)
+		value, err := etag.Value()
+		if err != nil {
+			return "", err
+		}
+
+		// Sandstorm strips off the quotes, so we have to add them back:
+		etagStrings[i] = `"` + value + `"`
+
+		if etag.Weak() {
+			etagStrings[i] = "W/" + etagStrings[i]
+		}
+	}
+	return strings.Join(etagStrings, ", "), nil
 }
 
 //// Actual WebSession methods ////
