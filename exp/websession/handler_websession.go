@@ -97,9 +97,8 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 	if err != nil {
 		return err
 	}
-	numAccept := accept.Len()
-	acceptHeaders := make([]string, numAccept)
-	for i := 0; i < numAccept; i++ {
+	acceptHeaders := make([]string, accept.Len())
+	for i := range acceptHeaders {
 		str, err := formatAccept(accept.At(i))
 		if err != nil {
 			return err
