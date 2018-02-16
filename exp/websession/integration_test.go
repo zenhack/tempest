@@ -112,6 +112,12 @@ func TestAcceptEncodingHeader(t *testing.T) {
 	testHeader(t, "Accept-Encoding", "*;q=1", "*;q=1")
 }
 
+func TestAdditionalHeaders(t *testing.T) {
+	testHeader(t, "X-Foo-Disallowed-Header", "Bar", "")
+	testHeader(t, "X-Sandstorm-App-Baz", "quux", "quux")
+	testHeader(t, "OC-Total-Length", "234", "234")
+}
+
 func TestNoOpHandler(t *testing.T) {
 	baseUrl := getAppUrl(t)
 

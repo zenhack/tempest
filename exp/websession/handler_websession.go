@@ -3,6 +3,7 @@ package websession
 import (
 	"context"
 	"fmt"
+	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -13,6 +14,12 @@ import (
 	"zenhack.net/go/sandstorm/exp/util/handle"
 	"zenhack.net/go/sandstorm/internal/errors"
 )
+
+var specialRequestHeaders = map[string]struct{}{
+	"Accept":          {},
+	"Accept-Encoding": {},
+	"Cookie":          {},
+}
 
 // Parameters common to all websession request methods
 type commonParams interface {
@@ -124,10 +131,29 @@ func copyContextInfo(req *http.Request, wsCtx websession.WebSession_Context) err
 	}
 	req.Header["Accept-Encoding"] = acceptEncodingHeaders
 
-	// TODO:
-	//
-	// eTagPrecondition
-	// additionalHeaders
+	// TODO: eTagPrecondition
+
+	additionalHeaders, err := wsCtx.AdditionalHeaders()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < additionalHeaders.Len(); i++ {
+		hdr := additionalHeaders.At(i)
+		name, err := hdr.Name()
+		if err != nil {
+			return err
+		}
+		value, err := hdr.Value()
+		if err != nil {
+
+		}
+		_, ok := specialRequestHeaders[name]
+		if ok {
+			log.Printf("Warning: special request header %q in "+
+				"websession additionalHeaders field", name)
+		}
+		req.Header.Set(name, value)
+	}
 
 	return nil
 }
