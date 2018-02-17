@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -32,6 +34,23 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		wantStatus := req.URL.Query().Get("want-status")
+		if wantStatus == "" {
+			wantStatus = "200"
+		}
+		var status int
+		n, err := fmt.Sscanf(wantStatus, "%d", &status)
+		if err != nil {
+			log.Printf("Error parsing want-status %q: %v", wantStatus, err)
+			status = 400
+		} else if n != 1 {
+			// I(zenhack) think this is impossible, but the docs for fmt.Sscanf
+			// don't actually say; let's be careful.
+			log.Printf("Error parsing want-status %q: fmt.Sscanf reported "+
+				"no succesfull parses.", wantStatus)
+			status = 400
+		}
+		w.WriteHeader(status)
 		err = json.NewEncoder(w).Encode(map[string]interface{}{
 			"url":     req.URL,
 			"method":  req.Method,

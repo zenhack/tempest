@@ -4,6 +4,7 @@ package websession
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -132,6 +133,23 @@ func TestETagPrecondition(t *testing.T) {
 	testHeader(t, "If-Match", `"foobarbaz"`, `"foobarbaz"`)
 	testHeader(t, "If-Match", `W/"foobarbaz"`, `W/"foobarbaz"`)
 	testHeader(t, "If-Match", `W/"foobarbaz", "quux"`, `W/"foobarbaz", "quux"`)
+}
+
+func TestWantStatus(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	for _, wantStatus := range []int{200, 201, 202} {
+		resp, err := http.Get(fmt.Sprintf(
+			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
+		))
+		if err != nil {
+			t.Error(err)
+		}
+		if resp.StatusCode != wantStatus {
+			t.Error("Unexpected status code; wanted", wantStatus, "but got",
+				resp.StatusCode, ".")
+		}
+	}
 }
 
 func TestNoOpHandler(t *testing.T) {

@@ -3,12 +3,41 @@ package websession
 // Implement http.ResponseWriter on top of WebSession.
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
+)
+
+var (
+	successCodeMap = map[int]websession.WebSession_Response_SuccessCode{
+		200: websession.WebSession_Response_SuccessCode_ok,
+		201: websession.WebSession_Response_SuccessCode_created,
+		202: websession.WebSession_Response_SuccessCode_accepted,
+		204: websession.WebSession_Response_SuccessCode_noContent,
+		206: websession.WebSession_Response_SuccessCode_partialContent,
+		207: websession.WebSession_Response_SuccessCode_multiStatus,
+		304: websession.WebSession_Response_SuccessCode_notModified,
+	}
+
+	clientErrorCodeMap = map[int]websession.WebSession_Response_ClientErrorCode{
+		400: websession.WebSession_Response_ClientErrorCode_badRequest,
+		403: websession.WebSession_Response_ClientErrorCode_forbidden,
+		404: websession.WebSession_Response_ClientErrorCode_notFound,
+		405: websession.WebSession_Response_ClientErrorCode_methodNotAllowed,
+		406: websession.WebSession_Response_ClientErrorCode_notAcceptable,
+		409: websession.WebSession_Response_ClientErrorCode_conflict,
+		410: websession.WebSession_Response_ClientErrorCode_gone,
+		412: websession.WebSession_Response_ClientErrorCode_preconditionFailed,
+		413: websession.WebSession_Response_ClientErrorCode_requestEntityTooLarge,
+		414: websession.WebSession_Response_ClientErrorCode_requestUriTooLong,
+		415: websession.WebSession_Response_ClientErrorCode_unsupportedMediaType,
+		418: websession.WebSession_Response_ClientErrorCode_imATeapot,
+		422: websession.WebSession_Response_ClientErrorCode_unprocessableEntity,
+	}
 )
 
 // ResponseWriter used for WebSession methods that just return a WebSession_Response,
@@ -29,6 +58,7 @@ func (w *basicResponseWriter) Header() http.Header {
 	return w.header
 }
 
+// Set fields common to all possible websession responses.
 func (w *basicResponseWriter) writeHeaderCommon() {
 	// A bit of a hack; afaik there's no public
 	// function for parsing a cookie, but we can
@@ -78,10 +108,10 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 	w.writeHeaderCommon()
 	switch statusCode {
-	case 200:
+	case 200, 201, 202:
 		w.response.SetContent()
 		content := w.response.Content()
-		content.SetStatusCode(websession.WebSession_Response_SuccessCode_ok)
+		content.SetStatusCode(successCodeMap[statusCode])
 
 		body := content.Body()
 		body.SetStream(w.cancel)
@@ -95,7 +125,7 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		// * disposition
 	// TODO: other status codes.
 	default:
-		panic("Not implemented")
+		panic(fmt.Sprintf("Status not implemented: %d", statusCode))
 	}
 
 	// TODO:
