@@ -12,7 +12,7 @@ import (
 // A HandlerUiView implements the new*Session methods of the grain.UiView_Server,
 // by wrapping an http.Handler.
 //
-// When then handler is invoked, its request argument will contain a SessionData
+// When the handler is invoked, its request argument will contain a SessionData
 // corresponding to the UiView method's arguments. The SessionData may be extracted
 // with GetSessionData.
 //
