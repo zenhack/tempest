@@ -141,7 +141,7 @@ func TestETagPrecondition(t *testing.T) {
 func TestWantStatus(t *testing.T) {
 	baseUrl := getAppUrl(t)
 
-	for _, wantStatus := range []int{200, 201, 202} {
+	for _, wantStatus := range []int{200, 201, 202, 204, 205} {
 		resp, err := http.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
 		))

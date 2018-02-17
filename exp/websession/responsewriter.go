@@ -126,6 +126,11 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		// * mimeType
 		// * eTag
 		// * disposition
+	case 204, 205:
+		w.response.SetNoContent()
+		noContent := w.response.NoContent()
+		noContent.SetShouldResetForm(statusCode == 205)
+		// TODO: eTag
 	// TODO: other status codes.
 	default:
 		panic(fmt.Sprintf("Status not implemented: %d", statusCode))
