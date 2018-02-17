@@ -83,7 +83,6 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 
 		// TODO:
 		//
-		// * setCookies
 		// * cachePolicy
 		// * encoding
 		// * language
