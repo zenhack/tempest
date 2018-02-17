@@ -42,6 +42,9 @@ var (
 
 // ResponseWriter used for WebSession methods that just return a WebSession_Response,
 // e.g. get, put, and post, but not postStreaming or openWebSocket.
+//
+// TODO: should we implement Hijacker? it may make sense not to; we can't actually
+// not send the header.
 type basicResponseWriter struct {
 	// Status to send. 0 until WriteHeader() has been called.
 	statusCode int
