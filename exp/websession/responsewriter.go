@@ -131,7 +131,13 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		noContent := w.response.NoContent()
 		noContent.SetShouldResetForm(statusCode == 205)
 		// TODO: eTag
-	// TODO: other status codes.
+	// TODO:
+	//
+	// * preConditionFailed
+	// * redirect
+	// * clientError
+	// * serverError
+	// * unsupported status
 	default:
 		panic(fmt.Sprintf("Status not implemented: %d", statusCode))
 	}
