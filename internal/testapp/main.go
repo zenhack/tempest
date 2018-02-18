@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/sandstorm/exp/websession"
@@ -80,11 +81,24 @@ func main() {
 	})
 
 	http.HandleFunc("/etag", func(w http.ResponseWriter, req *http.Request) {
+		// NOTE: This does not handle etags in full generality; it's just
+		// enough for the one test case in our test suite.
+		ifNoneMatch := req.Header.Get("If-None-Match")
+		if strings.HasPrefix(ifNoneMatch, "W/") {
+			ifNoneMatch = strings.TrimPrefix(ifNoneMatch, "W/")
+		}
 		value := `"sometag"`
+
 		if req.URL.Query().Get("weak") == "true" {
 			value = `W/` + value
 		}
 		w.Header().Set("ETag", value)
+
+		if ifNoneMatch == value {
+			w.WriteHeader(http.StatusNotModified)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	})
 
 	http.HandleFunc("/content-length", func(w http.ResponseWriter, req *http.Request) {

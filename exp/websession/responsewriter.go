@@ -113,18 +113,16 @@ func (w *basicResponseWriter) writeHeaderCommon() {
 	// TODO: cachePolicy
 }
 
-type hasETag interface {
-	NewETag() (websession.WebSession_ETag, error)
-}
-
-func (w *basicResponseWriter) copyETag(dst hasETag) {
+// Copy the ETag header, if any, into the capnp response. `newETag` should be the New* method
+// for the field which is to be set to the ETag.
+func (w *basicResponseWriter) copyETag(newETag func() (websession.WebSession_ETag, error)) {
 	etagText := w.header.Get("ETag")
 	if etagText == "" {
 		return
 	}
 	etagText = strings.TrimSpace(etagText)
 
-	etagDst, err := dst.NewETag()
+	etagDst, err := newETag()
 	if err != nil {
 		log.Print("Error allocating etag:", err, "skipping header.")
 	}
@@ -200,16 +198,15 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 			}
 		}
 
-		w.copyETag(content)
+		w.copyETag(content.NewETag)
 	case 204, 205:
 		w.response.SetNoContent()
 		noContent := w.response.NoContent()
 		noContent.SetShouldResetForm(statusCode == 205)
-		w.copyETag(noContent)
+		w.copyETag(noContent.NewETag)
 	case 304, 412:
 		w.response.SetPreconditionFailed()
-		// TODO: matchingETag. This is just a matter of checking of an ETag
-		// header in the response, and copying it if present.
+		w.copyETag(w.response.PreconditionFailed().NewMatchingETag)
 	// TODO:
 	//
 	// * redirect

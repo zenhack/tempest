@@ -237,12 +237,16 @@ func TestNoContentBodies(t *testing.T) {
 }
 
 func TestNotModified(t *testing.T) {
-	req, err := http.NewRequest("GET", baseUrl+"echo-request/status?want-status=304", nil)
+	sentETag := `"sometag"`
+	req, err := http.NewRequest("GET", baseUrl+"etag", nil)
 	chkfatal(t, err)
-	// We set this so sandstorm sees it and desides to return 304 instead of 412; the test
-	// app will just ignore it and return the status we ask for.
-	req.Header.Set("If-None-Match", `"blblb"`)
+	req.Header.Set("If-None-Match", sentETag)
 	resp, err := http.DefaultClient.Do(req)
 	chkfatal(t, err)
 	expectStatus(t, 304, resp.StatusCode)
+	receivedETag := resp.Header.Get("ETag")
+	if receivedETag != sentETag {
+		t.Fatalf("Got 304 status as expected, but etags didn't match: "+
+			"sent %q but received %q.", sentETag, receivedETag)
+	}
 }
