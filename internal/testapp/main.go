@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/sandstorm/exp/websession"
@@ -47,9 +48,15 @@ func main() {
 			// I(zenhack) think this is impossible, but the docs for fmt.Sscanf
 			// don't actually say; let's be careful.
 			log.Printf("Error parsing want-status %q: fmt.Sscanf reported "+
-				"no succesfull parses.", wantStatus)
+				"no succesful parses.", wantStatus)
 			status = 400
 		}
+		wantLang := req.URL.Query().Get("want-lang")
+		if wantLang != "" {
+			w.Header().Set("Content-Language", wantLang)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Encoding", "identity")
 		w.WriteHeader(status)
 		err = json.NewEncoder(w).Encode(map[string]interface{}{
 			"url":     req.URL,
@@ -61,6 +68,12 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+	})
+
+	http.HandleFunc("/content-length", func(w http.ResponseWriter, req *http.Request) {
+		payload := "Hello, Sandstorm!\n"
+		w.Header().Set("Content-Length", strconv.Itoa(len(payload)))
+		w.Write([]byte(payload))
 	})
 
 	http.HandleFunc("/set-cookie", func(w http.ResponseWriter, req *http.Request) {

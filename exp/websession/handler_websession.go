@@ -245,11 +245,12 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	}
 
 	w := &basicResponseWriter{
-		statusCode: 0,
-		header:     http.Header{},
-		cancel:     cancel,
-		bodyWriter: bytestream.ToWriteCloser(req.Context(), responseStream),
-		response:   p.Results,
+		statusCode:     0,
+		header:         http.Header{},
+		cancel:         cancel,
+		responseStream: responseStream,
+		bodyWriter:     bytestream.ToWriteCloser(req.Context(), responseStream),
+		response:       p.Results,
 	}
 
 	h.handler.ServeHTTP(w, req)

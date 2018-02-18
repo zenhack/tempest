@@ -7,9 +7,11 @@ package websession
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -35,6 +37,12 @@ type echoBody struct {
 func chkfatal(t *testing.T, err error) {
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func expectStatus(t *testing.T, want, got int) {
+	if want != got {
+		t.Fatal("Unexpected status code; expected", want, "but got", got)
 	}
 }
 
@@ -138,6 +146,52 @@ func TestETagPrecondition(t *testing.T) {
 	testHeader(t, "If-Match", `W/"foobarbaz", "quux"`, `W/"foobarbaz", "quux"`)
 }
 
+func TestResponseContentType(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	resp, err := http.Get(baseUrl + "echo-request/content-type")
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+	contentType := resp.Header.Get("Content-Type")
+	if contentType != "application/json" {
+		t.Fatalf("Expected content type application/json but got %q", contentType)
+	}
+}
+
+func TestResponseContentEncoding(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	resp, err := http.Get(baseUrl + "echo-request/content-encoding")
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+
+	encoding := resp.Header.Get("Content-Encoding")
+	if encoding != "identity" {
+		t.Fatalf("Expected content encoding identity, but got %q.", encoding)
+	}
+}
+
+func TestResponseContentLength(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	resp, err := http.Get(baseUrl + "content-length")
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+
+	contentLength := resp.Header.Get("Content-Length")
+	reportLength, err := strconv.ParseUint(contentLength, 10, 64)
+	chkfatal(t, err)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	chkfatal(t, err)
+
+	realLength := uint64(len(body))
+	if realLength != reportLength {
+		t.Fatal("Content-Header indicated a length of %d, but body was ",
+			"actually %d bytes long.", reportLength, realLength)
+	}
+}
+
 func TestWantStatus(t *testing.T) {
 	baseUrl := getAppUrl(t)
 
@@ -148,9 +202,25 @@ func TestWantStatus(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if resp.StatusCode != wantStatus {
-			t.Error("Unexpected status code; wanted", wantStatus, "but got",
-				resp.StatusCode, ".")
+		expectStatus(t, wantStatus, resp.StatusCode)
+	}
+}
+
+func TestWantLanguage(t *testing.T) {
+	baseUrl := getAppUrl(t)
+
+	for _, wantLang := range []string{"en-US", "de-DE"} {
+		resp, err := http.Get(
+			baseUrl + "echo-request/lang?want-lang=" + wantLang,
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expectStatus(t, 200, resp.StatusCode)
+		gotLang := resp.Header.Get("Content-Language")
+		if wantLang != gotLang {
+			t.Fatalf("Unexpected Content-Language; wanted %q but got %q.",
+				wantLang, gotLang)
 		}
 	}
 }

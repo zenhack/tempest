@@ -3,10 +3,12 @@ package websession
 // Implement http.ResponseWriter on top of WebSession.
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -51,6 +53,11 @@ type basicResponseWriter struct {
 
 	// handle which cancels the request's Context.
 	cancel util.Handle
+
+	// The responseStream field in the websession request. This should only
+	// be used for the expectSize() method; use bodyWriter for actually
+	// writing data.
+	responseStream util.ByteStream
 
 	header     http.Header
 	bodyWriter io.Writer
@@ -119,11 +126,36 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		body := content.Body()
 		body.SetStream(w.cancel)
 
+		encoding := w.header.Get("Content-Encoding")
+		if encoding != "" {
+			content.SetEncoding(encoding)
+		}
+		language := w.header.Get("Content-Language")
+		if language != "" {
+			content.SetLanguage(language)
+		}
+		mimeType := w.header.Get("Content-Type")
+		if mimeType != "" {
+			content.SetMimeType(mimeType)
+		}
+
+		contentLength := w.header.Get("Content-Length")
+		if contentLength != "" {
+			length, err := strconv.ParseUint(contentLength, 10, 64)
+			if err != nil {
+				log.Print("Error parsing Content-Length set by handler:", err)
+			} else {
+				w.responseStream.ExpectSize(
+					context.TODO(),
+					func(params util.ByteStream_expectSize_Params) error {
+						params.SetSize(length)
+						return nil
+					})
+			}
+		}
+
 		// TODO:
 		//
-		// * encoding
-		// * language
-		// * mimeType
 		// * eTag
 		// * disposition
 	case 204, 205:
