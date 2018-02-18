@@ -49,13 +49,8 @@ func expectStatus(t *testing.T, want, got int) {
 func TestBasicGetHead(t *testing.T) {
 	baseUrl := getAppUrl(t)
 	successfulResponse := func(resp *http.Response, err error) {
-		if err != nil {
-			t.Fatal("Making http request:", err)
-		}
-		if resp.StatusCode != 200 {
-			t.Log("Response:", resp)
-			t.Fatal("Got non-200 status code from app")
-		}
+		chkfatal(t, err)
+		expectStatus(t, 200, resp.StatusCode)
 	}
 	successfulResponse(http.Get(baseUrl + "echo-request/hello"))
 	successfulResponse(http.Head(baseUrl + "echo-request/hello"))
@@ -71,9 +66,7 @@ func TestGetCorrectInfo(t *testing.T) {
 			t.Log("Response:", resp)
 		}
 	}()
-	if resp.StatusCode != 200 {
-		t.Fatal("Non-zero status code")
-	}
+	expectStatus(t, 200, resp.StatusCode)
 	body := &echoBody{}
 	err = json.NewDecoder(resp.Body).Decode(body)
 	chkfatal(t, err)
@@ -101,9 +94,7 @@ func testHeader(t *testing.T, name, sendVal, wantRecvVal string) {
 		}
 	}()
 
-	if resp.StatusCode != 200 {
-		t.Fatal("Bad status code.")
-	}
+	expectStatus(t, 200, resp.StatusCode)
 	body := &echoBody{}
 	err = json.NewDecoder(resp.Body).Decode(body)
 	chkfatal(t, err)
@@ -199,9 +190,7 @@ func TestWantStatus(t *testing.T) {
 		resp, err := http.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
 		))
-		if err != nil {
-			t.Error(err)
-		}
+		chkfatal(t, err)
 		expectStatus(t, wantStatus, resp.StatusCode)
 	}
 }
@@ -213,9 +202,7 @@ func TestWantLanguage(t *testing.T) {
 		resp, err := http.Get(
 			baseUrl + "echo-request/lang?want-lang=" + wantLang,
 		)
-		if err != nil {
-			t.Fatal(err)
-		}
+		chkfatal(t, err)
 		expectStatus(t, 200, resp.StatusCode)
 		gotLang := resp.Header.Get("Content-Language")
 		if wantLang != gotLang {
@@ -230,7 +217,5 @@ func TestNoOpHandler(t *testing.T) {
 
 	resp, err := http.Get(baseUrl + "no-op-handler")
 	chkfatal(t, err)
-	if resp.StatusCode != 200 {
-		t.Fatal("Non-200 status. Response:", resp)
-	}
+	expectStatus(t, 200, resp.StatusCode)
 }
