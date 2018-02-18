@@ -250,3 +250,30 @@ func TestNotModified(t *testing.T) {
 			"sent %q but received %q.", sentETag, receivedETag)
 	}
 }
+
+func TestRedirects(t *testing.T) {
+	// make sure we don't follow redirects:
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	cases := []struct{ send, recv int }{
+		{301, 301},
+		{302, 303},
+		{303, 303},
+		{307, 307},
+		{308, 308},
+	}
+	for _, v := range cases {
+		url := fmt.Sprintf("%sredirect?want-status=%d", baseUrl, v.send)
+		resp, err := client.Get(url)
+		chkfatal(t, err)
+		expectStatus(t, v.recv, resp.StatusCode)
+		wantLoc := "/redirect-landing"
+		gotLoc := resp.Header.Get("Location")
+		if gotLoc != wantLoc {
+			t.Fatalf("Unexpected Location header %q; expected %q.", gotLoc, wantLoc)
+		}
+	}
+}

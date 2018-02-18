@@ -207,9 +207,14 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 	case 304, 412:
 		w.response.SetPreconditionFailed()
 		w.copyETag(w.response.PreconditionFailed().NewMatchingETag)
+	case 301, 302, 303, 307, 308:
+		w.response.SetRedirect()
+		redirect := w.response.Redirect()
+		redirect.SetLocation(w.header.Get("Location"))
+		redirect.SetIsPermanent(statusCode == 301 || statusCode == 308)
+		redirect.SetSwitchToGet(statusCode == 302 || statusCode == 303 || statusCode == 301)
 	// TODO:
 	//
-	// * redirect
 	// * clientError
 	// * serverError
 	// * unsupported status

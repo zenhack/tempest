@@ -115,6 +115,18 @@ func main() {
 		})
 	})
 
+	http.HandleFunc("/redirect", func(w http.ResponseWriter, req *http.Request) {
+		log.Print("Got redirect request....")
+		status := req.URL.Query().Get("want-status")
+		statusCode, err := strconv.Atoi(status)
+		if err != nil {
+			log.Print("Error parsing status:", err)
+			statusCode = 400
+		}
+		w.Header().Set("Location", "/redirect-landing")
+		w.WriteHeader(statusCode)
+	})
+
 	http.HandleFunc("/no-op-handler", func(w http.ResponseWriter, req *http.Request) {
 		// Make sure stuff works even if we don't do anything in the handler.
 	})
