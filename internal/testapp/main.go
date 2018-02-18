@@ -79,6 +79,14 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/etag", func(w http.ResponseWriter, req *http.Request) {
+		value := `"sometag"`
+		if req.URL.Query().Get("weak") == "true" {
+			value = `W/` + value
+		}
+		w.Header().Set("ETag", value)
+	})
+
 	http.HandleFunc("/content-length", func(w http.ResponseWriter, req *http.Request) {
 		payload := "Hello, Sandstorm!\n"
 		w.Header().Set("Content-Length", strconv.Itoa(len(payload)))

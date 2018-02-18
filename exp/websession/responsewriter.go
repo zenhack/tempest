@@ -10,6 +10,7 @@ import (
 	"mime"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -112,6 +113,29 @@ func (w *basicResponseWriter) writeHeaderCommon() {
 	// TODO: cachePolicy
 }
 
+type hasETag interface {
+	NewETag() (websession.WebSession_ETag, error)
+}
+
+func (w *basicResponseWriter) copyETag(dst hasETag) {
+	etagText := w.header.Get("ETag")
+	if etagText == "" {
+		return
+	}
+	etagText = strings.TrimSpace(etagText)
+
+	etagDst, err := dst.NewETag()
+	if err != nil {
+		log.Print("Error allocating etag:", err, "skipping header.")
+	}
+	etagDst.SetWeak(strings.HasPrefix(etagText, "W/"))
+
+	etagText = strings.TrimPrefix(etagText, "W/")
+	etagText = strings.TrimPrefix(etagText, `"`)
+	etagText = strings.TrimSuffix(etagText, `"`)
+	etagDst.SetValue(etagText)
+}
+
 func (w *basicResponseWriter) WriteHeader(statusCode int) {
 	if w.statusCode != 0 {
 		panic("WriteHeader called twice!")
@@ -176,12 +200,12 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 			}
 		}
 
-		// TODO: eTag
+		w.copyETag(content)
 	case 204, 205:
 		w.response.SetNoContent()
 		noContent := w.response.NoContent()
 		noContent.SetShouldResetForm(statusCode == 205)
-		// TODO: eTag
+		w.copyETag(noContent)
 	// TODO:
 	//
 	// * preConditionFailed

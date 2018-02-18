@@ -204,3 +204,23 @@ func TestNoOpHandler(t *testing.T) {
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 }
+
+func TestETag(t *testing.T) {
+	resp, err := http.Get(baseUrl + "etag")
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+	etag := resp.Header.Get("ETag")
+
+	if etag != `"sometag"` {
+		t.Errorf(`Expected ETag value "sometag", but got %q`, etag)
+	}
+
+	resp, err = http.Get(baseUrl + "etag?weak=true")
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+	etag = resp.Header.Get("ETag")
+
+	if etag != `W/"sometag"` {
+		t.Errorf(`Expected ETag value W/"sometag", but got %q`, etag)
+	}
+}
