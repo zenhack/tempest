@@ -15,15 +15,16 @@ import (
 	"testing"
 )
 
-// Get the base URL for the test app from the environment. if the requisite environment
-// variable is not set, skip the test.
-func getAppUrl(t *testing.T) string {
-	url := os.Getenv("GO_SANDSTORM_TEST_APP")
-	if url == "" {
-		t.Fatal("Integration test: GO_SANDSTORM_TEST_APP environment " +
+var baseUrl string
+
+func init() {
+	// Get the base URL for the test app from the environment. if
+	// the requisite environment variable is not set, panic.
+	baseUrl = os.Getenv("GO_SANDSTORM_TEST_APP")
+	if baseUrl == "" {
+		panic("Integration test: GO_SANDSTORM_TEST_APP environment " +
 			"variable not defined.")
 	}
-	return url
 }
 
 type echoBody struct {
@@ -47,7 +48,6 @@ func expectStatus(t *testing.T, want, got int) {
 }
 
 func TestBasicGetHead(t *testing.T) {
-	baseUrl := getAppUrl(t)
 	successfulResponse := func(resp *http.Response, err error) {
 		chkfatal(t, err)
 		expectStatus(t, 200, resp.StatusCode)
@@ -57,7 +57,6 @@ func TestBasicGetHead(t *testing.T) {
 }
 
 func TestGetCorrectInfo(t *testing.T) {
-	baseUrl := getAppUrl(t)
 
 	resp, err := http.Get(baseUrl + "echo-request/hello")
 	chkfatal(t, err)
@@ -80,8 +79,6 @@ func TestGetCorrectInfo(t *testing.T) {
 }
 
 func testHeader(t *testing.T, name, sendVal, wantRecvVal string) {
-	baseUrl := getAppUrl(t)
-
 	req, err := http.NewRequest("GET", baseUrl+"echo-request/"+name+"-header", nil)
 	chkfatal(t, err)
 	req.Header.Set(name, sendVal)
@@ -138,8 +135,6 @@ func TestETagPrecondition(t *testing.T) {
 }
 
 func TestResponseContentType(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	resp, err := http.Get(baseUrl + "echo-request/content-type")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
@@ -150,8 +145,6 @@ func TestResponseContentType(t *testing.T) {
 }
 
 func TestResponseContentEncoding(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	resp, err := http.Get(baseUrl + "echo-request/content-encoding")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
@@ -163,8 +156,6 @@ func TestResponseContentEncoding(t *testing.T) {
 }
 
 func TestResponseContentLength(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	resp, err := http.Get(baseUrl + "content-length")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
@@ -184,8 +175,6 @@ func TestResponseContentLength(t *testing.T) {
 }
 
 func TestWantStatus(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	for _, wantStatus := range []int{200, 201, 202, 204, 205} {
 		resp, err := http.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
@@ -196,8 +185,6 @@ func TestWantStatus(t *testing.T) {
 }
 
 func TestWantLanguage(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	for _, wantLang := range []string{"en-US", "de-DE"} {
 		resp, err := http.Get(
 			baseUrl + "echo-request/lang?want-lang=" + wantLang,
@@ -213,8 +200,6 @@ func TestWantLanguage(t *testing.T) {
 }
 
 func TestNoOpHandler(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	resp, err := http.Get(baseUrl + "no-op-handler")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)

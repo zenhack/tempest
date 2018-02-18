@@ -9,8 +9,6 @@ import (
 )
 
 func TestSetCookie(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	resp, err := http.Get(baseUrl + "set-cookie")
 	chkfatal(t, err)
 	cookies := resp.Cookies()
@@ -32,8 +30,6 @@ func TestSetCookie(t *testing.T) {
 }
 
 func TestSendCookie(t *testing.T) {
-	baseUrl := getAppUrl(t)
-
 	req, err := http.NewRequest("GET", baseUrl+"echorequest/sendcookie", nil)
 	chkfatal(t, err)
 
