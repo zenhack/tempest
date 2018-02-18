@@ -175,7 +175,7 @@ func TestResponseContentLength(t *testing.T) {
 }
 
 func TestWantStatus(t *testing.T) {
-	for _, wantStatus := range []int{200, 201, 202, 204, 205} {
+	for _, wantStatus := range []int{200, 201, 202, 204, 205, 412} {
 		resp, err := http.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
 		))
@@ -234,4 +234,15 @@ func TestNoContentBodies(t *testing.T) {
 	if len(data) != 0 {
 		t.Fatalf("No-content response returned a body: %q", data)
 	}
+}
+
+func TestNotModified(t *testing.T) {
+	req, err := http.NewRequest("GET", baseUrl+"echo-request/status?want-status=304", nil)
+	chkfatal(t, err)
+	// We set this so sandstorm sees it and desides to return 304 instead of 412; the test
+	// app will just ignore it and return the status we ask for.
+	req.Header.Set("If-None-Match", `"blblb"`)
+	resp, err := http.DefaultClient.Do(req)
+	chkfatal(t, err)
+	expectStatus(t, 304, resp.StatusCode)
 }

@@ -206,9 +206,12 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		noContent := w.response.NoContent()
 		noContent.SetShouldResetForm(statusCode == 205)
 		w.copyETag(noContent)
+	case 304, 412:
+		w.response.SetPreconditionFailed()
+		// TODO: matchingETag, though I(zenhack) don't see an obvious
+		// way to obtain that information.
 	// TODO:
 	//
-	// * preConditionFailed
 	// * redirect
 	// * clientError
 	// * serverError
