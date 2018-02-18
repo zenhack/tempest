@@ -208,8 +208,8 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		w.copyETag(noContent)
 	case 304, 412:
 		w.response.SetPreconditionFailed()
-		// TODO: matchingETag, though I(zenhack) don't see an obvious
-		// way to obtain that information.
+		// TODO: matchingETag. This is just a matter of checking of an ETag
+		// header in the response, and copying it if present.
 	// TODO:
 	//
 	// * redirect
