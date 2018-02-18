@@ -2,8 +2,11 @@
 
 package websession
 
+// Tests which are currently known to fail.
+
 import (
 	"encoding/json"
+	"mime"
 	"net/http"
 	"testing"
 )
@@ -57,5 +60,36 @@ func TestSendCookie(t *testing.T) {
 		t.Log("cookie header:", body.Headers.Get("Cookie"))
 		t.Log(body)
 		t.Fatal("The cookie we sent was not found!")
+	}
+}
+
+func TestDisposition(t *testing.T) {
+	mkRequest := func(query string) (mediatype string, params map[string]string) {
+		resp, err := http.Get(baseUrl + "echo-request/disposition" + query)
+		chkfatal(t, err)
+		expectStatus(t, 200, resp.StatusCode)
+		disposition := resp.Header.Get("Content-Disposition")
+		typ, params, err := mime.ParseMediaType(disposition)
+		if err != nil {
+			t.Logf("Content-Disposition: %q", disposition)
+		}
+		chkfatal(t, err)
+		return typ, params
+	}
+
+	typ, _ := mkRequest("")
+	if typ != "inline" {
+		t.Fatalf("Unexpected Content-Disposition; wanted inline but got %q", typ)
+	}
+
+	typ, params := mkRequest("?filename=hello.txt")
+	if typ != "attachment" {
+		t.Fatalf("Unexpected Content-Disposition; wanted attachment "+
+			"but got %q", typ)
+	}
+	filename := params["filename"]
+	if filename != "hello.txt" {
+		t.Fatalf("Unexpectd file name in Content-Disposition; wanted hello.txt"+
+			" but got %q", filename)
 	}
 }

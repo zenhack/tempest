@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"strconv"
 
@@ -154,10 +155,28 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 			}
 		}
 
-		// TODO:
-		//
-		// * eTag
-		// * disposition
+		// TODO: this doesn't seem to work. We have a failing test.
+		contentDisposition := w.header.Get("Content-Disposition")
+		if contentDisposition != "" {
+			typ, params, err := mime.ParseMediaType(contentDisposition)
+			if err != nil {
+				log.Print("Error parsing response's Content-Disposition:", err)
+			} else if typ == "inline" {
+				content.Disposition().SetNormal()
+			} else if typ == "attachment" {
+				filename, ok := params["filename"]
+				if !ok {
+					log.Println("Warning: handler specified " +
+						"Content-Disposition = attachment with no " +
+						"file name.")
+				}
+				content.Disposition().SetDownload(filename)
+			} else {
+				log.Println("Unsupported Content-Disposition type:", typ)
+			}
+		}
+
+		// TODO: eTag
 	case 204, 205:
 		w.response.SetNoContent()
 		noContent := w.response.NoContent()

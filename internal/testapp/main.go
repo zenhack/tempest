@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime"
 	"net"
 	"net/http"
 	"os"
@@ -54,6 +55,14 @@ func main() {
 		wantLang := req.URL.Query().Get("want-lang")
 		if wantLang != "" {
 			w.Header().Set("Content-Language", wantLang)
+		}
+		wantFilename := req.URL.Query().Get("filename")
+		if wantFilename == "" {
+			w.Header().Set("Content-Disposition", "inline")
+		} else {
+			w.Header().Set("Content-Disposition", mime.FormatMediaType(
+				"attachment", map[string]string{"filename": wantFilename},
+			))
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Content-Encoding", "identity")
