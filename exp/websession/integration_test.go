@@ -224,3 +224,14 @@ func TestETag(t *testing.T) {
 		t.Errorf(`Expected ETag value W/"sometag", but got %q`, etag)
 	}
 }
+
+func TestNoContentBodies(t *testing.T) {
+	resp, err := http.Get(baseUrl + "echo-request/status?want-status=205")
+	chkfatal(t, err)
+	expectStatus(t, 205, resp.StatusCode)
+	data, err := ioutil.ReadAll(resp.Body)
+	chkfatal(t, err)
+	if len(data) != 0 {
+		t.Fatalf("No-content response returned a body: %q", data)
+	}
+}
