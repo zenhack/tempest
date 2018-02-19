@@ -365,8 +365,6 @@ func (h *handlerWebSession) Post(p websession.WebSession_post) error {
 	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "POST")
 }
 
-//// Stubs for unimplemented WebSession methods ////
-
 func (h *handlerWebSession) Put(p websession.WebSession_put) error {
 	content, err := p.Params.Content()
 	if err != nil {
@@ -389,6 +387,8 @@ func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
 	}
 	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PATCH")
 }
+
+//// Stubs for unimplemented WebSession methods ////
 
 func (*handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
 	return errors.UnImplementedExn(p.Results.Segment())
