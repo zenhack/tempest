@@ -9,8 +9,8 @@ import (
 	"zombiezen.com/go/capnproto2"
 )
 
-// A HandlerUiView implements the new*Session methods of the grain.UiView_Server,
-// by wrapping an http.Handler.
+// A HandlerUiView implements the new*Session methods of the grain.UiView_Server
+// interface, by wrapping an http.Handler.
 //
 // When the handler is invoked, its request argument will contain a SessionData
 // corresponding to the UiView method's arguments. The SessionData may be extracted
