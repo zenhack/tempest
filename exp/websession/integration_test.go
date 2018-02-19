@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -310,6 +311,61 @@ func TestRedirects(t *testing.T) {
 		gotLoc := resp.Header.Get("Location")
 		if gotLoc != wantLoc {
 			t.Fatalf("Unexpected Location header %q; expected %q.", gotLoc, wantLoc)
+		}
+	}
+}
+
+// Basic test for PUT/POST/PATCH
+func TestPRequest(t *testing.T) {
+	methods := []string{"PUT", "POST", "PATCH"}
+
+	sendBody := "Hello, World!\n"
+
+	for _, method := range methods {
+		req, err := http.NewRequest(
+			method,
+			baseUrl+"echo-request/p-request",
+			strings.NewReader(sendBody),
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("Content-Type", "text/plain")
+		req.Header.Set("Content-Encoding", "identity")
+		resp, err := http.DefaultClient.Do(req)
+
+		body := &echoBody{}
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		chkfatal(t, err)
+		defer func() {
+			if t.Failed() {
+				t.Logf("response body: %q", bodyBytes)
+			}
+		}()
+		err = json.Unmarshal(bodyBytes, body)
+		chkfatal(t, err)
+
+		if body.Method != method {
+			t.Errorf("Incorrect method; expected %q but got %q.",
+				method, body.Method)
+		}
+
+		headers := []struct{ key, val string }{
+			{"Content-Type", "text/plain"},
+			{"Content-Encoding", "identity"},
+		}
+
+		for _, header := range headers {
+			actual := body.Headers.Get(header.key)
+			if actual != header.val {
+				t.Errorf("Incorrect %q header: wanted %q but got %q.",
+					header.key, header.val, actual)
+			}
+		}
+
+		if string(body.Body) != sendBody {
+			t.Errorf("Incorrect body; expected %q but got %q.",
+				sendBody, body.Body)
 		}
 	}
 }

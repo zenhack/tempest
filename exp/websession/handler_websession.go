@@ -1,8 +1,10 @@
 package websession
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -219,30 +221,37 @@ func formatETags(etags websession.WebSession_ETag_List) (string, error) {
 	return strings.Join(etagStrings, ", "), nil
 }
 
-//// Actual WebSession methods ////
-
-func (h *handlerWebSession) Get(p websession.WebSession_get) error {
-	ctx, cancel := handle.WithCancel(p.Ctx)
-	req, err := h.initRequest(ctx, p.Params)
+// Common logic for the request methods that return a websession.WebSession_Request.
+//
+// `ctx` should be the context from the capnp method argument.
+//
+// `params` should be the capnp Params for the method.
+//
+// `response` should be the Response object to store the result in.
+//
+// `customize` is a function which will be called just before ServeHTTP. It
+// is responsible for setting the HTTP Method on the request, as well as any
+// other capnp method specific data.
+func (h *handlerWebSession) handleCommon(
+	ctx context.Context,
+	params commonParams,
+	response websession.WebSession_Response,
+	customize func(*http.Request) error,
+) error {
+	ctx, cancel := handle.WithCancel(ctx)
+	req, err := h.initRequest(ctx, params)
 	if err != nil {
 		return err
 	}
 
-	// Just so it's not nil:
+	// Make sure it's not nil:
 	req.Body = http.NoBody
 
-	// TODO: probably factor this out.
-	wsCtx, err := p.Params.Context()
+	wsCtx, err := params.Context()
 	if err != nil {
 		return err
 	}
 	responseStream := wsCtx.ResponseStream()
-
-	if p.Params.IgnoreBody() {
-		req.Method = "HEAD"
-	} else {
-		req.Method = "GET"
-	}
 
 	w := &basicResponseWriter{
 		statusCode:     0,
@@ -250,11 +259,15 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 		cancel:         cancel,
 		responseStream: responseStream,
 		bodyWriter:     bytestream.ToWriteCloser(req.Context(), responseStream),
-		response:       p.Results,
+		response:       response,
+	}
+
+	err = customize(req)
+	if err != nil {
+		return err
 	}
 
 	h.handler.ServeHTTP(w, req)
-	// TODO: would probably make sense to factor the rest of this out.
 	if w.statusCode == 0 {
 		w.WriteHeader(200)
 	}
@@ -277,22 +290,101 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	return nil
 }
 
-//// Stubs for unimplemented WebSession methods ////
-
-func (*handlerWebSession) Post(p websession.WebSession_post) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+// PostContent/PutContent
+type pContent interface {
+	MimeType() (string, error)
+	Content() ([]byte, error)
+	HasEncoding() bool
+	Encoding() (string, error)
 }
 
-func (*handlerWebSession) Put(p websession.WebSession_put) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func copyPContent(req *http.Request, content pContent) error {
+	mimeType, err := content.MimeType()
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", mimeType)
+
+	data, err := content.Content()
+	if err != nil {
+		return err
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+
+	if content.HasEncoding() {
+		encoding, err := content.Encoding()
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Encoding", encoding)
+	}
+	return nil
+}
+
+// Common logic for capnp methods which take a `pContent` argument.
+//
+// `ctx`, `params`, and `response` are the same as in `handleCommon`.
+//
+// `content` is the `content` parameter.
+// `method` is the HTTP method to set.
+func (h *handlerWebSession) handlePContent(
+	ctx context.Context,
+	params commonParams,
+	response websession.WebSession_Response,
+	content pContent,
+	method string,
+) error {
+	return h.handleCommon(ctx, params, response, func(req *http.Request) error {
+		err := copyPContent(req, content)
+		if err != nil {
+			return err
+		}
+		req.Method = method
+		return nil
+	})
+}
+
+//// Actual WebSession methods ////
+
+func (h *handlerWebSession) Get(p websession.WebSession_get) error {
+	return h.handleCommon(p.Ctx, p.Params, p.Results, func(req *http.Request) error {
+		if p.Params.IgnoreBody() {
+			req.Method = "HEAD"
+		} else {
+			req.Method = "GET"
+		}
+		return nil
+	})
+}
+
+func (h *handlerWebSession) Post(p websession.WebSession_post) error {
+	content, err := p.Params.Content()
+	if err != nil {
+		return err
+	}
+	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "POST")
+}
+
+//// Stubs for unimplemented WebSession methods ////
+
+func (h *handlerWebSession) Put(p websession.WebSession_put) error {
+	content, err := p.Params.Content()
+	if err != nil {
+		return err
+	}
+	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PUT")
 }
 
 func (*handlerWebSession) Delete(p websession.WebSession_delete) error {
 	return errors.UnImplementedExn(p.Results.Segment())
 }
 
-func (*handlerWebSession) Patch(p websession.WebSession_patch) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
+	content, err := p.Params.Content()
+	if err != nil {
+		return err
+	}
+	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PATCH")
 }
 
 func (*handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
@@ -343,6 +435,6 @@ func (*handlerWebSession) Report(p websession.WebSession_report) error {
 	return errors.UnImplementedExn(p.Results.Segment())
 }
 
-func (*handlerWebSession) Options(p websession.WebSession_options) error {
+func (h *handlerWebSession) Options(p websession.WebSession_options) error {
 	return errors.UnImplementedExn(p.Results.Segment())
 }
