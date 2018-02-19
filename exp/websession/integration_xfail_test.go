@@ -89,7 +89,7 @@ func TestDisposition(t *testing.T) {
 	}
 	filename := params["filename"]
 	if filename != "hello.txt" {
-		t.Fatalf("Unexpectd file name in Content-Disposition; wanted hello.txt"+
+		t.Fatalf("Unexpected file name in Content-Disposition; wanted hello.txt"+
 			" but got %q", filename)
 	}
 }
