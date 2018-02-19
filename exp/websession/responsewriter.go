@@ -115,7 +115,8 @@ func (w *basicResponseWriter) writeHeaderCommon() {
 		}
 	}
 
-	// TODO: cachePolicy
+	// TODO: cachePolicy, though this is (very) low priority since at the time of
+	// writing (2018-02-19) since Sandstorm itself doesn't actually implement it.
 }
 
 // Copy the ETag header, if any, into the capnp response. `newETag` should be the New* method
