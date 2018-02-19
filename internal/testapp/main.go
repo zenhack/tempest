@@ -80,6 +80,19 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/return-headers", func(w http.ResponseWriter, req *http.Request) {
+		headers := map[string]string{}
+		err := json.NewDecoder(req.Body).Decode(&headers)
+		if err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("Error decoding body: " + err.Error()))
+			return
+		}
+		for key, val := range headers {
+			w.Header().Set(key, val)
+		}
+	})
+
 	http.HandleFunc("/etag", func(w http.ResponseWriter, req *http.Request) {
 		// NOTE: This does not handle etags in full generality; it's just
 		// enough for the one test case in our test suite.

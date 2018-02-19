@@ -44,6 +44,7 @@ func chkfatal(t *testing.T, err error) {
 }
 
 func expectStatus(t *testing.T, want, got int) {
+	t.Helper()
 	if want != got {
 		t.Fatal("Unexpected status code; expected", want, "but got", got)
 	}
@@ -114,7 +115,7 @@ func TestAcceptEncodingHeader(t *testing.T) {
 	testHeader(t, "Accept-Encoding", "*;q=1", "*;q=1")
 }
 
-func TestAdditionalHeaders(t *testing.T) {
+func TestAdditionalRequestHeaders(t *testing.T) {
 	testHeader(t, "X-Foo-Disallowed-Header", "Bar", "")
 	testHeader(t, "X-Sandstorm-App-Baz", "quux", "quux")
 	testHeader(t, "OC-Total-Length", "234", "234")
@@ -134,6 +135,30 @@ func TestETagPrecondition(t *testing.T) {
 	testHeader(t, "If-Match", `"foobarbaz"`, `"foobarbaz"`)
 	testHeader(t, "If-Match", `W/"foobarbaz"`, `W/"foobarbaz"`)
 	testHeader(t, "If-Match", `W/"foobarbaz", "quux"`, `W/"foobarbaz", "quux"`)
+}
+
+func TestAdditionalResponseHeaders(t *testing.T) {
+	resp, err := http.Post(baseUrl+"return-headers", "application/json", strings.NewReader(`
+		{
+			"X-Sandstorm-App-Foo": "bar",
+			"X-Sandstorm-App-Baz": "quux",
+			"X-OC-MTime": "2341"
+		}
+	`))
+	chkfatal(t, err)
+	expectStatus(t, 200, resp.StatusCode)
+
+	chkHeader := func(name, want string) {
+		got := resp.Header.Get(name)
+		if got != want {
+			t.Errorf("Incorrect value for header %q; wanted %q but got %q.",
+				name, want, got)
+		}
+	}
+
+	chkHeader("X-Sandstorm-App-Foo", "bar")
+	chkHeader("X-Sandstorm-App-Baz", "quux")
+	chkHeader("X-OC-MTime", "2341")
 }
 
 func TestResponseContentType(t *testing.T) {

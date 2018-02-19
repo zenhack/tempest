@@ -275,9 +275,19 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		}
 	}
 
-	// TODO:
-	//
-	// * additionalHeaders
+	// We copy all of the headers into additionalHeaders, and let Sandstorm worry
+	// about what to filter:
+	additionalHeaders, err := w.response.NewAdditionalHeaders(int32(len(w.header)))
+	if err != nil {
+		panic("Error allocating additionalHeaders: " + err.Error())
+	}
+	i := 0
+	for k, _ := range w.header {
+		hdr := additionalHeaders.At(i)
+		hdr.SetName(k)
+		hdr.SetValue(w.header.Get(k))
+		i++
+	}
 }
 
 // factor out the common work of the clientError variant.
