@@ -36,6 +36,7 @@ type echoBody struct {
 }
 
 func chkfatal(t *testing.T, err error) {
+	t.Helper()
 	if err != nil {
 		t.Fatal(err)
 	}
