@@ -15,11 +15,18 @@ import (
 // If all references to the ByteStream are dropped before Done is called,
 // further reads will return io.ErrUnexpectedEOF.
 func Pipe() (r *io.PipeReader, w util.ByteStream) {
+	r, wServer := PipeServer()
+	return r, util.ByteStream_ServerToClient(wServer)
+}
+
+// PipeServer() is like Pipe(), except that it returns a (ByteStream) server,
+// rather than a client.
+func PipeServer() (r *io.PipeReader, w util.ByteStream_Server) {
 	ioR, ioW := io.Pipe()
-	return ioR, util.ByteStream_ServerToClient(&pipeWriter{
+	return ioR, &pipeWriter{
 		w:        ioW,
 		isClosed: false,
-	})
+	}
 }
 
 // Implementation of ByteStream that wraps an io.PipeWriter; returned by Pipe().
