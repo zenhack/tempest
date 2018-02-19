@@ -254,12 +254,26 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	}
 
 	h.handler.ServeHTTP(w, req)
+	// TODO: would probably make sense to factor the rest of this out.
 	if w.statusCode == 0 {
 		w.WriteHeader(200)
 	}
-	responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
-		return nil
-	})
+	if w.bodyBuffer == nil {
+		responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
+			return nil
+		})
+	} else {
+		var errBody websession.WebSession_Response_ErrorBody
+		if w.statusCode == 500 {
+			errBody, err = w.response.ServerError().NonHtmlBody()
+		} else {
+			errBody, err = w.response.ClientError().NonHtmlBody()
+		}
+		if err != nil {
+			panic("Error fetching ErrorBody:" + err.Error())
+		}
+		errBody.SetData(w.bodyBuffer.Bytes())
+	}
 	return nil
 }
 

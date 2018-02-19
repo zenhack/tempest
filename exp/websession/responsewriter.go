@@ -3,9 +3,10 @@ package websession
 // Implement http.ResponseWriter on top of WebSession.
 
 import (
+	"bytes"
 	"context"
-	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -60,6 +61,10 @@ type basicResponseWriter struct {
 	// be used for the expectSize() method; use bodyWriter for actually
 	// writing data.
 	responseStream util.ByteStream
+
+	// The underlying buffer used by some responses for bodyWriter; if this
+	// is non-nil when the handler returns, we send it off to the client.
+	bodyBuffer *bytes.Buffer
 
 	header     http.Header
 	bodyWriter io.Writer
@@ -132,6 +137,31 @@ func (w *basicResponseWriter) copyETag(newETag func() (websession.WebSession_ETa
 	etagText = strings.TrimPrefix(etagText, `"`)
 	etagText = strings.TrimSuffix(etagText, `"`)
 	etagDst.SetValue(etagText)
+}
+
+func (w *basicResponseWriter) setErrorBody(newErrorBody func() (websession.WebSession_Response_ErrorBody, error)) {
+	body, err := newErrorBody()
+	if err != nil {
+		panic("Error allocating error body:" + err.Error())
+	}
+
+	encoding := w.header.Get("Content-Encoding")
+	language := w.header.Get("Content-Language")
+	contentType := w.header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "text/html"
+	}
+
+	body.SetMimeType(contentType)
+	if encoding != "" {
+		body.SetEncoding(encoding)
+	}
+	if language != "" {
+		body.SetLanguage(language)
+	}
+
+	w.bodyBuffer = &bytes.Buffer{}
+	w.bodyWriter = w.bodyBuffer
 }
 
 func (w *basicResponseWriter) WriteHeader(statusCode int) {
@@ -213,18 +243,48 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 		redirect.SetLocation(w.header.Get("Location"))
 		redirect.SetIsPermanent(statusCode == 301 || statusCode == 308)
 		redirect.SetSwitchToGet(statusCode == 302 || statusCode == 303 || statusCode == 301)
-	// TODO:
-	//
-	// * clientError
-	// * serverError
-	// * unsupported status
+	case 400, 403, 404, 405, 406, 409, 410, 413, 414, 415, 418, 422:
+		w.clientError()
+	case 500:
+		w.response.SetServerError()
+		w.setErrorBody(w.response.ServerError().NewNonHtmlBody)
 	default:
-		panic(fmt.Sprintf("Status not implemented: %d", statusCode))
+		if statusCode >= 400 && statusCode < 500 {
+			log.Printf("Unsupported client error code %d; reporting 400.", statusCode)
+			w.statusCode = 400
+			w.clientError()
+		} else {
+			log.Printf("Unsupported status code %d; reporting 500.", statusCode)
+
+			// Make sure this is set correctly; if the client sets it to 0, bad
+			// things will happen, since we use that to detect that the status
+			// has not been set!
+			w.statusCode = 500
+
+			w.response.SetServerError()
+			body, err := w.response.ServerError().NewNonHtmlBody()
+			if err != nil {
+				panic("Error allocating error body:" + err.Error())
+			}
+
+			// Don't send the body from the app; substitute our own.
+			body.SetMimeType("text/plain")
+			body.SetData([]byte(`Error: app sent unsupported status code.`))
+			w.bodyWriter = ioutil.Discard
+		}
 	}
 
 	// TODO:
 	//
 	// * additionalHeaders
+}
+
+// factor out the common work of the clientError variant.
+func (w *basicResponseWriter) clientError() {
+	w.response.SetClientError()
+	clientError := w.response.ClientError()
+	clientError.SetStatusCode(clientErrorCodeMap[w.statusCode])
+	w.setErrorBody(clientError.NewNonHtmlBody)
 }
 
 func (w *basicResponseWriter) Write(data []byte) (n int, err error) {
