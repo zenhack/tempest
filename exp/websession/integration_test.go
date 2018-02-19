@@ -190,11 +190,15 @@ func TestWantStatus(t *testing.T) {
 		500,
 	}
 	for _, wantStatus := range statusCodes {
-		resp, err := http.Get(fmt.Sprintf(
-			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
-		))
-		chkfatal(t, err)
-		expectStatus(t, wantStatus, resp.StatusCode)
+		url := fmt.Sprintf("%secho-request/status?want-status=%d", baseUrl, wantStatus)
+
+		for _, method := range []string{"GET", "HEAD", "DELETE"} {
+			req, err := http.NewRequest(method, url, nil)
+			chkfatal(t, err)
+			resp, err := http.DefaultClient.Do(req)
+			chkfatal(t, err)
+			expectStatus(t, wantStatus, resp.StatusCode)
+		}
 	}
 }
 

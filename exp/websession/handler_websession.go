@@ -375,8 +375,11 @@ func (h *handlerWebSession) Put(p websession.WebSession_put) error {
 	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PUT")
 }
 
-func (*handlerWebSession) Delete(p websession.WebSession_delete) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (h *handlerWebSession) Delete(p websession.WebSession_delete) error {
+	return h.handleCommon(p.Ctx, p.Params, p.Results, func(req *http.Request) error {
+		req.Method = "DELETE"
+		return nil
+	})
 }
 
 func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
