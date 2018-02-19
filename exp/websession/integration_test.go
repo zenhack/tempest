@@ -219,43 +219,6 @@ func TestBadOtherStatus(t *testing.T) {
 	}
 }
 
-// For client errors and 500s set by the app, we should still see the usual body.
-func TestErrorBodies(t *testing.T) {
-	statusCodes := []int{
-		// clientError
-		400, 403, 404, 405, 406, 409, 410, 413, 414, 415, 418, 422,
-		// serverError
-		500,
-	}
-	for _, wantStatus := range statusCodes {
-		resp, err := http.Get(fmt.Sprintf(
-			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
-		))
-		chkfatal(t, err)
-		expectStatus(t, wantStatus, resp.StatusCode)
-
-		// Read in the whole body up front. This way we can print it for
-		// debugging if decoding it fails.
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		chkfatal(t, err)
-		defer func() {
-			if t.Failed() {
-				t.Logf("Body was: %q", bodyBytes)
-			}
-		}()
-
-		// parse the body, and sanity check at least one thing:
-		body := &echoBody{}
-		err = json.Unmarshal(bodyBytes, body)
-		chkfatal(t, err)
-
-		if body.Method != "GET" {
-			t.Fatalf("Wrong method: %q", body.Method)
-		}
-		t.Logf("Status OK: %d", wantStatus)
-	}
-}
-
 func TestWantLanguage(t *testing.T) {
 	for _, wantLang := range []string{"en-US", "de-DE"} {
 		resp, err := http.Get(
