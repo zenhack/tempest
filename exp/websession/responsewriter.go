@@ -75,6 +75,27 @@ func (w *basicResponseWriter) Header() http.Header {
 	return w.header
 }
 
+func (w *basicResponseWriter) finishResponse(ctx context.Context) error {
+	if w.bodyBuffer == nil {
+		w.responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
+			return nil
+		})
+	} else {
+		var errBody websession.WebSession_Response_ErrorBody
+		var err error
+		if w.statusCode == 500 {
+			errBody, err = w.response.ServerError().NonHtmlBody()
+		} else {
+			errBody, err = w.response.ClientError().NonHtmlBody()
+		}
+		if err != nil {
+			panic("Error fetching ErrorBody:" + err.Error())
+		}
+		errBody.SetData(w.bodyBuffer.Bytes())
+	}
+	return nil
+}
+
 // Set fields common to all possible websession responses.
 func (w *basicResponseWriter) writeHeaderCommon() {
 	// A bit of a hack; afaik there's no public

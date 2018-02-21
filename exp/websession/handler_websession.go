@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"strings"
 
-	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/sandstorm/exp/util/handle"
@@ -45,22 +44,23 @@ type handlerWebSession struct {
 //
 // The request will have a Context that is derived from ctx, but includes the
 // SessionData in its Values.
-func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams) (*http.Request, error) {
+func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams) (*basicResponseWriter, *http.Request, error) {
+	ctx, cancel := handle.WithCancel(ctx)
 	path, err := params.Path()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	wsCtx, err := params.Context()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Sandstorm gives us a path no leading slash, but Go's http library
 	// expects one:
 	parsedUrl, err := url.ParseRequestURI("/" + path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ctx = context.WithValue(ctx, sessionDataKey, h.sessionData)
@@ -72,13 +72,21 @@ func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams
 	req = req.WithContext(ctx)
 	err = copyContextInfo(req, wsCtx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Set this as a default, so it's never nil.
 	req.Body = http.NoBody
 
-	return req, nil
+	w := &basicResponseWriter{
+		statusCode:     0,
+		header:         http.Header{},
+		cancel:         cancel,
+		responseStream: wsCtx.ResponseStream(),
+	}
+	w.bodyWriter = bytestream.ToWriteCloser(req.Context(), w.responseStream)
+
+	return w, req, nil
 }
 
 // Copy the information from the context into the request.
@@ -241,26 +249,11 @@ func (h *handlerWebSession) handleCommon(
 	response websession.WebSession_Response,
 	customize func(*http.Request) error,
 ) error {
-	ctx, cancel := handle.WithCancel(ctx)
-	req, err := h.initRequest(ctx, params)
+	w, req, err := h.initRequest(ctx, params)
 	if err != nil {
 		return err
 	}
-
-	wsCtx, err := params.Context()
-	if err != nil {
-		return err
-	}
-	responseStream := wsCtx.ResponseStream()
-
-	w := &basicResponseWriter{
-		statusCode:     0,
-		header:         http.Header{},
-		cancel:         cancel,
-		responseStream: responseStream,
-		bodyWriter:     bytestream.ToWriteCloser(req.Context(), responseStream),
-		response:       response,
-	}
+	w.response = response
 
 	err = customize(req)
 	if err != nil {
@@ -271,23 +264,7 @@ func (h *handlerWebSession) handleCommon(
 	if w.statusCode == 0 {
 		w.WriteHeader(200)
 	}
-	if w.bodyBuffer == nil {
-		responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
-			return nil
-		})
-	} else {
-		var errBody websession.WebSession_Response_ErrorBody
-		if w.statusCode == 500 {
-			errBody, err = w.response.ServerError().NonHtmlBody()
-		} else {
-			errBody, err = w.response.ClientError().NonHtmlBody()
-		}
-		if err != nil {
-			panic("Error fetching ErrorBody:" + err.Error())
-		}
-		errBody.SetData(w.bodyBuffer.Bytes())
-	}
-	return nil
+	return w.finishResponse(req.Context())
 }
 
 // PostContent/PutContent
@@ -387,12 +364,41 @@ func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
 	}
 	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PATCH")
 }
+func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
+	// TODO: copy mimeType & encoding.
+	reqR, reqW := bytestream.PipeServer()
+	reqStream := &requestStream{
+		ByteStream_Server: reqW,
+		responseChan:      make(chan websession.WebSession_Response, 1),
+		errChan:           make(chan error, 1),
+	}
+	p.Results.SetStream(websession.WebSession_RequestStream_ServerToClient(reqStream))
+	response, err := websession.NewWebSession_Response(p.Params.Segment())
+	if err != nil {
+		panic("Error allocating response: " + err.Error())
+	}
+	go func() {
+		basicW, req, err := h.initRequest(p.Ctx, p.Params)
+		if err != nil {
+			reqStream.errChan <- err
+			return
+		}
+		basicW.response = response
+		w := &streamingResponseWriter{
+			basic:        basicW,
+			responseChan: reqStream.responseChan,
+		}
+		req.Body = reqR
+		h.handler.ServeHTTP(w, req)
+		if w.basic.statusCode == 0 {
+			w.WriteHeader(200)
+		}
+		w.basic.finishResponse(req.Context())
+	}()
+	return nil
+}
 
 //// Stubs for unimplemented WebSession methods ////
-
-func (*handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
-	return errors.UnImplementedExn(p.Results.Segment())
-}
 
 func (*handlerWebSession) PutStreaming(p websession.WebSession_putStreaming) error {
 	return errors.UnImplementedExn(p.Results.Segment())

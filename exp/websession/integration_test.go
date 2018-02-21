@@ -5,8 +5,10 @@ package websession
 // Integration tests; these operate against the test app in ../../internal/testapp
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -396,5 +398,33 @@ func TestPRequest(t *testing.T) {
 			t.Errorf("Incorrect body; expected %q but got %q.",
 				sendBody, body.Body)
 		}
+	}
+}
+
+func TestStreaming(t *testing.T) {
+	r, w := io.Pipe()
+	req, err := http.NewRequest("POST", baseUrl+"echo-body", r)
+	chkfatal(t, err)
+	resp, err := http.DefaultTransport.RoundTrip(req)
+	chkfatal(t, err)
+	body := bufio.NewReader(resp.Body)
+	msg := "Hello, World\n"
+	for i := 0; i < 10; i++ {
+		_, err = w.Write([]byte(msg))
+		chkfatal(t, err)
+		line, err := body.ReadString('\n')
+		chkfatal(t, err)
+		if line != msg {
+			t.Fatalf("Wrote %q but read %q", msg, line)
+		}
+	}
+	w.Close()
+	b, err := body.ReadByte()
+	switch err {
+	case io.EOF:
+	case nil:
+		t.Fatal("Expected end of file, but read byte %c", b)
+	default:
+		t.Fatal("Expected end of file, but got error %q", err)
 	}
 }

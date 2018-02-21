@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"mime"
@@ -142,6 +143,11 @@ func main() {
 
 	http.HandleFunc("/no-op-handler", func(w http.ResponseWriter, req *http.Request) {
 		// Make sure stuff works even if we don't do anything in the handler.
+	})
+
+	http.HandleFunc("/echo-body", func(w http.ResponseWriter, req *http.Request) {
+		println("Hi!")
+		io.Copy(w, req.Body)
 	})
 
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
