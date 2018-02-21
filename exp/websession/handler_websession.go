@@ -75,6 +75,9 @@ func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams
 		return nil, err
 	}
 
+	// Set this as a default, so it's never nil.
+	req.Body = http.NoBody
+
 	return req, nil
 }
 
@@ -243,9 +246,6 @@ func (h *handlerWebSession) handleCommon(
 	if err != nil {
 		return err
 	}
-
-	// Make sure it's not nil:
-	req.Body = http.NoBody
 
 	wsCtx, err := params.Context()
 	if err != nil {
