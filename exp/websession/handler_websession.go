@@ -365,7 +365,6 @@ func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
 	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PATCH")
 }
 func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
-	// TODO: copy mimeType & encoding.
 	reqR, reqW := bytestream.PipeServer()
 	reqStream := &requestStream{
 		ByteStream_Server: reqW,
@@ -386,6 +385,10 @@ func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming)
 			reqStream.errChan <- err
 			return
 		}
+
+		req.Method = "POST"
+		// TODO: copy mimeType & encoding.
+
 		basicW.response = response
 		w := &streamingResponseWriter{
 			basic:        basicW,
