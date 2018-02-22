@@ -364,6 +364,7 @@ func TestPRequest(t *testing.T) {
 		req.Header.Set("Content-Type", "text/plain")
 		req.Header.Set("Content-Encoding", "identity")
 		resp, err := http.DefaultClient.Do(req)
+		chkfatal(t, err)
 
 		body := &echoBody{}
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
