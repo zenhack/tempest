@@ -378,7 +378,10 @@ func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming)
 		panic("Error allocating response: " + err.Error())
 	}
 	go func() {
-		basicW, req, err := h.initRequest(p.Ctx, p.Params)
+		// It's not clear to me(zenhack) what context we should use here;
+		// we can't use p.Ctx because that will be canceled when
+		// postStreaming returns.
+		basicW, req, err := h.initRequest(context.TODO(), p.Params)
 		if err != nil {
 			reqStream.errChan <- err
 			return
