@@ -198,8 +198,8 @@ func TestResponseContentLength(t *testing.T) {
 
 	realLength := uint64(len(body))
 	if realLength != reportLength {
-		t.Fatal("Content-Header indicated a length of %d, but body was ",
-			"actually %d bytes long.", reportLength, realLength)
+		t.Fatalf("Content-Header indicated a length of %v, but body was "+
+			"actually %v bytes long.", reportLength, realLength)
 	}
 }
 
@@ -423,8 +423,8 @@ func TestStreaming(t *testing.T) {
 	switch err {
 	case io.EOF:
 	case nil:
-		t.Fatal("Expected end of file, but read byte %c", b)
+		t.Fatalf("Expected end of file, but read byte %c", b)
 	default:
-		t.Fatal("Expected end of file, but got error %q", err)
+		t.Fatalf("Expected end of file, but got error %q", err)
 	}
 }
