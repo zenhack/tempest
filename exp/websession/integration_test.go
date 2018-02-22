@@ -404,11 +404,25 @@ func TestPRequest(t *testing.T) {
 
 func TestStreaming(t *testing.T) {
 	r, w := io.Pipe()
-	req, err := http.NewRequest("POST", baseUrl+"echo-body", r)
+
+	// If we just pass in the pipe, the client will block until there's data,
+	// so we give it something else to read from before we start writing data,
+	// via a MultiReader.
+	req, err := http.NewRequest("POST", baseUrl+"echo-body",
+		io.MultiReader(strings.NewReader("FirstLine\n"), r))
+
 	chkfatal(t, err)
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	chkfatal(t, err)
 	body := bufio.NewReader(resp.Body)
+
+	line, err := body.ReadString('\n')
+	chkfatal(t, err)
+	t.Logf("line = %q", line)
+	if line != "FirstLine\n" {
+		t.Fatalf("Wrote %q but read %q", "FirstLine\n", line)
+	}
+
 	msg := "Hello, World\n"
 	for i := 0; i < 10; i++ {
 		_, err = w.Write([]byte(msg))

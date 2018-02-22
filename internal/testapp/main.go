@@ -146,8 +146,11 @@ func main() {
 	})
 
 	http.HandleFunc("/echo-body", func(w http.ResponseWriter, req *http.Request) {
-		println("Hi!")
-		io.Copy(w, req.Body)
+		n, err := io.Copy(io.MultiWriter(os.Stderr, w), req.Body)
+		if err != nil {
+			log.Printf("Error in io.Copy: %q", err)
+		}
+		log.Printf("io.Copy: wrote %d bytes.", n)
 	})
 
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
