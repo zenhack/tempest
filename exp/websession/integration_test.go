@@ -412,7 +412,7 @@ func TestStreaming(t *testing.T) {
 		io.MultiReader(strings.NewReader("FirstLine\n"), r))
 
 	chkfatal(t, err)
-	resp, err := http.DefaultTransport.RoundTrip(req)
+	resp, err := http.DefaultClient.Do(req)
 	chkfatal(t, err)
 	body := bufio.NewReader(resp.Body)
 
