@@ -25,7 +25,7 @@ func NewRootProxyClaimRequestRequest(s *capnp.Segment) (ProxyClaimRequestRequest
 }
 
 func ReadRootProxyClaimRequestRequest(msg *capnp.Message) (ProxyClaimRequestRequest, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ProxyClaimRequestRequest{root.Struct()}, err
 }
 
@@ -40,8 +40,7 @@ func (s ProxyClaimRequestRequest) RequestToken() (string, error) {
 }
 
 func (s ProxyClaimRequestRequest) HasRequestToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ProxyClaimRequestRequest) RequestTokenBytes() ([]byte, error) {
@@ -59,8 +58,7 @@ func (s ProxyClaimRequestRequest) RequiredPermissions() (capnp.TextList, error) 
 }
 
 func (s ProxyClaimRequestRequest) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s ProxyClaimRequestRequest) SetRequiredPermissions(v capnp.TextList) error {
@@ -84,8 +82,7 @@ func (s ProxyClaimRequestRequest) Label() (util.LocalizedText, error) {
 }
 
 func (s ProxyClaimRequestRequest) HasLabel() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s ProxyClaimRequestRequest) SetLabel(v util.LocalizedText) error {
@@ -125,16 +122,16 @@ func (s ProxyClaimRequestRequest_List) String() string {
 	return str
 }
 
-// ProxyClaimRequestRequest_Promise is a wrapper for a ProxyClaimRequestRequest promised by a client call.
-type ProxyClaimRequestRequest_Promise struct{ *capnp.Pipeline }
+// ProxyClaimRequestRequest_Future is a wrapper for a ProxyClaimRequestRequest promised by a client call.
+type ProxyClaimRequestRequest_Future struct{ *capnp.Future }
 
-func (p ProxyClaimRequestRequest_Promise) Struct() (ProxyClaimRequestRequest, error) {
-	s, err := p.Pipeline.Struct()
+func (p ProxyClaimRequestRequest_Future) Struct() (ProxyClaimRequestRequest, error) {
+	s, err := p.Future.Struct()
 	return ProxyClaimRequestRequest{s}, err
 }
 
-func (p ProxyClaimRequestRequest_Promise) Label() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p ProxyClaimRequestRequest_Future) Label() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
 type ProxyClaimRequestResponse struct{ capnp.Struct }
@@ -153,7 +150,7 @@ func NewRootProxyClaimRequestResponse(s *capnp.Segment) (ProxyClaimRequestRespon
 }
 
 func ReadRootProxyClaimRequestResponse(msg *capnp.Message) (ProxyClaimRequestResponse, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ProxyClaimRequestResponse{root.Struct()}, err
 }
 
@@ -168,8 +165,7 @@ func (s ProxyClaimRequestResponse) Cap() (string, error) {
 }
 
 func (s ProxyClaimRequestResponse) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ProxyClaimRequestResponse) CapBytes() ([]byte, error) {
@@ -203,11 +199,11 @@ func (s ProxyClaimRequestResponse_List) String() string {
 	return str
 }
 
-// ProxyClaimRequestResponse_Promise is a wrapper for a ProxyClaimRequestResponse promised by a client call.
-type ProxyClaimRequestResponse_Promise struct{ *capnp.Pipeline }
+// ProxyClaimRequestResponse_Future is a wrapper for a ProxyClaimRequestResponse promised by a client call.
+type ProxyClaimRequestResponse_Future struct{ *capnp.Future }
 
-func (p ProxyClaimRequestResponse_Promise) Struct() (ProxyClaimRequestResponse, error) {
-	s, err := p.Pipeline.Struct()
+func (p ProxyClaimRequestResponse_Future) Struct() (ProxyClaimRequestResponse, error) {
+	s, err := p.Future.Struct()
 	return ProxyClaimRequestResponse{s}, err
 }
 

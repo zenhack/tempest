@@ -3,7 +3,7 @@
 package grain
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	strconv "strconv"
 	activity "zenhack.net/go/sandstorm/capnp/activity"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
@@ -15,261 +15,227 @@ import (
 	server "zombiezen.com/go/capnproto2/server"
 )
 
-type SandstormApi struct{ Client capnp.Client }
+type SandstormApi struct{ Client *capnp.Client }
 
 // SandstormApi_TypeID is the unique identifier for the type SandstormApi.
 const SandstormApi_TypeID = 0xd2654fcf2a7002cb
 
-func (c SandstormApi) DeprecatedPublish(ctx context.Context, params func(SandstormApi_deprecatedPublish_Params) error, opts ...capnp.CallOption) SandstormApi_deprecatedPublish_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_deprecatedPublish_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) DeprecatedPublish(ctx context.Context, params func(SandstormApi_deprecatedPublish_Params) error) (SandstormApi_deprecatedPublish_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deprecatedPublish",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_deprecatedPublish_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_deprecatedPublish_Params{Struct: s}) }
 	}
-	return SandstormApi_deprecatedPublish_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_deprecatedPublish_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) DeprecatedRegisterAction(ctx context.Context, params func(SandstormApi_deprecatedRegisterAction_Params) error, opts ...capnp.CallOption) SandstormApi_deprecatedRegisterAction_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_deprecatedRegisterAction_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) DeprecatedRegisterAction(ctx context.Context, params func(SandstormApi_deprecatedRegisterAction_Params) error) (SandstormApi_deprecatedRegisterAction_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deprecatedRegisterAction",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_deprecatedRegisterAction_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_deprecatedRegisterAction_Params{Struct: s}) }
 	}
-	return SandstormApi_deprecatedRegisterAction_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_deprecatedRegisterAction_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) ShareCap(ctx context.Context, params func(SandstormApi_shareCap_Params) error, opts ...capnp.CallOption) SandstormApi_shareCap_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_shareCap_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) ShareCap(ctx context.Context, params func(SandstormApi_shareCap_Params) error) (SandstormApi_shareCap_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "shareCap",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_shareCap_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_shareCap_Params{Struct: s}) }
 	}
-	return SandstormApi_shareCap_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_shareCap_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) ShareView(ctx context.Context, params func(SandstormApi_shareView_Params) error, opts ...capnp.CallOption) SandstormApi_shareView_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_shareView_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) ShareView(ctx context.Context, params func(SandstormApi_shareView_Params) error) (SandstormApi_shareView_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "shareView",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_shareView_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_shareView_Params{Struct: s}) }
 	}
-	return SandstormApi_shareView_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_shareView_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) Restore(ctx context.Context, params func(SandstormApi_restore_Params) error, opts ...capnp.CallOption) SandstormApi_restore_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_restore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) Restore(ctx context.Context, params func(SandstormApi_restore_Params) error) (SandstormApi_restore_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "restore",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_restore_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_restore_Params{Struct: s}) }
 	}
-	return SandstormApi_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_restore_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) Drop(ctx context.Context, params func(SandstormApi_drop_Params) error, opts ...capnp.CallOption) SandstormApi_drop_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) Drop(ctx context.Context, params func(SandstormApi_drop_Params) error) (SandstormApi_drop_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "drop",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_drop_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_drop_Params{Struct: s}) }
 	}
-	return SandstormApi_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_drop_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) Deleted(ctx context.Context, params func(SandstormApi_deleted_Params) error, opts ...capnp.CallOption) SandstormApi_deleted_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_deleted_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) Deleted(ctx context.Context, params func(SandstormApi_deleted_Params) error) (SandstormApi_deleted_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deleted",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_deleted_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_deleted_Params{Struct: s}) }
 	}
-	return SandstormApi_deleted_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_deleted_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) StayAwake(ctx context.Context, params func(SandstormApi_stayAwake_Params) error, opts ...capnp.CallOption) SandstormApi_stayAwake_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_stayAwake_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) StayAwake(ctx context.Context, params func(SandstormApi_stayAwake_Params) error) (SandstormApi_stayAwake_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      7,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "stayAwake",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_stayAwake_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_stayAwake_Params{Struct: s}) }
 	}
-	return SandstormApi_stayAwake_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_stayAwake_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) Save(ctx context.Context, params func(SandstormApi_save_Params) error, opts ...capnp.CallOption) SandstormApi_save_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_save_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) Save(ctx context.Context, params func(SandstormApi_save_Params) error) (SandstormApi_save_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      8,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_save_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_save_Params{Struct: s}) }
 	}
-	return SandstormApi_save_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_save_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) BackgroundActivity(ctx context.Context, params func(SandstormApi_backgroundActivity_Params) error, opts ...capnp.CallOption) SandstormApi_backgroundActivity_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_backgroundActivity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) BackgroundActivity(ctx context.Context, params func(SandstormApi_backgroundActivity_Params) error) (SandstormApi_backgroundActivity_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      9,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "backgroundActivity",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_backgroundActivity_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_backgroundActivity_Params{Struct: s}) }
 	}
-	return SandstormApi_backgroundActivity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_backgroundActivity_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormApi) GetIdentityId(ctx context.Context, params func(SandstormApi_getIdentityId_Params) error, opts ...capnp.CallOption) SandstormApi_getIdentityId_Results_Promise {
-	if c.Client == nil {
-		return SandstormApi_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormApi) GetIdentityId(ctx context.Context, params func(SandstormApi_getIdentityId_Params) error) (SandstormApi_getIdentityId_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd2654fcf2a7002cb,
 			MethodID:      10,
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "getIdentityId",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormApi_getIdentityId_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormApi_getIdentityId_Params{Struct: s}) }
 	}
-	return SandstormApi_getIdentityId_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormApi_getIdentityId_Results_Future{Future: ans.Future()}, release
 }
 
+// A SandstormApi_Server is a SandstormApi with a local implementation.
 type SandstormApi_Server interface {
-	DeprecatedPublish(SandstormApi_deprecatedPublish) error
+	DeprecatedPublish(context.Context, SandstormApi_deprecatedPublish) error
 
-	DeprecatedRegisterAction(SandstormApi_deprecatedRegisterAction) error
+	DeprecatedRegisterAction(context.Context, SandstormApi_deprecatedRegisterAction) error
 
-	ShareCap(SandstormApi_shareCap) error
+	ShareCap(context.Context, SandstormApi_shareCap) error
 
-	ShareView(SandstormApi_shareView) error
+	ShareView(context.Context, SandstormApi_shareView) error
 
-	Restore(SandstormApi_restore) error
+	Restore(context.Context, SandstormApi_restore) error
 
-	Drop(SandstormApi_drop) error
+	Drop(context.Context, SandstormApi_drop) error
 
-	Deleted(SandstormApi_deleted) error
+	Deleted(context.Context, SandstormApi_deleted) error
 
-	StayAwake(SandstormApi_stayAwake) error
+	StayAwake(context.Context, SandstormApi_stayAwake) error
 
-	Save(SandstormApi_save) error
+	Save(context.Context, SandstormApi_save) error
 
-	BackgroundActivity(SandstormApi_backgroundActivity) error
+	BackgroundActivity(context.Context, SandstormApi_backgroundActivity) error
 
-	GetIdentityId(SandstormApi_getIdentityId) error
+	GetIdentityId(context.Context, SandstormApi_getIdentityId) error
 }
 
-func SandstormApi_ServerToClient(s SandstormApi_Server) SandstormApi {
-	c, _ := s.(server.Closer)
-	return SandstormApi{Client: server.New(SandstormApi_Methods(nil, s), c)}
+// SandstormApi_NewServer creates a new Server from an implementation of SandstormApi_Server.
+func SandstormApi_NewServer(s SandstormApi_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(SandstormApi_Methods(nil, s), s, c, policy)
 }
 
+// SandstormApi_ServerToClient creates a new Client from an implementation of SandstormApi_Server.
+// The caller is responsible for calling Release on the returned Client.
+func SandstormApi_ServerToClient(s SandstormApi_Server, policy *server.Policy) SandstormApi {
+	return SandstormApi{Client: capnp.NewClient(SandstormApi_NewServer(s, policy))}
+}
+
+// SandstormApi_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 11)
@@ -282,11 +248,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deprecatedPublish",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_deprecatedPublish{c, opts, SandstormApi_deprecatedPublish_Params{Struct: p}, SandstormApi_deprecatedPublish_Results{Struct: r}}
-			return s.DeprecatedPublish(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeprecatedPublish(ctx, SandstormApi_deprecatedPublish{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -296,11 +260,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deprecatedRegisterAction",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_deprecatedRegisterAction{c, opts, SandstormApi_deprecatedRegisterAction_Params{Struct: p}, SandstormApi_deprecatedRegisterAction_Results{Struct: r}}
-			return s.DeprecatedRegisterAction(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeprecatedRegisterAction(ctx, SandstormApi_deprecatedRegisterAction{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -310,11 +272,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "shareCap",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_shareCap{c, opts, SandstormApi_shareCap_Params{Struct: p}, SandstormApi_shareCap_Results{Struct: r}}
-			return s.ShareCap(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ShareCap(ctx, SandstormApi_shareCap{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -324,11 +284,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "shareView",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_shareView{c, opts, SandstormApi_shareView_Params{Struct: p}, SandstormApi_shareView_Results{Struct: r}}
-			return s.ShareView(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ShareView(ctx, SandstormApi_shareView{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -338,11 +296,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "restore",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_restore{c, opts, SandstormApi_restore_Params{Struct: p}, SandstormApi_restore_Results{Struct: r}}
-			return s.Restore(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Restore(ctx, SandstormApi_restore{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -352,11 +308,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "drop",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_drop{c, opts, SandstormApi_drop_Params{Struct: p}, SandstormApi_drop_Results{Struct: r}}
-			return s.Drop(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Drop(ctx, SandstormApi_drop{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -366,11 +320,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "deleted",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_deleted{c, opts, SandstormApi_deleted_Params{Struct: p}, SandstormApi_deleted_Results{Struct: r}}
-			return s.Deleted(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Deleted(ctx, SandstormApi_deleted{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -380,11 +332,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "stayAwake",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_stayAwake{c, opts, SandstormApi_stayAwake_Params{Struct: p}, SandstormApi_stayAwake_Results{Struct: r}}
-			return s.StayAwake(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.StayAwake(ctx, SandstormApi_stayAwake{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -394,11 +344,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_save{c, opts, SandstormApi_save_Params{Struct: p}, SandstormApi_save_Results{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, SandstormApi_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -408,11 +356,9 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "backgroundActivity",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_backgroundActivity{c, opts, SandstormApi_backgroundActivity_Params{Struct: p}, SandstormApi_backgroundActivity_Results{Struct: r}}
-			return s.BackgroundActivity(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.BackgroundActivity(ctx, SandstormApi_backgroundActivity{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -422,102 +368,199 @@ func SandstormApi_Methods(methods []server.Method, s SandstormApi_Server) []serv
 			InterfaceName: "grain.capnp:SandstormApi",
 			MethodName:    "getIdentityId",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormApi_getIdentityId{c, opts, SandstormApi_getIdentityId_Params{Struct: p}, SandstormApi_getIdentityId_Results{Struct: r}}
-			return s.GetIdentityId(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetIdentityId(ctx, SandstormApi_getIdentityId{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// SandstormApi_deprecatedPublish holds the arguments for a server call to SandstormApi.deprecatedPublish.
+// SandstormApi_deprecatedPublish holds the state for a server call to SandstormApi.deprecatedPublish.
+// See server.Call for documentation.
 type SandstormApi_deprecatedPublish struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_deprecatedPublish_Params
-	Results SandstormApi_deprecatedPublish_Results
+	*server.Call
 }
 
-// SandstormApi_deprecatedRegisterAction holds the arguments for a server call to SandstormApi.deprecatedRegisterAction.
+// Args returns the call's arguments.
+func (c SandstormApi_deprecatedPublish) Args() SandstormApi_deprecatedPublish_Params {
+	return SandstormApi_deprecatedPublish_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_deprecatedPublish) AllocResults() (SandstormApi_deprecatedPublish_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormApi_deprecatedPublish_Results{Struct: r}, err
+}
+
+// SandstormApi_deprecatedRegisterAction holds the state for a server call to SandstormApi.deprecatedRegisterAction.
+// See server.Call for documentation.
 type SandstormApi_deprecatedRegisterAction struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_deprecatedRegisterAction_Params
-	Results SandstormApi_deprecatedRegisterAction_Results
+	*server.Call
 }
 
-// SandstormApi_shareCap holds the arguments for a server call to SandstormApi.shareCap.
+// Args returns the call's arguments.
+func (c SandstormApi_deprecatedRegisterAction) Args() SandstormApi_deprecatedRegisterAction_Params {
+	return SandstormApi_deprecatedRegisterAction_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_deprecatedRegisterAction) AllocResults() (SandstormApi_deprecatedRegisterAction_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormApi_deprecatedRegisterAction_Results{Struct: r}, err
+}
+
+// SandstormApi_shareCap holds the state for a server call to SandstormApi.shareCap.
+// See server.Call for documentation.
 type SandstormApi_shareCap struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_shareCap_Params
-	Results SandstormApi_shareCap_Results
+	*server.Call
 }
 
-// SandstormApi_shareView holds the arguments for a server call to SandstormApi.shareView.
+// Args returns the call's arguments.
+func (c SandstormApi_shareCap) Args() SandstormApi_shareCap_Params {
+	return SandstormApi_shareCap_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_shareCap) AllocResults() (SandstormApi_shareCap_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SandstormApi_shareCap_Results{Struct: r}, err
+}
+
+// SandstormApi_shareView holds the state for a server call to SandstormApi.shareView.
+// See server.Call for documentation.
 type SandstormApi_shareView struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_shareView_Params
-	Results SandstormApi_shareView_Results
+	*server.Call
 }
 
-// SandstormApi_restore holds the arguments for a server call to SandstormApi.restore.
+// Args returns the call's arguments.
+func (c SandstormApi_shareView) Args() SandstormApi_shareView_Params {
+	return SandstormApi_shareView_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_shareView) AllocResults() (SandstormApi_shareView_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SandstormApi_shareView_Results{Struct: r}, err
+}
+
+// SandstormApi_restore holds the state for a server call to SandstormApi.restore.
+// See server.Call for documentation.
 type SandstormApi_restore struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_restore_Params
-	Results SandstormApi_restore_Results
+	*server.Call
 }
 
-// SandstormApi_drop holds the arguments for a server call to SandstormApi.drop.
+// Args returns the call's arguments.
+func (c SandstormApi_restore) Args() SandstormApi_restore_Params {
+	return SandstormApi_restore_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_restore) AllocResults() (SandstormApi_restore_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_restore_Results{Struct: r}, err
+}
+
+// SandstormApi_drop holds the state for a server call to SandstormApi.drop.
+// See server.Call for documentation.
 type SandstormApi_drop struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_drop_Params
-	Results SandstormApi_drop_Results
+	*server.Call
 }
 
-// SandstormApi_deleted holds the arguments for a server call to SandstormApi.deleted.
+// Args returns the call's arguments.
+func (c SandstormApi_drop) Args() SandstormApi_drop_Params {
+	return SandstormApi_drop_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_drop) AllocResults() (SandstormApi_drop_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormApi_drop_Results{Struct: r}, err
+}
+
+// SandstormApi_deleted holds the state for a server call to SandstormApi.deleted.
+// See server.Call for documentation.
 type SandstormApi_deleted struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_deleted_Params
-	Results SandstormApi_deleted_Results
+	*server.Call
 }
 
-// SandstormApi_stayAwake holds the arguments for a server call to SandstormApi.stayAwake.
+// Args returns the call's arguments.
+func (c SandstormApi_deleted) Args() SandstormApi_deleted_Params {
+	return SandstormApi_deleted_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_deleted) AllocResults() (SandstormApi_deleted_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormApi_deleted_Results{Struct: r}, err
+}
+
+// SandstormApi_stayAwake holds the state for a server call to SandstormApi.stayAwake.
+// See server.Call for documentation.
 type SandstormApi_stayAwake struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_stayAwake_Params
-	Results SandstormApi_stayAwake_Results
+	*server.Call
 }
 
-// SandstormApi_save holds the arguments for a server call to SandstormApi.save.
+// Args returns the call's arguments.
+func (c SandstormApi_stayAwake) Args() SandstormApi_stayAwake_Params {
+	return SandstormApi_stayAwake_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_stayAwake) AllocResults() (SandstormApi_stayAwake_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_stayAwake_Results{Struct: r}, err
+}
+
+// SandstormApi_save holds the state for a server call to SandstormApi.save.
+// See server.Call for documentation.
 type SandstormApi_save struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_save_Params
-	Results SandstormApi_save_Results
+	*server.Call
 }
 
-// SandstormApi_backgroundActivity holds the arguments for a server call to SandstormApi.backgroundActivity.
+// Args returns the call's arguments.
+func (c SandstormApi_save) Args() SandstormApi_save_Params {
+	return SandstormApi_save_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_save) AllocResults() (SandstormApi_save_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_save_Results{Struct: r}, err
+}
+
+// SandstormApi_backgroundActivity holds the state for a server call to SandstormApi.backgroundActivity.
+// See server.Call for documentation.
 type SandstormApi_backgroundActivity struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_backgroundActivity_Params
-	Results SandstormApi_backgroundActivity_Results
+	*server.Call
 }
 
-// SandstormApi_getIdentityId holds the arguments for a server call to SandstormApi.getIdentityId.
+// Args returns the call's arguments.
+func (c SandstormApi_backgroundActivity) Args() SandstormApi_backgroundActivity_Params {
+	return SandstormApi_backgroundActivity_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_backgroundActivity) AllocResults() (SandstormApi_backgroundActivity_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormApi_backgroundActivity_Results{Struct: r}, err
+}
+
+// SandstormApi_getIdentityId holds the state for a server call to SandstormApi.getIdentityId.
+// See server.Call for documentation.
 type SandstormApi_getIdentityId struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormApi_getIdentityId_Params
-	Results SandstormApi_getIdentityId_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormApi_getIdentityId) Args() SandstormApi_getIdentityId_Params {
+	return SandstormApi_getIdentityId_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormApi_getIdentityId) AllocResults() (SandstormApi_getIdentityId_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormApi_getIdentityId_Results{Struct: r}, err
 }
 
 type SandstormApi_deprecatedPublish_Params struct{ capnp.Struct }
@@ -536,7 +579,7 @@ func NewRootSandstormApi_deprecatedPublish_Params(s *capnp.Segment) (SandstormAp
 }
 
 func ReadRootSandstormApi_deprecatedPublish_Params(msg *capnp.Message) (SandstormApi_deprecatedPublish_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deprecatedPublish_Params{root.Struct()}, err
 }
 
@@ -567,11 +610,11 @@ func (s SandstormApi_deprecatedPublish_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_deprecatedPublish_Params_Promise is a wrapper for a SandstormApi_deprecatedPublish_Params promised by a client call.
-type SandstormApi_deprecatedPublish_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deprecatedPublish_Params_Future is a wrapper for a SandstormApi_deprecatedPublish_Params promised by a client call.
+type SandstormApi_deprecatedPublish_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deprecatedPublish_Params_Promise) Struct() (SandstormApi_deprecatedPublish_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deprecatedPublish_Params_Future) Struct() (SandstormApi_deprecatedPublish_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deprecatedPublish_Params{s}, err
 }
 
@@ -591,7 +634,7 @@ func NewRootSandstormApi_deprecatedPublish_Results(s *capnp.Segment) (SandstormA
 }
 
 func ReadRootSandstormApi_deprecatedPublish_Results(msg *capnp.Message) (SandstormApi_deprecatedPublish_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deprecatedPublish_Results{root.Struct()}, err
 }
 
@@ -622,11 +665,11 @@ func (s SandstormApi_deprecatedPublish_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_deprecatedPublish_Results_Promise is a wrapper for a SandstormApi_deprecatedPublish_Results promised by a client call.
-type SandstormApi_deprecatedPublish_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deprecatedPublish_Results_Future is a wrapper for a SandstormApi_deprecatedPublish_Results promised by a client call.
+type SandstormApi_deprecatedPublish_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deprecatedPublish_Results_Promise) Struct() (SandstormApi_deprecatedPublish_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deprecatedPublish_Results_Future) Struct() (SandstormApi_deprecatedPublish_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deprecatedPublish_Results{s}, err
 }
 
@@ -646,7 +689,7 @@ func NewRootSandstormApi_deprecatedRegisterAction_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormApi_deprecatedRegisterAction_Params(msg *capnp.Message) (SandstormApi_deprecatedRegisterAction_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deprecatedRegisterAction_Params{root.Struct()}, err
 }
 
@@ -677,11 +720,11 @@ func (s SandstormApi_deprecatedRegisterAction_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_deprecatedRegisterAction_Params_Promise is a wrapper for a SandstormApi_deprecatedRegisterAction_Params promised by a client call.
-type SandstormApi_deprecatedRegisterAction_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deprecatedRegisterAction_Params_Future is a wrapper for a SandstormApi_deprecatedRegisterAction_Params promised by a client call.
+type SandstormApi_deprecatedRegisterAction_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deprecatedRegisterAction_Params_Promise) Struct() (SandstormApi_deprecatedRegisterAction_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deprecatedRegisterAction_Params_Future) Struct() (SandstormApi_deprecatedRegisterAction_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deprecatedRegisterAction_Params{s}, err
 }
 
@@ -701,7 +744,7 @@ func NewRootSandstormApi_deprecatedRegisterAction_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormApi_deprecatedRegisterAction_Results(msg *capnp.Message) (SandstormApi_deprecatedRegisterAction_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deprecatedRegisterAction_Results{root.Struct()}, err
 }
 
@@ -732,11 +775,11 @@ func (s SandstormApi_deprecatedRegisterAction_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_deprecatedRegisterAction_Results_Promise is a wrapper for a SandstormApi_deprecatedRegisterAction_Results promised by a client call.
-type SandstormApi_deprecatedRegisterAction_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deprecatedRegisterAction_Results_Future is a wrapper for a SandstormApi_deprecatedRegisterAction_Results promised by a client call.
+type SandstormApi_deprecatedRegisterAction_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deprecatedRegisterAction_Results_Promise) Struct() (SandstormApi_deprecatedRegisterAction_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deprecatedRegisterAction_Results_Future) Struct() (SandstormApi_deprecatedRegisterAction_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deprecatedRegisterAction_Results{s}, err
 }
 
@@ -756,7 +799,7 @@ func NewRootSandstormApi_shareCap_Params(s *capnp.Segment) (SandstormApi_shareCa
 }
 
 func ReadRootSandstormApi_shareCap_Params(msg *capnp.Message) (SandstormApi_shareCap_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_shareCap_Params{root.Struct()}, err
 }
 
@@ -765,24 +808,15 @@ func (s SandstormApi_shareCap_Params) String() string {
 	return str
 }
 
-func (s SandstormApi_shareCap_Params) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SandstormApi_shareCap_Params) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SandstormApi_shareCap_Params) CapPtr() (capnp.Ptr, error) {
+func (s SandstormApi_shareCap_Params) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SandstormApi_shareCap_Params) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SandstormApi_shareCap_Params) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SandstormApi_shareCap_Params) SetCapPtr(v capnp.Ptr) error {
+func (s SandstormApi_shareCap_Params) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -792,8 +826,7 @@ func (s SandstormApi_shareCap_Params) DisplayInfo() (powerbox.PowerboxDisplayInf
 }
 
 func (s SandstormApi_shareCap_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SandstormApi_shareCap_Params) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
@@ -833,20 +866,20 @@ func (s SandstormApi_shareCap_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_shareCap_Params_Promise is a wrapper for a SandstormApi_shareCap_Params promised by a client call.
-type SandstormApi_shareCap_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_shareCap_Params_Future is a wrapper for a SandstormApi_shareCap_Params promised by a client call.
+type SandstormApi_shareCap_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_shareCap_Params_Promise) Struct() (SandstormApi_shareCap_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_shareCap_Params_Future) Struct() (SandstormApi_shareCap_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_shareCap_Params{s}, err
 }
 
-func (p SandstormApi_shareCap_Params_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SandstormApi_shareCap_Params_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SandstormApi_shareCap_Params_Promise) DisplayInfo() powerbox.PowerboxDisplayInfo_Promise {
-	return powerbox.PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p SandstormApi_shareCap_Params_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
+	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
 type SandstormApi_shareCap_Results struct{ capnp.Struct }
@@ -865,7 +898,7 @@ func NewRootSandstormApi_shareCap_Results(s *capnp.Segment) (SandstormApi_shareC
 }
 
 func ReadRootSandstormApi_shareCap_Results(msg *capnp.Message) (SandstormApi_shareCap_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_shareCap_Results{root.Struct()}, err
 }
 
@@ -874,24 +907,15 @@ func (s SandstormApi_shareCap_Results) String() string {
 	return str
 }
 
-func (s SandstormApi_shareCap_Results) SharedCap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SandstormApi_shareCap_Results) HasSharedCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SandstormApi_shareCap_Results) SharedCapPtr() (capnp.Ptr, error) {
+func (s SandstormApi_shareCap_Results) SharedCap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SandstormApi_shareCap_Results) SetSharedCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SandstormApi_shareCap_Results) HasSharedCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SandstormApi_shareCap_Results) SetSharedCapPtr(v capnp.Ptr) error {
+func (s SandstormApi_shareCap_Results) SetSharedCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -901,12 +925,11 @@ func (s SandstormApi_shareCap_Results) Link() SharingLink {
 }
 
 func (s SandstormApi_shareCap_Results) HasLink() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SandstormApi_shareCap_Results) SetLink(v SharingLink) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -936,20 +959,20 @@ func (s SandstormApi_shareCap_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_shareCap_Results_Promise is a wrapper for a SandstormApi_shareCap_Results promised by a client call.
-type SandstormApi_shareCap_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_shareCap_Results_Future is a wrapper for a SandstormApi_shareCap_Results promised by a client call.
+type SandstormApi_shareCap_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_shareCap_Results_Promise) Struct() (SandstormApi_shareCap_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_shareCap_Results_Future) Struct() (SandstormApi_shareCap_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_shareCap_Results{s}, err
 }
 
-func (p SandstormApi_shareCap_Results_Promise) SharedCap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SandstormApi_shareCap_Results_Future) SharedCap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SandstormApi_shareCap_Results_Promise) Link() SharingLink {
-	return SharingLink{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p SandstormApi_shareCap_Results_Future) Link() SharingLink {
+	return SharingLink{Client: p.Future.Field(1, nil).Client()}
 }
 
 type SandstormApi_shareView_Params struct{ capnp.Struct }
@@ -968,7 +991,7 @@ func NewRootSandstormApi_shareView_Params(s *capnp.Segment) (SandstormApi_shareV
 }
 
 func ReadRootSandstormApi_shareView_Params(msg *capnp.Message) (SandstormApi_shareView_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_shareView_Params{root.Struct()}, err
 }
 
@@ -983,12 +1006,11 @@ func (s SandstormApi_shareView_Params) View() UiView {
 }
 
 func (s SandstormApi_shareView_Params) HasView() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_shareView_Params) SetView(v UiView) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1018,16 +1040,16 @@ func (s SandstormApi_shareView_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_shareView_Params_Promise is a wrapper for a SandstormApi_shareView_Params promised by a client call.
-type SandstormApi_shareView_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_shareView_Params_Future is a wrapper for a SandstormApi_shareView_Params promised by a client call.
+type SandstormApi_shareView_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_shareView_Params_Promise) Struct() (SandstormApi_shareView_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_shareView_Params_Future) Struct() (SandstormApi_shareView_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_shareView_Params{s}, err
 }
 
-func (p SandstormApi_shareView_Params_Promise) View() UiView {
-	return UiView{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormApi_shareView_Params_Future) View() UiView {
+	return UiView{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormApi_shareView_Results struct{ capnp.Struct }
@@ -1046,7 +1068,7 @@ func NewRootSandstormApi_shareView_Results(s *capnp.Segment) (SandstormApi_share
 }
 
 func ReadRootSandstormApi_shareView_Results(msg *capnp.Message) (SandstormApi_shareView_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_shareView_Results{root.Struct()}, err
 }
 
@@ -1061,12 +1083,11 @@ func (s SandstormApi_shareView_Results) SharedView() UiView {
 }
 
 func (s SandstormApi_shareView_Results) HasSharedView() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_shareView_Results) SetSharedView(v UiView) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1080,12 +1101,11 @@ func (s SandstormApi_shareView_Results) Link() ViewSharingLink {
 }
 
 func (s SandstormApi_shareView_Results) HasLink() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SandstormApi_shareView_Results) SetLink(v ViewSharingLink) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1115,20 +1135,20 @@ func (s SandstormApi_shareView_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_shareView_Results_Promise is a wrapper for a SandstormApi_shareView_Results promised by a client call.
-type SandstormApi_shareView_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_shareView_Results_Future is a wrapper for a SandstormApi_shareView_Results promised by a client call.
+type SandstormApi_shareView_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_shareView_Results_Promise) Struct() (SandstormApi_shareView_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_shareView_Results_Future) Struct() (SandstormApi_shareView_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_shareView_Results{s}, err
 }
 
-func (p SandstormApi_shareView_Results_Promise) SharedView() UiView {
-	return UiView{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormApi_shareView_Results_Future) SharedView() UiView {
+	return UiView{Client: p.Future.Field(0, nil).Client()}
 }
 
-func (p SandstormApi_shareView_Results_Promise) Link() ViewSharingLink {
-	return ViewSharingLink{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p SandstormApi_shareView_Results_Future) Link() ViewSharingLink {
+	return ViewSharingLink{Client: p.Future.Field(1, nil).Client()}
 }
 
 type SandstormApi_restore_Params struct{ capnp.Struct }
@@ -1147,7 +1167,7 @@ func NewRootSandstormApi_restore_Params(s *capnp.Segment) (SandstormApi_restore_
 }
 
 func ReadRootSandstormApi_restore_Params(msg *capnp.Message) (SandstormApi_restore_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_restore_Params{root.Struct()}, err
 }
 
@@ -1162,8 +1182,7 @@ func (s SandstormApi_restore_Params) Token() ([]byte, error) {
 }
 
 func (s SandstormApi_restore_Params) HasToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_restore_Params) SetToken(v []byte) error {
@@ -1192,11 +1211,11 @@ func (s SandstormApi_restore_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_restore_Params_Promise is a wrapper for a SandstormApi_restore_Params promised by a client call.
-type SandstormApi_restore_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_restore_Params_Future is a wrapper for a SandstormApi_restore_Params promised by a client call.
+type SandstormApi_restore_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_restore_Params_Promise) Struct() (SandstormApi_restore_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_restore_Params_Future) Struct() (SandstormApi_restore_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_restore_Params{s}, err
 }
 
@@ -1216,7 +1235,7 @@ func NewRootSandstormApi_restore_Results(s *capnp.Segment) (SandstormApi_restore
 }
 
 func ReadRootSandstormApi_restore_Results(msg *capnp.Message) (SandstormApi_restore_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_restore_Results{root.Struct()}, err
 }
 
@@ -1225,24 +1244,15 @@ func (s SandstormApi_restore_Results) String() string {
 	return str
 }
 
-func (s SandstormApi_restore_Results) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SandstormApi_restore_Results) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SandstormApi_restore_Results) CapPtr() (capnp.Ptr, error) {
+func (s SandstormApi_restore_Results) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SandstormApi_restore_Results) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SandstormApi_restore_Results) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SandstormApi_restore_Results) SetCapPtr(v capnp.Ptr) error {
+func (s SandstormApi_restore_Results) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1268,16 +1278,16 @@ func (s SandstormApi_restore_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_restore_Results_Promise is a wrapper for a SandstormApi_restore_Results promised by a client call.
-type SandstormApi_restore_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_restore_Results_Future is a wrapper for a SandstormApi_restore_Results promised by a client call.
+type SandstormApi_restore_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_restore_Results_Promise) Struct() (SandstormApi_restore_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_restore_Results_Future) Struct() (SandstormApi_restore_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_restore_Results{s}, err
 }
 
-func (p SandstormApi_restore_Results_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SandstormApi_restore_Results_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type SandstormApi_drop_Params struct{ capnp.Struct }
@@ -1296,7 +1306,7 @@ func NewRootSandstormApi_drop_Params(s *capnp.Segment) (SandstormApi_drop_Params
 }
 
 func ReadRootSandstormApi_drop_Params(msg *capnp.Message) (SandstormApi_drop_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_drop_Params{root.Struct()}, err
 }
 
@@ -1311,8 +1321,7 @@ func (s SandstormApi_drop_Params) Token() ([]byte, error) {
 }
 
 func (s SandstormApi_drop_Params) HasToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_drop_Params) SetToken(v []byte) error {
@@ -1341,11 +1350,11 @@ func (s SandstormApi_drop_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_drop_Params_Promise is a wrapper for a SandstormApi_drop_Params promised by a client call.
-type SandstormApi_drop_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_drop_Params_Future is a wrapper for a SandstormApi_drop_Params promised by a client call.
+type SandstormApi_drop_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_drop_Params_Promise) Struct() (SandstormApi_drop_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_drop_Params_Future) Struct() (SandstormApi_drop_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_drop_Params{s}, err
 }
 
@@ -1365,7 +1374,7 @@ func NewRootSandstormApi_drop_Results(s *capnp.Segment) (SandstormApi_drop_Resul
 }
 
 func ReadRootSandstormApi_drop_Results(msg *capnp.Message) (SandstormApi_drop_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_drop_Results{root.Struct()}, err
 }
 
@@ -1396,11 +1405,11 @@ func (s SandstormApi_drop_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_drop_Results_Promise is a wrapper for a SandstormApi_drop_Results promised by a client call.
-type SandstormApi_drop_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_drop_Results_Future is a wrapper for a SandstormApi_drop_Results promised by a client call.
+type SandstormApi_drop_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_drop_Results_Promise) Struct() (SandstormApi_drop_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_drop_Results_Future) Struct() (SandstormApi_drop_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_drop_Results{s}, err
 }
 
@@ -1420,7 +1429,7 @@ func NewRootSandstormApi_deleted_Params(s *capnp.Segment) (SandstormApi_deleted_
 }
 
 func ReadRootSandstormApi_deleted_Params(msg *capnp.Message) (SandstormApi_deleted_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deleted_Params{root.Struct()}, err
 }
 
@@ -1429,24 +1438,15 @@ func (s SandstormApi_deleted_Params) String() string {
 	return str
 }
 
-func (s SandstormApi_deleted_Params) Ref() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SandstormApi_deleted_Params) HasRef() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SandstormApi_deleted_Params) RefPtr() (capnp.Ptr, error) {
+func (s SandstormApi_deleted_Params) Ref() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SandstormApi_deleted_Params) SetRef(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SandstormApi_deleted_Params) HasRef() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SandstormApi_deleted_Params) SetRefPtr(v capnp.Ptr) error {
+func (s SandstormApi_deleted_Params) SetRef(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1472,16 +1472,16 @@ func (s SandstormApi_deleted_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_deleted_Params_Promise is a wrapper for a SandstormApi_deleted_Params promised by a client call.
-type SandstormApi_deleted_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deleted_Params_Future is a wrapper for a SandstormApi_deleted_Params promised by a client call.
+type SandstormApi_deleted_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deleted_Params_Promise) Struct() (SandstormApi_deleted_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deleted_Params_Future) Struct() (SandstormApi_deleted_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deleted_Params{s}, err
 }
 
-func (p SandstormApi_deleted_Params_Promise) Ref() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SandstormApi_deleted_Params_Future) Ref() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type SandstormApi_deleted_Results struct{ capnp.Struct }
@@ -1500,7 +1500,7 @@ func NewRootSandstormApi_deleted_Results(s *capnp.Segment) (SandstormApi_deleted
 }
 
 func ReadRootSandstormApi_deleted_Results(msg *capnp.Message) (SandstormApi_deleted_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_deleted_Results{root.Struct()}, err
 }
 
@@ -1531,11 +1531,11 @@ func (s SandstormApi_deleted_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_deleted_Results_Promise is a wrapper for a SandstormApi_deleted_Results promised by a client call.
-type SandstormApi_deleted_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_deleted_Results_Future is a wrapper for a SandstormApi_deleted_Results promised by a client call.
+type SandstormApi_deleted_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_deleted_Results_Promise) Struct() (SandstormApi_deleted_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_deleted_Results_Future) Struct() (SandstormApi_deleted_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_deleted_Results{s}, err
 }
 
@@ -1555,7 +1555,7 @@ func NewRootSandstormApi_stayAwake_Params(s *capnp.Segment) (SandstormApi_stayAw
 }
 
 func ReadRootSandstormApi_stayAwake_Params(msg *capnp.Message) (SandstormApi_stayAwake_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_stayAwake_Params{root.Struct()}, err
 }
 
@@ -1570,8 +1570,7 @@ func (s SandstormApi_stayAwake_Params) DisplayInfo() (activity.NotificationDispl
 }
 
 func (s SandstormApi_stayAwake_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_stayAwake_Params) SetDisplayInfo(v activity.NotificationDisplayInfo) error {
@@ -1595,12 +1594,11 @@ func (s SandstormApi_stayAwake_Params) Notification() activity.OngoingNotificati
 }
 
 func (s SandstormApi_stayAwake_Params) HasNotification() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SandstormApi_stayAwake_Params) SetNotification(v activity.OngoingNotification) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1630,20 +1628,20 @@ func (s SandstormApi_stayAwake_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_stayAwake_Params_Promise is a wrapper for a SandstormApi_stayAwake_Params promised by a client call.
-type SandstormApi_stayAwake_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_stayAwake_Params_Future is a wrapper for a SandstormApi_stayAwake_Params promised by a client call.
+type SandstormApi_stayAwake_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_stayAwake_Params_Promise) Struct() (SandstormApi_stayAwake_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_stayAwake_Params_Future) Struct() (SandstormApi_stayAwake_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_stayAwake_Params{s}, err
 }
 
-func (p SandstormApi_stayAwake_Params_Promise) DisplayInfo() activity.NotificationDisplayInfo_Promise {
-	return activity.NotificationDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p SandstormApi_stayAwake_Params_Future) DisplayInfo() activity.NotificationDisplayInfo_Future {
+	return activity.NotificationDisplayInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p SandstormApi_stayAwake_Params_Promise) Notification() activity.OngoingNotification {
-	return activity.OngoingNotification{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p SandstormApi_stayAwake_Params_Future) Notification() activity.OngoingNotification {
+	return activity.OngoingNotification{Client: p.Future.Field(1, nil).Client()}
 }
 
 type SandstormApi_stayAwake_Results struct{ capnp.Struct }
@@ -1662,7 +1660,7 @@ func NewRootSandstormApi_stayAwake_Results(s *capnp.Segment) (SandstormApi_stayA
 }
 
 func ReadRootSandstormApi_stayAwake_Results(msg *capnp.Message) (SandstormApi_stayAwake_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_stayAwake_Results{root.Struct()}, err
 }
 
@@ -1677,12 +1675,11 @@ func (s SandstormApi_stayAwake_Results) Handle() util.Handle {
 }
 
 func (s SandstormApi_stayAwake_Results) HasHandle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_stayAwake_Results) SetHandle(v util.Handle) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1712,16 +1709,16 @@ func (s SandstormApi_stayAwake_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_stayAwake_Results_Promise is a wrapper for a SandstormApi_stayAwake_Results promised by a client call.
-type SandstormApi_stayAwake_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_stayAwake_Results_Future is a wrapper for a SandstormApi_stayAwake_Results promised by a client call.
+type SandstormApi_stayAwake_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_stayAwake_Results_Promise) Struct() (SandstormApi_stayAwake_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_stayAwake_Results_Future) Struct() (SandstormApi_stayAwake_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_stayAwake_Results{s}, err
 }
 
-func (p SandstormApi_stayAwake_Results_Promise) Handle() util.Handle {
-	return util.Handle{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormApi_stayAwake_Results_Future) Handle() util.Handle {
+	return util.Handle{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormApi_save_Params struct{ capnp.Struct }
@@ -1740,7 +1737,7 @@ func NewRootSandstormApi_save_Params(s *capnp.Segment) (SandstormApi_save_Params
 }
 
 func ReadRootSandstormApi_save_Params(msg *capnp.Message) (SandstormApi_save_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_save_Params{root.Struct()}, err
 }
 
@@ -1749,24 +1746,15 @@ func (s SandstormApi_save_Params) String() string {
 	return str
 }
 
-func (s SandstormApi_save_Params) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SandstormApi_save_Params) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SandstormApi_save_Params) CapPtr() (capnp.Ptr, error) {
+func (s SandstormApi_save_Params) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SandstormApi_save_Params) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SandstormApi_save_Params) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SandstormApi_save_Params) SetCapPtr(v capnp.Ptr) error {
+func (s SandstormApi_save_Params) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1776,8 +1764,7 @@ func (s SandstormApi_save_Params) Label() (util.LocalizedText, error) {
 }
 
 func (s SandstormApi_save_Params) HasLabel() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SandstormApi_save_Params) SetLabel(v util.LocalizedText) error {
@@ -1817,20 +1804,20 @@ func (s SandstormApi_save_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_save_Params_Promise is a wrapper for a SandstormApi_save_Params promised by a client call.
-type SandstormApi_save_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_save_Params_Future is a wrapper for a SandstormApi_save_Params promised by a client call.
+type SandstormApi_save_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_save_Params_Promise) Struct() (SandstormApi_save_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_save_Params_Future) Struct() (SandstormApi_save_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_save_Params{s}, err
 }
 
-func (p SandstormApi_save_Params_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SandstormApi_save_Params_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SandstormApi_save_Params_Promise) Label() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p SandstormApi_save_Params_Future) Label() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
 type SandstormApi_save_Results struct{ capnp.Struct }
@@ -1849,7 +1836,7 @@ func NewRootSandstormApi_save_Results(s *capnp.Segment) (SandstormApi_save_Resul
 }
 
 func ReadRootSandstormApi_save_Results(msg *capnp.Message) (SandstormApi_save_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_save_Results{root.Struct()}, err
 }
 
@@ -1864,8 +1851,7 @@ func (s SandstormApi_save_Results) Token() ([]byte, error) {
 }
 
 func (s SandstormApi_save_Results) HasToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_save_Results) SetToken(v []byte) error {
@@ -1894,11 +1880,11 @@ func (s SandstormApi_save_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_save_Results_Promise is a wrapper for a SandstormApi_save_Results promised by a client call.
-type SandstormApi_save_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_save_Results_Future is a wrapper for a SandstormApi_save_Results promised by a client call.
+type SandstormApi_save_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_save_Results_Promise) Struct() (SandstormApi_save_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_save_Results_Future) Struct() (SandstormApi_save_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_save_Results{s}, err
 }
 
@@ -1918,7 +1904,7 @@ func NewRootSandstormApi_backgroundActivity_Params(s *capnp.Segment) (SandstormA
 }
 
 func ReadRootSandstormApi_backgroundActivity_Params(msg *capnp.Message) (SandstormApi_backgroundActivity_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_backgroundActivity_Params{root.Struct()}, err
 }
 
@@ -1933,8 +1919,7 @@ func (s SandstormApi_backgroundActivity_Params) Event() (activity.ActivityEvent,
 }
 
 func (s SandstormApi_backgroundActivity_Params) HasEvent() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_backgroundActivity_Params) SetEvent(v activity.ActivityEvent) error {
@@ -1974,16 +1959,16 @@ func (s SandstormApi_backgroundActivity_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_backgroundActivity_Params_Promise is a wrapper for a SandstormApi_backgroundActivity_Params promised by a client call.
-type SandstormApi_backgroundActivity_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_backgroundActivity_Params_Future is a wrapper for a SandstormApi_backgroundActivity_Params promised by a client call.
+type SandstormApi_backgroundActivity_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_backgroundActivity_Params_Promise) Struct() (SandstormApi_backgroundActivity_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_backgroundActivity_Params_Future) Struct() (SandstormApi_backgroundActivity_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_backgroundActivity_Params{s}, err
 }
 
-func (p SandstormApi_backgroundActivity_Params_Promise) Event() activity.ActivityEvent_Promise {
-	return activity.ActivityEvent_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p SandstormApi_backgroundActivity_Params_Future) Event() activity.ActivityEvent_Future {
+	return activity.ActivityEvent_Future{Future: p.Future.Field(0, nil)}
 }
 
 type SandstormApi_backgroundActivity_Results struct{ capnp.Struct }
@@ -2002,7 +1987,7 @@ func NewRootSandstormApi_backgroundActivity_Results(s *capnp.Segment) (Sandstorm
 }
 
 func ReadRootSandstormApi_backgroundActivity_Results(msg *capnp.Message) (SandstormApi_backgroundActivity_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_backgroundActivity_Results{root.Struct()}, err
 }
 
@@ -2033,11 +2018,11 @@ func (s SandstormApi_backgroundActivity_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_backgroundActivity_Results_Promise is a wrapper for a SandstormApi_backgroundActivity_Results promised by a client call.
-type SandstormApi_backgroundActivity_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_backgroundActivity_Results_Future is a wrapper for a SandstormApi_backgroundActivity_Results promised by a client call.
+type SandstormApi_backgroundActivity_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_backgroundActivity_Results_Promise) Struct() (SandstormApi_backgroundActivity_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_backgroundActivity_Results_Future) Struct() (SandstormApi_backgroundActivity_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_backgroundActivity_Results{s}, err
 }
 
@@ -2057,7 +2042,7 @@ func NewRootSandstormApi_getIdentityId_Params(s *capnp.Segment) (SandstormApi_ge
 }
 
 func ReadRootSandstormApi_getIdentityId_Params(msg *capnp.Message) (SandstormApi_getIdentityId_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_getIdentityId_Params{root.Struct()}, err
 }
 
@@ -2072,12 +2057,11 @@ func (s SandstormApi_getIdentityId_Params) Identity() identity.Identity {
 }
 
 func (s SandstormApi_getIdentityId_Params) HasIdentity() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_getIdentityId_Params) SetIdentity(v identity.Identity) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2107,16 +2091,16 @@ func (s SandstormApi_getIdentityId_Params_List) String() string {
 	return str
 }
 
-// SandstormApi_getIdentityId_Params_Promise is a wrapper for a SandstormApi_getIdentityId_Params promised by a client call.
-type SandstormApi_getIdentityId_Params_Promise struct{ *capnp.Pipeline }
+// SandstormApi_getIdentityId_Params_Future is a wrapper for a SandstormApi_getIdentityId_Params promised by a client call.
+type SandstormApi_getIdentityId_Params_Future struct{ *capnp.Future }
 
-func (p SandstormApi_getIdentityId_Params_Promise) Struct() (SandstormApi_getIdentityId_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_getIdentityId_Params_Future) Struct() (SandstormApi_getIdentityId_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_getIdentityId_Params{s}, err
 }
 
-func (p SandstormApi_getIdentityId_Params_Promise) Identity() identity.Identity {
-	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormApi_getIdentityId_Params_Future) Identity() identity.Identity {
+	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormApi_getIdentityId_Results struct{ capnp.Struct }
@@ -2135,7 +2119,7 @@ func NewRootSandstormApi_getIdentityId_Results(s *capnp.Segment) (SandstormApi_g
 }
 
 func ReadRootSandstormApi_getIdentityId_Results(msg *capnp.Message) (SandstormApi_getIdentityId_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormApi_getIdentityId_Results{root.Struct()}, err
 }
 
@@ -2150,8 +2134,7 @@ func (s SandstormApi_getIdentityId_Results) Id() ([]byte, error) {
 }
 
 func (s SandstormApi_getIdentityId_Results) HasId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormApi_getIdentityId_Results) SetId(v []byte) error {
@@ -2180,115 +2163,109 @@ func (s SandstormApi_getIdentityId_Results_List) String() string {
 	return str
 }
 
-// SandstormApi_getIdentityId_Results_Promise is a wrapper for a SandstormApi_getIdentityId_Results promised by a client call.
-type SandstormApi_getIdentityId_Results_Promise struct{ *capnp.Pipeline }
+// SandstormApi_getIdentityId_Results_Future is a wrapper for a SandstormApi_getIdentityId_Results promised by a client call.
+type SandstormApi_getIdentityId_Results_Future struct{ *capnp.Future }
 
-func (p SandstormApi_getIdentityId_Results_Promise) Struct() (SandstormApi_getIdentityId_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormApi_getIdentityId_Results_Future) Struct() (SandstormApi_getIdentityId_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormApi_getIdentityId_Results{s}, err
 }
 
-type UiView struct{ Client capnp.Client }
+type UiView struct{ Client *capnp.Client }
 
 // UiView_TypeID is the unique identifier for the type UiView.
 const UiView_TypeID = 0xdbb4d798ea67e2e7
 
-func (c UiView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_Params) error, opts ...capnp.CallOption) UiView_ViewInfo_Promise {
-	if c.Client == nil {
-		return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c UiView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_Params) error) (UiView_ViewInfo_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_getViewInfo_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_getViewInfo_Params{Struct: s}) }
 	}
-	return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_ViewInfo_Future{Future: ans.Future()}, release
 }
-func (c UiView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error, opts ...capnp.CallOption) UiView_newSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c UiView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error) (UiView_newSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
 	}
-	return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newSession_Results_Future{Future: ans.Future()}, release
 }
-func (c UiView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error, opts ...capnp.CallOption) UiView_newRequestSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c UiView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error) (UiView_newRequestSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
 	}
-	return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newRequestSession_Results_Future{Future: ans.Future()}, release
 }
-func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error, opts ...capnp.CallOption) UiView_newOfferSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error) (UiView_newOfferSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
 	}
-	return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
 }
 
+// A UiView_Server is a UiView with a local implementation.
 type UiView_Server interface {
-	GetViewInfo(UiView_getViewInfo) error
+	GetViewInfo(context.Context, UiView_getViewInfo) error
 
-	NewSession(UiView_newSession) error
+	NewSession(context.Context, UiView_newSession) error
 
-	NewRequestSession(UiView_newRequestSession) error
+	NewRequestSession(context.Context, UiView_newRequestSession) error
 
-	NewOfferSession(UiView_newOfferSession) error
+	NewOfferSession(context.Context, UiView_newOfferSession) error
 }
 
-func UiView_ServerToClient(s UiView_Server) UiView {
-	c, _ := s.(server.Closer)
-	return UiView{Client: server.New(UiView_Methods(nil, s), c)}
+// UiView_NewServer creates a new Server from an implementation of UiView_Server.
+func UiView_NewServer(s UiView_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(UiView_Methods(nil, s), s, c, policy)
 }
 
+// UiView_ServerToClient creates a new Client from an implementation of UiView_Server.
+// The caller is responsible for calling Release on the returned Client.
+func UiView_ServerToClient(s UiView_Server, policy *server.Policy) UiView {
+	return UiView{Client: capnp.NewClient(UiView_NewServer(s, policy))}
+}
+
+// UiView_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 4)
@@ -2301,11 +2278,9 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_getViewInfo{c, opts, UiView_getViewInfo_Params{Struct: p}, UiView_ViewInfo{Struct: r}}
-			return s.GetViewInfo(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetViewInfo(ctx, UiView_getViewInfo{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 8},
 	})
 
 	methods = append(methods, server.Method{
@@ -2315,11 +2290,9 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newSession{c, opts, UiView_newSession_Params{Struct: p}, UiView_newSession_Results{Struct: r}}
-			return s.NewSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewSession(ctx, UiView_newSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -2329,11 +2302,9 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newRequestSession{c, opts, UiView_newRequestSession_Params{Struct: p}, UiView_newRequestSession_Results{Struct: r}}
-			return s.NewRequestSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewRequestSession(ctx, UiView_newRequestSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -2343,46 +2314,80 @@ func UiView_Methods(methods []server.Method, s UiView_Server) []server.Method {
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newOfferSession{c, opts, UiView_newOfferSession_Params{Struct: p}, UiView_newOfferSession_Results{Struct: r}}
-			return s.NewOfferSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewOfferSession(ctx, UiView_newOfferSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// UiView_getViewInfo holds the arguments for a server call to UiView.getViewInfo.
+// UiView_getViewInfo holds the state for a server call to UiView.getViewInfo.
+// See server.Call for documentation.
 type UiView_getViewInfo struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  UiView_getViewInfo_Params
-	Results UiView_ViewInfo
+	*server.Call
 }
 
-// UiView_newSession holds the arguments for a server call to UiView.newSession.
+// Args returns the call's arguments.
+func (c UiView_getViewInfo) Args() UiView_getViewInfo_Params {
+	return UiView_getViewInfo_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c UiView_getViewInfo) AllocResults() (UiView_ViewInfo, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 8})
+	return UiView_ViewInfo{Struct: r}, err
+}
+
+// UiView_newSession holds the state for a server call to UiView.newSession.
+// See server.Call for documentation.
 type UiView_newSession struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  UiView_newSession_Params
-	Results UiView_newSession_Results
+	*server.Call
 }
 
-// UiView_newRequestSession holds the arguments for a server call to UiView.newRequestSession.
+// Args returns the call's arguments.
+func (c UiView_newSession) Args() UiView_newSession_Params {
+	return UiView_newSession_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c UiView_newSession) AllocResults() (UiView_newSession_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return UiView_newSession_Results{Struct: r}, err
+}
+
+// UiView_newRequestSession holds the state for a server call to UiView.newRequestSession.
+// See server.Call for documentation.
 type UiView_newRequestSession struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  UiView_newRequestSession_Params
-	Results UiView_newRequestSession_Results
+	*server.Call
 }
 
-// UiView_newOfferSession holds the arguments for a server call to UiView.newOfferSession.
+// Args returns the call's arguments.
+func (c UiView_newRequestSession) Args() UiView_newRequestSession_Params {
+	return UiView_newRequestSession_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c UiView_newRequestSession) AllocResults() (UiView_newRequestSession_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return UiView_newRequestSession_Results{Struct: r}, err
+}
+
+// UiView_newOfferSession holds the state for a server call to UiView.newOfferSession.
+// See server.Call for documentation.
 type UiView_newOfferSession struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  UiView_newOfferSession_Params
-	Results UiView_newOfferSession_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c UiView_newOfferSession) Args() UiView_newOfferSession_Params {
+	return UiView_newOfferSession_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c UiView_newOfferSession) AllocResults() (UiView_newOfferSession_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return UiView_newOfferSession_Results{Struct: r}, err
 }
 
 type UiView_ViewInfo struct{ capnp.Struct }
@@ -2401,7 +2406,7 @@ func NewRootUiView_ViewInfo(s *capnp.Segment) (UiView_ViewInfo, error) {
 }
 
 func ReadRootUiView_ViewInfo(msg *capnp.Message) (UiView_ViewInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_ViewInfo{root.Struct()}, err
 }
 
@@ -2416,8 +2421,7 @@ func (s UiView_ViewInfo) Permissions() (PermissionDef_List, error) {
 }
 
 func (s UiView_ViewInfo) HasPermissions() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_ViewInfo) SetPermissions(v PermissionDef_List) error {
@@ -2441,8 +2445,7 @@ func (s UiView_ViewInfo) Roles() (RoleDef_List, error) {
 }
 
 func (s UiView_ViewInfo) HasRoles() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s UiView_ViewInfo) SetRoles(v RoleDef_List) error {
@@ -2466,8 +2469,7 @@ func (s UiView_ViewInfo) DeniedPermissions() (capnp.BitList, error) {
 }
 
 func (s UiView_ViewInfo) HasDeniedPermissions() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s UiView_ViewInfo) SetDeniedPermissions(v capnp.BitList) error {
@@ -2491,8 +2493,7 @@ func (s UiView_ViewInfo) MatchRequests() (powerbox.PowerboxDescriptor_List, erro
 }
 
 func (s UiView_ViewInfo) HasMatchRequests() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s UiView_ViewInfo) SetMatchRequests(v powerbox.PowerboxDescriptor_List) error {
@@ -2516,8 +2517,7 @@ func (s UiView_ViewInfo) MatchOffers() (powerbox.PowerboxDescriptor_List, error)
 }
 
 func (s UiView_ViewInfo) HasMatchOffers() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s UiView_ViewInfo) SetMatchOffers(v powerbox.PowerboxDescriptor_List) error {
@@ -2541,8 +2541,7 @@ func (s UiView_ViewInfo) AppTitle() (util.LocalizedText, error) {
 }
 
 func (s UiView_ViewInfo) HasAppTitle() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s UiView_ViewInfo) SetAppTitle(v util.LocalizedText) error {
@@ -2566,12 +2565,11 @@ func (s UiView_ViewInfo) GrainIcon() util.StaticAsset {
 }
 
 func (s UiView_ViewInfo) HasGrainIcon() bool {
-	p, err := s.Struct.Ptr(6)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(6)
 }
 
 func (s UiView_ViewInfo) SetGrainIcon(v util.StaticAsset) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(6, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2585,8 +2583,7 @@ func (s UiView_ViewInfo) EventTypes() (activity.ActivityTypeDef_List, error) {
 }
 
 func (s UiView_ViewInfo) HasEventTypes() bool {
-	p, err := s.Struct.Ptr(7)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(7)
 }
 
 func (s UiView_ViewInfo) SetEventTypes(v activity.ActivityTypeDef_List) error {
@@ -2624,20 +2621,20 @@ func (s UiView_ViewInfo_List) String() string {
 	return str
 }
 
-// UiView_ViewInfo_Promise is a wrapper for a UiView_ViewInfo promised by a client call.
-type UiView_ViewInfo_Promise struct{ *capnp.Pipeline }
+// UiView_ViewInfo_Future is a wrapper for a UiView_ViewInfo promised by a client call.
+type UiView_ViewInfo_Future struct{ *capnp.Future }
 
-func (p UiView_ViewInfo_Promise) Struct() (UiView_ViewInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_ViewInfo_Future) Struct() (UiView_ViewInfo, error) {
+	s, err := p.Future.Struct()
 	return UiView_ViewInfo{s}, err
 }
 
-func (p UiView_ViewInfo_Promise) AppTitle() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p UiView_ViewInfo_Future) AppTitle() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(5, nil)}
 }
 
-func (p UiView_ViewInfo_Promise) GrainIcon() util.StaticAsset {
-	return util.StaticAsset{Client: p.Pipeline.GetPipeline(6).Client()}
+func (p UiView_ViewInfo_Future) GrainIcon() util.StaticAsset {
+	return util.StaticAsset{Client: p.Future.Field(6, nil).Client()}
 }
 
 type UiView_PowerboxTag struct{ capnp.Struct }
@@ -2656,7 +2653,7 @@ func NewRootUiView_PowerboxTag(s *capnp.Segment) (UiView_PowerboxTag, error) {
 }
 
 func ReadRootUiView_PowerboxTag(msg *capnp.Message) (UiView_PowerboxTag, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_PowerboxTag{root.Struct()}, err
 }
 
@@ -2671,8 +2668,7 @@ func (s UiView_PowerboxTag) Title() (string, error) {
 }
 
 func (s UiView_PowerboxTag) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_PowerboxTag) TitleBytes() ([]byte, error) {
@@ -2706,11 +2702,11 @@ func (s UiView_PowerboxTag_List) String() string {
 	return str
 }
 
-// UiView_PowerboxTag_Promise is a wrapper for a UiView_PowerboxTag promised by a client call.
-type UiView_PowerboxTag_Promise struct{ *capnp.Pipeline }
+// UiView_PowerboxTag_Future is a wrapper for a UiView_PowerboxTag promised by a client call.
+type UiView_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p UiView_PowerboxTag_Promise) Struct() (UiView_PowerboxTag, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_PowerboxTag_Future) Struct() (UiView_PowerboxTag, error) {
+	s, err := p.Future.Struct()
 	return UiView_PowerboxTag{s}, err
 }
 
@@ -2730,7 +2726,7 @@ func NewRootUiView_getViewInfo_Params(s *capnp.Segment) (UiView_getViewInfo_Para
 }
 
 func ReadRootUiView_getViewInfo_Params(msg *capnp.Message) (UiView_getViewInfo_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_getViewInfo_Params{root.Struct()}, err
 }
 
@@ -2761,11 +2757,11 @@ func (s UiView_getViewInfo_Params_List) String() string {
 	return str
 }
 
-// UiView_getViewInfo_Params_Promise is a wrapper for a UiView_getViewInfo_Params promised by a client call.
-type UiView_getViewInfo_Params_Promise struct{ *capnp.Pipeline }
+// UiView_getViewInfo_Params_Future is a wrapper for a UiView_getViewInfo_Params promised by a client call.
+type UiView_getViewInfo_Params_Future struct{ *capnp.Future }
 
-func (p UiView_getViewInfo_Params_Promise) Struct() (UiView_getViewInfo_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_getViewInfo_Params_Future) Struct() (UiView_getViewInfo_Params, error) {
+	s, err := p.Future.Struct()
 	return UiView_getViewInfo_Params{s}, err
 }
 
@@ -2785,7 +2781,7 @@ func NewRootUiView_newSession_Params(s *capnp.Segment) (UiView_newSession_Params
 }
 
 func ReadRootUiView_newSession_Params(msg *capnp.Message) (UiView_newSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newSession_Params{root.Struct()}, err
 }
 
@@ -2800,8 +2796,7 @@ func (s UiView_newSession_Params) UserInfo() (identity.UserInfo, error) {
 }
 
 func (s UiView_newSession_Params) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newSession_Params) SetUserInfo(v identity.UserInfo) error {
@@ -2825,12 +2820,11 @@ func (s UiView_newSession_Params) Context() SessionContext {
 }
 
 func (s UiView_newSession_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s UiView_newSession_Params) SetContext(v SessionContext) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2846,24 +2840,15 @@ func (s UiView_newSession_Params) SetSessionType(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-func (s UiView_newSession_Params) SessionParams() (capnp.Pointer, error) {
-	return s.Struct.Pointer(2)
-}
-
-func (s UiView_newSession_Params) HasSessionParams() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
-}
-
-func (s UiView_newSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+func (s UiView_newSession_Params) SessionParams() (capnp.Ptr, error) {
 	return s.Struct.Ptr(2)
 }
 
-func (s UiView_newSession_Params) SetSessionParams(v capnp.Pointer) error {
-	return s.Struct.SetPointer(2, v)
+func (s UiView_newSession_Params) HasSessionParams() bool {
+	return s.Struct.HasPtr(2)
 }
 
-func (s UiView_newSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+func (s UiView_newSession_Params) SetSessionParams(v capnp.Ptr) error {
 	return s.Struct.SetPtr(2, v)
 }
 
@@ -2873,8 +2858,7 @@ func (s UiView_newSession_Params) TabId() ([]byte, error) {
 }
 
 func (s UiView_newSession_Params) HasTabId() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s UiView_newSession_Params) SetTabId(v []byte) error {
@@ -2903,24 +2887,24 @@ func (s UiView_newSession_Params_List) String() string {
 	return str
 }
 
-// UiView_newSession_Params_Promise is a wrapper for a UiView_newSession_Params promised by a client call.
-type UiView_newSession_Params_Promise struct{ *capnp.Pipeline }
+// UiView_newSession_Params_Future is a wrapper for a UiView_newSession_Params promised by a client call.
+type UiView_newSession_Params_Future struct{ *capnp.Future }
 
-func (p UiView_newSession_Params_Promise) Struct() (UiView_newSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newSession_Params_Future) Struct() (UiView_newSession_Params, error) {
+	s, err := p.Future.Struct()
 	return UiView_newSession_Params{s}, err
 }
 
-func (p UiView_newSession_Params_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p UiView_newSession_Params_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p UiView_newSession_Params_Promise) Context() SessionContext {
-	return SessionContext{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p UiView_newSession_Params_Future) Context() SessionContext {
+	return SessionContext{Client: p.Future.Field(1, nil).Client()}
 }
 
-func (p UiView_newSession_Params_Promise) SessionParams() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(2)
+func (p UiView_newSession_Params_Future) SessionParams() *capnp.Future {
+	return p.Future.Field(2, nil)
 }
 
 type UiView_newSession_Results struct{ capnp.Struct }
@@ -2939,7 +2923,7 @@ func NewRootUiView_newSession_Results(s *capnp.Segment) (UiView_newSession_Resul
 }
 
 func ReadRootUiView_newSession_Results(msg *capnp.Message) (UiView_newSession_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newSession_Results{root.Struct()}, err
 }
 
@@ -2954,12 +2938,11 @@ func (s UiView_newSession_Results) Session() UiSession {
 }
 
 func (s UiView_newSession_Results) HasSession() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newSession_Results) SetSession(v UiSession) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2989,16 +2972,16 @@ func (s UiView_newSession_Results_List) String() string {
 	return str
 }
 
-// UiView_newSession_Results_Promise is a wrapper for a UiView_newSession_Results promised by a client call.
-type UiView_newSession_Results_Promise struct{ *capnp.Pipeline }
+// UiView_newSession_Results_Future is a wrapper for a UiView_newSession_Results promised by a client call.
+type UiView_newSession_Results_Future struct{ *capnp.Future }
 
-func (p UiView_newSession_Results_Promise) Struct() (UiView_newSession_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newSession_Results_Future) Struct() (UiView_newSession_Results, error) {
+	s, err := p.Future.Struct()
 	return UiView_newSession_Results{s}, err
 }
 
-func (p UiView_newSession_Results_Promise) Session() UiSession {
-	return UiSession{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p UiView_newSession_Results_Future) Session() UiSession {
+	return UiSession{Client: p.Future.Field(0, nil).Client()}
 }
 
 type UiView_newRequestSession_Params struct{ capnp.Struct }
@@ -3017,7 +3000,7 @@ func NewRootUiView_newRequestSession_Params(s *capnp.Segment) (UiView_newRequest
 }
 
 func ReadRootUiView_newRequestSession_Params(msg *capnp.Message) (UiView_newRequestSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newRequestSession_Params{root.Struct()}, err
 }
 
@@ -3032,8 +3015,7 @@ func (s UiView_newRequestSession_Params) UserInfo() (identity.UserInfo, error) {
 }
 
 func (s UiView_newRequestSession_Params) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newRequestSession_Params) SetUserInfo(v identity.UserInfo) error {
@@ -3057,12 +3039,11 @@ func (s UiView_newRequestSession_Params) Context() SessionContext {
 }
 
 func (s UiView_newRequestSession_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s UiView_newRequestSession_Params) SetContext(v SessionContext) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -3078,24 +3059,15 @@ func (s UiView_newRequestSession_Params) SetSessionType(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-func (s UiView_newRequestSession_Params) SessionParams() (capnp.Pointer, error) {
-	return s.Struct.Pointer(2)
-}
-
-func (s UiView_newRequestSession_Params) HasSessionParams() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
-}
-
-func (s UiView_newRequestSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+func (s UiView_newRequestSession_Params) SessionParams() (capnp.Ptr, error) {
 	return s.Struct.Ptr(2)
 }
 
-func (s UiView_newRequestSession_Params) SetSessionParams(v capnp.Pointer) error {
-	return s.Struct.SetPointer(2, v)
+func (s UiView_newRequestSession_Params) HasSessionParams() bool {
+	return s.Struct.HasPtr(2)
 }
 
-func (s UiView_newRequestSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+func (s UiView_newRequestSession_Params) SetSessionParams(v capnp.Ptr) error {
 	return s.Struct.SetPtr(2, v)
 }
 
@@ -3105,8 +3077,7 @@ func (s UiView_newRequestSession_Params) RequestInfo() (powerbox.PowerboxDescrip
 }
 
 func (s UiView_newRequestSession_Params) HasRequestInfo() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s UiView_newRequestSession_Params) SetRequestInfo(v powerbox.PowerboxDescriptor_List) error {
@@ -3130,8 +3101,7 @@ func (s UiView_newRequestSession_Params) TabId() ([]byte, error) {
 }
 
 func (s UiView_newRequestSession_Params) HasTabId() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s UiView_newRequestSession_Params) SetTabId(v []byte) error {
@@ -3160,24 +3130,24 @@ func (s UiView_newRequestSession_Params_List) String() string {
 	return str
 }
 
-// UiView_newRequestSession_Params_Promise is a wrapper for a UiView_newRequestSession_Params promised by a client call.
-type UiView_newRequestSession_Params_Promise struct{ *capnp.Pipeline }
+// UiView_newRequestSession_Params_Future is a wrapper for a UiView_newRequestSession_Params promised by a client call.
+type UiView_newRequestSession_Params_Future struct{ *capnp.Future }
 
-func (p UiView_newRequestSession_Params_Promise) Struct() (UiView_newRequestSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newRequestSession_Params_Future) Struct() (UiView_newRequestSession_Params, error) {
+	s, err := p.Future.Struct()
 	return UiView_newRequestSession_Params{s}, err
 }
 
-func (p UiView_newRequestSession_Params_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p UiView_newRequestSession_Params_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p UiView_newRequestSession_Params_Promise) Context() SessionContext {
-	return SessionContext{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p UiView_newRequestSession_Params_Future) Context() SessionContext {
+	return SessionContext{Client: p.Future.Field(1, nil).Client()}
 }
 
-func (p UiView_newRequestSession_Params_Promise) SessionParams() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(2)
+func (p UiView_newRequestSession_Params_Future) SessionParams() *capnp.Future {
+	return p.Future.Field(2, nil)
 }
 
 type UiView_newRequestSession_Results struct{ capnp.Struct }
@@ -3196,7 +3166,7 @@ func NewRootUiView_newRequestSession_Results(s *capnp.Segment) (UiView_newReques
 }
 
 func ReadRootUiView_newRequestSession_Results(msg *capnp.Message) (UiView_newRequestSession_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newRequestSession_Results{root.Struct()}, err
 }
 
@@ -3211,12 +3181,11 @@ func (s UiView_newRequestSession_Results) Session() UiSession {
 }
 
 func (s UiView_newRequestSession_Results) HasSession() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newRequestSession_Results) SetSession(v UiSession) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -3246,16 +3215,16 @@ func (s UiView_newRequestSession_Results_List) String() string {
 	return str
 }
 
-// UiView_newRequestSession_Results_Promise is a wrapper for a UiView_newRequestSession_Results promised by a client call.
-type UiView_newRequestSession_Results_Promise struct{ *capnp.Pipeline }
+// UiView_newRequestSession_Results_Future is a wrapper for a UiView_newRequestSession_Results promised by a client call.
+type UiView_newRequestSession_Results_Future struct{ *capnp.Future }
 
-func (p UiView_newRequestSession_Results_Promise) Struct() (UiView_newRequestSession_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newRequestSession_Results_Future) Struct() (UiView_newRequestSession_Results, error) {
+	s, err := p.Future.Struct()
 	return UiView_newRequestSession_Results{s}, err
 }
 
-func (p UiView_newRequestSession_Results_Promise) Session() UiSession {
-	return UiSession{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p UiView_newRequestSession_Results_Future) Session() UiSession {
+	return UiSession{Client: p.Future.Field(0, nil).Client()}
 }
 
 type UiView_newOfferSession_Params struct{ capnp.Struct }
@@ -3274,7 +3243,7 @@ func NewRootUiView_newOfferSession_Params(s *capnp.Segment) (UiView_newOfferSess
 }
 
 func ReadRootUiView_newOfferSession_Params(msg *capnp.Message) (UiView_newOfferSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newOfferSession_Params{root.Struct()}, err
 }
 
@@ -3289,8 +3258,7 @@ func (s UiView_newOfferSession_Params) UserInfo() (identity.UserInfo, error) {
 }
 
 func (s UiView_newOfferSession_Params) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newOfferSession_Params) SetUserInfo(v identity.UserInfo) error {
@@ -3314,12 +3282,11 @@ func (s UiView_newOfferSession_Params) Context() SessionContext {
 }
 
 func (s UiView_newOfferSession_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s UiView_newOfferSession_Params) SetContext(v SessionContext) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -3335,45 +3302,27 @@ func (s UiView_newOfferSession_Params) SetSessionType(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-func (s UiView_newOfferSession_Params) SessionParams() (capnp.Pointer, error) {
-	return s.Struct.Pointer(2)
-}
-
-func (s UiView_newOfferSession_Params) HasSessionParams() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
-}
-
-func (s UiView_newOfferSession_Params) SessionParamsPtr() (capnp.Ptr, error) {
+func (s UiView_newOfferSession_Params) SessionParams() (capnp.Ptr, error) {
 	return s.Struct.Ptr(2)
 }
 
-func (s UiView_newOfferSession_Params) SetSessionParams(v capnp.Pointer) error {
-	return s.Struct.SetPointer(2, v)
+func (s UiView_newOfferSession_Params) HasSessionParams() bool {
+	return s.Struct.HasPtr(2)
 }
 
-func (s UiView_newOfferSession_Params) SetSessionParamsPtr(v capnp.Ptr) error {
+func (s UiView_newOfferSession_Params) SetSessionParams(v capnp.Ptr) error {
 	return s.Struct.SetPtr(2, v)
 }
 
-func (s UiView_newOfferSession_Params) Offer() (capnp.Pointer, error) {
-	return s.Struct.Pointer(3)
-}
-
-func (s UiView_newOfferSession_Params) HasOffer() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
-}
-
-func (s UiView_newOfferSession_Params) OfferPtr() (capnp.Ptr, error) {
+func (s UiView_newOfferSession_Params) Offer() (capnp.Ptr, error) {
 	return s.Struct.Ptr(3)
 }
 
-func (s UiView_newOfferSession_Params) SetOffer(v capnp.Pointer) error {
-	return s.Struct.SetPointer(3, v)
+func (s UiView_newOfferSession_Params) HasOffer() bool {
+	return s.Struct.HasPtr(3)
 }
 
-func (s UiView_newOfferSession_Params) SetOfferPtr(v capnp.Ptr) error {
+func (s UiView_newOfferSession_Params) SetOffer(v capnp.Ptr) error {
 	return s.Struct.SetPtr(3, v)
 }
 
@@ -3383,8 +3332,7 @@ func (s UiView_newOfferSession_Params) Descriptor() (powerbox.PowerboxDescriptor
 }
 
 func (s UiView_newOfferSession_Params) HasDescriptor() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s UiView_newOfferSession_Params) SetDescriptor(v powerbox.PowerboxDescriptor) error {
@@ -3408,8 +3356,7 @@ func (s UiView_newOfferSession_Params) TabId() ([]byte, error) {
 }
 
 func (s UiView_newOfferSession_Params) HasTabId() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s UiView_newOfferSession_Params) SetTabId(v []byte) error {
@@ -3438,32 +3385,32 @@ func (s UiView_newOfferSession_Params_List) String() string {
 	return str
 }
 
-// UiView_newOfferSession_Params_Promise is a wrapper for a UiView_newOfferSession_Params promised by a client call.
-type UiView_newOfferSession_Params_Promise struct{ *capnp.Pipeline }
+// UiView_newOfferSession_Params_Future is a wrapper for a UiView_newOfferSession_Params promised by a client call.
+type UiView_newOfferSession_Params_Future struct{ *capnp.Future }
 
-func (p UiView_newOfferSession_Params_Promise) Struct() (UiView_newOfferSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newOfferSession_Params_Future) Struct() (UiView_newOfferSession_Params, error) {
+	s, err := p.Future.Struct()
 	return UiView_newOfferSession_Params{s}, err
 }
 
-func (p UiView_newOfferSession_Params_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p UiView_newOfferSession_Params_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p UiView_newOfferSession_Params_Promise) Context() SessionContext {
-	return SessionContext{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p UiView_newOfferSession_Params_Future) Context() SessionContext {
+	return SessionContext{Client: p.Future.Field(1, nil).Client()}
 }
 
-func (p UiView_newOfferSession_Params_Promise) SessionParams() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(2)
+func (p UiView_newOfferSession_Params_Future) SessionParams() *capnp.Future {
+	return p.Future.Field(2, nil)
 }
 
-func (p UiView_newOfferSession_Params_Promise) Offer() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(3)
+func (p UiView_newOfferSession_Params_Future) Offer() *capnp.Future {
+	return p.Future.Field(3, nil)
 }
 
-func (p UiView_newOfferSession_Params_Promise) Descriptor() powerbox.PowerboxDescriptor_Promise {
-	return powerbox.PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(4)}
+func (p UiView_newOfferSession_Params_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(4, nil)}
 }
 
 type UiView_newOfferSession_Results struct{ capnp.Struct }
@@ -3482,7 +3429,7 @@ func NewRootUiView_newOfferSession_Results(s *capnp.Segment) (UiView_newOfferSes
 }
 
 func ReadRootUiView_newOfferSession_Results(msg *capnp.Message) (UiView_newOfferSession_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UiView_newOfferSession_Results{root.Struct()}, err
 }
 
@@ -3497,12 +3444,11 @@ func (s UiView_newOfferSession_Results) Session() UiSession {
 }
 
 func (s UiView_newOfferSession_Results) HasSession() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UiView_newOfferSession_Results) SetSession(v UiSession) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -3532,31 +3478,41 @@ func (s UiView_newOfferSession_Results_List) String() string {
 	return str
 }
 
-// UiView_newOfferSession_Results_Promise is a wrapper for a UiView_newOfferSession_Results promised by a client call.
-type UiView_newOfferSession_Results_Promise struct{ *capnp.Pipeline }
+// UiView_newOfferSession_Results_Future is a wrapper for a UiView_newOfferSession_Results promised by a client call.
+type UiView_newOfferSession_Results_Future struct{ *capnp.Future }
 
-func (p UiView_newOfferSession_Results_Promise) Struct() (UiView_newOfferSession_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p UiView_newOfferSession_Results_Future) Struct() (UiView_newOfferSession_Results, error) {
+	s, err := p.Future.Struct()
 	return UiView_newOfferSession_Results{s}, err
 }
 
-func (p UiView_newOfferSession_Results_Promise) Session() UiSession {
-	return UiSession{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p UiView_newOfferSession_Results_Future) Session() UiSession {
+	return UiSession{Client: p.Future.Field(0, nil).Client()}
 }
 
-type UiSession struct{ Client capnp.Client }
+type UiSession struct{ Client *capnp.Client }
 
 // UiSession_TypeID is the unique identifier for the type UiSession.
 const UiSession_TypeID = 0xf63241ee58b5166f
 
+// A UiSession_Server is a UiSession with a local implementation.
 type UiSession_Server interface {
 }
 
-func UiSession_ServerToClient(s UiSession_Server) UiSession {
-	c, _ := s.(server.Closer)
-	return UiSession{Client: server.New(UiSession_Methods(nil, s), c)}
+// UiSession_NewServer creates a new Server from an implementation of UiSession_Server.
+func UiSession_NewServer(s UiSession_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(UiSession_Methods(nil, s), s, c, policy)
 }
 
+// UiSession_ServerToClient creates a new Client from an implementation of UiSession_Server.
+// The caller is responsible for calling Release on the returned Client.
+func UiSession_ServerToClient(s UiSession_Server, policy *server.Policy) UiSession {
+	return UiSession{Client: capnp.NewClient(UiSession_NewServer(s, policy))}
+}
+
+// UiSession_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func UiSession_Methods(methods []server.Method, s UiSession_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 0)
@@ -3565,217 +3521,191 @@ func UiSession_Methods(methods []server.Method, s UiSession_Server) []server.Met
 	return methods
 }
 
-type SessionContext struct{ Client capnp.Client }
+type SessionContext struct{ Client *capnp.Client }
 
 // SessionContext_TypeID is the unique identifier for the type SessionContext.
 const SessionContext_TypeID = 0xbf3e401d5a63f336
 
-func (c SessionContext) GetSharedPermissions(ctx context.Context, params func(SessionContext_getSharedPermissions_Params) error, opts ...capnp.CallOption) SessionContext_getSharedPermissions_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_getSharedPermissions_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) GetSharedPermissions(ctx context.Context, params func(SessionContext_getSharedPermissions_Params) error) (SessionContext_getSharedPermissions_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "getSharedPermissions",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_getSharedPermissions_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_getSharedPermissions_Params{Struct: s}) }
 	}
-	return SessionContext_getSharedPermissions_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_getSharedPermissions_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) TieToUser(ctx context.Context, params func(SessionContext_tieToUser_Params) error, opts ...capnp.CallOption) SessionContext_tieToUser_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) TieToUser(ctx context.Context, params func(SessionContext_tieToUser_Params) error) (SessionContext_tieToUser_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "tieToUser",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_tieToUser_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_tieToUser_Params{Struct: s}) }
 	}
-	return SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_tieToUser_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) Offer(ctx context.Context, params func(SessionContext_offer_Params) error, opts ...capnp.CallOption) SessionContext_offer_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) Offer(ctx context.Context, params func(SessionContext_offer_Params) error) (SessionContext_offer_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "offer",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_offer_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_offer_Params{Struct: s}) }
 	}
-	return SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_offer_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) Request(ctx context.Context, params func(SessionContext_request_Params) error, opts ...capnp.CallOption) SessionContext_request_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) Request(ctx context.Context, params func(SessionContext_request_Params) error) (SessionContext_request_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "request",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_request_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_request_Params{Struct: s}) }
 	}
-	return SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_request_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) FulfillRequest(ctx context.Context, params func(SessionContext_fulfillRequest_Params) error, opts ...capnp.CallOption) SessionContext_fulfillRequest_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) FulfillRequest(ctx context.Context, params func(SessionContext_fulfillRequest_Params) error) (SessionContext_fulfillRequest_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "fulfillRequest",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_fulfillRequest_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_fulfillRequest_Params{Struct: s}) }
 	}
-	return SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_fulfillRequest_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) Close(ctx context.Context, params func(SessionContext_close_Params) error, opts ...capnp.CallOption) SessionContext_close_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) Close(ctx context.Context, params func(SessionContext_close_Params) error) (SessionContext_close_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "close",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_close_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_close_Params{Struct: s}) }
 	}
-	return SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_close_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) OpenView(ctx context.Context, params func(SessionContext_openView_Params) error, opts ...capnp.CallOption) SessionContext_openView_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_openView_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) OpenView(ctx context.Context, params func(SessionContext_openView_Params) error) (SessionContext_openView_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "openView",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_openView_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_openView_Params{Struct: s}) }
 	}
-	return SessionContext_openView_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_openView_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) ClaimRequest(ctx context.Context, params func(SessionContext_claimRequest_Params) error, opts ...capnp.CallOption) SessionContext_claimRequest_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_claimRequest_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) ClaimRequest(ctx context.Context, params func(SessionContext_claimRequest_Params) error) (SessionContext_claimRequest_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      7,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "claimRequest",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_claimRequest_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_claimRequest_Params{Struct: s}) }
 	}
-	return SessionContext_claimRequest_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_claimRequest_Results_Future{Future: ans.Future()}, release
 }
-func (c SessionContext) Activity(ctx context.Context, params func(SessionContext_activity_Params) error, opts ...capnp.CallOption) SessionContext_activity_Results_Promise {
-	if c.Client == nil {
-		return SessionContext_activity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SessionContext) Activity(ctx context.Context, params func(SessionContext_activity_Params) error) (SessionContext_activity_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      8,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "activity",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SessionContext_activity_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SessionContext_activity_Params{Struct: s}) }
 	}
-	return SessionContext_activity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SessionContext_activity_Results_Future{Future: ans.Future()}, release
 }
 
+// A SessionContext_Server is a SessionContext with a local implementation.
 type SessionContext_Server interface {
-	GetSharedPermissions(SessionContext_getSharedPermissions) error
+	GetSharedPermissions(context.Context, SessionContext_getSharedPermissions) error
 
-	TieToUser(SessionContext_tieToUser) error
+	TieToUser(context.Context, SessionContext_tieToUser) error
 
-	Offer(SessionContext_offer) error
+	Offer(context.Context, SessionContext_offer) error
 
-	Request(SessionContext_request) error
+	Request(context.Context, SessionContext_request) error
 
-	FulfillRequest(SessionContext_fulfillRequest) error
+	FulfillRequest(context.Context, SessionContext_fulfillRequest) error
 
-	Close(SessionContext_close) error
+	Close(context.Context, SessionContext_close) error
 
-	OpenView(SessionContext_openView) error
+	OpenView(context.Context, SessionContext_openView) error
 
-	ClaimRequest(SessionContext_claimRequest) error
+	ClaimRequest(context.Context, SessionContext_claimRequest) error
 
-	Activity(SessionContext_activity) error
+	Activity(context.Context, SessionContext_activity) error
 }
 
-func SessionContext_ServerToClient(s SessionContext_Server) SessionContext {
-	c, _ := s.(server.Closer)
-	return SessionContext{Client: server.New(SessionContext_Methods(nil, s), c)}
+// SessionContext_NewServer creates a new Server from an implementation of SessionContext_Server.
+func SessionContext_NewServer(s SessionContext_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(SessionContext_Methods(nil, s), s, c, policy)
 }
 
+// SessionContext_ServerToClient creates a new Client from an implementation of SessionContext_Server.
+// The caller is responsible for calling Release on the returned Client.
+func SessionContext_ServerToClient(s SessionContext_Server, policy *server.Policy) SessionContext {
+	return SessionContext{Client: capnp.NewClient(SessionContext_NewServer(s, policy))}
+}
+
+// SessionContext_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 9)
@@ -3788,11 +3718,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "getSharedPermissions",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_getSharedPermissions{c, opts, SessionContext_getSharedPermissions_Params{Struct: p}, SessionContext_getSharedPermissions_Results{Struct: r}}
-			return s.GetSharedPermissions(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSharedPermissions(ctx, SessionContext_getSharedPermissions{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3802,11 +3730,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "tieToUser",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_tieToUser{c, opts, SessionContext_tieToUser_Params{Struct: p}, SessionContext_tieToUser_Results{Struct: r}}
-			return s.TieToUser(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.TieToUser(ctx, SessionContext_tieToUser{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3816,11 +3742,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "offer",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_offer{c, opts, SessionContext_offer_Params{Struct: p}, SessionContext_offer_Results{Struct: r}}
-			return s.Offer(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Offer(ctx, SessionContext_offer{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3830,11 +3754,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "request",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_request{c, opts, SessionContext_request_Params{Struct: p}, SessionContext_request_Results{Struct: r}}
-			return s.Request(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Request(ctx, SessionContext_request{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -3844,11 +3766,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "fulfillRequest",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_fulfillRequest{c, opts, SessionContext_fulfillRequest_Params{Struct: p}, SessionContext_fulfillRequest_Results{Struct: r}}
-			return s.FulfillRequest(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.FulfillRequest(ctx, SessionContext_fulfillRequest{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3858,11 +3778,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "close",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_close{c, opts, SessionContext_close_Params{Struct: p}, SessionContext_close_Results{Struct: r}}
-			return s.Close(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Close(ctx, SessionContext_close{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3872,11 +3790,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "openView",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_openView{c, opts, SessionContext_openView_Params{Struct: p}, SessionContext_openView_Results{Struct: r}}
-			return s.OpenView(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.OpenView(ctx, SessionContext_openView{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3886,11 +3802,9 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "claimRequest",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_claimRequest{c, opts, SessionContext_claimRequest_Params{Struct: p}, SessionContext_claimRequest_Results{Struct: r}}
-			return s.ClaimRequest(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ClaimRequest(ctx, SessionContext_claimRequest{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3900,86 +3814,165 @@ func SessionContext_Methods(methods []server.Method, s SessionContext_Server) []
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "activity",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SessionContext_activity{c, opts, SessionContext_activity_Params{Struct: p}, SessionContext_activity_Results{Struct: r}}
-			return s.Activity(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Activity(ctx, SessionContext_activity{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// SessionContext_getSharedPermissions holds the arguments for a server call to SessionContext.getSharedPermissions.
+// SessionContext_getSharedPermissions holds the state for a server call to SessionContext.getSharedPermissions.
+// See server.Call for documentation.
 type SessionContext_getSharedPermissions struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_getSharedPermissions_Params
-	Results SessionContext_getSharedPermissions_Results
+	*server.Call
 }
 
-// SessionContext_tieToUser holds the arguments for a server call to SessionContext.tieToUser.
+// Args returns the call's arguments.
+func (c SessionContext_getSharedPermissions) Args() SessionContext_getSharedPermissions_Params {
+	return SessionContext_getSharedPermissions_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_getSharedPermissions) AllocResults() (SessionContext_getSharedPermissions_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SessionContext_getSharedPermissions_Results{Struct: r}, err
+}
+
+// SessionContext_tieToUser holds the state for a server call to SessionContext.tieToUser.
+// See server.Call for documentation.
 type SessionContext_tieToUser struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_tieToUser_Params
-	Results SessionContext_tieToUser_Results
+	*server.Call
 }
 
-// SessionContext_offer holds the arguments for a server call to SessionContext.offer.
+// Args returns the call's arguments.
+func (c SessionContext_tieToUser) Args() SessionContext_tieToUser_Params {
+	return SessionContext_tieToUser_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_tieToUser) AllocResults() (SessionContext_tieToUser_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SessionContext_tieToUser_Results{Struct: r}, err
+}
+
+// SessionContext_offer holds the state for a server call to SessionContext.offer.
+// See server.Call for documentation.
 type SessionContext_offer struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_offer_Params
-	Results SessionContext_offer_Results
+	*server.Call
 }
 
-// SessionContext_request holds the arguments for a server call to SessionContext.request.
+// Args returns the call's arguments.
+func (c SessionContext_offer) Args() SessionContext_offer_Params {
+	return SessionContext_offer_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_offer) AllocResults() (SessionContext_offer_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SessionContext_offer_Results{Struct: r}, err
+}
+
+// SessionContext_request holds the state for a server call to SessionContext.request.
+// See server.Call for documentation.
 type SessionContext_request struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_request_Params
-	Results SessionContext_request_Results
+	*server.Call
 }
 
-// SessionContext_fulfillRequest holds the arguments for a server call to SessionContext.fulfillRequest.
+// Args returns the call's arguments.
+func (c SessionContext_request) Args() SessionContext_request_Params {
+	return SessionContext_request_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_request) AllocResults() (SessionContext_request_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SessionContext_request_Results{Struct: r}, err
+}
+
+// SessionContext_fulfillRequest holds the state for a server call to SessionContext.fulfillRequest.
+// See server.Call for documentation.
 type SessionContext_fulfillRequest struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_fulfillRequest_Params
-	Results SessionContext_fulfillRequest_Results
+	*server.Call
 }
 
-// SessionContext_close holds the arguments for a server call to SessionContext.close.
+// Args returns the call's arguments.
+func (c SessionContext_fulfillRequest) Args() SessionContext_fulfillRequest_Params {
+	return SessionContext_fulfillRequest_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_fulfillRequest) AllocResults() (SessionContext_fulfillRequest_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SessionContext_fulfillRequest_Results{Struct: r}, err
+}
+
+// SessionContext_close holds the state for a server call to SessionContext.close.
+// See server.Call for documentation.
 type SessionContext_close struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_close_Params
-	Results SessionContext_close_Results
+	*server.Call
 }
 
-// SessionContext_openView holds the arguments for a server call to SessionContext.openView.
+// Args returns the call's arguments.
+func (c SessionContext_close) Args() SessionContext_close_Params {
+	return SessionContext_close_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_close) AllocResults() (SessionContext_close_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SessionContext_close_Results{Struct: r}, err
+}
+
+// SessionContext_openView holds the state for a server call to SessionContext.openView.
+// See server.Call for documentation.
 type SessionContext_openView struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_openView_Params
-	Results SessionContext_openView_Results
+	*server.Call
 }
 
-// SessionContext_claimRequest holds the arguments for a server call to SessionContext.claimRequest.
+// Args returns the call's arguments.
+func (c SessionContext_openView) Args() SessionContext_openView_Params {
+	return SessionContext_openView_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_openView) AllocResults() (SessionContext_openView_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SessionContext_openView_Results{Struct: r}, err
+}
+
+// SessionContext_claimRequest holds the state for a server call to SessionContext.claimRequest.
+// See server.Call for documentation.
 type SessionContext_claimRequest struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_claimRequest_Params
-	Results SessionContext_claimRequest_Results
+	*server.Call
 }
 
-// SessionContext_activity holds the arguments for a server call to SessionContext.activity.
+// Args returns the call's arguments.
+func (c SessionContext_claimRequest) Args() SessionContext_claimRequest_Params {
+	return SessionContext_claimRequest_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_claimRequest) AllocResults() (SessionContext_claimRequest_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SessionContext_claimRequest_Results{Struct: r}, err
+}
+
+// SessionContext_activity holds the state for a server call to SessionContext.activity.
+// See server.Call for documentation.
 type SessionContext_activity struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SessionContext_activity_Params
-	Results SessionContext_activity_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SessionContext_activity) Args() SessionContext_activity_Params {
+	return SessionContext_activity_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SessionContext_activity) AllocResults() (SessionContext_activity_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SessionContext_activity_Results{Struct: r}, err
 }
 
 type SessionContext_getSharedPermissions_Params struct{ capnp.Struct }
@@ -3998,7 +3991,7 @@ func NewRootSessionContext_getSharedPermissions_Params(s *capnp.Segment) (Sessio
 }
 
 func ReadRootSessionContext_getSharedPermissions_Params(msg *capnp.Message) (SessionContext_getSharedPermissions_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_getSharedPermissions_Params{root.Struct()}, err
 }
 
@@ -4029,11 +4022,11 @@ func (s SessionContext_getSharedPermissions_Params_List) String() string {
 	return str
 }
 
-// SessionContext_getSharedPermissions_Params_Promise is a wrapper for a SessionContext_getSharedPermissions_Params promised by a client call.
-type SessionContext_getSharedPermissions_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_getSharedPermissions_Params_Future is a wrapper for a SessionContext_getSharedPermissions_Params promised by a client call.
+type SessionContext_getSharedPermissions_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_getSharedPermissions_Params_Promise) Struct() (SessionContext_getSharedPermissions_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_getSharedPermissions_Params_Future) Struct() (SessionContext_getSharedPermissions_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_getSharedPermissions_Params{s}, err
 }
 
@@ -4053,7 +4046,7 @@ func NewRootSessionContext_getSharedPermissions_Results(s *capnp.Segment) (Sessi
 }
 
 func ReadRootSessionContext_getSharedPermissions_Results(msg *capnp.Message) (SessionContext_getSharedPermissions_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_getSharedPermissions_Results{root.Struct()}, err
 }
 
@@ -4068,12 +4061,11 @@ func (s SessionContext_getSharedPermissions_Results) Var() util.Assignable_Gette
 }
 
 func (s SessionContext_getSharedPermissions_Results) HasVar() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionContext_getSharedPermissions_Results) SetVar(v util.Assignable_Getter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4103,16 +4095,16 @@ func (s SessionContext_getSharedPermissions_Results_List) String() string {
 	return str
 }
 
-// SessionContext_getSharedPermissions_Results_Promise is a wrapper for a SessionContext_getSharedPermissions_Results promised by a client call.
-type SessionContext_getSharedPermissions_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_getSharedPermissions_Results_Future is a wrapper for a SessionContext_getSharedPermissions_Results promised by a client call.
+type SessionContext_getSharedPermissions_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_getSharedPermissions_Results_Promise) Struct() (SessionContext_getSharedPermissions_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_getSharedPermissions_Results_Future) Struct() (SessionContext_getSharedPermissions_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_getSharedPermissions_Results{s}, err
 }
 
-func (p SessionContext_getSharedPermissions_Results_Promise) Var() util.Assignable_Getter {
-	return util.Assignable_Getter{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SessionContext_getSharedPermissions_Results_Future) Var() util.Assignable_Getter {
+	return util.Assignable_Getter{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SessionContext_tieToUser_Params struct{ capnp.Struct }
@@ -4131,7 +4123,7 @@ func NewRootSessionContext_tieToUser_Params(s *capnp.Segment) (SessionContext_ti
 }
 
 func ReadRootSessionContext_tieToUser_Params(msg *capnp.Message) (SessionContext_tieToUser_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_tieToUser_Params{root.Struct()}, err
 }
 
@@ -4140,24 +4132,15 @@ func (s SessionContext_tieToUser_Params) String() string {
 	return str
 }
 
-func (s SessionContext_tieToUser_Params) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_tieToUser_Params) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_tieToUser_Params) CapPtr() (capnp.Ptr, error) {
+func (s SessionContext_tieToUser_Params) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_tieToUser_Params) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_tieToUser_Params) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_tieToUser_Params) SetCapPtr(v capnp.Ptr) error {
+func (s SessionContext_tieToUser_Params) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -4167,8 +4150,7 @@ func (s SessionContext_tieToUser_Params) RequiredPermissions() (capnp.BitList, e
 }
 
 func (s SessionContext_tieToUser_Params) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_tieToUser_Params) SetRequiredPermissions(v capnp.BitList) error {
@@ -4192,8 +4174,7 @@ func (s SessionContext_tieToUser_Params) DisplayInfo() (powerbox.PowerboxDisplay
 }
 
 func (s SessionContext_tieToUser_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s SessionContext_tieToUser_Params) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
@@ -4233,20 +4214,20 @@ func (s SessionContext_tieToUser_Params_List) String() string {
 	return str
 }
 
-// SessionContext_tieToUser_Params_Promise is a wrapper for a SessionContext_tieToUser_Params promised by a client call.
-type SessionContext_tieToUser_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_tieToUser_Params_Future is a wrapper for a SessionContext_tieToUser_Params promised by a client call.
+type SessionContext_tieToUser_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_tieToUser_Params_Promise) Struct() (SessionContext_tieToUser_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_tieToUser_Params_Future) Struct() (SessionContext_tieToUser_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_tieToUser_Params{s}, err
 }
 
-func (p SessionContext_tieToUser_Params_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_tieToUser_Params_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SessionContext_tieToUser_Params_Promise) DisplayInfo() powerbox.PowerboxDisplayInfo_Promise {
-	return powerbox.PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p SessionContext_tieToUser_Params_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
+	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(2, nil)}
 }
 
 type SessionContext_tieToUser_Results struct{ capnp.Struct }
@@ -4265,7 +4246,7 @@ func NewRootSessionContext_tieToUser_Results(s *capnp.Segment) (SessionContext_t
 }
 
 func ReadRootSessionContext_tieToUser_Results(msg *capnp.Message) (SessionContext_tieToUser_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_tieToUser_Results{root.Struct()}, err
 }
 
@@ -4274,24 +4255,15 @@ func (s SessionContext_tieToUser_Results) String() string {
 	return str
 }
 
-func (s SessionContext_tieToUser_Results) TiedCap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_tieToUser_Results) HasTiedCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_tieToUser_Results) TiedCapPtr() (capnp.Ptr, error) {
+func (s SessionContext_tieToUser_Results) TiedCap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_tieToUser_Results) SetTiedCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_tieToUser_Results) HasTiedCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_tieToUser_Results) SetTiedCapPtr(v capnp.Ptr) error {
+func (s SessionContext_tieToUser_Results) SetTiedCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -4317,16 +4289,16 @@ func (s SessionContext_tieToUser_Results_List) String() string {
 	return str
 }
 
-// SessionContext_tieToUser_Results_Promise is a wrapper for a SessionContext_tieToUser_Results promised by a client call.
-type SessionContext_tieToUser_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_tieToUser_Results_Future is a wrapper for a SessionContext_tieToUser_Results promised by a client call.
+type SessionContext_tieToUser_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_tieToUser_Results_Promise) Struct() (SessionContext_tieToUser_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_tieToUser_Results_Future) Struct() (SessionContext_tieToUser_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_tieToUser_Results{s}, err
 }
 
-func (p SessionContext_tieToUser_Results_Promise) TiedCap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_tieToUser_Results_Future) TiedCap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type SessionContext_offer_Params struct{ capnp.Struct }
@@ -4345,7 +4317,7 @@ func NewRootSessionContext_offer_Params(s *capnp.Segment) (SessionContext_offer_
 }
 
 func ReadRootSessionContext_offer_Params(msg *capnp.Message) (SessionContext_offer_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_offer_Params{root.Struct()}, err
 }
 
@@ -4354,24 +4326,15 @@ func (s SessionContext_offer_Params) String() string {
 	return str
 }
 
-func (s SessionContext_offer_Params) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_offer_Params) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_offer_Params) CapPtr() (capnp.Ptr, error) {
+func (s SessionContext_offer_Params) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_offer_Params) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_offer_Params) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_offer_Params) SetCapPtr(v capnp.Ptr) error {
+func (s SessionContext_offer_Params) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -4381,8 +4344,7 @@ func (s SessionContext_offer_Params) RequiredPermissions() (capnp.BitList, error
 }
 
 func (s SessionContext_offer_Params) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_offer_Params) SetRequiredPermissions(v capnp.BitList) error {
@@ -4406,8 +4368,7 @@ func (s SessionContext_offer_Params) Descriptor() (powerbox.PowerboxDescriptor, 
 }
 
 func (s SessionContext_offer_Params) HasDescriptor() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s SessionContext_offer_Params) SetDescriptor(v powerbox.PowerboxDescriptor) error {
@@ -4431,8 +4392,7 @@ func (s SessionContext_offer_Params) DisplayInfo() (powerbox.PowerboxDisplayInfo
 }
 
 func (s SessionContext_offer_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s SessionContext_offer_Params) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
@@ -4472,24 +4432,24 @@ func (s SessionContext_offer_Params_List) String() string {
 	return str
 }
 
-// SessionContext_offer_Params_Promise is a wrapper for a SessionContext_offer_Params promised by a client call.
-type SessionContext_offer_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_offer_Params_Future is a wrapper for a SessionContext_offer_Params promised by a client call.
+type SessionContext_offer_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_offer_Params_Promise) Struct() (SessionContext_offer_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_offer_Params_Future) Struct() (SessionContext_offer_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_offer_Params{s}, err
 }
 
-func (p SessionContext_offer_Params_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_offer_Params_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SessionContext_offer_Params_Promise) Descriptor() powerbox.PowerboxDescriptor_Promise {
-	return powerbox.PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p SessionContext_offer_Params_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p SessionContext_offer_Params_Promise) DisplayInfo() powerbox.PowerboxDisplayInfo_Promise {
-	return powerbox.PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p SessionContext_offer_Params_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
+	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(3, nil)}
 }
 
 type SessionContext_offer_Results struct{ capnp.Struct }
@@ -4508,7 +4468,7 @@ func NewRootSessionContext_offer_Results(s *capnp.Segment) (SessionContext_offer
 }
 
 func ReadRootSessionContext_offer_Results(msg *capnp.Message) (SessionContext_offer_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_offer_Results{root.Struct()}, err
 }
 
@@ -4539,11 +4499,11 @@ func (s SessionContext_offer_Results_List) String() string {
 	return str
 }
 
-// SessionContext_offer_Results_Promise is a wrapper for a SessionContext_offer_Results promised by a client call.
-type SessionContext_offer_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_offer_Results_Future is a wrapper for a SessionContext_offer_Results promised by a client call.
+type SessionContext_offer_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_offer_Results_Promise) Struct() (SessionContext_offer_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_offer_Results_Future) Struct() (SessionContext_offer_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_offer_Results{s}, err
 }
 
@@ -4563,7 +4523,7 @@ func NewRootSessionContext_request_Params(s *capnp.Segment) (SessionContext_requ
 }
 
 func ReadRootSessionContext_request_Params(msg *capnp.Message) (SessionContext_request_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_request_Params{root.Struct()}, err
 }
 
@@ -4578,8 +4538,7 @@ func (s SessionContext_request_Params) Query() (powerbox.PowerboxDescriptor_List
 }
 
 func (s SessionContext_request_Params) HasQuery() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionContext_request_Params) SetQuery(v powerbox.PowerboxDescriptor_List) error {
@@ -4603,8 +4562,7 @@ func (s SessionContext_request_Params) RequiredPermissions() (capnp.BitList, err
 }
 
 func (s SessionContext_request_Params) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_request_Params) SetRequiredPermissions(v capnp.BitList) error {
@@ -4644,11 +4602,11 @@ func (s SessionContext_request_Params_List) String() string {
 	return str
 }
 
-// SessionContext_request_Params_Promise is a wrapper for a SessionContext_request_Params promised by a client call.
-type SessionContext_request_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_request_Params_Future is a wrapper for a SessionContext_request_Params promised by a client call.
+type SessionContext_request_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_request_Params_Promise) Struct() (SessionContext_request_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_request_Params_Future) Struct() (SessionContext_request_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_request_Params{s}, err
 }
 
@@ -4668,7 +4626,7 @@ func NewRootSessionContext_request_Results(s *capnp.Segment) (SessionContext_req
 }
 
 func ReadRootSessionContext_request_Results(msg *capnp.Message) (SessionContext_request_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_request_Results{root.Struct()}, err
 }
 
@@ -4677,24 +4635,15 @@ func (s SessionContext_request_Results) String() string {
 	return str
 }
 
-func (s SessionContext_request_Results) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_request_Results) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_request_Results) CapPtr() (capnp.Ptr, error) {
+func (s SessionContext_request_Results) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_request_Results) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_request_Results) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_request_Results) SetCapPtr(v capnp.Ptr) error {
+func (s SessionContext_request_Results) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -4704,8 +4653,7 @@ func (s SessionContext_request_Results) Descriptor() (powerbox.PowerboxDescripto
 }
 
 func (s SessionContext_request_Results) HasDescriptor() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_request_Results) SetDescriptor(v powerbox.PowerboxDescriptor) error {
@@ -4745,20 +4693,20 @@ func (s SessionContext_request_Results_List) String() string {
 	return str
 }
 
-// SessionContext_request_Results_Promise is a wrapper for a SessionContext_request_Results promised by a client call.
-type SessionContext_request_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_request_Results_Future is a wrapper for a SessionContext_request_Results promised by a client call.
+type SessionContext_request_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_request_Results_Promise) Struct() (SessionContext_request_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_request_Results_Future) Struct() (SessionContext_request_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_request_Results{s}, err
 }
 
-func (p SessionContext_request_Results_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_request_Results_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SessionContext_request_Results_Promise) Descriptor() powerbox.PowerboxDescriptor_Promise {
-	return powerbox.PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p SessionContext_request_Results_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
 }
 
 type SessionContext_fulfillRequest_Params struct{ capnp.Struct }
@@ -4777,7 +4725,7 @@ func NewRootSessionContext_fulfillRequest_Params(s *capnp.Segment) (SessionConte
 }
 
 func ReadRootSessionContext_fulfillRequest_Params(msg *capnp.Message) (SessionContext_fulfillRequest_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_fulfillRequest_Params{root.Struct()}, err
 }
 
@@ -4786,24 +4734,15 @@ func (s SessionContext_fulfillRequest_Params) String() string {
 	return str
 }
 
-func (s SessionContext_fulfillRequest_Params) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_fulfillRequest_Params) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_fulfillRequest_Params) CapPtr() (capnp.Ptr, error) {
+func (s SessionContext_fulfillRequest_Params) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_fulfillRequest_Params) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_fulfillRequest_Params) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_fulfillRequest_Params) SetCapPtr(v capnp.Ptr) error {
+func (s SessionContext_fulfillRequest_Params) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -4813,8 +4752,7 @@ func (s SessionContext_fulfillRequest_Params) RequiredPermissions() (capnp.BitLi
 }
 
 func (s SessionContext_fulfillRequest_Params) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_fulfillRequest_Params) SetRequiredPermissions(v capnp.BitList) error {
@@ -4838,8 +4776,7 @@ func (s SessionContext_fulfillRequest_Params) Descriptor() (powerbox.PowerboxDes
 }
 
 func (s SessionContext_fulfillRequest_Params) HasDescriptor() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s SessionContext_fulfillRequest_Params) SetDescriptor(v powerbox.PowerboxDescriptor) error {
@@ -4863,8 +4800,7 @@ func (s SessionContext_fulfillRequest_Params) DisplayInfo() (powerbox.PowerboxDi
 }
 
 func (s SessionContext_fulfillRequest_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s SessionContext_fulfillRequest_Params) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
@@ -4904,24 +4840,24 @@ func (s SessionContext_fulfillRequest_Params_List) String() string {
 	return str
 }
 
-// SessionContext_fulfillRequest_Params_Promise is a wrapper for a SessionContext_fulfillRequest_Params promised by a client call.
-type SessionContext_fulfillRequest_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_fulfillRequest_Params_Future is a wrapper for a SessionContext_fulfillRequest_Params promised by a client call.
+type SessionContext_fulfillRequest_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Struct() (SessionContext_fulfillRequest_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_fulfillRequest_Params_Future) Struct() (SessionContext_fulfillRequest_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_fulfillRequest_Params{s}, err
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_fulfillRequest_Params_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) Descriptor() powerbox.PowerboxDescriptor_Promise {
-	return powerbox.PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p SessionContext_fulfillRequest_Params_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p SessionContext_fulfillRequest_Params_Promise) DisplayInfo() powerbox.PowerboxDisplayInfo_Promise {
-	return powerbox.PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p SessionContext_fulfillRequest_Params_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
+	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(3, nil)}
 }
 
 type SessionContext_fulfillRequest_Results struct{ capnp.Struct }
@@ -4940,7 +4876,7 @@ func NewRootSessionContext_fulfillRequest_Results(s *capnp.Segment) (SessionCont
 }
 
 func ReadRootSessionContext_fulfillRequest_Results(msg *capnp.Message) (SessionContext_fulfillRequest_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_fulfillRequest_Results{root.Struct()}, err
 }
 
@@ -4971,11 +4907,11 @@ func (s SessionContext_fulfillRequest_Results_List) String() string {
 	return str
 }
 
-// SessionContext_fulfillRequest_Results_Promise is a wrapper for a SessionContext_fulfillRequest_Results promised by a client call.
-type SessionContext_fulfillRequest_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_fulfillRequest_Results_Future is a wrapper for a SessionContext_fulfillRequest_Results promised by a client call.
+type SessionContext_fulfillRequest_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_fulfillRequest_Results_Promise) Struct() (SessionContext_fulfillRequest_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_fulfillRequest_Results_Future) Struct() (SessionContext_fulfillRequest_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_fulfillRequest_Results{s}, err
 }
 
@@ -4995,7 +4931,7 @@ func NewRootSessionContext_close_Params(s *capnp.Segment) (SessionContext_close_
 }
 
 func ReadRootSessionContext_close_Params(msg *capnp.Message) (SessionContext_close_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_close_Params{root.Struct()}, err
 }
 
@@ -5026,11 +4962,11 @@ func (s SessionContext_close_Params_List) String() string {
 	return str
 }
 
-// SessionContext_close_Params_Promise is a wrapper for a SessionContext_close_Params promised by a client call.
-type SessionContext_close_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_close_Params_Future is a wrapper for a SessionContext_close_Params promised by a client call.
+type SessionContext_close_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_close_Params_Promise) Struct() (SessionContext_close_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_close_Params_Future) Struct() (SessionContext_close_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_close_Params{s}, err
 }
 
@@ -5050,7 +4986,7 @@ func NewRootSessionContext_close_Results(s *capnp.Segment) (SessionContext_close
 }
 
 func ReadRootSessionContext_close_Results(msg *capnp.Message) (SessionContext_close_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_close_Results{root.Struct()}, err
 }
 
@@ -5081,11 +5017,11 @@ func (s SessionContext_close_Results_List) String() string {
 	return str
 }
 
-// SessionContext_close_Results_Promise is a wrapper for a SessionContext_close_Results promised by a client call.
-type SessionContext_close_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_close_Results_Future is a wrapper for a SessionContext_close_Results promised by a client call.
+type SessionContext_close_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_close_Results_Promise) Struct() (SessionContext_close_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_close_Results_Future) Struct() (SessionContext_close_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_close_Results{s}, err
 }
 
@@ -5105,7 +5041,7 @@ func NewRootSessionContext_openView_Params(s *capnp.Segment) (SessionContext_ope
 }
 
 func ReadRootSessionContext_openView_Params(msg *capnp.Message) (SessionContext_openView_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_openView_Params{root.Struct()}, err
 }
 
@@ -5120,12 +5056,11 @@ func (s SessionContext_openView_Params) View() UiView {
 }
 
 func (s SessionContext_openView_Params) HasView() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionContext_openView_Params) SetView(v UiView) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -5139,8 +5074,7 @@ func (s SessionContext_openView_Params) Path() (string, error) {
 }
 
 func (s SessionContext_openView_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_openView_Params) PathBytes() ([]byte, error) {
@@ -5182,16 +5116,16 @@ func (s SessionContext_openView_Params_List) String() string {
 	return str
 }
 
-// SessionContext_openView_Params_Promise is a wrapper for a SessionContext_openView_Params promised by a client call.
-type SessionContext_openView_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_openView_Params_Future is a wrapper for a SessionContext_openView_Params promised by a client call.
+type SessionContext_openView_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_openView_Params_Promise) Struct() (SessionContext_openView_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_openView_Params_Future) Struct() (SessionContext_openView_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_openView_Params{s}, err
 }
 
-func (p SessionContext_openView_Params_Promise) View() UiView {
-	return UiView{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SessionContext_openView_Params_Future) View() UiView {
+	return UiView{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SessionContext_openView_Results struct{ capnp.Struct }
@@ -5210,7 +5144,7 @@ func NewRootSessionContext_openView_Results(s *capnp.Segment) (SessionContext_op
 }
 
 func ReadRootSessionContext_openView_Results(msg *capnp.Message) (SessionContext_openView_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_openView_Results{root.Struct()}, err
 }
 
@@ -5241,11 +5175,11 @@ func (s SessionContext_openView_Results_List) String() string {
 	return str
 }
 
-// SessionContext_openView_Results_Promise is a wrapper for a SessionContext_openView_Results promised by a client call.
-type SessionContext_openView_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_openView_Results_Future is a wrapper for a SessionContext_openView_Results promised by a client call.
+type SessionContext_openView_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_openView_Results_Promise) Struct() (SessionContext_openView_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_openView_Results_Future) Struct() (SessionContext_openView_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_openView_Results{s}, err
 }
 
@@ -5265,7 +5199,7 @@ func NewRootSessionContext_claimRequest_Params(s *capnp.Segment) (SessionContext
 }
 
 func ReadRootSessionContext_claimRequest_Params(msg *capnp.Message) (SessionContext_claimRequest_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_claimRequest_Params{root.Struct()}, err
 }
 
@@ -5280,8 +5214,7 @@ func (s SessionContext_claimRequest_Params) RequestToken() (string, error) {
 }
 
 func (s SessionContext_claimRequest_Params) HasRequestToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionContext_claimRequest_Params) RequestTokenBytes() ([]byte, error) {
@@ -5299,8 +5232,7 @@ func (s SessionContext_claimRequest_Params) RequiredPermissions() (capnp.BitList
 }
 
 func (s SessionContext_claimRequest_Params) HasRequiredPermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionContext_claimRequest_Params) SetRequiredPermissions(v capnp.BitList) error {
@@ -5340,11 +5272,11 @@ func (s SessionContext_claimRequest_Params_List) String() string {
 	return str
 }
 
-// SessionContext_claimRequest_Params_Promise is a wrapper for a SessionContext_claimRequest_Params promised by a client call.
-type SessionContext_claimRequest_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_claimRequest_Params_Future is a wrapper for a SessionContext_claimRequest_Params promised by a client call.
+type SessionContext_claimRequest_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_claimRequest_Params_Promise) Struct() (SessionContext_claimRequest_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_claimRequest_Params_Future) Struct() (SessionContext_claimRequest_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_claimRequest_Params{s}, err
 }
 
@@ -5364,7 +5296,7 @@ func NewRootSessionContext_claimRequest_Results(s *capnp.Segment) (SessionContex
 }
 
 func ReadRootSessionContext_claimRequest_Results(msg *capnp.Message) (SessionContext_claimRequest_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_claimRequest_Results{root.Struct()}, err
 }
 
@@ -5373,24 +5305,15 @@ func (s SessionContext_claimRequest_Results) String() string {
 	return str
 }
 
-func (s SessionContext_claimRequest_Results) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s SessionContext_claimRequest_Results) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionContext_claimRequest_Results) CapPtr() (capnp.Ptr, error) {
+func (s SessionContext_claimRequest_Results) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s SessionContext_claimRequest_Results) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s SessionContext_claimRequest_Results) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s SessionContext_claimRequest_Results) SetCapPtr(v capnp.Ptr) error {
+func (s SessionContext_claimRequest_Results) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -5416,16 +5339,16 @@ func (s SessionContext_claimRequest_Results_List) String() string {
 	return str
 }
 
-// SessionContext_claimRequest_Results_Promise is a wrapper for a SessionContext_claimRequest_Results promised by a client call.
-type SessionContext_claimRequest_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_claimRequest_Results_Future is a wrapper for a SessionContext_claimRequest_Results promised by a client call.
+type SessionContext_claimRequest_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_claimRequest_Results_Promise) Struct() (SessionContext_claimRequest_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_claimRequest_Results_Future) Struct() (SessionContext_claimRequest_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_claimRequest_Results{s}, err
 }
 
-func (p SessionContext_claimRequest_Results_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p SessionContext_claimRequest_Results_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type SessionContext_activity_Params struct{ capnp.Struct }
@@ -5444,7 +5367,7 @@ func NewRootSessionContext_activity_Params(s *capnp.Segment) (SessionContext_act
 }
 
 func ReadRootSessionContext_activity_Params(msg *capnp.Message) (SessionContext_activity_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_activity_Params{root.Struct()}, err
 }
 
@@ -5459,8 +5382,7 @@ func (s SessionContext_activity_Params) Event() (activity.ActivityEvent, error) 
 }
 
 func (s SessionContext_activity_Params) HasEvent() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionContext_activity_Params) SetEvent(v activity.ActivityEvent) error {
@@ -5500,16 +5422,16 @@ func (s SessionContext_activity_Params_List) String() string {
 	return str
 }
 
-// SessionContext_activity_Params_Promise is a wrapper for a SessionContext_activity_Params promised by a client call.
-type SessionContext_activity_Params_Promise struct{ *capnp.Pipeline }
+// SessionContext_activity_Params_Future is a wrapper for a SessionContext_activity_Params promised by a client call.
+type SessionContext_activity_Params_Future struct{ *capnp.Future }
 
-func (p SessionContext_activity_Params_Promise) Struct() (SessionContext_activity_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_activity_Params_Future) Struct() (SessionContext_activity_Params, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_activity_Params{s}, err
 }
 
-func (p SessionContext_activity_Params_Promise) Event() activity.ActivityEvent_Promise {
-	return activity.ActivityEvent_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p SessionContext_activity_Params_Future) Event() activity.ActivityEvent_Future {
+	return activity.ActivityEvent_Future{Future: p.Future.Field(0, nil)}
 }
 
 type SessionContext_activity_Results struct{ capnp.Struct }
@@ -5528,7 +5450,7 @@ func NewRootSessionContext_activity_Results(s *capnp.Segment) (SessionContext_ac
 }
 
 func ReadRootSessionContext_activity_Results(msg *capnp.Message) (SessionContext_activity_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionContext_activity_Results{root.Struct()}, err
 }
 
@@ -5559,11 +5481,11 @@ func (s SessionContext_activity_Results_List) String() string {
 	return str
 }
 
-// SessionContext_activity_Results_Promise is a wrapper for a SessionContext_activity_Results promised by a client call.
-type SessionContext_activity_Results_Promise struct{ *capnp.Pipeline }
+// SessionContext_activity_Results_Future is a wrapper for a SessionContext_activity_Results promised by a client call.
+type SessionContext_activity_Results_Future struct{ *capnp.Future }
 
-func (p SessionContext_activity_Results_Promise) Struct() (SessionContext_activity_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionContext_activity_Results_Future) Struct() (SessionContext_activity_Results, error) {
+	s, err := p.Future.Struct()
 	return SessionContext_activity_Results{s}, err
 }
 
@@ -5583,7 +5505,7 @@ func NewRootPermissionDef(s *capnp.Segment) (PermissionDef, error) {
 }
 
 func ReadRootPermissionDef(msg *capnp.Message) (PermissionDef, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PermissionDef{root.Struct()}, err
 }
 
@@ -5598,8 +5520,7 @@ func (s PermissionDef) Name() (string, error) {
 }
 
 func (s PermissionDef) HasName() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s PermissionDef) NameBytes() ([]byte, error) {
@@ -5617,8 +5538,7 @@ func (s PermissionDef) Title() (util.LocalizedText, error) {
 }
 
 func (s PermissionDef) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s PermissionDef) SetTitle(v util.LocalizedText) error {
@@ -5642,8 +5562,7 @@ func (s PermissionDef) Description() (util.LocalizedText, error) {
 }
 
 func (s PermissionDef) HasDescription() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s PermissionDef) SetDescription(v util.LocalizedText) error {
@@ -5687,20 +5606,20 @@ func (s PermissionDef_List) String() string {
 	return str
 }
 
-// PermissionDef_Promise is a wrapper for a PermissionDef promised by a client call.
-type PermissionDef_Promise struct{ *capnp.Pipeline }
+// PermissionDef_Future is a wrapper for a PermissionDef promised by a client call.
+type PermissionDef_Future struct{ *capnp.Future }
 
-func (p PermissionDef_Promise) Struct() (PermissionDef, error) {
-	s, err := p.Pipeline.Struct()
+func (p PermissionDef_Future) Struct() (PermissionDef, error) {
+	s, err := p.Future.Struct()
 	return PermissionDef{s}, err
 }
 
-func (p PermissionDef_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p PermissionDef_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p PermissionDef_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p PermissionDef_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
 type RoleDef struct{ capnp.Struct }
@@ -5719,7 +5638,7 @@ func NewRootRoleDef(s *capnp.Segment) (RoleDef, error) {
 }
 
 func ReadRootRoleDef(msg *capnp.Message) (RoleDef, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return RoleDef{root.Struct()}, err
 }
 
@@ -5734,8 +5653,7 @@ func (s RoleDef) Title() (util.LocalizedText, error) {
 }
 
 func (s RoleDef) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s RoleDef) SetTitle(v util.LocalizedText) error {
@@ -5759,8 +5677,7 @@ func (s RoleDef) VerbPhrase() (util.LocalizedText, error) {
 }
 
 func (s RoleDef) HasVerbPhrase() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s RoleDef) SetVerbPhrase(v util.LocalizedText) error {
@@ -5784,8 +5701,7 @@ func (s RoleDef) Description() (util.LocalizedText, error) {
 }
 
 func (s RoleDef) HasDescription() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s RoleDef) SetDescription(v util.LocalizedText) error {
@@ -5809,8 +5725,7 @@ func (s RoleDef) Permissions() (capnp.BitList, error) {
 }
 
 func (s RoleDef) HasPermissions() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s RoleDef) SetPermissions(v capnp.BitList) error {
@@ -5862,61 +5777,67 @@ func (s RoleDef_List) String() string {
 	return str
 }
 
-// RoleDef_Promise is a wrapper for a RoleDef promised by a client call.
-type RoleDef_Promise struct{ *capnp.Pipeline }
+// RoleDef_Future is a wrapper for a RoleDef promised by a client call.
+type RoleDef_Future struct{ *capnp.Future }
 
-func (p RoleDef_Promise) Struct() (RoleDef, error) {
-	s, err := p.Pipeline.Struct()
+func (p RoleDef_Future) Struct() (RoleDef, error) {
+	s, err := p.Future.Struct()
 	return RoleDef{s}, err
 }
 
-func (p RoleDef_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p RoleDef_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p RoleDef_Promise) VerbPhrase() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p RoleDef_Future) VerbPhrase() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p RoleDef_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p RoleDef_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
-type SharingLink struct{ Client capnp.Client }
+type SharingLink struct{ Client *capnp.Client }
 
 // SharingLink_TypeID is the unique identifier for the type SharingLink.
 const SharingLink_TypeID = 0xc05520c9b0994ad3
 
-func (c SharingLink) GetPetname(ctx context.Context, params func(SharingLink_getPetname_Params) error, opts ...capnp.CallOption) SharingLink_getPetname_Results_Promise {
-	if c.Client == nil {
-		return SharingLink_getPetname_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SharingLink) GetPetname(ctx context.Context, params func(SharingLink_getPetname_Params) error) (SharingLink_getPetname_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
 			MethodName:    "getPetname",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SharingLink_getPetname_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SharingLink_getPetname_Params{Struct: s}) }
 	}
-	return SharingLink_getPetname_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SharingLink_getPetname_Results_Future{Future: ans.Future()}, release
 }
 
+// A SharingLink_Server is a SharingLink with a local implementation.
 type SharingLink_Server interface {
-	GetPetname(SharingLink_getPetname) error
+	GetPetname(context.Context, SharingLink_getPetname) error
 }
 
-func SharingLink_ServerToClient(s SharingLink_Server) SharingLink {
-	c, _ := s.(server.Closer)
-	return SharingLink{Client: server.New(SharingLink_Methods(nil, s), c)}
+// SharingLink_NewServer creates a new Server from an implementation of SharingLink_Server.
+func SharingLink_NewServer(s SharingLink_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(SharingLink_Methods(nil, s), s, c, policy)
 }
 
+// SharingLink_ServerToClient creates a new Client from an implementation of SharingLink_Server.
+// The caller is responsible for calling Release on the returned Client.
+func SharingLink_ServerToClient(s SharingLink_Server, policy *server.Policy) SharingLink {
+	return SharingLink{Client: capnp.NewClient(SharingLink_NewServer(s, policy))}
+}
+
+// SharingLink_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func SharingLink_Methods(methods []server.Method, s SharingLink_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -5929,22 +5850,29 @@ func SharingLink_Methods(methods []server.Method, s SharingLink_Server) []server
 			InterfaceName: "grain.capnp:SharingLink",
 			MethodName:    "getPetname",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SharingLink_getPetname{c, opts, SharingLink_getPetname_Params{Struct: p}, SharingLink_getPetname_Results{Struct: r}}
-			return s.GetPetname(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetPetname(ctx, SharingLink_getPetname{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// SharingLink_getPetname holds the arguments for a server call to SharingLink.getPetname.
+// SharingLink_getPetname holds the state for a server call to SharingLink.getPetname.
+// See server.Call for documentation.
 type SharingLink_getPetname struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SharingLink_getPetname_Params
-	Results SharingLink_getPetname_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SharingLink_getPetname) Args() SharingLink_getPetname_Params {
+	return SharingLink_getPetname_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SharingLink_getPetname) AllocResults() (SharingLink_getPetname_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SharingLink_getPetname_Results{Struct: r}, err
 }
 
 type SharingLink_getPetname_Params struct{ capnp.Struct }
@@ -5963,7 +5891,7 @@ func NewRootSharingLink_getPetname_Params(s *capnp.Segment) (SharingLink_getPetn
 }
 
 func ReadRootSharingLink_getPetname_Params(msg *capnp.Message) (SharingLink_getPetname_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SharingLink_getPetname_Params{root.Struct()}, err
 }
 
@@ -5994,11 +5922,11 @@ func (s SharingLink_getPetname_Params_List) String() string {
 	return str
 }
 
-// SharingLink_getPetname_Params_Promise is a wrapper for a SharingLink_getPetname_Params promised by a client call.
-type SharingLink_getPetname_Params_Promise struct{ *capnp.Pipeline }
+// SharingLink_getPetname_Params_Future is a wrapper for a SharingLink_getPetname_Params promised by a client call.
+type SharingLink_getPetname_Params_Future struct{ *capnp.Future }
 
-func (p SharingLink_getPetname_Params_Promise) Struct() (SharingLink_getPetname_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SharingLink_getPetname_Params_Future) Struct() (SharingLink_getPetname_Params, error) {
+	s, err := p.Future.Struct()
 	return SharingLink_getPetname_Params{s}, err
 }
 
@@ -6018,7 +5946,7 @@ func NewRootSharingLink_getPetname_Results(s *capnp.Segment) (SharingLink_getPet
 }
 
 func ReadRootSharingLink_getPetname_Results(msg *capnp.Message) (SharingLink_getPetname_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SharingLink_getPetname_Results{root.Struct()}, err
 }
 
@@ -6033,12 +5961,11 @@ func (s SharingLink_getPetname_Results) Name() util.Assignable {
 }
 
 func (s SharingLink_getPetname_Results) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SharingLink_getPetname_Results) SetName(v util.Assignable) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -6068,75 +5995,77 @@ func (s SharingLink_getPetname_Results_List) String() string {
 	return str
 }
 
-// SharingLink_getPetname_Results_Promise is a wrapper for a SharingLink_getPetname_Results promised by a client call.
-type SharingLink_getPetname_Results_Promise struct{ *capnp.Pipeline }
+// SharingLink_getPetname_Results_Future is a wrapper for a SharingLink_getPetname_Results promised by a client call.
+type SharingLink_getPetname_Results_Future struct{ *capnp.Future }
 
-func (p SharingLink_getPetname_Results_Promise) Struct() (SharingLink_getPetname_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SharingLink_getPetname_Results_Future) Struct() (SharingLink_getPetname_Results, error) {
+	s, err := p.Future.Struct()
 	return SharingLink_getPetname_Results{s}, err
 }
 
-func (p SharingLink_getPetname_Results_Promise) Name() util.Assignable {
-	return util.Assignable{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SharingLink_getPetname_Results_Future) Name() util.Assignable {
+	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
 }
 
-type ViewSharingLink struct{ Client capnp.Client }
+type ViewSharingLink struct{ Client *capnp.Client }
 
 // ViewSharingLink_TypeID is the unique identifier for the type ViewSharingLink.
 const ViewSharingLink_TypeID = 0xa4f82f764dc3fee8
 
-func (c ViewSharingLink) GetRoleAssignment(ctx context.Context, params func(ViewSharingLink_getRoleAssignment_Params) error, opts ...capnp.CallOption) ViewSharingLink_getRoleAssignment_Results_Promise {
-	if c.Client == nil {
-		return ViewSharingLink_getRoleAssignment_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c ViewSharingLink) GetRoleAssignment(ctx context.Context, params func(ViewSharingLink_getRoleAssignment_Params) error) (ViewSharingLink_getRoleAssignment_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa4f82f764dc3fee8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:ViewSharingLink",
 			MethodName:    "getRoleAssignment",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(ViewSharingLink_getRoleAssignment_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ViewSharingLink_getRoleAssignment_Params{Struct: s}) }
 	}
-	return ViewSharingLink_getRoleAssignment_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ViewSharingLink_getRoleAssignment_Results_Future{Future: ans.Future()}, release
 }
-func (c ViewSharingLink) GetPetname(ctx context.Context, params func(SharingLink_getPetname_Params) error, opts ...capnp.CallOption) SharingLink_getPetname_Results_Promise {
-	if c.Client == nil {
-		return SharingLink_getPetname_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c ViewSharingLink) GetPetname(ctx context.Context, params func(SharingLink_getPetname_Params) error) (SharingLink_getPetname_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc05520c9b0994ad3,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SharingLink",
 			MethodName:    "getPetname",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SharingLink_getPetname_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SharingLink_getPetname_Params{Struct: s}) }
 	}
-	return SharingLink_getPetname_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SharingLink_getPetname_Results_Future{Future: ans.Future()}, release
 }
 
+// A ViewSharingLink_Server is a ViewSharingLink with a local implementation.
 type ViewSharingLink_Server interface {
-	GetRoleAssignment(ViewSharingLink_getRoleAssignment) error
+	GetRoleAssignment(context.Context, ViewSharingLink_getRoleAssignment) error
 
-	GetPetname(SharingLink_getPetname) error
+	GetPetname(context.Context, SharingLink_getPetname) error
 }
 
-func ViewSharingLink_ServerToClient(s ViewSharingLink_Server) ViewSharingLink {
-	c, _ := s.(server.Closer)
-	return ViewSharingLink{Client: server.New(ViewSharingLink_Methods(nil, s), c)}
+// ViewSharingLink_NewServer creates a new Server from an implementation of ViewSharingLink_Server.
+func ViewSharingLink_NewServer(s ViewSharingLink_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(ViewSharingLink_Methods(nil, s), s, c, policy)
 }
 
+// ViewSharingLink_ServerToClient creates a new Client from an implementation of ViewSharingLink_Server.
+// The caller is responsible for calling Release on the returned Client.
+func ViewSharingLink_ServerToClient(s ViewSharingLink_Server, policy *server.Policy) ViewSharingLink {
+	return ViewSharingLink{Client: capnp.NewClient(ViewSharingLink_NewServer(s, policy))}
+}
+
+// ViewSharingLink_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func ViewSharingLink_Methods(methods []server.Method, s ViewSharingLink_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -6149,11 +6078,9 @@ func ViewSharingLink_Methods(methods []server.Method, s ViewSharingLink_Server) 
 			InterfaceName: "grain.capnp:ViewSharingLink",
 			MethodName:    "getRoleAssignment",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := ViewSharingLink_getRoleAssignment{c, opts, ViewSharingLink_getRoleAssignment_Params{Struct: p}, ViewSharingLink_getRoleAssignment_Results{Struct: r}}
-			return s.GetRoleAssignment(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetRoleAssignment(ctx, ViewSharingLink_getRoleAssignment{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -6163,22 +6090,29 @@ func ViewSharingLink_Methods(methods []server.Method, s ViewSharingLink_Server) 
 			InterfaceName: "grain.capnp:SharingLink",
 			MethodName:    "getPetname",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SharingLink_getPetname{c, opts, SharingLink_getPetname_Params{Struct: p}, SharingLink_getPetname_Results{Struct: r}}
-			return s.GetPetname(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetPetname(ctx, SharingLink_getPetname{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// ViewSharingLink_getRoleAssignment holds the arguments for a server call to ViewSharingLink.getRoleAssignment.
+// ViewSharingLink_getRoleAssignment holds the state for a server call to ViewSharingLink.getRoleAssignment.
+// See server.Call for documentation.
 type ViewSharingLink_getRoleAssignment struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  ViewSharingLink_getRoleAssignment_Params
-	Results ViewSharingLink_getRoleAssignment_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c ViewSharingLink_getRoleAssignment) Args() ViewSharingLink_getRoleAssignment_Params {
+	return ViewSharingLink_getRoleAssignment_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ViewSharingLink_getRoleAssignment) AllocResults() (ViewSharingLink_getRoleAssignment_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return ViewSharingLink_getRoleAssignment_Results{Struct: r}, err
 }
 
 type ViewSharingLink_RoleAssignment struct{ capnp.Struct }
@@ -6218,7 +6152,7 @@ func NewRootViewSharingLink_RoleAssignment(s *capnp.Segment) (ViewSharingLink_Ro
 }
 
 func ReadRootViewSharingLink_RoleAssignment(msg *capnp.Message) (ViewSharingLink_RoleAssignment, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ViewSharingLink_RoleAssignment{root.Struct()}, err
 }
 
@@ -6258,8 +6192,7 @@ func (s ViewSharingLink_RoleAssignment) AddPermissions() (capnp.BitList, error) 
 }
 
 func (s ViewSharingLink_RoleAssignment) HasAddPermissions() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ViewSharingLink_RoleAssignment) SetAddPermissions(v capnp.BitList) error {
@@ -6283,8 +6216,7 @@ func (s ViewSharingLink_RoleAssignment) RemovePermissions() (capnp.BitList, erro
 }
 
 func (s ViewSharingLink_RoleAssignment) HasRemovePermissions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s ViewSharingLink_RoleAssignment) SetRemovePermissions(v capnp.BitList) error {
@@ -6324,11 +6256,11 @@ func (s ViewSharingLink_RoleAssignment_List) String() string {
 	return str
 }
 
-// ViewSharingLink_RoleAssignment_Promise is a wrapper for a ViewSharingLink_RoleAssignment promised by a client call.
-type ViewSharingLink_RoleAssignment_Promise struct{ *capnp.Pipeline }
+// ViewSharingLink_RoleAssignment_Future is a wrapper for a ViewSharingLink_RoleAssignment promised by a client call.
+type ViewSharingLink_RoleAssignment_Future struct{ *capnp.Future }
 
-func (p ViewSharingLink_RoleAssignment_Promise) Struct() (ViewSharingLink_RoleAssignment, error) {
-	s, err := p.Pipeline.Struct()
+func (p ViewSharingLink_RoleAssignment_Future) Struct() (ViewSharingLink_RoleAssignment, error) {
+	s, err := p.Future.Struct()
 	return ViewSharingLink_RoleAssignment{s}, err
 }
 
@@ -6348,7 +6280,7 @@ func NewRootViewSharingLink_getRoleAssignment_Params(s *capnp.Segment) (ViewShar
 }
 
 func ReadRootViewSharingLink_getRoleAssignment_Params(msg *capnp.Message) (ViewSharingLink_getRoleAssignment_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ViewSharingLink_getRoleAssignment_Params{root.Struct()}, err
 }
 
@@ -6379,11 +6311,11 @@ func (s ViewSharingLink_getRoleAssignment_Params_List) String() string {
 	return str
 }
 
-// ViewSharingLink_getRoleAssignment_Params_Promise is a wrapper for a ViewSharingLink_getRoleAssignment_Params promised by a client call.
-type ViewSharingLink_getRoleAssignment_Params_Promise struct{ *capnp.Pipeline }
+// ViewSharingLink_getRoleAssignment_Params_Future is a wrapper for a ViewSharingLink_getRoleAssignment_Params promised by a client call.
+type ViewSharingLink_getRoleAssignment_Params_Future struct{ *capnp.Future }
 
-func (p ViewSharingLink_getRoleAssignment_Params_Promise) Struct() (ViewSharingLink_getRoleAssignment_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p ViewSharingLink_getRoleAssignment_Params_Future) Struct() (ViewSharingLink_getRoleAssignment_Params, error) {
+	s, err := p.Future.Struct()
 	return ViewSharingLink_getRoleAssignment_Params{s}, err
 }
 
@@ -6403,7 +6335,7 @@ func NewRootViewSharingLink_getRoleAssignment_Results(s *capnp.Segment) (ViewSha
 }
 
 func ReadRootViewSharingLink_getRoleAssignment_Results(msg *capnp.Message) (ViewSharingLink_getRoleAssignment_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ViewSharingLink_getRoleAssignment_Results{root.Struct()}, err
 }
 
@@ -6418,12 +6350,11 @@ func (s ViewSharingLink_getRoleAssignment_Results) Var() util.Assignable {
 }
 
 func (s ViewSharingLink_getRoleAssignment_Results) HasVar() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ViewSharingLink_getRoleAssignment_Results) SetVar(v util.Assignable) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -6453,16 +6384,16 @@ func (s ViewSharingLink_getRoleAssignment_Results_List) String() string {
 	return str
 }
 
-// ViewSharingLink_getRoleAssignment_Results_Promise is a wrapper for a ViewSharingLink_getRoleAssignment_Results promised by a client call.
-type ViewSharingLink_getRoleAssignment_Results_Promise struct{ *capnp.Pipeline }
+// ViewSharingLink_getRoleAssignment_Results_Future is a wrapper for a ViewSharingLink_getRoleAssignment_Results promised by a client call.
+type ViewSharingLink_getRoleAssignment_Results_Future struct{ *capnp.Future }
 
-func (p ViewSharingLink_getRoleAssignment_Results_Promise) Struct() (ViewSharingLink_getRoleAssignment_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p ViewSharingLink_getRoleAssignment_Results_Future) Struct() (ViewSharingLink_getRoleAssignment_Results, error) {
+	s, err := p.Future.Struct()
 	return ViewSharingLink_getRoleAssignment_Results{s}, err
 }
 
-func (p ViewSharingLink_getRoleAssignment_Results_Promise) Var() util.Assignable {
-	return util.Assignable{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p ViewSharingLink_getRoleAssignment_Results_Future) Var() util.Assignable {
+	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
 }
 
 type GrainInfo struct{ capnp.Struct }
@@ -6481,7 +6412,7 @@ func NewRootGrainInfo(s *capnp.Segment) (GrainInfo, error) {
 }
 
 func ReadRootGrainInfo(msg *capnp.Message) (GrainInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GrainInfo{root.Struct()}, err
 }
 
@@ -6496,8 +6427,7 @@ func (s GrainInfo) AppId() (string, error) {
 }
 
 func (s GrainInfo) HasAppId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GrainInfo) AppIdBytes() ([]byte, error) {
@@ -6523,8 +6453,7 @@ func (s GrainInfo) Title() (string, error) {
 }
 
 func (s GrainInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s GrainInfo) TitleBytes() ([]byte, error) {
@@ -6542,8 +6471,7 @@ func (s GrainInfo) OwnerIdentityId() (string, error) {
 }
 
 func (s GrainInfo) HasOwnerIdentityId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s GrainInfo) OwnerIdentityIdBytes() ([]byte, error) {
@@ -6573,49 +6501,55 @@ func (s GrainInfo_List) String() string {
 	return str
 }
 
-// GrainInfo_Promise is a wrapper for a GrainInfo promised by a client call.
-type GrainInfo_Promise struct{ *capnp.Pipeline }
+// GrainInfo_Future is a wrapper for a GrainInfo promised by a client call.
+type GrainInfo_Future struct{ *capnp.Future }
 
-func (p GrainInfo_Promise) Struct() (GrainInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p GrainInfo_Future) Struct() (GrainInfo, error) {
+	s, err := p.Future.Struct()
 	return GrainInfo{s}, err
 }
 
-type AppPersistent struct{ Client capnp.Client }
+type AppPersistent struct{ Client *capnp.Client }
 
 // AppPersistent_TypeID is the unique identifier for the type AppPersistent.
 const AppPersistent_TypeID = 0xaffa789add8747b8
 
-func (c AppPersistent) Save(ctx context.Context, params func(AppPersistent_save_Params) error, opts ...capnp.CallOption) AppPersistent_save_Results_Promise {
-	if c.Client == nil {
-		return AppPersistent_save_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c AppPersistent) Save(ctx context.Context, params func(AppPersistent_save_Params) error) (AppPersistent_save_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xaffa789add8747b8,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:AppPersistent",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(AppPersistent_save_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(AppPersistent_save_Params{Struct: s}) }
 	}
-	return AppPersistent_save_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return AppPersistent_save_Results_Future{Future: ans.Future()}, release
 }
 
+// A AppPersistent_Server is a AppPersistent with a local implementation.
 type AppPersistent_Server interface {
-	Save(AppPersistent_save) error
+	Save(context.Context, AppPersistent_save) error
 }
 
-func AppPersistent_ServerToClient(s AppPersistent_Server) AppPersistent {
-	c, _ := s.(server.Closer)
-	return AppPersistent{Client: server.New(AppPersistent_Methods(nil, s), c)}
+// AppPersistent_NewServer creates a new Server from an implementation of AppPersistent_Server.
+func AppPersistent_NewServer(s AppPersistent_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(AppPersistent_Methods(nil, s), s, c, policy)
 }
 
+// AppPersistent_ServerToClient creates a new Client from an implementation of AppPersistent_Server.
+// The caller is responsible for calling Release on the returned Client.
+func AppPersistent_ServerToClient(s AppPersistent_Server, policy *server.Policy) AppPersistent {
+	return AppPersistent{Client: capnp.NewClient(AppPersistent_NewServer(s, policy))}
+}
+
+// AppPersistent_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func AppPersistent_Methods(methods []server.Method, s AppPersistent_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -6628,22 +6562,29 @@ func AppPersistent_Methods(methods []server.Method, s AppPersistent_Server) []se
 			InterfaceName: "grain.capnp:AppPersistent",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := AppPersistent_save{c, opts, AppPersistent_save_Params{Struct: p}, AppPersistent_save_Results{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, AppPersistent_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	return methods
 }
 
-// AppPersistent_save holds the arguments for a server call to AppPersistent.save.
+// AppPersistent_save holds the state for a server call to AppPersistent.save.
+// See server.Call for documentation.
 type AppPersistent_save struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  AppPersistent_save_Params
-	Results AppPersistent_save_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c AppPersistent_save) Args() AppPersistent_save_Params {
+	return AppPersistent_save_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c AppPersistent_save) AllocResults() (AppPersistent_save_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return AppPersistent_save_Results{Struct: r}, err
 }
 
 type AppPersistent_save_Params struct{ capnp.Struct }
@@ -6662,7 +6603,7 @@ func NewRootAppPersistent_save_Params(s *capnp.Segment) (AppPersistent_save_Para
 }
 
 func ReadRootAppPersistent_save_Params(msg *capnp.Message) (AppPersistent_save_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return AppPersistent_save_Params{root.Struct()}, err
 }
 
@@ -6693,11 +6634,11 @@ func (s AppPersistent_save_Params_List) String() string {
 	return str
 }
 
-// AppPersistent_save_Params_Promise is a wrapper for a AppPersistent_save_Params promised by a client call.
-type AppPersistent_save_Params_Promise struct{ *capnp.Pipeline }
+// AppPersistent_save_Params_Future is a wrapper for a AppPersistent_save_Params promised by a client call.
+type AppPersistent_save_Params_Future struct{ *capnp.Future }
 
-func (p AppPersistent_save_Params_Promise) Struct() (AppPersistent_save_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p AppPersistent_save_Params_Future) Struct() (AppPersistent_save_Params, error) {
+	s, err := p.Future.Struct()
 	return AppPersistent_save_Params{s}, err
 }
 
@@ -6717,7 +6658,7 @@ func NewRootAppPersistent_save_Results(s *capnp.Segment) (AppPersistent_save_Res
 }
 
 func ReadRootAppPersistent_save_Results(msg *capnp.Message) (AppPersistent_save_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return AppPersistent_save_Results{root.Struct()}, err
 }
 
@@ -6726,24 +6667,15 @@ func (s AppPersistent_save_Results) String() string {
 	return str
 }
 
-func (s AppPersistent_save_Results) ObjectId() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s AppPersistent_save_Results) HasObjectId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s AppPersistent_save_Results) ObjectIdPtr() (capnp.Ptr, error) {
+func (s AppPersistent_save_Results) ObjectId() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s AppPersistent_save_Results) SetObjectId(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s AppPersistent_save_Results) HasObjectId() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s AppPersistent_save_Results) SetObjectIdPtr(v capnp.Ptr) error {
+func (s AppPersistent_save_Results) SetObjectId(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -6753,8 +6685,7 @@ func (s AppPersistent_save_Results) Label() (util.LocalizedText, error) {
 }
 
 func (s AppPersistent_save_Results) HasLabel() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s AppPersistent_save_Results) SetLabel(v util.LocalizedText) error {
@@ -6794,167 +6725,153 @@ func (s AppPersistent_save_Results_List) String() string {
 	return str
 }
 
-// AppPersistent_save_Results_Promise is a wrapper for a AppPersistent_save_Results promised by a client call.
-type AppPersistent_save_Results_Promise struct{ *capnp.Pipeline }
+// AppPersistent_save_Results_Future is a wrapper for a AppPersistent_save_Results promised by a client call.
+type AppPersistent_save_Results_Future struct{ *capnp.Future }
 
-func (p AppPersistent_save_Results_Promise) Struct() (AppPersistent_save_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p AppPersistent_save_Results_Future) Struct() (AppPersistent_save_Results, error) {
+	s, err := p.Future.Struct()
 	return AppPersistent_save_Results{s}, err
 }
 
-func (p AppPersistent_save_Results_Promise) ObjectId() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p AppPersistent_save_Results_Future) ObjectId() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p AppPersistent_save_Results_Promise) Label() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p AppPersistent_save_Results_Future) Label() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
-type MainView struct{ Client capnp.Client }
+type MainView struct{ Client *capnp.Client }
 
 // MainView_TypeID is the unique identifier for the type MainView.
 const MainView_TypeID = 0xc277e9822ae2c8fc
 
-func (c MainView) Restore(ctx context.Context, params func(MainView_restore_Params) error, opts ...capnp.CallOption) MainView_restore_Results_Promise {
-	if c.Client == nil {
-		return MainView_restore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) Restore(ctx context.Context, params func(MainView_restore_Params) error) (MainView_restore_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:MainView",
 			MethodName:    "restore",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(MainView_restore_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(MainView_restore_Params{Struct: s}) }
 	}
-	return MainView_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return MainView_restore_Results_Future{Future: ans.Future()}, release
 }
-func (c MainView) Drop(ctx context.Context, params func(MainView_drop_Params) error, opts ...capnp.CallOption) MainView_drop_Results_Promise {
-	if c.Client == nil {
-		return MainView_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) Drop(ctx context.Context, params func(MainView_drop_Params) error) (MainView_drop_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc277e9822ae2c8fc,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:MainView",
 			MethodName:    "drop",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(MainView_drop_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(MainView_drop_Params{Struct: s}) }
 	}
-	return MainView_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return MainView_drop_Results_Future{Future: ans.Future()}, release
 }
-func (c MainView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_Params) error, opts ...capnp.CallOption) UiView_ViewInfo_Promise {
-	if c.Client == nil {
-		return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) GetViewInfo(ctx context.Context, params func(UiView_getViewInfo_Params) error) (UiView_ViewInfo_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_getViewInfo_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_getViewInfo_Params{Struct: s}) }
 	}
-	return UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_ViewInfo_Future{Future: ans.Future()}, release
 }
-func (c MainView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error, opts ...capnp.CallOption) UiView_newSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) NewSession(ctx context.Context, params func(UiView_newSession_Params) error) (UiView_newSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newSession_Params{Struct: s}) }
 	}
-	return UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newSession_Results_Future{Future: ans.Future()}, release
 }
-func (c MainView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error, opts ...capnp.CallOption) UiView_newRequestSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) NewRequestSession(ctx context.Context, params func(UiView_newRequestSession_Params) error) (UiView_newRequestSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newRequestSession_Params{Struct: s}) }
 	}
-	return UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newRequestSession_Results_Future{Future: ans.Future()}, release
 }
-func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error, opts ...capnp.CallOption) UiView_newOfferSession_Results_Promise {
-	if c.Client == nil {
-		return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOfferSession_Params) error) (UiView_newOfferSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UiView_newOfferSession_Params{Struct: s}) }
 	}
-	return UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
 }
 
+// A MainView_Server is a MainView with a local implementation.
 type MainView_Server interface {
-	Restore(MainView_restore) error
+	Restore(context.Context, MainView_restore) error
 
-	Drop(MainView_drop) error
+	Drop(context.Context, MainView_drop) error
 
-	GetViewInfo(UiView_getViewInfo) error
+	GetViewInfo(context.Context, UiView_getViewInfo) error
 
-	NewSession(UiView_newSession) error
+	NewSession(context.Context, UiView_newSession) error
 
-	NewRequestSession(UiView_newRequestSession) error
+	NewRequestSession(context.Context, UiView_newRequestSession) error
 
-	NewOfferSession(UiView_newOfferSession) error
+	NewOfferSession(context.Context, UiView_newOfferSession) error
 }
 
-func MainView_ServerToClient(s MainView_Server) MainView {
-	c, _ := s.(server.Closer)
-	return MainView{Client: server.New(MainView_Methods(nil, s), c)}
+// MainView_NewServer creates a new Server from an implementation of MainView_Server.
+func MainView_NewServer(s MainView_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(MainView_Methods(nil, s), s, c, policy)
 }
 
+// MainView_ServerToClient creates a new Client from an implementation of MainView_Server.
+// The caller is responsible for calling Release on the returned Client.
+func MainView_ServerToClient(s MainView_Server, policy *server.Policy) MainView {
+	return MainView{Client: capnp.NewClient(MainView_NewServer(s, policy))}
+}
+
+// MainView_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func MainView_Methods(methods []server.Method, s MainView_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 6)
@@ -6967,11 +6884,9 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:MainView",
 			MethodName:    "restore",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := MainView_restore{c, opts, MainView_restore_Params{Struct: p}, MainView_restore_Results{Struct: r}}
-			return s.Restore(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Restore(ctx, MainView_restore{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -6981,11 +6896,9 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:MainView",
 			MethodName:    "drop",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := MainView_drop{c, opts, MainView_drop_Params{Struct: p}, MainView_drop_Results{Struct: r}}
-			return s.Drop(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Drop(ctx, MainView_drop{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -6995,11 +6908,9 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_getViewInfo{c, opts, UiView_getViewInfo_Params{Struct: p}, UiView_ViewInfo{Struct: r}}
-			return s.GetViewInfo(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetViewInfo(ctx, UiView_getViewInfo{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 8},
 	})
 
 	methods = append(methods, server.Method{
@@ -7009,11 +6920,9 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newSession{c, opts, UiView_newSession_Params{Struct: p}, UiView_newSession_Results{Struct: r}}
-			return s.NewSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewSession(ctx, UiView_newSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -7023,11 +6932,9 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newRequestSession{c, opts, UiView_newRequestSession_Params{Struct: p}, UiView_newRequestSession_Results{Struct: r}}
-			return s.NewRequestSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewRequestSession(ctx, UiView_newRequestSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -7037,30 +6944,46 @@ func MainView_Methods(methods []server.Method, s MainView_Server) []server.Metho
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := UiView_newOfferSession{c, opts, UiView_newOfferSession_Params{Struct: p}, UiView_newOfferSession_Results{Struct: r}}
-			return s.NewOfferSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewOfferSession(ctx, UiView_newOfferSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// MainView_restore holds the arguments for a server call to MainView.restore.
+// MainView_restore holds the state for a server call to MainView.restore.
+// See server.Call for documentation.
 type MainView_restore struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  MainView_restore_Params
-	Results MainView_restore_Results
+	*server.Call
 }
 
-// MainView_drop holds the arguments for a server call to MainView.drop.
+// Args returns the call's arguments.
+func (c MainView_restore) Args() MainView_restore_Params {
+	return MainView_restore_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c MainView_restore) AllocResults() (MainView_restore_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return MainView_restore_Results{Struct: r}, err
+}
+
+// MainView_drop holds the state for a server call to MainView.drop.
+// See server.Call for documentation.
 type MainView_drop struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  MainView_drop_Params
-	Results MainView_drop_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c MainView_drop) Args() MainView_drop_Params {
+	return MainView_drop_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c MainView_drop) AllocResults() (MainView_drop_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return MainView_drop_Results{Struct: r}, err
 }
 
 type MainView_restore_Params struct{ capnp.Struct }
@@ -7079,7 +7002,7 @@ func NewRootMainView_restore_Params(s *capnp.Segment) (MainView_restore_Params, 
 }
 
 func ReadRootMainView_restore_Params(msg *capnp.Message) (MainView_restore_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return MainView_restore_Params{root.Struct()}, err
 }
 
@@ -7088,24 +7011,15 @@ func (s MainView_restore_Params) String() string {
 	return str
 }
 
-func (s MainView_restore_Params) ObjectId() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s MainView_restore_Params) HasObjectId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s MainView_restore_Params) ObjectIdPtr() (capnp.Ptr, error) {
+func (s MainView_restore_Params) ObjectId() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s MainView_restore_Params) SetObjectId(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s MainView_restore_Params) HasObjectId() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s MainView_restore_Params) SetObjectIdPtr(v capnp.Ptr) error {
+func (s MainView_restore_Params) SetObjectId(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -7131,16 +7045,16 @@ func (s MainView_restore_Params_List) String() string {
 	return str
 }
 
-// MainView_restore_Params_Promise is a wrapper for a MainView_restore_Params promised by a client call.
-type MainView_restore_Params_Promise struct{ *capnp.Pipeline }
+// MainView_restore_Params_Future is a wrapper for a MainView_restore_Params promised by a client call.
+type MainView_restore_Params_Future struct{ *capnp.Future }
 
-func (p MainView_restore_Params_Promise) Struct() (MainView_restore_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p MainView_restore_Params_Future) Struct() (MainView_restore_Params, error) {
+	s, err := p.Future.Struct()
 	return MainView_restore_Params{s}, err
 }
 
-func (p MainView_restore_Params_Promise) ObjectId() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p MainView_restore_Params_Future) ObjectId() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type MainView_restore_Results struct{ capnp.Struct }
@@ -7159,7 +7073,7 @@ func NewRootMainView_restore_Results(s *capnp.Segment) (MainView_restore_Results
 }
 
 func ReadRootMainView_restore_Results(msg *capnp.Message) (MainView_restore_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return MainView_restore_Results{root.Struct()}, err
 }
 
@@ -7168,24 +7082,15 @@ func (s MainView_restore_Results) String() string {
 	return str
 }
 
-func (s MainView_restore_Results) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s MainView_restore_Results) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s MainView_restore_Results) CapPtr() (capnp.Ptr, error) {
+func (s MainView_restore_Results) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s MainView_restore_Results) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s MainView_restore_Results) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s MainView_restore_Results) SetCapPtr(v capnp.Ptr) error {
+func (s MainView_restore_Results) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -7211,16 +7116,16 @@ func (s MainView_restore_Results_List) String() string {
 	return str
 }
 
-// MainView_restore_Results_Promise is a wrapper for a MainView_restore_Results promised by a client call.
-type MainView_restore_Results_Promise struct{ *capnp.Pipeline }
+// MainView_restore_Results_Future is a wrapper for a MainView_restore_Results promised by a client call.
+type MainView_restore_Results_Future struct{ *capnp.Future }
 
-func (p MainView_restore_Results_Promise) Struct() (MainView_restore_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p MainView_restore_Results_Future) Struct() (MainView_restore_Results, error) {
+	s, err := p.Future.Struct()
 	return MainView_restore_Results{s}, err
 }
 
-func (p MainView_restore_Results_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p MainView_restore_Results_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type MainView_drop_Params struct{ capnp.Struct }
@@ -7239,7 +7144,7 @@ func NewRootMainView_drop_Params(s *capnp.Segment) (MainView_drop_Params, error)
 }
 
 func ReadRootMainView_drop_Params(msg *capnp.Message) (MainView_drop_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return MainView_drop_Params{root.Struct()}, err
 }
 
@@ -7248,24 +7153,15 @@ func (s MainView_drop_Params) String() string {
 	return str
 }
 
-func (s MainView_drop_Params) ObjectId() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s MainView_drop_Params) HasObjectId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s MainView_drop_Params) ObjectIdPtr() (capnp.Ptr, error) {
+func (s MainView_drop_Params) ObjectId() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s MainView_drop_Params) SetObjectId(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s MainView_drop_Params) HasObjectId() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s MainView_drop_Params) SetObjectIdPtr(v capnp.Ptr) error {
+func (s MainView_drop_Params) SetObjectId(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -7291,16 +7187,16 @@ func (s MainView_drop_Params_List) String() string {
 	return str
 }
 
-// MainView_drop_Params_Promise is a wrapper for a MainView_drop_Params promised by a client call.
-type MainView_drop_Params_Promise struct{ *capnp.Pipeline }
+// MainView_drop_Params_Future is a wrapper for a MainView_drop_Params promised by a client call.
+type MainView_drop_Params_Future struct{ *capnp.Future }
 
-func (p MainView_drop_Params_Promise) Struct() (MainView_drop_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p MainView_drop_Params_Future) Struct() (MainView_drop_Params, error) {
+	s, err := p.Future.Struct()
 	return MainView_drop_Params{s}, err
 }
 
-func (p MainView_drop_Params_Promise) ObjectId() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p MainView_drop_Params_Future) ObjectId() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type MainView_drop_Results struct{ capnp.Struct }
@@ -7319,7 +7215,7 @@ func NewRootMainView_drop_Results(s *capnp.Segment) (MainView_drop_Results, erro
 }
 
 func ReadRootMainView_drop_Results(msg *capnp.Message) (MainView_drop_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return MainView_drop_Results{root.Struct()}, err
 }
 
@@ -7350,11 +7246,11 @@ func (s MainView_drop_Results_List) String() string {
 	return str
 }
 
-// MainView_drop_Results_Promise is a wrapper for a MainView_drop_Results promised by a client call.
-type MainView_drop_Results_Promise struct{ *capnp.Pipeline }
+// MainView_drop_Results_Future is a wrapper for a MainView_drop_Results promised by a client call.
+type MainView_drop_Results_Future struct{ *capnp.Future }
 
-func (p MainView_drop_Results_Promise) Struct() (MainView_drop_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p MainView_drop_Results_Future) Struct() (MainView_drop_Results, error) {
+	s, err := p.Future.Struct()
 	return MainView_drop_Results{s}, err
 }
 

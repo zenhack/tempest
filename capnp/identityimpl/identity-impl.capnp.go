@@ -3,7 +3,7 @@
 package identityimpl
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	capnp "zombiezen.com/go/capnproto2"
@@ -12,87 +12,85 @@ import (
 	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
-type PersistentIdentity struct{ Client capnp.Client }
+type PersistentIdentity struct{ Client *capnp.Client }
 
 // PersistentIdentity_TypeID is the unique identifier for the type PersistentIdentity.
 const PersistentIdentity_TypeID = 0xaaecb6e5c137fd7a
 
-func (c PersistentIdentity) GetProfile(ctx context.Context, params func(identity.Identity_getProfile_Params) error, opts ...capnp.CallOption) identity.Identity_getProfile_Results_Promise {
-	if c.Client == nil {
-		return identity.Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentIdentity) GetProfile(ctx context.Context, params func(identity.Identity_getProfile_Params) error) (identity.Identity_getProfile_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc084987aa951dd18,
 			MethodID:      0,
 			InterfaceName: "identity.capnp:Identity",
 			MethodName:    "getProfile",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(identity.Identity_getProfile_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(identity.Identity_getProfile_Params{Struct: s}) }
 	}
-	return identity.Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return identity.Identity_getProfile_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentIdentity) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
-	if c.Client == nil {
-		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentIdentity) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error {
 			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
 		}
 	}
-	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
-	if c.Client == nil {
-		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
 	}
-	return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// A PersistentIdentity_Server is a PersistentIdentity with a local implementation.
 type PersistentIdentity_Server interface {
-	GetProfile(identity.Identity_getProfile) error
+	GetProfile(context.Context, identity.Identity_getProfile) error
 
-	AddRequirements(supervisor.SystemPersistent_addRequirements) error
+	AddRequirements(context.Context, supervisor.SystemPersistent_addRequirements) error
 
-	Save(persistent.Persistent_save) error
+	Save(context.Context, persistent.Persistent_save) error
 }
 
-func PersistentIdentity_ServerToClient(s PersistentIdentity_Server) PersistentIdentity {
-	c, _ := s.(server.Closer)
-	return PersistentIdentity{Client: server.New(PersistentIdentity_Methods(nil, s), c)}
+// PersistentIdentity_NewServer creates a new Server from an implementation of PersistentIdentity_Server.
+func PersistentIdentity_NewServer(s PersistentIdentity_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(PersistentIdentity_Methods(nil, s), s, c, policy)
 }
 
+// PersistentIdentity_ServerToClient creates a new Client from an implementation of PersistentIdentity_Server.
+// The caller is responsible for calling Release on the returned Client.
+func PersistentIdentity_ServerToClient(s PersistentIdentity_Server, policy *server.Policy) PersistentIdentity {
+	return PersistentIdentity{Client: capnp.NewClient(PersistentIdentity_NewServer(s, policy))}
+}
+
+// PersistentIdentity_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 3)
@@ -105,11 +103,9 @@ func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Se
 			InterfaceName: "identity.capnp:Identity",
 			MethodName:    "getProfile",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := identity.Identity_getProfile{c, opts, identity.Identity_getProfile_Params{Struct: p}, identity.Identity_getProfile_Results{Struct: r}}
-			return s.GetProfile(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetProfile(ctx, identity.Identity_getProfile{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -119,11 +115,9 @@ func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Se
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := supervisor.SystemPersistent_addRequirements{c, opts, supervisor.SystemPersistent_addRequirements_Params{Struct: p}, supervisor.SystemPersistent_addRequirements_Results{Struct: r}}
-			return s.AddRequirements(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AddRequirements(ctx, supervisor.SystemPersistent_addRequirements{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -133,11 +127,9 @@ func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Se
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := persistent.Persistent_save{c, opts, persistent.Persistent_SaveParams{Struct: p}, persistent.Persistent_SaveResults{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, persistent.Persistent_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods

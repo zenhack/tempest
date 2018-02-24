@@ -10,7 +10,7 @@ import (
 
 // Constants defined in update-tool.capnp.
 var (
-	UpdatePublicKeys = PublicSigningKey_List{List: capnp.MustUnmarshalRootPtr(x_96c3fff3f4beb8fe[0:56]).List()}
+	UpdatePublicKeys = PublicSigningKey_List{List: capnp.MustUnmarshalRoot(x_96c3fff3f4beb8fe[0:56]).List()}
 )
 
 type PublicSigningKey struct{ capnp.Struct }
@@ -29,7 +29,7 @@ func NewRootPublicSigningKey(s *capnp.Segment) (PublicSigningKey, error) {
 }
 
 func ReadRootPublicSigningKey(msg *capnp.Message) (PublicSigningKey, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PublicSigningKey{root.Struct()}, err
 }
 
@@ -90,11 +90,11 @@ func (s PublicSigningKey_List) String() string {
 	return str
 }
 
-// PublicSigningKey_Promise is a wrapper for a PublicSigningKey promised by a client call.
-type PublicSigningKey_Promise struct{ *capnp.Pipeline }
+// PublicSigningKey_Future is a wrapper for a PublicSigningKey promised by a client call.
+type PublicSigningKey_Future struct{ *capnp.Future }
 
-func (p PublicSigningKey_Promise) Struct() (PublicSigningKey, error) {
-	s, err := p.Pipeline.Struct()
+func (p PublicSigningKey_Future) Struct() (PublicSigningKey, error) {
+	s, err := p.Future.Struct()
 	return PublicSigningKey{s}, err
 }
 
@@ -114,7 +114,7 @@ func NewRootSignature(s *capnp.Segment) (Signature, error) {
 }
 
 func ReadRootSignature(msg *capnp.Message) (Signature, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Signature{root.Struct()}, err
 }
 
@@ -205,11 +205,11 @@ func (s Signature_List) String() string {
 	return str
 }
 
-// Signature_Promise is a wrapper for a Signature promised by a client call.
-type Signature_Promise struct{ *capnp.Pipeline }
+// Signature_Future is a wrapper for a Signature promised by a client call.
+type Signature_Future struct{ *capnp.Future }
 
-func (p Signature_Promise) Struct() (Signature, error) {
-	s, err := p.Pipeline.Struct()
+func (p Signature_Future) Struct() (Signature, error) {
+	s, err := p.Future.Struct()
 	return Signature{s}, err
 }
 
@@ -229,7 +229,7 @@ func NewRootUpdateSignature(s *capnp.Segment) (UpdateSignature, error) {
 }
 
 func ReadRootUpdateSignature(msg *capnp.Message) (UpdateSignature, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UpdateSignature{root.Struct()}, err
 }
 
@@ -244,8 +244,7 @@ func (s UpdateSignature) Signatures() (Signature_List, error) {
 }
 
 func (s UpdateSignature) HasSignatures() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UpdateSignature) SetSignatures(v Signature_List) error {
@@ -283,11 +282,11 @@ func (s UpdateSignature_List) String() string {
 	return str
 }
 
-// UpdateSignature_Promise is a wrapper for a UpdateSignature promised by a client call.
-type UpdateSignature_Promise struct{ *capnp.Pipeline }
+// UpdateSignature_Future is a wrapper for a UpdateSignature promised by a client call.
+type UpdateSignature_Future struct{ *capnp.Future }
 
-func (p UpdateSignature_Promise) Struct() (UpdateSignature, error) {
-	s, err := p.Pipeline.Struct()
+func (p UpdateSignature_Future) Struct() (UpdateSignature, error) {
+	s, err := p.Future.Struct()
 	return UpdateSignature{s}, err
 }
 

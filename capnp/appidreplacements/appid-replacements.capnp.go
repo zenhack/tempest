@@ -10,7 +10,7 @@ import (
 
 // Constants defined in appid-replacements.capnp.
 var (
-	AppIdReplacementList = AppIdReplacement_List{List: capnp.MustUnmarshalRootPtr(x_a53cae3f717a1676[0:712]).List()}
+	AppIdReplacementList = AppIdReplacement_List{List: capnp.MustUnmarshalRoot(x_a53cae3f717a1676[0:712]).List()}
 )
 
 type AppIdReplacement struct{ capnp.Struct }
@@ -29,7 +29,7 @@ func NewRootAppIdReplacement(s *capnp.Segment) (AppIdReplacement, error) {
 }
 
 func ReadRootAppIdReplacement(msg *capnp.Message) (AppIdReplacement, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return AppIdReplacement{root.Struct()}, err
 }
 
@@ -44,8 +44,7 @@ func (s AppIdReplacement) Original() (string, error) {
 }
 
 func (s AppIdReplacement) HasOriginal() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s AppIdReplacement) OriginalBytes() ([]byte, error) {
@@ -63,8 +62,7 @@ func (s AppIdReplacement) Replacement() (string, error) {
 }
 
 func (s AppIdReplacement) HasReplacement() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s AppIdReplacement) ReplacementBytes() ([]byte, error) {
@@ -82,8 +80,7 @@ func (s AppIdReplacement) RevokeExceptPackageIds() (capnp.TextList, error) {
 }
 
 func (s AppIdReplacement) HasRevokeExceptPackageIds() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s AppIdReplacement) SetRevokeExceptPackageIds(v capnp.TextList) error {
@@ -121,11 +118,11 @@ func (s AppIdReplacement_List) String() string {
 	return str
 }
 
-// AppIdReplacement_Promise is a wrapper for a AppIdReplacement promised by a client call.
-type AppIdReplacement_Promise struct{ *capnp.Pipeline }
+// AppIdReplacement_Future is a wrapper for a AppIdReplacement promised by a client call.
+type AppIdReplacement_Future struct{ *capnp.Future }
 
-func (p AppIdReplacement_Promise) Struct() (AppIdReplacement, error) {
-	s, err := p.Pipeline.Struct()
+func (p AppIdReplacement_Future) Struct() (AppIdReplacement, error) {
+	s, err := p.Future.Struct()
 	return AppIdReplacement{s}, err
 }
 

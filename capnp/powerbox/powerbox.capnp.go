@@ -25,7 +25,7 @@ func NewRootPowerboxDescriptor(s *capnp.Segment) (PowerboxDescriptor, error) {
 }
 
 func ReadRootPowerboxDescriptor(msg *capnp.Message) (PowerboxDescriptor, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PowerboxDescriptor{root.Struct()}, err
 }
 
@@ -40,8 +40,7 @@ func (s PowerboxDescriptor) Tags() (PowerboxDescriptor_Tag_List, error) {
 }
 
 func (s PowerboxDescriptor) HasTags() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s PowerboxDescriptor) SetTags(v PowerboxDescriptor_Tag_List) error {
@@ -89,11 +88,11 @@ func (s PowerboxDescriptor_List) String() string {
 	return str
 }
 
-// PowerboxDescriptor_Promise is a wrapper for a PowerboxDescriptor promised by a client call.
-type PowerboxDescriptor_Promise struct{ *capnp.Pipeline }
+// PowerboxDescriptor_Future is a wrapper for a PowerboxDescriptor promised by a client call.
+type PowerboxDescriptor_Future struct{ *capnp.Future }
 
-func (p PowerboxDescriptor_Promise) Struct() (PowerboxDescriptor, error) {
-	s, err := p.Pipeline.Struct()
+func (p PowerboxDescriptor_Future) Struct() (PowerboxDescriptor, error) {
+	s, err := p.Future.Struct()
 	return PowerboxDescriptor{s}, err
 }
 
@@ -113,7 +112,7 @@ func NewRootPowerboxDescriptor_Tag(s *capnp.Segment) (PowerboxDescriptor_Tag, er
 }
 
 func ReadRootPowerboxDescriptor_Tag(msg *capnp.Message) (PowerboxDescriptor_Tag, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PowerboxDescriptor_Tag{root.Struct()}, err
 }
 
@@ -130,24 +129,15 @@ func (s PowerboxDescriptor_Tag) SetId(v uint64) {
 	s.Struct.SetUint64(0, v)
 }
 
-func (s PowerboxDescriptor_Tag) Value() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s PowerboxDescriptor_Tag) HasValue() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s PowerboxDescriptor_Tag) ValuePtr() (capnp.Ptr, error) {
+func (s PowerboxDescriptor_Tag) Value() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s PowerboxDescriptor_Tag) SetValue(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s PowerboxDescriptor_Tag) HasValue() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s PowerboxDescriptor_Tag) SetValuePtr(v capnp.Ptr) error {
+func (s PowerboxDescriptor_Tag) SetValue(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -173,16 +163,16 @@ func (s PowerboxDescriptor_Tag_List) String() string {
 	return str
 }
 
-// PowerboxDescriptor_Tag_Promise is a wrapper for a PowerboxDescriptor_Tag promised by a client call.
-type PowerboxDescriptor_Tag_Promise struct{ *capnp.Pipeline }
+// PowerboxDescriptor_Tag_Future is a wrapper for a PowerboxDescriptor_Tag promised by a client call.
+type PowerboxDescriptor_Tag_Future struct{ *capnp.Future }
 
-func (p PowerboxDescriptor_Tag_Promise) Struct() (PowerboxDescriptor_Tag, error) {
-	s, err := p.Pipeline.Struct()
+func (p PowerboxDescriptor_Tag_Future) Struct() (PowerboxDescriptor_Tag, error) {
+	s, err := p.Future.Struct()
 	return PowerboxDescriptor_Tag{s}, err
 }
 
-func (p PowerboxDescriptor_Tag_Promise) Value() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p PowerboxDescriptor_Tag_Future) Value() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type PowerboxDescriptor_MatchQuality uint16
@@ -261,7 +251,7 @@ func NewRootPowerboxDisplayInfo(s *capnp.Segment) (PowerboxDisplayInfo, error) {
 }
 
 func ReadRootPowerboxDisplayInfo(msg *capnp.Message) (PowerboxDisplayInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PowerboxDisplayInfo{root.Struct()}, err
 }
 
@@ -276,8 +266,7 @@ func (s PowerboxDisplayInfo) Title() (util.LocalizedText, error) {
 }
 
 func (s PowerboxDisplayInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s PowerboxDisplayInfo) SetTitle(v util.LocalizedText) error {
@@ -301,8 +290,7 @@ func (s PowerboxDisplayInfo) VerbPhrase() (util.LocalizedText, error) {
 }
 
 func (s PowerboxDisplayInfo) HasVerbPhrase() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s PowerboxDisplayInfo) SetVerbPhrase(v util.LocalizedText) error {
@@ -326,8 +314,7 @@ func (s PowerboxDisplayInfo) Description() (util.LocalizedText, error) {
 }
 
 func (s PowerboxDisplayInfo) HasDescription() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s PowerboxDisplayInfo) SetDescription(v util.LocalizedText) error {
@@ -367,24 +354,24 @@ func (s PowerboxDisplayInfo_List) String() string {
 	return str
 }
 
-// PowerboxDisplayInfo_Promise is a wrapper for a PowerboxDisplayInfo promised by a client call.
-type PowerboxDisplayInfo_Promise struct{ *capnp.Pipeline }
+// PowerboxDisplayInfo_Future is a wrapper for a PowerboxDisplayInfo promised by a client call.
+type PowerboxDisplayInfo_Future struct{ *capnp.Future }
 
-func (p PowerboxDisplayInfo_Promise) Struct() (PowerboxDisplayInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p PowerboxDisplayInfo_Future) Struct() (PowerboxDisplayInfo, error) {
+	s, err := p.Future.Struct()
 	return PowerboxDisplayInfo{s}, err
 }
 
-func (p PowerboxDisplayInfo_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p PowerboxDisplayInfo_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p PowerboxDisplayInfo_Promise) VerbPhrase() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p PowerboxDisplayInfo_Future) VerbPhrase() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p PowerboxDisplayInfo_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p PowerboxDisplayInfo_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
 const schema_f6c200ab14cd53e4 = "x\xdat\x92Kk\x13Q\x1c\xc5\xcf\xb971\x0d\xa8" +

@@ -3,7 +3,7 @@
 package util
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	capnp "zombiezen.com/go/capnproto2"
 	text "zombiezen.com/go/capnproto2/encoding/text"
 	schemas "zombiezen.com/go/capnproto2/schemas"
@@ -26,7 +26,7 @@ func NewRootKeyValue(s *capnp.Segment) (KeyValue, error) {
 }
 
 func ReadRootKeyValue(msg *capnp.Message) (KeyValue, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return KeyValue{root.Struct()}, err
 }
 
@@ -41,8 +41,7 @@ func (s KeyValue) Key() (string, error) {
 }
 
 func (s KeyValue) HasKey() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s KeyValue) KeyBytes() ([]byte, error) {
@@ -60,8 +59,7 @@ func (s KeyValue) Value() (string, error) {
 }
 
 func (s KeyValue) HasValue() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s KeyValue) ValueBytes() ([]byte, error) {
@@ -91,11 +89,11 @@ func (s KeyValue_List) String() string {
 	return str
 }
 
-// KeyValue_Promise is a wrapper for a KeyValue promised by a client call.
-type KeyValue_Promise struct{ *capnp.Pipeline }
+// KeyValue_Future is a wrapper for a KeyValue promised by a client call.
+type KeyValue_Future struct{ *capnp.Future }
 
-func (p KeyValue_Promise) Struct() (KeyValue, error) {
-	s, err := p.Pipeline.Struct()
+func (p KeyValue_Future) Struct() (KeyValue, error) {
+	s, err := p.Future.Struct()
 	return KeyValue{s}, err
 }
 
@@ -115,7 +113,7 @@ func NewRootLocalizedText(s *capnp.Segment) (LocalizedText, error) {
 }
 
 func ReadRootLocalizedText(msg *capnp.Message) (LocalizedText, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return LocalizedText{root.Struct()}, err
 }
 
@@ -130,8 +128,7 @@ func (s LocalizedText) DefaultText() (string, error) {
 }
 
 func (s LocalizedText) HasDefaultText() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s LocalizedText) DefaultTextBytes() ([]byte, error) {
@@ -149,8 +146,7 @@ func (s LocalizedText) Localizations() (LocalizedText_Localization_List, error) 
 }
 
 func (s LocalizedText) HasLocalizations() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s LocalizedText) SetLocalizations(v LocalizedText_Localization_List) error {
@@ -186,11 +182,11 @@ func (s LocalizedText_List) String() string {
 	return str
 }
 
-// LocalizedText_Promise is a wrapper for a LocalizedText promised by a client call.
-type LocalizedText_Promise struct{ *capnp.Pipeline }
+// LocalizedText_Future is a wrapper for a LocalizedText promised by a client call.
+type LocalizedText_Future struct{ *capnp.Future }
 
-func (p LocalizedText_Promise) Struct() (LocalizedText, error) {
-	s, err := p.Pipeline.Struct()
+func (p LocalizedText_Future) Struct() (LocalizedText, error) {
+	s, err := p.Future.Struct()
 	return LocalizedText{s}, err
 }
 
@@ -210,7 +206,7 @@ func NewRootLocalizedText_Localization(s *capnp.Segment) (LocalizedText_Localiza
 }
 
 func ReadRootLocalizedText_Localization(msg *capnp.Message) (LocalizedText_Localization, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return LocalizedText_Localization{root.Struct()}, err
 }
 
@@ -225,8 +221,7 @@ func (s LocalizedText_Localization) Locale() (string, error) {
 }
 
 func (s LocalizedText_Localization) HasLocale() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s LocalizedText_Localization) LocaleBytes() ([]byte, error) {
@@ -244,8 +239,7 @@ func (s LocalizedText_Localization) Text() (string, error) {
 }
 
 func (s LocalizedText_Localization) HasText() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s LocalizedText_Localization) TextBytes() ([]byte, error) {
@@ -279,27 +273,37 @@ func (s LocalizedText_Localization_List) String() string {
 	return str
 }
 
-// LocalizedText_Localization_Promise is a wrapper for a LocalizedText_Localization promised by a client call.
-type LocalizedText_Localization_Promise struct{ *capnp.Pipeline }
+// LocalizedText_Localization_Future is a wrapper for a LocalizedText_Localization promised by a client call.
+type LocalizedText_Localization_Future struct{ *capnp.Future }
 
-func (p LocalizedText_Localization_Promise) Struct() (LocalizedText_Localization, error) {
-	s, err := p.Pipeline.Struct()
+func (p LocalizedText_Localization_Future) Struct() (LocalizedText_Localization, error) {
+	s, err := p.Future.Struct()
 	return LocalizedText_Localization{s}, err
 }
 
-type Handle struct{ Client capnp.Client }
+type Handle struct{ Client *capnp.Client }
 
 // Handle_TypeID is the unique identifier for the type Handle.
 const Handle_TypeID = 0x98f424ac606042e0
 
+// A Handle_Server is a Handle with a local implementation.
 type Handle_Server interface {
 }
 
-func Handle_ServerToClient(s Handle_Server) Handle {
-	c, _ := s.(server.Closer)
-	return Handle{Client: server.New(Handle_Methods(nil, s), c)}
+// Handle_NewServer creates a new Server from an implementation of Handle_Server.
+func Handle_NewServer(s Handle_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Handle_Methods(nil, s), s, c, policy)
 }
 
+// Handle_ServerToClient creates a new Client from an implementation of Handle_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Handle_ServerToClient(s Handle_Server, policy *server.Policy) Handle {
+	return Handle{Client: capnp.NewClient(Handle_NewServer(s, policy))}
+}
+
+// Handle_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Handle_Methods(methods []server.Method, s Handle_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 0)
@@ -308,85 +312,83 @@ func Handle_Methods(methods []server.Method, s Handle_Server) []server.Method {
 	return methods
 }
 
-type ByteStream struct{ Client capnp.Client }
+type ByteStream struct{ Client *capnp.Client }
 
 // ByteStream_TypeID is the unique identifier for the type ByteStream.
 const ByteStream_TypeID = 0xcd57387729cfe35f
 
-func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Params) error, opts ...capnp.CallOption) ByteStream_write_Results_Promise {
-	if c.Client == nil {
-		return ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Params) error) (ByteStream_write_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(ByteStream_write_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ByteStream_write_Params{Struct: s}) }
 	}
-	return ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ByteStream_write_Results_Future{Future: ans.Future()}, release
 }
-func (c ByteStream) Done(ctx context.Context, params func(ByteStream_done_Params) error, opts ...capnp.CallOption) ByteStream_done_Results_Promise {
-	if c.Client == nil {
-		return ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c ByteStream) Done(ctx context.Context, params func(ByteStream_done_Params) error) (ByteStream_done_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(ByteStream_done_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ByteStream_done_Params{Struct: s}) }
 	}
-	return ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ByteStream_done_Results_Future{Future: ans.Future()}, release
 }
-func (c ByteStream) ExpectSize(ctx context.Context, params func(ByteStream_expectSize_Params) error, opts ...capnp.CallOption) ByteStream_expectSize_Results_Promise {
-	if c.Client == nil {
-		return ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c ByteStream) ExpectSize(ctx context.Context, params func(ByteStream_expectSize_Params) error) (ByteStream_expectSize_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(ByteStream_expectSize_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ByteStream_expectSize_Params{Struct: s}) }
 	}
-	return ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
+// A ByteStream_Server is a ByteStream with a local implementation.
 type ByteStream_Server interface {
-	Write(ByteStream_write) error
+	Write(context.Context, ByteStream_write) error
 
-	Done(ByteStream_done) error
+	Done(context.Context, ByteStream_done) error
 
-	ExpectSize(ByteStream_expectSize) error
+	ExpectSize(context.Context, ByteStream_expectSize) error
 }
 
-func ByteStream_ServerToClient(s ByteStream_Server) ByteStream {
-	c, _ := s.(server.Closer)
-	return ByteStream{Client: server.New(ByteStream_Methods(nil, s), c)}
+// ByteStream_NewServer creates a new Server from an implementation of ByteStream_Server.
+func ByteStream_NewServer(s ByteStream_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(ByteStream_Methods(nil, s), s, c, policy)
 }
 
+// ByteStream_ServerToClient creates a new Client from an implementation of ByteStream_Server.
+// The caller is responsible for calling Release on the returned Client.
+func ByteStream_ServerToClient(s ByteStream_Server, policy *server.Policy) ByteStream {
+	return ByteStream{Client: capnp.NewClient(ByteStream_NewServer(s, policy))}
+}
+
+// ByteStream_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 3)
@@ -399,11 +401,9 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := ByteStream_write{c, opts, ByteStream_write_Params{Struct: p}, ByteStream_write_Results{Struct: r}}
-			return s.Write(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Write(ctx, ByteStream_write{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -413,11 +413,9 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := ByteStream_done{c, opts, ByteStream_done_Params{Struct: p}, ByteStream_done_Results{Struct: r}}
-			return s.Done(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Done(ctx, ByteStream_done{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -427,38 +425,63 @@ func ByteStream_Methods(methods []server.Method, s ByteStream_Server) []server.M
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := ByteStream_expectSize{c, opts, ByteStream_expectSize_Params{Struct: p}, ByteStream_expectSize_Results{Struct: r}}
-			return s.ExpectSize(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ExpectSize(ctx, ByteStream_expectSize{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// ByteStream_write holds the arguments for a server call to ByteStream.write.
+// ByteStream_write holds the state for a server call to ByteStream.write.
+// See server.Call for documentation.
 type ByteStream_write struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  ByteStream_write_Params
-	Results ByteStream_write_Results
+	*server.Call
 }
 
-// ByteStream_done holds the arguments for a server call to ByteStream.done.
+// Args returns the call's arguments.
+func (c ByteStream_write) Args() ByteStream_write_Params {
+	return ByteStream_write_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ByteStream_write) AllocResults() (ByteStream_write_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ByteStream_write_Results{Struct: r}, err
+}
+
+// ByteStream_done holds the state for a server call to ByteStream.done.
+// See server.Call for documentation.
 type ByteStream_done struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  ByteStream_done_Params
-	Results ByteStream_done_Results
+	*server.Call
 }
 
-// ByteStream_expectSize holds the arguments for a server call to ByteStream.expectSize.
+// Args returns the call's arguments.
+func (c ByteStream_done) Args() ByteStream_done_Params {
+	return ByteStream_done_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ByteStream_done) AllocResults() (ByteStream_done_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ByteStream_done_Results{Struct: r}, err
+}
+
+// ByteStream_expectSize holds the state for a server call to ByteStream.expectSize.
+// See server.Call for documentation.
 type ByteStream_expectSize struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  ByteStream_expectSize_Params
-	Results ByteStream_expectSize_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c ByteStream_expectSize) Args() ByteStream_expectSize_Params {
+	return ByteStream_expectSize_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ByteStream_expectSize) AllocResults() (ByteStream_expectSize_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ByteStream_expectSize_Results{Struct: r}, err
 }
 
 type ByteStream_write_Params struct{ capnp.Struct }
@@ -477,7 +500,7 @@ func NewRootByteStream_write_Params(s *capnp.Segment) (ByteStream_write_Params, 
 }
 
 func ReadRootByteStream_write_Params(msg *capnp.Message) (ByteStream_write_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_write_Params{root.Struct()}, err
 }
 
@@ -492,8 +515,7 @@ func (s ByteStream_write_Params) Data() ([]byte, error) {
 }
 
 func (s ByteStream_write_Params) HasData() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ByteStream_write_Params) SetData(v []byte) error {
@@ -522,11 +544,11 @@ func (s ByteStream_write_Params_List) String() string {
 	return str
 }
 
-// ByteStream_write_Params_Promise is a wrapper for a ByteStream_write_Params promised by a client call.
-type ByteStream_write_Params_Promise struct{ *capnp.Pipeline }
+// ByteStream_write_Params_Future is a wrapper for a ByteStream_write_Params promised by a client call.
+type ByteStream_write_Params_Future struct{ *capnp.Future }
 
-func (p ByteStream_write_Params_Promise) Struct() (ByteStream_write_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_write_Params_Future) Struct() (ByteStream_write_Params, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_write_Params{s}, err
 }
 
@@ -546,7 +568,7 @@ func NewRootByteStream_write_Results(s *capnp.Segment) (ByteStream_write_Results
 }
 
 func ReadRootByteStream_write_Results(msg *capnp.Message) (ByteStream_write_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_write_Results{root.Struct()}, err
 }
 
@@ -577,11 +599,11 @@ func (s ByteStream_write_Results_List) String() string {
 	return str
 }
 
-// ByteStream_write_Results_Promise is a wrapper for a ByteStream_write_Results promised by a client call.
-type ByteStream_write_Results_Promise struct{ *capnp.Pipeline }
+// ByteStream_write_Results_Future is a wrapper for a ByteStream_write_Results promised by a client call.
+type ByteStream_write_Results_Future struct{ *capnp.Future }
 
-func (p ByteStream_write_Results_Promise) Struct() (ByteStream_write_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_write_Results_Future) Struct() (ByteStream_write_Results, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_write_Results{s}, err
 }
 
@@ -601,7 +623,7 @@ func NewRootByteStream_done_Params(s *capnp.Segment) (ByteStream_done_Params, er
 }
 
 func ReadRootByteStream_done_Params(msg *capnp.Message) (ByteStream_done_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_done_Params{root.Struct()}, err
 }
 
@@ -632,11 +654,11 @@ func (s ByteStream_done_Params_List) String() string {
 	return str
 }
 
-// ByteStream_done_Params_Promise is a wrapper for a ByteStream_done_Params promised by a client call.
-type ByteStream_done_Params_Promise struct{ *capnp.Pipeline }
+// ByteStream_done_Params_Future is a wrapper for a ByteStream_done_Params promised by a client call.
+type ByteStream_done_Params_Future struct{ *capnp.Future }
 
-func (p ByteStream_done_Params_Promise) Struct() (ByteStream_done_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_done_Params_Future) Struct() (ByteStream_done_Params, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_done_Params{s}, err
 }
 
@@ -656,7 +678,7 @@ func NewRootByteStream_done_Results(s *capnp.Segment) (ByteStream_done_Results, 
 }
 
 func ReadRootByteStream_done_Results(msg *capnp.Message) (ByteStream_done_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_done_Results{root.Struct()}, err
 }
 
@@ -687,11 +709,11 @@ func (s ByteStream_done_Results_List) String() string {
 	return str
 }
 
-// ByteStream_done_Results_Promise is a wrapper for a ByteStream_done_Results promised by a client call.
-type ByteStream_done_Results_Promise struct{ *capnp.Pipeline }
+// ByteStream_done_Results_Future is a wrapper for a ByteStream_done_Results promised by a client call.
+type ByteStream_done_Results_Future struct{ *capnp.Future }
 
-func (p ByteStream_done_Results_Promise) Struct() (ByteStream_done_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_done_Results_Future) Struct() (ByteStream_done_Results, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_done_Results{s}, err
 }
 
@@ -711,7 +733,7 @@ func NewRootByteStream_expectSize_Params(s *capnp.Segment) (ByteStream_expectSiz
 }
 
 func ReadRootByteStream_expectSize_Params(msg *capnp.Message) (ByteStream_expectSize_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_expectSize_Params{root.Struct()}, err
 }
 
@@ -750,11 +772,11 @@ func (s ByteStream_expectSize_Params_List) String() string {
 	return str
 }
 
-// ByteStream_expectSize_Params_Promise is a wrapper for a ByteStream_expectSize_Params promised by a client call.
-type ByteStream_expectSize_Params_Promise struct{ *capnp.Pipeline }
+// ByteStream_expectSize_Params_Future is a wrapper for a ByteStream_expectSize_Params promised by a client call.
+type ByteStream_expectSize_Params_Future struct{ *capnp.Future }
 
-func (p ByteStream_expectSize_Params_Promise) Struct() (ByteStream_expectSize_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_expectSize_Params_Future) Struct() (ByteStream_expectSize_Params, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_expectSize_Params{s}, err
 }
 
@@ -774,7 +796,7 @@ func NewRootByteStream_expectSize_Results(s *capnp.Segment) (ByteStream_expectSi
 }
 
 func ReadRootByteStream_expectSize_Results(msg *capnp.Message) (ByteStream_expectSize_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ByteStream_expectSize_Results{root.Struct()}, err
 }
 
@@ -805,93 +827,91 @@ func (s ByteStream_expectSize_Results_List) String() string {
 	return str
 }
 
-// ByteStream_expectSize_Results_Promise is a wrapper for a ByteStream_expectSize_Results promised by a client call.
-type ByteStream_expectSize_Results_Promise struct{ *capnp.Pipeline }
+// ByteStream_expectSize_Results_Future is a wrapper for a ByteStream_expectSize_Results promised by a client call.
+type ByteStream_expectSize_Results_Future struct{ *capnp.Future }
 
-func (p ByteStream_expectSize_Results_Promise) Struct() (ByteStream_expectSize_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p ByteStream_expectSize_Results_Future) Struct() (ByteStream_expectSize_Results, error) {
+	s, err := p.Future.Struct()
 	return ByteStream_expectSize_Results{s}, err
 }
 
-type Blob struct{ Client capnp.Client }
+type Blob struct{ Client *capnp.Client }
 
 // Blob_TypeID is the unique identifier for the type Blob.
 const Blob_TypeID = 0xe53527a75d90198f
 
-func (c Blob) GetSize(ctx context.Context, params func(Blob_getSize_Params) error, opts ...capnp.CallOption) Blob_getSize_Results_Promise {
-	if c.Client == nil {
-		return Blob_getSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Blob) GetSize(ctx context.Context, params func(Blob_getSize_Params) error) (Blob_getSize_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe53527a75d90198f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "getSize",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_getSize_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Blob_getSize_Params{Struct: s}) }
 	}
-	return Blob_getSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Blob_getSize_Results_Future{Future: ans.Future()}, release
 }
-func (c Blob) WriteTo(ctx context.Context, params func(Blob_writeTo_Params) error, opts ...capnp.CallOption) Blob_writeTo_Results_Promise {
-	if c.Client == nil {
-		return Blob_writeTo_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Blob) WriteTo(ctx context.Context, params func(Blob_writeTo_Params) error) (Blob_writeTo_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe53527a75d90198f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "writeTo",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_writeTo_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Blob_writeTo_Params{Struct: s}) }
 	}
-	return Blob_writeTo_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Blob_writeTo_Results_Future{Future: ans.Future()}, release
 }
-func (c Blob) GetSlice(ctx context.Context, params func(Blob_getSlice_Params) error, opts ...capnp.CallOption) Blob_getSlice_Results_Promise {
-	if c.Client == nil {
-		return Blob_getSlice_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Blob) GetSlice(ctx context.Context, params func(Blob_getSlice_Params) error) (Blob_getSlice_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe53527a75d90198f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "getSlice",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 16, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Blob_getSlice_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 16, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Blob_getSlice_Params{Struct: s}) }
 	}
-	return Blob_getSlice_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Blob_getSlice_Results_Future{Future: ans.Future()}, release
 }
 
+// A Blob_Server is a Blob with a local implementation.
 type Blob_Server interface {
-	GetSize(Blob_getSize) error
+	GetSize(context.Context, Blob_getSize) error
 
-	WriteTo(Blob_writeTo) error
+	WriteTo(context.Context, Blob_writeTo) error
 
-	GetSlice(Blob_getSlice) error
+	GetSlice(context.Context, Blob_getSlice) error
 }
 
-func Blob_ServerToClient(s Blob_Server) Blob {
-	c, _ := s.(server.Closer)
-	return Blob{Client: server.New(Blob_Methods(nil, s), c)}
+// Blob_NewServer creates a new Server from an implementation of Blob_Server.
+func Blob_NewServer(s Blob_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Blob_Methods(nil, s), s, c, policy)
 }
 
+// Blob_ServerToClient creates a new Client from an implementation of Blob_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Blob_ServerToClient(s Blob_Server, policy *server.Policy) Blob {
+	return Blob{Client: capnp.NewClient(Blob_NewServer(s, policy))}
+}
+
+// Blob_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Blob_Methods(methods []server.Method, s Blob_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 3)
@@ -904,11 +924,9 @@ func Blob_Methods(methods []server.Method, s Blob_Server) []server.Method {
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "getSize",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_getSize{c, opts, Blob_getSize_Params{Struct: p}, Blob_getSize_Results{Struct: r}}
-			return s.GetSize(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSize(ctx, Blob_getSize{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -918,11 +936,9 @@ func Blob_Methods(methods []server.Method, s Blob_Server) []server.Method {
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "writeTo",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_writeTo{c, opts, Blob_writeTo_Params{Struct: p}, Blob_writeTo_Results{Struct: r}}
-			return s.WriteTo(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.WriteTo(ctx, Blob_writeTo{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -932,38 +948,63 @@ func Blob_Methods(methods []server.Method, s Blob_Server) []server.Method {
 			InterfaceName: "util.capnp:Blob",
 			MethodName:    "getSlice",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Blob_getSlice{c, opts, Blob_getSlice_Params{Struct: p}, Blob_getSlice_Results{Struct: r}}
-			return s.GetSlice(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSlice(ctx, Blob_getSlice{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// Blob_getSize holds the arguments for a server call to Blob.getSize.
+// Blob_getSize holds the state for a server call to Blob.getSize.
+// See server.Call for documentation.
 type Blob_getSize struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_getSize_Params
-	Results Blob_getSize_Results
+	*server.Call
 }
 
-// Blob_writeTo holds the arguments for a server call to Blob.writeTo.
+// Args returns the call's arguments.
+func (c Blob_getSize) Args() Blob_getSize_Params {
+	return Blob_getSize_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Blob_getSize) AllocResults() (Blob_getSize_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Blob_getSize_Results{Struct: r}, err
+}
+
+// Blob_writeTo holds the state for a server call to Blob.writeTo.
+// See server.Call for documentation.
 type Blob_writeTo struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_writeTo_Params
-	Results Blob_writeTo_Results
+	*server.Call
 }
 
-// Blob_getSlice holds the arguments for a server call to Blob.getSlice.
+// Args returns the call's arguments.
+func (c Blob_writeTo) Args() Blob_writeTo_Params {
+	return Blob_writeTo_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Blob_writeTo) AllocResults() (Blob_writeTo_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Blob_writeTo_Results{Struct: r}, err
+}
+
+// Blob_getSlice holds the state for a server call to Blob.getSlice.
+// See server.Call for documentation.
 type Blob_getSlice struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Blob_getSlice_Params
-	Results Blob_getSlice_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c Blob_getSlice) Args() Blob_getSlice_Params {
+	return Blob_getSlice_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Blob_getSlice) AllocResults() (Blob_getSlice_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Blob_getSlice_Results{Struct: r}, err
 }
 
 type Blob_getSize_Params struct{ capnp.Struct }
@@ -982,7 +1023,7 @@ func NewRootBlob_getSize_Params(s *capnp.Segment) (Blob_getSize_Params, error) {
 }
 
 func ReadRootBlob_getSize_Params(msg *capnp.Message) (Blob_getSize_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_getSize_Params{root.Struct()}, err
 }
 
@@ -1013,11 +1054,11 @@ func (s Blob_getSize_Params_List) String() string {
 	return str
 }
 
-// Blob_getSize_Params_Promise is a wrapper for a Blob_getSize_Params promised by a client call.
-type Blob_getSize_Params_Promise struct{ *capnp.Pipeline }
+// Blob_getSize_Params_Future is a wrapper for a Blob_getSize_Params promised by a client call.
+type Blob_getSize_Params_Future struct{ *capnp.Future }
 
-func (p Blob_getSize_Params_Promise) Struct() (Blob_getSize_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_getSize_Params_Future) Struct() (Blob_getSize_Params, error) {
+	s, err := p.Future.Struct()
 	return Blob_getSize_Params{s}, err
 }
 
@@ -1037,7 +1078,7 @@ func NewRootBlob_getSize_Results(s *capnp.Segment) (Blob_getSize_Results, error)
 }
 
 func ReadRootBlob_getSize_Results(msg *capnp.Message) (Blob_getSize_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_getSize_Results{root.Struct()}, err
 }
 
@@ -1076,11 +1117,11 @@ func (s Blob_getSize_Results_List) String() string {
 	return str
 }
 
-// Blob_getSize_Results_Promise is a wrapper for a Blob_getSize_Results promised by a client call.
-type Blob_getSize_Results_Promise struct{ *capnp.Pipeline }
+// Blob_getSize_Results_Future is a wrapper for a Blob_getSize_Results promised by a client call.
+type Blob_getSize_Results_Future struct{ *capnp.Future }
 
-func (p Blob_getSize_Results_Promise) Struct() (Blob_getSize_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_getSize_Results_Future) Struct() (Blob_getSize_Results, error) {
+	s, err := p.Future.Struct()
 	return Blob_getSize_Results{s}, err
 }
 
@@ -1100,7 +1141,7 @@ func NewRootBlob_writeTo_Params(s *capnp.Segment) (Blob_writeTo_Params, error) {
 }
 
 func ReadRootBlob_writeTo_Params(msg *capnp.Message) (Blob_writeTo_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_writeTo_Params{root.Struct()}, err
 }
 
@@ -1115,12 +1156,11 @@ func (s Blob_writeTo_Params) Stream() ByteStream {
 }
 
 func (s Blob_writeTo_Params) HasStream() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Blob_writeTo_Params) SetStream(v ByteStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1158,16 +1198,16 @@ func (s Blob_writeTo_Params_List) String() string {
 	return str
 }
 
-// Blob_writeTo_Params_Promise is a wrapper for a Blob_writeTo_Params promised by a client call.
-type Blob_writeTo_Params_Promise struct{ *capnp.Pipeline }
+// Blob_writeTo_Params_Future is a wrapper for a Blob_writeTo_Params promised by a client call.
+type Blob_writeTo_Params_Future struct{ *capnp.Future }
 
-func (p Blob_writeTo_Params_Promise) Struct() (Blob_writeTo_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_writeTo_Params_Future) Struct() (Blob_writeTo_Params, error) {
+	s, err := p.Future.Struct()
 	return Blob_writeTo_Params{s}, err
 }
 
-func (p Blob_writeTo_Params_Promise) Stream() ByteStream {
-	return ByteStream{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Blob_writeTo_Params_Future) Stream() ByteStream {
+	return ByteStream{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Blob_writeTo_Results struct{ capnp.Struct }
@@ -1186,7 +1226,7 @@ func NewRootBlob_writeTo_Results(s *capnp.Segment) (Blob_writeTo_Results, error)
 }
 
 func ReadRootBlob_writeTo_Results(msg *capnp.Message) (Blob_writeTo_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_writeTo_Results{root.Struct()}, err
 }
 
@@ -1201,12 +1241,11 @@ func (s Blob_writeTo_Results) Handle() Handle {
 }
 
 func (s Blob_writeTo_Results) HasHandle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Blob_writeTo_Results) SetHandle(v Handle) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1236,16 +1275,16 @@ func (s Blob_writeTo_Results_List) String() string {
 	return str
 }
 
-// Blob_writeTo_Results_Promise is a wrapper for a Blob_writeTo_Results promised by a client call.
-type Blob_writeTo_Results_Promise struct{ *capnp.Pipeline }
+// Blob_writeTo_Results_Future is a wrapper for a Blob_writeTo_Results promised by a client call.
+type Blob_writeTo_Results_Future struct{ *capnp.Future }
 
-func (p Blob_writeTo_Results_Promise) Struct() (Blob_writeTo_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_writeTo_Results_Future) Struct() (Blob_writeTo_Results, error) {
+	s, err := p.Future.Struct()
 	return Blob_writeTo_Results{s}, err
 }
 
-func (p Blob_writeTo_Results_Promise) Handle() Handle {
-	return Handle{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Blob_writeTo_Results_Future) Handle() Handle {
+	return Handle{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Blob_getSlice_Params struct{ capnp.Struct }
@@ -1264,7 +1303,7 @@ func NewRootBlob_getSlice_Params(s *capnp.Segment) (Blob_getSlice_Params, error)
 }
 
 func ReadRootBlob_getSlice_Params(msg *capnp.Message) (Blob_getSlice_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_getSlice_Params{root.Struct()}, err
 }
 
@@ -1311,11 +1350,11 @@ func (s Blob_getSlice_Params_List) String() string {
 	return str
 }
 
-// Blob_getSlice_Params_Promise is a wrapper for a Blob_getSlice_Params promised by a client call.
-type Blob_getSlice_Params_Promise struct{ *capnp.Pipeline }
+// Blob_getSlice_Params_Future is a wrapper for a Blob_getSlice_Params promised by a client call.
+type Blob_getSlice_Params_Future struct{ *capnp.Future }
 
-func (p Blob_getSlice_Params_Promise) Struct() (Blob_getSlice_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_getSlice_Params_Future) Struct() (Blob_getSlice_Params, error) {
+	s, err := p.Future.Struct()
 	return Blob_getSlice_Params{s}, err
 }
 
@@ -1335,7 +1374,7 @@ func NewRootBlob_getSlice_Results(s *capnp.Segment) (Blob_getSlice_Results, erro
 }
 
 func ReadRootBlob_getSlice_Results(msg *capnp.Message) (Blob_getSlice_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Blob_getSlice_Results{root.Struct()}, err
 }
 
@@ -1350,8 +1389,7 @@ func (s Blob_getSlice_Results) Data() ([]byte, error) {
 }
 
 func (s Blob_getSlice_Results) HasData() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Blob_getSlice_Results) SetData(v []byte) error {
@@ -1380,93 +1418,91 @@ func (s Blob_getSlice_Results_List) String() string {
 	return str
 }
 
-// Blob_getSlice_Results_Promise is a wrapper for a Blob_getSlice_Results promised by a client call.
-type Blob_getSlice_Results_Promise struct{ *capnp.Pipeline }
+// Blob_getSlice_Results_Future is a wrapper for a Blob_getSlice_Results promised by a client call.
+type Blob_getSlice_Results_Future struct{ *capnp.Future }
 
-func (p Blob_getSlice_Results_Promise) Struct() (Blob_getSlice_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Blob_getSlice_Results_Future) Struct() (Blob_getSlice_Results, error) {
+	s, err := p.Future.Struct()
 	return Blob_getSlice_Results{s}, err
 }
 
-type Assignable struct{ Client capnp.Client }
+type Assignable struct{ Client *capnp.Client }
 
 // Assignable_TypeID is the unique identifier for the type Assignable.
 const Assignable_TypeID = 0xeaf255b498229199
 
-func (c Assignable) Get(ctx context.Context, params func(Assignable_get_Params) error, opts ...capnp.CallOption) Assignable_get_Results_Promise {
-	if c.Client == nil {
-		return Assignable_get_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable) Get(ctx context.Context, params func(Assignable_get_Params) error) (Assignable_get_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "get",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_get_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_get_Params{Struct: s}) }
 	}
-	return Assignable_get_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_get_Results_Future{Future: ans.Future()}, release
 }
-func (c Assignable) AsGetter(ctx context.Context, params func(Assignable_asGetter_Params) error, opts ...capnp.CallOption) Assignable_asGetter_Results_Promise {
-	if c.Client == nil {
-		return Assignable_asGetter_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable) AsGetter(ctx context.Context, params func(Assignable_asGetter_Params) error) (Assignable_asGetter_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "asGetter",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_asGetter_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_asGetter_Params{Struct: s}) }
 	}
-	return Assignable_asGetter_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_asGetter_Results_Future{Future: ans.Future()}, release
 }
-func (c Assignable) AsSetter(ctx context.Context, params func(Assignable_asSetter_Params) error, opts ...capnp.CallOption) Assignable_asSetter_Results_Promise {
-	if c.Client == nil {
-		return Assignable_asSetter_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable) AsSetter(ctx context.Context, params func(Assignable_asSetter_Params) error) (Assignable_asSetter_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xeaf255b498229199,
 			MethodID:      2,
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "asSetter",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_asSetter_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_asSetter_Params{Struct: s}) }
 	}
-	return Assignable_asSetter_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_asSetter_Results_Future{Future: ans.Future()}, release
 }
 
+// A Assignable_Server is a Assignable with a local implementation.
 type Assignable_Server interface {
-	Get(Assignable_get) error
+	Get(context.Context, Assignable_get) error
 
-	AsGetter(Assignable_asGetter) error
+	AsGetter(context.Context, Assignable_asGetter) error
 
-	AsSetter(Assignable_asSetter) error
+	AsSetter(context.Context, Assignable_asSetter) error
 }
 
-func Assignable_ServerToClient(s Assignable_Server) Assignable {
-	c, _ := s.(server.Closer)
-	return Assignable{Client: server.New(Assignable_Methods(nil, s), c)}
+// Assignable_NewServer creates a new Server from an implementation of Assignable_Server.
+func Assignable_NewServer(s Assignable_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Assignable_Methods(nil, s), s, c, policy)
 }
 
+// Assignable_ServerToClient creates a new Client from an implementation of Assignable_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Assignable_ServerToClient(s Assignable_Server, policy *server.Policy) Assignable {
+	return Assignable{Client: capnp.NewClient(Assignable_NewServer(s, policy))}
+}
+
+// Assignable_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 3)
@@ -1479,11 +1515,9 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "get",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_get{c, opts, Assignable_get_Params{Struct: p}, Assignable_get_Results{Struct: r}}
-			return s.Get(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Get(ctx, Assignable_get{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -1493,11 +1527,9 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "asGetter",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_asGetter{c, opts, Assignable_asGetter_Params{Struct: p}, Assignable_asGetter_Results{Struct: r}}
-			return s.AsGetter(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AsGetter(ctx, Assignable_asGetter{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -1507,97 +1539,124 @@ func Assignable_Methods(methods []server.Method, s Assignable_Server) []server.M
 			InterfaceName: "util.capnp:Assignable",
 			MethodName:    "asSetter",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_asSetter{c, opts, Assignable_asSetter_Params{Struct: p}, Assignable_asSetter_Results{Struct: r}}
-			return s.AsSetter(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AsSetter(ctx, Assignable_asSetter{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// Assignable_get holds the arguments for a server call to Assignable.get.
+// Assignable_get holds the state for a server call to Assignable.get.
+// See server.Call for documentation.
 type Assignable_get struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_get_Params
-	Results Assignable_get_Results
+	*server.Call
 }
 
-// Assignable_asGetter holds the arguments for a server call to Assignable.asGetter.
+// Args returns the call's arguments.
+func (c Assignable_get) Args() Assignable_get_Params {
+	return Assignable_get_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_get) AllocResults() (Assignable_get_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return Assignable_get_Results{Struct: r}, err
+}
+
+// Assignable_asGetter holds the state for a server call to Assignable.asGetter.
+// See server.Call for documentation.
 type Assignable_asGetter struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_asGetter_Params
-	Results Assignable_asGetter_Results
+	*server.Call
 }
 
-// Assignable_asSetter holds the arguments for a server call to Assignable.asSetter.
+// Args returns the call's arguments.
+func (c Assignable_asGetter) Args() Assignable_asGetter_Params {
+	return Assignable_asGetter_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_asGetter) AllocResults() (Assignable_asGetter_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Assignable_asGetter_Results{Struct: r}, err
+}
+
+// Assignable_asSetter holds the state for a server call to Assignable.asSetter.
+// See server.Call for documentation.
 type Assignable_asSetter struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_asSetter_Params
-	Results Assignable_asSetter_Results
+	*server.Call
 }
 
-type Assignable_Getter struct{ Client capnp.Client }
+// Args returns the call's arguments.
+func (c Assignable_asSetter) Args() Assignable_asSetter_Params {
+	return Assignable_asSetter_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_asSetter) AllocResults() (Assignable_asSetter_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Assignable_asSetter_Results{Struct: r}, err
+}
+
+type Assignable_Getter struct{ Client *capnp.Client }
 
 // Assignable_Getter_TypeID is the unique identifier for the type Assignable_Getter.
 const Assignable_Getter_TypeID = 0x80f2f65360d64224
 
-func (c Assignable_Getter) Get(ctx context.Context, params func(Assignable_Getter_get_Params) error, opts ...capnp.CallOption) Assignable_Getter_get_Results_Promise {
-	if c.Client == nil {
-		return Assignable_Getter_get_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable_Getter) Get(ctx context.Context, params func(Assignable_Getter_get_Params) error) (Assignable_Getter_get_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Getter",
 			MethodName:    "get",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_Getter_get_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_Getter_get_Params{Struct: s}) }
 	}
-	return Assignable_Getter_get_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_Getter_get_Results_Future{Future: ans.Future()}, release
 }
-func (c Assignable_Getter) Subscribe(ctx context.Context, params func(Assignable_Getter_subscribe_Params) error, opts ...capnp.CallOption) Assignable_Getter_subscribe_Results_Promise {
-	if c.Client == nil {
-		return Assignable_Getter_subscribe_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable_Getter) Subscribe(ctx context.Context, params func(Assignable_Getter_subscribe_Params) error) (Assignable_Getter_subscribe_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0x80f2f65360d64224,
 			MethodID:      1,
 			InterfaceName: "util.capnp:Assignable.Getter",
 			MethodName:    "subscribe",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_Getter_subscribe_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_Getter_subscribe_Params{Struct: s}) }
 	}
-	return Assignable_Getter_subscribe_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_Getter_subscribe_Results_Future{Future: ans.Future()}, release
 }
 
+// A Assignable_Getter_Server is a Assignable_Getter with a local implementation.
 type Assignable_Getter_Server interface {
-	Get(Assignable_Getter_get) error
+	Get(context.Context, Assignable_Getter_get) error
 
-	Subscribe(Assignable_Getter_subscribe) error
+	Subscribe(context.Context, Assignable_Getter_subscribe) error
 }
 
-func Assignable_Getter_ServerToClient(s Assignable_Getter_Server) Assignable_Getter {
-	c, _ := s.(server.Closer)
-	return Assignable_Getter{Client: server.New(Assignable_Getter_Methods(nil, s), c)}
+// Assignable_Getter_NewServer creates a new Server from an implementation of Assignable_Getter_Server.
+func Assignable_Getter_NewServer(s Assignable_Getter_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Assignable_Getter_Methods(nil, s), s, c, policy)
 }
 
+// Assignable_Getter_ServerToClient creates a new Client from an implementation of Assignable_Getter_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Assignable_Getter_ServerToClient(s Assignable_Getter_Server, policy *server.Policy) Assignable_Getter {
+	return Assignable_Getter{Client: capnp.NewClient(Assignable_Getter_NewServer(s, policy))}
+}
+
+// Assignable_Getter_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Assignable_Getter_Methods(methods []server.Method, s Assignable_Getter_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -1610,11 +1669,9 @@ func Assignable_Getter_Methods(methods []server.Method, s Assignable_Getter_Serv
 			InterfaceName: "util.capnp:Assignable.Getter",
 			MethodName:    "get",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_Getter_get{c, opts, Assignable_Getter_get_Params{Struct: p}, Assignable_Getter_get_Results{Struct: r}}
-			return s.Get(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Get(ctx, Assignable_Getter_get{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -1624,30 +1681,46 @@ func Assignable_Getter_Methods(methods []server.Method, s Assignable_Getter_Serv
 			InterfaceName: "util.capnp:Assignable.Getter",
 			MethodName:    "subscribe",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_Getter_subscribe{c, opts, Assignable_Getter_subscribe_Params{Struct: p}, Assignable_Getter_subscribe_Results{Struct: r}}
-			return s.Subscribe(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Subscribe(ctx, Assignable_Getter_subscribe{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// Assignable_Getter_get holds the arguments for a server call to Assignable_Getter.get.
+// Assignable_Getter_get holds the state for a server call to Assignable_Getter.get.
+// See server.Call for documentation.
 type Assignable_Getter_get struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_Getter_get_Params
-	Results Assignable_Getter_get_Results
+	*server.Call
 }
 
-// Assignable_Getter_subscribe holds the arguments for a server call to Assignable_Getter.subscribe.
+// Args returns the call's arguments.
+func (c Assignable_Getter_get) Args() Assignable_Getter_get_Params {
+	return Assignable_Getter_get_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_Getter_get) AllocResults() (Assignable_Getter_get_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Assignable_Getter_get_Results{Struct: r}, err
+}
+
+// Assignable_Getter_subscribe holds the state for a server call to Assignable_Getter.subscribe.
+// See server.Call for documentation.
 type Assignable_Getter_subscribe struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_Getter_subscribe_Params
-	Results Assignable_Getter_subscribe_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c Assignable_Getter_subscribe) Args() Assignable_Getter_subscribe_Params {
+	return Assignable_Getter_subscribe_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_Getter_subscribe) AllocResults() (Assignable_Getter_subscribe_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Assignable_Getter_subscribe_Results{Struct: r}, err
 }
 
 type Assignable_Getter_get_Params struct{ capnp.Struct }
@@ -1666,7 +1739,7 @@ func NewRootAssignable_Getter_get_Params(s *capnp.Segment) (Assignable_Getter_ge
 }
 
 func ReadRootAssignable_Getter_get_Params(msg *capnp.Message) (Assignable_Getter_get_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Getter_get_Params{root.Struct()}, err
 }
 
@@ -1697,11 +1770,11 @@ func (s Assignable_Getter_get_Params_List) String() string {
 	return str
 }
 
-// Assignable_Getter_get_Params_Promise is a wrapper for a Assignable_Getter_get_Params promised by a client call.
-type Assignable_Getter_get_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_Getter_get_Params_Future is a wrapper for a Assignable_Getter_get_Params promised by a client call.
+type Assignable_Getter_get_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_Getter_get_Params_Promise) Struct() (Assignable_Getter_get_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Getter_get_Params_Future) Struct() (Assignable_Getter_get_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Getter_get_Params{s}, err
 }
 
@@ -1721,7 +1794,7 @@ func NewRootAssignable_Getter_get_Results(s *capnp.Segment) (Assignable_Getter_g
 }
 
 func ReadRootAssignable_Getter_get_Results(msg *capnp.Message) (Assignable_Getter_get_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Getter_get_Results{root.Struct()}, err
 }
 
@@ -1730,24 +1803,15 @@ func (s Assignable_Getter_get_Results) String() string {
 	return str
 }
 
-func (s Assignable_Getter_get_Results) Value() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s Assignable_Getter_get_Results) HasValue() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s Assignable_Getter_get_Results) ValuePtr() (capnp.Ptr, error) {
+func (s Assignable_Getter_get_Results) Value() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s Assignable_Getter_get_Results) SetValue(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s Assignable_Getter_get_Results) HasValue() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s Assignable_Getter_get_Results) SetValuePtr(v capnp.Ptr) error {
+func (s Assignable_Getter_get_Results) SetValue(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1773,16 +1837,16 @@ func (s Assignable_Getter_get_Results_List) String() string {
 	return str
 }
 
-// Assignable_Getter_get_Results_Promise is a wrapper for a Assignable_Getter_get_Results promised by a client call.
-type Assignable_Getter_get_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_Getter_get_Results_Future is a wrapper for a Assignable_Getter_get_Results promised by a client call.
+type Assignable_Getter_get_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_Getter_get_Results_Promise) Struct() (Assignable_Getter_get_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Getter_get_Results_Future) Struct() (Assignable_Getter_get_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Getter_get_Results{s}, err
 }
 
-func (p Assignable_Getter_get_Results_Promise) Value() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p Assignable_Getter_get_Results_Future) Value() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type Assignable_Getter_subscribe_Params struct{ capnp.Struct }
@@ -1801,7 +1865,7 @@ func NewRootAssignable_Getter_subscribe_Params(s *capnp.Segment) (Assignable_Get
 }
 
 func ReadRootAssignable_Getter_subscribe_Params(msg *capnp.Message) (Assignable_Getter_subscribe_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Getter_subscribe_Params{root.Struct()}, err
 }
 
@@ -1816,12 +1880,11 @@ func (s Assignable_Getter_subscribe_Params) Setter() Assignable_Setter {
 }
 
 func (s Assignable_Getter_subscribe_Params) HasSetter() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Assignable_Getter_subscribe_Params) SetSetter(v Assignable_Setter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1851,16 +1914,16 @@ func (s Assignable_Getter_subscribe_Params_List) String() string {
 	return str
 }
 
-// Assignable_Getter_subscribe_Params_Promise is a wrapper for a Assignable_Getter_subscribe_Params promised by a client call.
-type Assignable_Getter_subscribe_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_Getter_subscribe_Params_Future is a wrapper for a Assignable_Getter_subscribe_Params promised by a client call.
+type Assignable_Getter_subscribe_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_Getter_subscribe_Params_Promise) Struct() (Assignable_Getter_subscribe_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Getter_subscribe_Params_Future) Struct() (Assignable_Getter_subscribe_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Getter_subscribe_Params{s}, err
 }
 
-func (p Assignable_Getter_subscribe_Params_Promise) Setter() Assignable_Setter {
-	return Assignable_Setter{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Assignable_Getter_subscribe_Params_Future) Setter() Assignable_Setter {
+	return Assignable_Setter{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Assignable_Getter_subscribe_Results struct{ capnp.Struct }
@@ -1879,7 +1942,7 @@ func NewRootAssignable_Getter_subscribe_Results(s *capnp.Segment) (Assignable_Ge
 }
 
 func ReadRootAssignable_Getter_subscribe_Results(msg *capnp.Message) (Assignable_Getter_subscribe_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Getter_subscribe_Results{root.Struct()}, err
 }
 
@@ -1894,12 +1957,11 @@ func (s Assignable_Getter_subscribe_Results) Handle() Handle {
 }
 
 func (s Assignable_Getter_subscribe_Results) HasHandle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Assignable_Getter_subscribe_Results) SetHandle(v Handle) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1929,53 +1991,59 @@ func (s Assignable_Getter_subscribe_Results_List) String() string {
 	return str
 }
 
-// Assignable_Getter_subscribe_Results_Promise is a wrapper for a Assignable_Getter_subscribe_Results promised by a client call.
-type Assignable_Getter_subscribe_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_Getter_subscribe_Results_Future is a wrapper for a Assignable_Getter_subscribe_Results promised by a client call.
+type Assignable_Getter_subscribe_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_Getter_subscribe_Results_Promise) Struct() (Assignable_Getter_subscribe_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Getter_subscribe_Results_Future) Struct() (Assignable_Getter_subscribe_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Getter_subscribe_Results{s}, err
 }
 
-func (p Assignable_Getter_subscribe_Results_Promise) Handle() Handle {
-	return Handle{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Assignable_Getter_subscribe_Results_Future) Handle() Handle {
+	return Handle{Client: p.Future.Field(0, nil).Client()}
 }
 
-type Assignable_Setter struct{ Client capnp.Client }
+type Assignable_Setter struct{ Client *capnp.Client }
 
 // Assignable_Setter_TypeID is the unique identifier for the type Assignable_Setter.
 const Assignable_Setter_TypeID = 0xd5256a3f93589d2f
 
-func (c Assignable_Setter) Set(ctx context.Context, params func(Assignable_Setter_set_Params) error, opts ...capnp.CallOption) Assignable_Setter_set_Results_Promise {
-	if c.Client == nil {
-		return Assignable_Setter_set_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Assignable_Setter) Set(ctx context.Context, params func(Assignable_Setter_set_Params) error) (Assignable_Setter_set_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd5256a3f93589d2f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:Assignable.Setter",
 			MethodName:    "set",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Assignable_Setter_set_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Assignable_Setter_set_Params{Struct: s}) }
 	}
-	return Assignable_Setter_set_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Assignable_Setter_set_Results_Future{Future: ans.Future()}, release
 }
 
+// A Assignable_Setter_Server is a Assignable_Setter with a local implementation.
 type Assignable_Setter_Server interface {
-	Set(Assignable_Setter_set) error
+	Set(context.Context, Assignable_Setter_set) error
 }
 
-func Assignable_Setter_ServerToClient(s Assignable_Setter_Server) Assignable_Setter {
-	c, _ := s.(server.Closer)
-	return Assignable_Setter{Client: server.New(Assignable_Setter_Methods(nil, s), c)}
+// Assignable_Setter_NewServer creates a new Server from an implementation of Assignable_Setter_Server.
+func Assignable_Setter_NewServer(s Assignable_Setter_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Assignable_Setter_Methods(nil, s), s, c, policy)
 }
 
+// Assignable_Setter_ServerToClient creates a new Client from an implementation of Assignable_Setter_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Assignable_Setter_ServerToClient(s Assignable_Setter_Server, policy *server.Policy) Assignable_Setter {
+	return Assignable_Setter{Client: capnp.NewClient(Assignable_Setter_NewServer(s, policy))}
+}
+
+// Assignable_Setter_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Assignable_Setter_Methods(methods []server.Method, s Assignable_Setter_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -1988,22 +2056,29 @@ func Assignable_Setter_Methods(methods []server.Method, s Assignable_Setter_Serv
 			InterfaceName: "util.capnp:Assignable.Setter",
 			MethodName:    "set",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Assignable_Setter_set{c, opts, Assignable_Setter_set_Params{Struct: p}, Assignable_Setter_set_Results{Struct: r}}
-			return s.Set(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Set(ctx, Assignable_Setter_set{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// Assignable_Setter_set holds the arguments for a server call to Assignable_Setter.set.
+// Assignable_Setter_set holds the state for a server call to Assignable_Setter.set.
+// See server.Call for documentation.
 type Assignable_Setter_set struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Assignable_Setter_set_Params
-	Results Assignable_Setter_set_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c Assignable_Setter_set) Args() Assignable_Setter_set_Params {
+	return Assignable_Setter_set_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Assignable_Setter_set) AllocResults() (Assignable_Setter_set_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Assignable_Setter_set_Results{Struct: r}, err
 }
 
 type Assignable_Setter_set_Params struct{ capnp.Struct }
@@ -2022,7 +2097,7 @@ func NewRootAssignable_Setter_set_Params(s *capnp.Segment) (Assignable_Setter_se
 }
 
 func ReadRootAssignable_Setter_set_Params(msg *capnp.Message) (Assignable_Setter_set_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Setter_set_Params{root.Struct()}, err
 }
 
@@ -2031,24 +2106,15 @@ func (s Assignable_Setter_set_Params) String() string {
 	return str
 }
 
-func (s Assignable_Setter_set_Params) Value() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s Assignable_Setter_set_Params) HasValue() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s Assignable_Setter_set_Params) ValuePtr() (capnp.Ptr, error) {
+func (s Assignable_Setter_set_Params) Value() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s Assignable_Setter_set_Params) SetValue(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s Assignable_Setter_set_Params) HasValue() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s Assignable_Setter_set_Params) SetValuePtr(v capnp.Ptr) error {
+func (s Assignable_Setter_set_Params) SetValue(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -2074,16 +2140,16 @@ func (s Assignable_Setter_set_Params_List) String() string {
 	return str
 }
 
-// Assignable_Setter_set_Params_Promise is a wrapper for a Assignable_Setter_set_Params promised by a client call.
-type Assignable_Setter_set_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_Setter_set_Params_Future is a wrapper for a Assignable_Setter_set_Params promised by a client call.
+type Assignable_Setter_set_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_Setter_set_Params_Promise) Struct() (Assignable_Setter_set_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Setter_set_Params_Future) Struct() (Assignable_Setter_set_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Setter_set_Params{s}, err
 }
 
-func (p Assignable_Setter_set_Params_Promise) Value() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p Assignable_Setter_set_Params_Future) Value() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type Assignable_Setter_set_Results struct{ capnp.Struct }
@@ -2102,7 +2168,7 @@ func NewRootAssignable_Setter_set_Results(s *capnp.Segment) (Assignable_Setter_s
 }
 
 func ReadRootAssignable_Setter_set_Results(msg *capnp.Message) (Assignable_Setter_set_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_Setter_set_Results{root.Struct()}, err
 }
 
@@ -2133,11 +2199,11 @@ func (s Assignable_Setter_set_Results_List) String() string {
 	return str
 }
 
-// Assignable_Setter_set_Results_Promise is a wrapper for a Assignable_Setter_set_Results promised by a client call.
-type Assignable_Setter_set_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_Setter_set_Results_Future is a wrapper for a Assignable_Setter_set_Results promised by a client call.
+type Assignable_Setter_set_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_Setter_set_Results_Promise) Struct() (Assignable_Setter_set_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_Setter_set_Results_Future) Struct() (Assignable_Setter_set_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_Setter_set_Results{s}, err
 }
 
@@ -2157,7 +2223,7 @@ func NewRootAssignable_get_Params(s *capnp.Segment) (Assignable_get_Params, erro
 }
 
 func ReadRootAssignable_get_Params(msg *capnp.Message) (Assignable_get_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_get_Params{root.Struct()}, err
 }
 
@@ -2188,11 +2254,11 @@ func (s Assignable_get_Params_List) String() string {
 	return str
 }
 
-// Assignable_get_Params_Promise is a wrapper for a Assignable_get_Params promised by a client call.
-type Assignable_get_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_get_Params_Future is a wrapper for a Assignable_get_Params promised by a client call.
+type Assignable_get_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_get_Params_Promise) Struct() (Assignable_get_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_get_Params_Future) Struct() (Assignable_get_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_get_Params{s}, err
 }
 
@@ -2212,7 +2278,7 @@ func NewRootAssignable_get_Results(s *capnp.Segment) (Assignable_get_Results, er
 }
 
 func ReadRootAssignable_get_Results(msg *capnp.Message) (Assignable_get_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_get_Results{root.Struct()}, err
 }
 
@@ -2221,24 +2287,15 @@ func (s Assignable_get_Results) String() string {
 	return str
 }
 
-func (s Assignable_get_Results) Value() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s Assignable_get_Results) HasValue() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s Assignable_get_Results) ValuePtr() (capnp.Ptr, error) {
+func (s Assignable_get_Results) Value() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s Assignable_get_Results) SetValue(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s Assignable_get_Results) HasValue() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s Assignable_get_Results) SetValuePtr(v capnp.Ptr) error {
+func (s Assignable_get_Results) SetValue(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -2248,12 +2305,11 @@ func (s Assignable_get_Results) Setter() Assignable_Setter {
 }
 
 func (s Assignable_get_Results) HasSetter() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Assignable_get_Results) SetSetter(v Assignable_Setter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2283,20 +2339,20 @@ func (s Assignable_get_Results_List) String() string {
 	return str
 }
 
-// Assignable_get_Results_Promise is a wrapper for a Assignable_get_Results promised by a client call.
-type Assignable_get_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_get_Results_Future is a wrapper for a Assignable_get_Results promised by a client call.
+type Assignable_get_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_get_Results_Promise) Struct() (Assignable_get_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_get_Results_Future) Struct() (Assignable_get_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_get_Results{s}, err
 }
 
-func (p Assignable_get_Results_Promise) Value() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p Assignable_get_Results_Future) Value() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
-func (p Assignable_get_Results_Promise) Setter() Assignable_Setter {
-	return Assignable_Setter{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p Assignable_get_Results_Future) Setter() Assignable_Setter {
+	return Assignable_Setter{Client: p.Future.Field(1, nil).Client()}
 }
 
 type Assignable_asGetter_Params struct{ capnp.Struct }
@@ -2315,7 +2371,7 @@ func NewRootAssignable_asGetter_Params(s *capnp.Segment) (Assignable_asGetter_Pa
 }
 
 func ReadRootAssignable_asGetter_Params(msg *capnp.Message) (Assignable_asGetter_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_asGetter_Params{root.Struct()}, err
 }
 
@@ -2346,11 +2402,11 @@ func (s Assignable_asGetter_Params_List) String() string {
 	return str
 }
 
-// Assignable_asGetter_Params_Promise is a wrapper for a Assignable_asGetter_Params promised by a client call.
-type Assignable_asGetter_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_asGetter_Params_Future is a wrapper for a Assignable_asGetter_Params promised by a client call.
+type Assignable_asGetter_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_asGetter_Params_Promise) Struct() (Assignable_asGetter_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_asGetter_Params_Future) Struct() (Assignable_asGetter_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_asGetter_Params{s}, err
 }
 
@@ -2370,7 +2426,7 @@ func NewRootAssignable_asGetter_Results(s *capnp.Segment) (Assignable_asGetter_R
 }
 
 func ReadRootAssignable_asGetter_Results(msg *capnp.Message) (Assignable_asGetter_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_asGetter_Results{root.Struct()}, err
 }
 
@@ -2385,12 +2441,11 @@ func (s Assignable_asGetter_Results) Getter() Assignable_Getter {
 }
 
 func (s Assignable_asGetter_Results) HasGetter() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Assignable_asGetter_Results) SetGetter(v Assignable_Getter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2420,16 +2475,16 @@ func (s Assignable_asGetter_Results_List) String() string {
 	return str
 }
 
-// Assignable_asGetter_Results_Promise is a wrapper for a Assignable_asGetter_Results promised by a client call.
-type Assignable_asGetter_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_asGetter_Results_Future is a wrapper for a Assignable_asGetter_Results promised by a client call.
+type Assignable_asGetter_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_asGetter_Results_Promise) Struct() (Assignable_asGetter_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_asGetter_Results_Future) Struct() (Assignable_asGetter_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_asGetter_Results{s}, err
 }
 
-func (p Assignable_asGetter_Results_Promise) Getter() Assignable_Getter {
-	return Assignable_Getter{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Assignable_asGetter_Results_Future) Getter() Assignable_Getter {
+	return Assignable_Getter{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Assignable_asSetter_Params struct{ capnp.Struct }
@@ -2448,7 +2503,7 @@ func NewRootAssignable_asSetter_Params(s *capnp.Segment) (Assignable_asSetter_Pa
 }
 
 func ReadRootAssignable_asSetter_Params(msg *capnp.Message) (Assignable_asSetter_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_asSetter_Params{root.Struct()}, err
 }
 
@@ -2479,11 +2534,11 @@ func (s Assignable_asSetter_Params_List) String() string {
 	return str
 }
 
-// Assignable_asSetter_Params_Promise is a wrapper for a Assignable_asSetter_Params promised by a client call.
-type Assignable_asSetter_Params_Promise struct{ *capnp.Pipeline }
+// Assignable_asSetter_Params_Future is a wrapper for a Assignable_asSetter_Params promised by a client call.
+type Assignable_asSetter_Params_Future struct{ *capnp.Future }
 
-func (p Assignable_asSetter_Params_Promise) Struct() (Assignable_asSetter_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_asSetter_Params_Future) Struct() (Assignable_asSetter_Params, error) {
+	s, err := p.Future.Struct()
 	return Assignable_asSetter_Params{s}, err
 }
 
@@ -2503,7 +2558,7 @@ func NewRootAssignable_asSetter_Results(s *capnp.Segment) (Assignable_asSetter_R
 }
 
 func ReadRootAssignable_asSetter_Results(msg *capnp.Message) (Assignable_asSetter_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Assignable_asSetter_Results{root.Struct()}, err
 }
 
@@ -2518,12 +2573,11 @@ func (s Assignable_asSetter_Results) Setter() Assignable_Setter {
 }
 
 func (s Assignable_asSetter_Results) HasSetter() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Assignable_asSetter_Results) SetSetter(v Assignable_Setter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2553,53 +2607,59 @@ func (s Assignable_asSetter_Results_List) String() string {
 	return str
 }
 
-// Assignable_asSetter_Results_Promise is a wrapper for a Assignable_asSetter_Results promised by a client call.
-type Assignable_asSetter_Results_Promise struct{ *capnp.Pipeline }
+// Assignable_asSetter_Results_Future is a wrapper for a Assignable_asSetter_Results promised by a client call.
+type Assignable_asSetter_Results_Future struct{ *capnp.Future }
 
-func (p Assignable_asSetter_Results_Promise) Struct() (Assignable_asSetter_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Assignable_asSetter_Results_Future) Struct() (Assignable_asSetter_Results, error) {
+	s, err := p.Future.Struct()
 	return Assignable_asSetter_Results{s}, err
 }
 
-func (p Assignable_asSetter_Results_Promise) Setter() Assignable_Setter {
-	return Assignable_Setter{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Assignable_asSetter_Results_Future) Setter() Assignable_Setter {
+	return Assignable_Setter{Client: p.Future.Field(0, nil).Client()}
 }
 
-type StaticAsset struct{ Client capnp.Client }
+type StaticAsset struct{ Client *capnp.Client }
 
 // StaticAsset_TypeID is the unique identifier for the type StaticAsset.
 const StaticAsset_TypeID = 0xfabb5e621fa9a23f
 
-func (c StaticAsset) GetUrl(ctx context.Context, params func(StaticAsset_getUrl_Params) error, opts ...capnp.CallOption) StaticAsset_getUrl_Results_Promise {
-	if c.Client == nil {
-		return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c StaticAsset) GetUrl(ctx context.Context, params func(StaticAsset_getUrl_Params) error) (StaticAsset_getUrl_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xfabb5e621fa9a23f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:StaticAsset",
 			MethodName:    "getUrl",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(StaticAsset_getUrl_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(StaticAsset_getUrl_Params{Struct: s}) }
 	}
-	return StaticAsset_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return StaticAsset_getUrl_Results_Future{Future: ans.Future()}, release
 }
 
+// A StaticAsset_Server is a StaticAsset with a local implementation.
 type StaticAsset_Server interface {
-	GetUrl(StaticAsset_getUrl) error
+	GetUrl(context.Context, StaticAsset_getUrl) error
 }
 
-func StaticAsset_ServerToClient(s StaticAsset_Server) StaticAsset {
-	c, _ := s.(server.Closer)
-	return StaticAsset{Client: server.New(StaticAsset_Methods(nil, s), c)}
+// StaticAsset_NewServer creates a new Server from an implementation of StaticAsset_Server.
+func StaticAsset_NewServer(s StaticAsset_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(StaticAsset_Methods(nil, s), s, c, policy)
 }
 
+// StaticAsset_ServerToClient creates a new Client from an implementation of StaticAsset_Server.
+// The caller is responsible for calling Release on the returned Client.
+func StaticAsset_ServerToClient(s StaticAsset_Server, policy *server.Policy) StaticAsset {
+	return StaticAsset{Client: capnp.NewClient(StaticAsset_NewServer(s, policy))}
+}
+
+// StaticAsset_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func StaticAsset_Methods(methods []server.Method, s StaticAsset_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -2612,22 +2672,29 @@ func StaticAsset_Methods(methods []server.Method, s StaticAsset_Server) []server
 			InterfaceName: "util.capnp:StaticAsset",
 			MethodName:    "getUrl",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := StaticAsset_getUrl{c, opts, StaticAsset_getUrl_Params{Struct: p}, StaticAsset_getUrl_Results{Struct: r}}
-			return s.GetUrl(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetUrl(ctx, StaticAsset_getUrl{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// StaticAsset_getUrl holds the arguments for a server call to StaticAsset.getUrl.
+// StaticAsset_getUrl holds the state for a server call to StaticAsset.getUrl.
+// See server.Call for documentation.
 type StaticAsset_getUrl struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  StaticAsset_getUrl_Params
-	Results StaticAsset_getUrl_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c StaticAsset_getUrl) Args() StaticAsset_getUrl_Params {
+	return StaticAsset_getUrl_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c StaticAsset_getUrl) AllocResults() (StaticAsset_getUrl_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return StaticAsset_getUrl_Results{Struct: r}, err
 }
 
 type StaticAsset_Protocol uint16
@@ -2701,7 +2768,7 @@ func NewRootStaticAsset_getUrl_Params(s *capnp.Segment) (StaticAsset_getUrl_Para
 }
 
 func ReadRootStaticAsset_getUrl_Params(msg *capnp.Message) (StaticAsset_getUrl_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return StaticAsset_getUrl_Params{root.Struct()}, err
 }
 
@@ -2732,11 +2799,11 @@ func (s StaticAsset_getUrl_Params_List) String() string {
 	return str
 }
 
-// StaticAsset_getUrl_Params_Promise is a wrapper for a StaticAsset_getUrl_Params promised by a client call.
-type StaticAsset_getUrl_Params_Promise struct{ *capnp.Pipeline }
+// StaticAsset_getUrl_Params_Future is a wrapper for a StaticAsset_getUrl_Params promised by a client call.
+type StaticAsset_getUrl_Params_Future struct{ *capnp.Future }
 
-func (p StaticAsset_getUrl_Params_Promise) Struct() (StaticAsset_getUrl_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p StaticAsset_getUrl_Params_Future) Struct() (StaticAsset_getUrl_Params, error) {
+	s, err := p.Future.Struct()
 	return StaticAsset_getUrl_Params{s}, err
 }
 
@@ -2756,7 +2823,7 @@ func NewRootStaticAsset_getUrl_Results(s *capnp.Segment) (StaticAsset_getUrl_Res
 }
 
 func ReadRootStaticAsset_getUrl_Results(msg *capnp.Message) (StaticAsset_getUrl_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return StaticAsset_getUrl_Results{root.Struct()}, err
 }
 
@@ -2779,8 +2846,7 @@ func (s StaticAsset_getUrl_Results) HostPath() (string, error) {
 }
 
 func (s StaticAsset_getUrl_Results) HasHostPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s StaticAsset_getUrl_Results) HostPathBytes() ([]byte, error) {
@@ -2814,11 +2880,11 @@ func (s StaticAsset_getUrl_Results_List) String() string {
 	return str
 }
 
-// StaticAsset_getUrl_Results_Promise is a wrapper for a StaticAsset_getUrl_Results promised by a client call.
-type StaticAsset_getUrl_Results_Promise struct{ *capnp.Pipeline }
+// StaticAsset_getUrl_Results_Future is a wrapper for a StaticAsset_getUrl_Results promised by a client call.
+type StaticAsset_getUrl_Results_Future struct{ *capnp.Future }
 
-func (p StaticAsset_getUrl_Results_Promise) Struct() (StaticAsset_getUrl_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p StaticAsset_getUrl_Results_Future) Struct() (StaticAsset_getUrl_Results, error) {
+	s, err := p.Future.Struct()
 	return StaticAsset_getUrl_Results{s}, err
 }
 

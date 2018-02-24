@@ -8,7 +8,7 @@
 
 [[constraint]]
   name = "zombiezen.com/go/capnproto2"
-  version = "2.17.0"
+  branch = "v3"
 
 [prune]
   go-tests = true

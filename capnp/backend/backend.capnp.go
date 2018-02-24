@@ -3,7 +3,7 @@
 package backend
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	strconv "strconv"
 	apisession "zenhack.net/go/sandstorm/capnp/apisession"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
@@ -22,371 +22,317 @@ const (
 	Backend_socketPath = "/var/sandstorm/socket/backend"
 )
 
-type Backend struct{ Client capnp.Client }
+type Backend struct{ Client *capnp.Client }
 
 // Backend_TypeID is the unique identifier for the type Backend.
 const Backend_TypeID = 0xc1b0e9713ac1ad4f
 
-func (c Backend) StartGrain(ctx context.Context, params func(Backend_startGrain_Params) error, opts ...capnp.CallOption) Backend_startGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_startGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) StartGrain(ctx context.Context, params func(Backend_startGrain_Params) error) (Backend_startGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      0,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "startGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_startGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_startGrain_Params{Struct: s}) }
 	}
-	return Backend_startGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_startGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) GetGrain(ctx context.Context, params func(Backend_getGrain_Params) error, opts ...capnp.CallOption) Backend_getGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_getGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) GetGrain(ctx context.Context, params func(Backend_getGrain_Params) error) (Backend_getGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      1,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_getGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_getGrain_Params{Struct: s}) }
 	}
-	return Backend_getGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_getGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) DeleteGrain(ctx context.Context, params func(Backend_deleteGrain_Params) error, opts ...capnp.CallOption) Backend_deleteGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_deleteGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) DeleteGrain(ctx context.Context, params func(Backend_deleteGrain_Params) error) (Backend_deleteGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      2,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_deleteGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_deleteGrain_Params{Struct: s}) }
 	}
-	return Backend_deleteGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_deleteGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) InstallPackage(ctx context.Context, params func(Backend_installPackage_Params) error, opts ...capnp.CallOption) Backend_installPackage_Results_Promise {
-	if c.Client == nil {
-		return Backend_installPackage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) InstallPackage(ctx context.Context, params func(Backend_installPackage_Params) error) (Backend_installPackage_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      3,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "installPackage",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_installPackage_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_installPackage_Params{Struct: s}) }
 	}
-	return Backend_installPackage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_installPackage_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) TryGetPackage(ctx context.Context, params func(Backend_tryGetPackage_Params) error, opts ...capnp.CallOption) Backend_tryGetPackage_Results_Promise {
-	if c.Client == nil {
-		return Backend_tryGetPackage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) TryGetPackage(ctx context.Context, params func(Backend_tryGetPackage_Params) error) (Backend_tryGetPackage_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      4,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "tryGetPackage",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_tryGetPackage_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_tryGetPackage_Params{Struct: s}) }
 	}
-	return Backend_tryGetPackage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_tryGetPackage_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) DeletePackage(ctx context.Context, params func(Backend_deletePackage_Params) error, opts ...capnp.CallOption) Backend_deletePackage_Results_Promise {
-	if c.Client == nil {
-		return Backend_deletePackage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) DeletePackage(ctx context.Context, params func(Backend_deletePackage_Params) error) (Backend_deletePackage_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      5,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deletePackage",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_deletePackage_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_deletePackage_Params{Struct: s}) }
 	}
-	return Backend_deletePackage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_deletePackage_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) BackupGrain(ctx context.Context, params func(Backend_backupGrain_Params) error, opts ...capnp.CallOption) Backend_backupGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_backupGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) BackupGrain(ctx context.Context, params func(Backend_backupGrain_Params) error) (Backend_backupGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      6,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "backupGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_backupGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_backupGrain_Params{Struct: s}) }
 	}
-	return Backend_backupGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_backupGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) RestoreGrain(ctx context.Context, params func(Backend_restoreGrain_Params) error, opts ...capnp.CallOption) Backend_restoreGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_restoreGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) RestoreGrain(ctx context.Context, params func(Backend_restoreGrain_Params) error) (Backend_restoreGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      7,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "restoreGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_restoreGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_restoreGrain_Params{Struct: s}) }
 	}
-	return Backend_restoreGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_restoreGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) UploadBackup(ctx context.Context, params func(Backend_uploadBackup_Params) error, opts ...capnp.CallOption) Backend_uploadBackup_Results_Promise {
-	if c.Client == nil {
-		return Backend_uploadBackup_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) UploadBackup(ctx context.Context, params func(Backend_uploadBackup_Params) error) (Backend_uploadBackup_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      8,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "uploadBackup",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_uploadBackup_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_uploadBackup_Params{Struct: s}) }
 	}
-	return Backend_uploadBackup_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_uploadBackup_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) DownloadBackup(ctx context.Context, params func(Backend_downloadBackup_Params) error, opts ...capnp.CallOption) Backend_downloadBackup_Results_Promise {
-	if c.Client == nil {
-		return Backend_downloadBackup_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) DownloadBackup(ctx context.Context, params func(Backend_downloadBackup_Params) error) (Backend_downloadBackup_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      9,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "downloadBackup",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_downloadBackup_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_downloadBackup_Params{Struct: s}) }
 	}
-	return Backend_downloadBackup_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_downloadBackup_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) DeleteBackup(ctx context.Context, params func(Backend_deleteBackup_Params) error, opts ...capnp.CallOption) Backend_deleteBackup_Results_Promise {
-	if c.Client == nil {
-		return Backend_deleteBackup_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) DeleteBackup(ctx context.Context, params func(Backend_deleteBackup_Params) error) (Backend_deleteBackup_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      10,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteBackup",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_deleteBackup_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_deleteBackup_Params{Struct: s}) }
 	}
-	return Backend_deleteBackup_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_deleteBackup_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) GetUserStorageUsage(ctx context.Context, params func(Backend_getUserStorageUsage_Params) error, opts ...capnp.CallOption) Backend_getUserStorageUsage_Results_Promise {
-	if c.Client == nil {
-		return Backend_getUserStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) GetUserStorageUsage(ctx context.Context, params func(Backend_getUserStorageUsage_Params) error) (Backend_getUserStorageUsage_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      11,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getUserStorageUsage",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_getUserStorageUsage_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_getUserStorageUsage_Params{Struct: s}) }
 	}
-	return Backend_getUserStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_getUserStorageUsage_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) TransferGrain(ctx context.Context, params func(Backend_transferGrain_Params) error, opts ...capnp.CallOption) Backend_transferGrain_Results_Promise {
-	if c.Client == nil {
-		return Backend_transferGrain_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) TransferGrain(ctx context.Context, params func(Backend_transferGrain_Params) error) (Backend_transferGrain_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      12,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "transferGrain",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_transferGrain_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_transferGrain_Params{Struct: s}) }
 	}
-	return Backend_transferGrain_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_transferGrain_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) DeleteUser(ctx context.Context, params func(Backend_deleteUser_Params) error, opts ...capnp.CallOption) Backend_deleteUser_Results_Promise {
-	if c.Client == nil {
-		return Backend_deleteUser_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) DeleteUser(ctx context.Context, params func(Backend_deleteUser_Params) error) (Backend_deleteUser_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      13,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteUser",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_deleteUser_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_deleteUser_Params{Struct: s}) }
 	}
-	return Backend_deleteUser_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_deleteUser_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) Ping(ctx context.Context, params func(Backend_ping_Params) error, opts ...capnp.CallOption) Backend_ping_Results_Promise {
-	if c.Client == nil {
-		return Backend_ping_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) Ping(ctx context.Context, params func(Backend_ping_Params) error) (Backend_ping_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      14,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "ping",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_ping_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_ping_Params{Struct: s}) }
 	}
-	return Backend_ping_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_ping_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend) GetGrainStorageUsage(ctx context.Context, params func(Backend_getGrainStorageUsage_Params) error, opts ...capnp.CallOption) Backend_getGrainStorageUsage_Results_Promise {
-	if c.Client == nil {
-		return Backend_getGrainStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend) GetGrainStorageUsage(ctx context.Context, params func(Backend_getGrainStorageUsage_Params) error) (Backend_getGrainStorageUsage_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc1b0e9713ac1ad4f,
 			MethodID:      15,
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getGrainStorageUsage",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_getGrainStorageUsage_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_getGrainStorageUsage_Params{Struct: s}) }
 	}
-	return Backend_getGrainStorageUsage_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_getGrainStorageUsage_Results_Future{Future: ans.Future()}, release
 }
 
+// A Backend_Server is a Backend with a local implementation.
 type Backend_Server interface {
-	StartGrain(Backend_startGrain) error
+	StartGrain(context.Context, Backend_startGrain) error
 
-	GetGrain(Backend_getGrain) error
+	GetGrain(context.Context, Backend_getGrain) error
 
-	DeleteGrain(Backend_deleteGrain) error
+	DeleteGrain(context.Context, Backend_deleteGrain) error
 
-	InstallPackage(Backend_installPackage) error
+	InstallPackage(context.Context, Backend_installPackage) error
 
-	TryGetPackage(Backend_tryGetPackage) error
+	TryGetPackage(context.Context, Backend_tryGetPackage) error
 
-	DeletePackage(Backend_deletePackage) error
+	DeletePackage(context.Context, Backend_deletePackage) error
 
-	BackupGrain(Backend_backupGrain) error
+	BackupGrain(context.Context, Backend_backupGrain) error
 
-	RestoreGrain(Backend_restoreGrain) error
+	RestoreGrain(context.Context, Backend_restoreGrain) error
 
-	UploadBackup(Backend_uploadBackup) error
+	UploadBackup(context.Context, Backend_uploadBackup) error
 
-	DownloadBackup(Backend_downloadBackup) error
+	DownloadBackup(context.Context, Backend_downloadBackup) error
 
-	DeleteBackup(Backend_deleteBackup) error
+	DeleteBackup(context.Context, Backend_deleteBackup) error
 
-	GetUserStorageUsage(Backend_getUserStorageUsage) error
+	GetUserStorageUsage(context.Context, Backend_getUserStorageUsage) error
 
-	TransferGrain(Backend_transferGrain) error
+	TransferGrain(context.Context, Backend_transferGrain) error
 
-	DeleteUser(Backend_deleteUser) error
+	DeleteUser(context.Context, Backend_deleteUser) error
 
-	Ping(Backend_ping) error
+	Ping(context.Context, Backend_ping) error
 
-	GetGrainStorageUsage(Backend_getGrainStorageUsage) error
+	GetGrainStorageUsage(context.Context, Backend_getGrainStorageUsage) error
 }
 
-func Backend_ServerToClient(s Backend_Server) Backend {
-	c, _ := s.(server.Closer)
-	return Backend{Client: server.New(Backend_Methods(nil, s), c)}
+// Backend_NewServer creates a new Server from an implementation of Backend_Server.
+func Backend_NewServer(s Backend_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Backend_Methods(nil, s), s, c, policy)
 }
 
+// Backend_ServerToClient creates a new Client from an implementation of Backend_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Backend_ServerToClient(s Backend_Server, policy *server.Policy) Backend {
+	return Backend{Client: capnp.NewClient(Backend_NewServer(s, policy))}
+}
+
+// Backend_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 16)
@@ -399,11 +345,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "startGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_startGrain{c, opts, Backend_startGrain_Params{Struct: p}, Backend_startGrain_Results{Struct: r}}
-			return s.StartGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.StartGrain(ctx, Backend_startGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -413,11 +357,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_getGrain{c, opts, Backend_getGrain_Params{Struct: p}, Backend_getGrain_Results{Struct: r}}
-			return s.GetGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetGrain(ctx, Backend_getGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -427,11 +369,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_deleteGrain{c, opts, Backend_deleteGrain_Params{Struct: p}, Backend_deleteGrain_Results{Struct: r}}
-			return s.DeleteGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeleteGrain(ctx, Backend_deleteGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -441,11 +381,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "installPackage",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_installPackage{c, opts, Backend_installPackage_Params{Struct: p}, Backend_installPackage_Results{Struct: r}}
-			return s.InstallPackage(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.InstallPackage(ctx, Backend_installPackage{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -455,11 +393,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "tryGetPackage",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_tryGetPackage{c, opts, Backend_tryGetPackage_Params{Struct: p}, Backend_tryGetPackage_Results{Struct: r}}
-			return s.TryGetPackage(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.TryGetPackage(ctx, Backend_tryGetPackage{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 3},
 	})
 
 	methods = append(methods, server.Method{
@@ -469,11 +405,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deletePackage",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_deletePackage{c, opts, Backend_deletePackage_Params{Struct: p}, Backend_deletePackage_Results{Struct: r}}
-			return s.DeletePackage(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeletePackage(ctx, Backend_deletePackage{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -483,11 +417,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "backupGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_backupGrain{c, opts, Backend_backupGrain_Params{Struct: p}, Backend_backupGrain_Results{Struct: r}}
-			return s.BackupGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.BackupGrain(ctx, Backend_backupGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -497,11 +429,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "restoreGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_restoreGrain{c, opts, Backend_restoreGrain_Params{Struct: p}, Backend_restoreGrain_Results{Struct: r}}
-			return s.RestoreGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.RestoreGrain(ctx, Backend_restoreGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -511,11 +441,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "uploadBackup",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_uploadBackup{c, opts, Backend_uploadBackup_Params{Struct: p}, Backend_uploadBackup_Results{Struct: r}}
-			return s.UploadBackup(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.UploadBackup(ctx, Backend_uploadBackup{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -525,11 +453,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "downloadBackup",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_downloadBackup{c, opts, Backend_downloadBackup_Params{Struct: p}, Backend_downloadBackup_Results{Struct: r}}
-			return s.DownloadBackup(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DownloadBackup(ctx, Backend_downloadBackup{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -539,11 +465,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteBackup",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_deleteBackup{c, opts, Backend_deleteBackup_Params{Struct: p}, Backend_deleteBackup_Results{Struct: r}}
-			return s.DeleteBackup(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeleteBackup(ctx, Backend_deleteBackup{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -553,11 +477,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getUserStorageUsage",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_getUserStorageUsage{c, opts, Backend_getUserStorageUsage_Params{Struct: p}, Backend_getUserStorageUsage_Results{Struct: r}}
-			return s.GetUserStorageUsage(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetUserStorageUsage(ctx, Backend_getUserStorageUsage{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -567,11 +489,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "transferGrain",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_transferGrain{c, opts, Backend_transferGrain_Params{Struct: p}, Backend_transferGrain_Results{Struct: r}}
-			return s.TransferGrain(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.TransferGrain(ctx, Backend_transferGrain{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -581,11 +501,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "deleteUser",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_deleteUser{c, opts, Backend_deleteUser_Params{Struct: p}, Backend_deleteUser_Results{Struct: r}}
-			return s.DeleteUser(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.DeleteUser(ctx, Backend_deleteUser{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -595,11 +513,9 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "ping",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_ping{c, opts, Backend_ping_Params{Struct: p}, Backend_ping_Results{Struct: r}}
-			return s.Ping(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Ping(ctx, Backend_ping{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -609,245 +525,381 @@ func Backend_Methods(methods []server.Method, s Backend_Server) []server.Method 
 			InterfaceName: "backend.capnp:Backend",
 			MethodName:    "getGrainStorageUsage",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_getGrainStorageUsage{c, opts, Backend_getGrainStorageUsage_Params{Struct: p}, Backend_getGrainStorageUsage_Results{Struct: r}}
-			return s.GetGrainStorageUsage(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetGrainStorageUsage(ctx, Backend_getGrainStorageUsage{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// Backend_startGrain holds the arguments for a server call to Backend.startGrain.
+// Backend_startGrain holds the state for a server call to Backend.startGrain.
+// See server.Call for documentation.
 type Backend_startGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_startGrain_Params
-	Results Backend_startGrain_Results
+	*server.Call
 }
 
-// Backend_getGrain holds the arguments for a server call to Backend.getGrain.
+// Args returns the call's arguments.
+func (c Backend_startGrain) Args() Backend_startGrain_Params {
+	return Backend_startGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_startGrain) AllocResults() (Backend_startGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Backend_startGrain_Results{Struct: r}, err
+}
+
+// Backend_getGrain holds the state for a server call to Backend.getGrain.
+// See server.Call for documentation.
 type Backend_getGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_getGrain_Params
-	Results Backend_getGrain_Results
+	*server.Call
 }
 
-// Backend_deleteGrain holds the arguments for a server call to Backend.deleteGrain.
+// Args returns the call's arguments.
+func (c Backend_getGrain) Args() Backend_getGrain_Params {
+	return Backend_getGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_getGrain) AllocResults() (Backend_getGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Backend_getGrain_Results{Struct: r}, err
+}
+
+// Backend_deleteGrain holds the state for a server call to Backend.deleteGrain.
+// See server.Call for documentation.
 type Backend_deleteGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_deleteGrain_Params
-	Results Backend_deleteGrain_Results
+	*server.Call
 }
 
-// Backend_installPackage holds the arguments for a server call to Backend.installPackage.
+// Args returns the call's arguments.
+func (c Backend_deleteGrain) Args() Backend_deleteGrain_Params {
+	return Backend_deleteGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_deleteGrain) AllocResults() (Backend_deleteGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_deleteGrain_Results{Struct: r}, err
+}
+
+// Backend_installPackage holds the state for a server call to Backend.installPackage.
+// See server.Call for documentation.
 type Backend_installPackage struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_installPackage_Params
-	Results Backend_installPackage_Results
+	*server.Call
 }
 
-// Backend_tryGetPackage holds the arguments for a server call to Backend.tryGetPackage.
+// Args returns the call's arguments.
+func (c Backend_installPackage) Args() Backend_installPackage_Params {
+	return Backend_installPackage_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_installPackage) AllocResults() (Backend_installPackage_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Backend_installPackage_Results{Struct: r}, err
+}
+
+// Backend_tryGetPackage holds the state for a server call to Backend.tryGetPackage.
+// See server.Call for documentation.
 type Backend_tryGetPackage struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_tryGetPackage_Params
-	Results Backend_tryGetPackage_Results
+	*server.Call
 }
 
-// Backend_deletePackage holds the arguments for a server call to Backend.deletePackage.
+// Args returns the call's arguments.
+func (c Backend_tryGetPackage) Args() Backend_tryGetPackage_Params {
+	return Backend_tryGetPackage_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_tryGetPackage) AllocResults() (Backend_tryGetPackage_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
+	return Backend_tryGetPackage_Results{Struct: r}, err
+}
+
+// Backend_deletePackage holds the state for a server call to Backend.deletePackage.
+// See server.Call for documentation.
 type Backend_deletePackage struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_deletePackage_Params
-	Results Backend_deletePackage_Results
+	*server.Call
 }
 
-// Backend_backupGrain holds the arguments for a server call to Backend.backupGrain.
+// Args returns the call's arguments.
+func (c Backend_deletePackage) Args() Backend_deletePackage_Params {
+	return Backend_deletePackage_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_deletePackage) AllocResults() (Backend_deletePackage_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_deletePackage_Results{Struct: r}, err
+}
+
+// Backend_backupGrain holds the state for a server call to Backend.backupGrain.
+// See server.Call for documentation.
 type Backend_backupGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_backupGrain_Params
-	Results Backend_backupGrain_Results
+	*server.Call
 }
 
-// Backend_restoreGrain holds the arguments for a server call to Backend.restoreGrain.
+// Args returns the call's arguments.
+func (c Backend_backupGrain) Args() Backend_backupGrain_Params {
+	return Backend_backupGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_backupGrain) AllocResults() (Backend_backupGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_backupGrain_Results{Struct: r}, err
+}
+
+// Backend_restoreGrain holds the state for a server call to Backend.restoreGrain.
+// See server.Call for documentation.
 type Backend_restoreGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_restoreGrain_Params
-	Results Backend_restoreGrain_Results
+	*server.Call
 }
 
-// Backend_uploadBackup holds the arguments for a server call to Backend.uploadBackup.
+// Args returns the call's arguments.
+func (c Backend_restoreGrain) Args() Backend_restoreGrain_Params {
+	return Backend_restoreGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_restoreGrain) AllocResults() (Backend_restoreGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Backend_restoreGrain_Results{Struct: r}, err
+}
+
+// Backend_uploadBackup holds the state for a server call to Backend.uploadBackup.
+// See server.Call for documentation.
 type Backend_uploadBackup struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_uploadBackup_Params
-	Results Backend_uploadBackup_Results
+	*server.Call
 }
 
-// Backend_downloadBackup holds the arguments for a server call to Backend.downloadBackup.
+// Args returns the call's arguments.
+func (c Backend_uploadBackup) Args() Backend_uploadBackup_Params {
+	return Backend_uploadBackup_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_uploadBackup) AllocResults() (Backend_uploadBackup_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Backend_uploadBackup_Results{Struct: r}, err
+}
+
+// Backend_downloadBackup holds the state for a server call to Backend.downloadBackup.
+// See server.Call for documentation.
 type Backend_downloadBackup struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_downloadBackup_Params
-	Results Backend_downloadBackup_Results
+	*server.Call
 }
 
-// Backend_deleteBackup holds the arguments for a server call to Backend.deleteBackup.
+// Args returns the call's arguments.
+func (c Backend_downloadBackup) Args() Backend_downloadBackup_Params {
+	return Backend_downloadBackup_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_downloadBackup) AllocResults() (Backend_downloadBackup_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_downloadBackup_Results{Struct: r}, err
+}
+
+// Backend_deleteBackup holds the state for a server call to Backend.deleteBackup.
+// See server.Call for documentation.
 type Backend_deleteBackup struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_deleteBackup_Params
-	Results Backend_deleteBackup_Results
+	*server.Call
 }
 
-// Backend_getUserStorageUsage holds the arguments for a server call to Backend.getUserStorageUsage.
+// Args returns the call's arguments.
+func (c Backend_deleteBackup) Args() Backend_deleteBackup_Params {
+	return Backend_deleteBackup_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_deleteBackup) AllocResults() (Backend_deleteBackup_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_deleteBackup_Results{Struct: r}, err
+}
+
+// Backend_getUserStorageUsage holds the state for a server call to Backend.getUserStorageUsage.
+// See server.Call for documentation.
 type Backend_getUserStorageUsage struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_getUserStorageUsage_Params
-	Results Backend_getUserStorageUsage_Results
+	*server.Call
 }
 
-// Backend_transferGrain holds the arguments for a server call to Backend.transferGrain.
+// Args returns the call's arguments.
+func (c Backend_getUserStorageUsage) Args() Backend_getUserStorageUsage_Params {
+	return Backend_getUserStorageUsage_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_getUserStorageUsage) AllocResults() (Backend_getUserStorageUsage_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Backend_getUserStorageUsage_Results{Struct: r}, err
+}
+
+// Backend_transferGrain holds the state for a server call to Backend.transferGrain.
+// See server.Call for documentation.
 type Backend_transferGrain struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_transferGrain_Params
-	Results Backend_transferGrain_Results
+	*server.Call
 }
 
-// Backend_deleteUser holds the arguments for a server call to Backend.deleteUser.
+// Args returns the call's arguments.
+func (c Backend_transferGrain) Args() Backend_transferGrain_Params {
+	return Backend_transferGrain_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_transferGrain) AllocResults() (Backend_transferGrain_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_transferGrain_Results{Struct: r}, err
+}
+
+// Backend_deleteUser holds the state for a server call to Backend.deleteUser.
+// See server.Call for documentation.
 type Backend_deleteUser struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_deleteUser_Params
-	Results Backend_deleteUser_Results
+	*server.Call
 }
 
-// Backend_ping holds the arguments for a server call to Backend.ping.
+// Args returns the call's arguments.
+func (c Backend_deleteUser) Args() Backend_deleteUser_Params {
+	return Backend_deleteUser_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_deleteUser) AllocResults() (Backend_deleteUser_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_deleteUser_Results{Struct: r}, err
+}
+
+// Backend_ping holds the state for a server call to Backend.ping.
+// See server.Call for documentation.
 type Backend_ping struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_ping_Params
-	Results Backend_ping_Results
+	*server.Call
 }
 
-// Backend_getGrainStorageUsage holds the arguments for a server call to Backend.getGrainStorageUsage.
+// Args returns the call's arguments.
+func (c Backend_ping) Args() Backend_ping_Params {
+	return Backend_ping_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_ping) AllocResults() (Backend_ping_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return Backend_ping_Results{Struct: r}, err
+}
+
+// Backend_getGrainStorageUsage holds the state for a server call to Backend.getGrainStorageUsage.
+// See server.Call for documentation.
 type Backend_getGrainStorageUsage struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_getGrainStorageUsage_Params
-	Results Backend_getGrainStorageUsage_Results
+	*server.Call
 }
 
-type Backend_PackageUploadStream struct{ Client capnp.Client }
+// Args returns the call's arguments.
+func (c Backend_getGrainStorageUsage) Args() Backend_getGrainStorageUsage_Params {
+	return Backend_getGrainStorageUsage_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_getGrainStorageUsage) AllocResults() (Backend_getGrainStorageUsage_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
+	return Backend_getGrainStorageUsage_Results{Struct: r}, err
+}
+
+type Backend_PackageUploadStream struct{ Client *capnp.Client }
 
 // Backend_PackageUploadStream_TypeID is the unique identifier for the type Backend_PackageUploadStream.
 const Backend_PackageUploadStream_TypeID = 0xb481d35d0da2713c
 
-func (c Backend_PackageUploadStream) SaveAs(ctx context.Context, params func(Backend_PackageUploadStream_saveAs_Params) error, opts ...capnp.CallOption) Backend_PackageUploadStream_saveAs_Results_Promise {
-	if c.Client == nil {
-		return Backend_PackageUploadStream_saveAs_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend_PackageUploadStream) SaveAs(ctx context.Context, params func(Backend_PackageUploadStream_saveAs_Params) error) (Backend_PackageUploadStream_saveAs_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xb481d35d0da2713c,
 			MethodID:      0,
 			InterfaceName: "backend.capnp:Backend.PackageUploadStream",
 			MethodName:    "saveAs",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Backend_PackageUploadStream_saveAs_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Backend_PackageUploadStream_saveAs_Params{Struct: s}) }
 	}
-	return Backend_PackageUploadStream_saveAs_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Backend_PackageUploadStream_saveAs_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend_PackageUploadStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error, opts ...capnp.CallOption) util.ByteStream_write_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend_PackageUploadStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error) (util.ByteStream_write_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
 	}
-	return util.ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_write_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend_PackageUploadStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error, opts ...capnp.CallOption) util.ByteStream_done_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend_PackageUploadStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error) (util.ByteStream_done_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_done_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_done_Params{Struct: s}) }
 	}
-	return util.ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_done_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend_PackageUploadStream) ExpectSize(ctx context.Context, params func(util.ByteStream_expectSize_Params) error, opts ...capnp.CallOption) util.ByteStream_expectSize_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Backend_PackageUploadStream) ExpectSize(ctx context.Context, params func(util.ByteStream_expectSize_Params) error) (util.ByteStream_expectSize_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params{Struct: s}) }
 	}
-	return util.ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
+// A Backend_PackageUploadStream_Server is a Backend_PackageUploadStream with a local implementation.
 type Backend_PackageUploadStream_Server interface {
-	SaveAs(Backend_PackageUploadStream_saveAs) error
+	SaveAs(context.Context, Backend_PackageUploadStream_saveAs) error
 
-	Write(util.ByteStream_write) error
+	Write(context.Context, util.ByteStream_write) error
 
-	Done(util.ByteStream_done) error
+	Done(context.Context, util.ByteStream_done) error
 
-	ExpectSize(util.ByteStream_expectSize) error
+	ExpectSize(context.Context, util.ByteStream_expectSize) error
 }
 
-func Backend_PackageUploadStream_ServerToClient(s Backend_PackageUploadStream_Server) Backend_PackageUploadStream {
-	c, _ := s.(server.Closer)
-	return Backend_PackageUploadStream{Client: server.New(Backend_PackageUploadStream_Methods(nil, s), c)}
+// Backend_PackageUploadStream_NewServer creates a new Server from an implementation of Backend_PackageUploadStream_Server.
+func Backend_PackageUploadStream_NewServer(s Backend_PackageUploadStream_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Backend_PackageUploadStream_Methods(nil, s), s, c, policy)
 }
 
+// Backend_PackageUploadStream_ServerToClient creates a new Client from an implementation of Backend_PackageUploadStream_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Backend_PackageUploadStream_ServerToClient(s Backend_PackageUploadStream_Server, policy *server.Policy) Backend_PackageUploadStream {
+	return Backend_PackageUploadStream{Client: capnp.NewClient(Backend_PackageUploadStream_NewServer(s, policy))}
+}
+
+// Backend_PackageUploadStream_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Backend_PackageUploadStream_Methods(methods []server.Method, s Backend_PackageUploadStream_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 4)
@@ -860,11 +912,9 @@ func Backend_PackageUploadStream_Methods(methods []server.Method, s Backend_Pack
 			InterfaceName: "backend.capnp:Backend.PackageUploadStream",
 			MethodName:    "saveAs",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Backend_PackageUploadStream_saveAs{c, opts, Backend_PackageUploadStream_saveAs_Params{Struct: p}, Backend_PackageUploadStream_saveAs_Results{Struct: r}}
-			return s.SaveAs(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SaveAs(ctx, Backend_PackageUploadStream_saveAs{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 3},
 	})
 
 	methods = append(methods, server.Method{
@@ -874,11 +924,9 @@ func Backend_PackageUploadStream_Methods(methods []server.Method, s Backend_Pack
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_write{c, opts, util.ByteStream_write_Params{Struct: p}, util.ByteStream_write_Results{Struct: r}}
-			return s.Write(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Write(ctx, util.ByteStream_write{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -888,11 +936,9 @@ func Backend_PackageUploadStream_Methods(methods []server.Method, s Backend_Pack
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_done{c, opts, util.ByteStream_done_Params{Struct: p}, util.ByteStream_done_Results{Struct: r}}
-			return s.Done(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Done(ctx, util.ByteStream_done{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -902,22 +948,29 @@ func Backend_PackageUploadStream_Methods(methods []server.Method, s Backend_Pack
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_expectSize{c, opts, util.ByteStream_expectSize_Params{Struct: p}, util.ByteStream_expectSize_Results{Struct: r}}
-			return s.ExpectSize(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ExpectSize(ctx, util.ByteStream_expectSize{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// Backend_PackageUploadStream_saveAs holds the arguments for a server call to Backend_PackageUploadStream.saveAs.
+// Backend_PackageUploadStream_saveAs holds the state for a server call to Backend_PackageUploadStream.saveAs.
+// See server.Call for documentation.
 type Backend_PackageUploadStream_saveAs struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Backend_PackageUploadStream_saveAs_Params
-	Results Backend_PackageUploadStream_saveAs_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c Backend_PackageUploadStream_saveAs) Args() Backend_PackageUploadStream_saveAs_Params {
+	return Backend_PackageUploadStream_saveAs_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Backend_PackageUploadStream_saveAs) AllocResults() (Backend_PackageUploadStream_saveAs_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
+	return Backend_PackageUploadStream_saveAs_Results{Struct: r}, err
 }
 
 type Backend_PackageUploadStream_saveAs_Params struct{ capnp.Struct }
@@ -936,7 +989,7 @@ func NewRootBackend_PackageUploadStream_saveAs_Params(s *capnp.Segment) (Backend
 }
 
 func ReadRootBackend_PackageUploadStream_saveAs_Params(msg *capnp.Message) (Backend_PackageUploadStream_saveAs_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_PackageUploadStream_saveAs_Params{root.Struct()}, err
 }
 
@@ -951,8 +1004,7 @@ func (s Backend_PackageUploadStream_saveAs_Params) PackageId() (string, error) {
 }
 
 func (s Backend_PackageUploadStream_saveAs_Params) HasPackageId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_PackageUploadStream_saveAs_Params) PackageIdBytes() ([]byte, error) {
@@ -986,11 +1038,11 @@ func (s Backend_PackageUploadStream_saveAs_Params_List) String() string {
 	return str
 }
 
-// Backend_PackageUploadStream_saveAs_Params_Promise is a wrapper for a Backend_PackageUploadStream_saveAs_Params promised by a client call.
-type Backend_PackageUploadStream_saveAs_Params_Promise struct{ *capnp.Pipeline }
+// Backend_PackageUploadStream_saveAs_Params_Future is a wrapper for a Backend_PackageUploadStream_saveAs_Params promised by a client call.
+type Backend_PackageUploadStream_saveAs_Params_Future struct{ *capnp.Future }
 
-func (p Backend_PackageUploadStream_saveAs_Params_Promise) Struct() (Backend_PackageUploadStream_saveAs_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_PackageUploadStream_saveAs_Params_Future) Struct() (Backend_PackageUploadStream_saveAs_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_PackageUploadStream_saveAs_Params{s}, err
 }
 
@@ -1010,7 +1062,7 @@ func NewRootBackend_PackageUploadStream_saveAs_Results(s *capnp.Segment) (Backen
 }
 
 func ReadRootBackend_PackageUploadStream_saveAs_Results(msg *capnp.Message) (Backend_PackageUploadStream_saveAs_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_PackageUploadStream_saveAs_Results{root.Struct()}, err
 }
 
@@ -1025,8 +1077,7 @@ func (s Backend_PackageUploadStream_saveAs_Results) AppId() (string, error) {
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) HasAppId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) AppIdBytes() ([]byte, error) {
@@ -1044,8 +1095,7 @@ func (s Backend_PackageUploadStream_saveAs_Results) Manifest() (spk.Manifest, er
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) HasManifest() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) SetManifest(v spk.Manifest) error {
@@ -1069,8 +1119,7 @@ func (s Backend_PackageUploadStream_saveAs_Results) AuthorPgpKeyFingerprint() (s
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) HasAuthorPgpKeyFingerprint() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_PackageUploadStream_saveAs_Results) AuthorPgpKeyFingerprintBytes() ([]byte, error) {
@@ -1104,16 +1153,16 @@ func (s Backend_PackageUploadStream_saveAs_Results_List) String() string {
 	return str
 }
 
-// Backend_PackageUploadStream_saveAs_Results_Promise is a wrapper for a Backend_PackageUploadStream_saveAs_Results promised by a client call.
-type Backend_PackageUploadStream_saveAs_Results_Promise struct{ *capnp.Pipeline }
+// Backend_PackageUploadStream_saveAs_Results_Future is a wrapper for a Backend_PackageUploadStream_saveAs_Results promised by a client call.
+type Backend_PackageUploadStream_saveAs_Results_Future struct{ *capnp.Future }
 
-func (p Backend_PackageUploadStream_saveAs_Results_Promise) Struct() (Backend_PackageUploadStream_saveAs_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_PackageUploadStream_saveAs_Results_Future) Struct() (Backend_PackageUploadStream_saveAs_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_PackageUploadStream_saveAs_Results{s}, err
 }
 
-func (p Backend_PackageUploadStream_saveAs_Results_Promise) Manifest() spk.Manifest_Promise {
-	return spk.Manifest_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p Backend_PackageUploadStream_saveAs_Results_Future) Manifest() spk.Manifest_Future {
+	return spk.Manifest_Future{Future: p.Future.Field(1, nil)}
 }
 
 type Backend_startGrain_Params struct{ capnp.Struct }
@@ -1132,7 +1181,7 @@ func NewRootBackend_startGrain_Params(s *capnp.Segment) (Backend_startGrain_Para
 }
 
 func ReadRootBackend_startGrain_Params(msg *capnp.Message) (Backend_startGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_startGrain_Params{root.Struct()}, err
 }
 
@@ -1147,8 +1196,7 @@ func (s Backend_startGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_startGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_startGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -1166,8 +1214,7 @@ func (s Backend_startGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_startGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_startGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -1185,8 +1232,7 @@ func (s Backend_startGrain_Params) PackageId() (string, error) {
 }
 
 func (s Backend_startGrain_Params) HasPackageId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_startGrain_Params) PackageIdBytes() ([]byte, error) {
@@ -1204,8 +1250,7 @@ func (s Backend_startGrain_Params) Command() (spk.Manifest_Command, error) {
 }
 
 func (s Backend_startGrain_Params) HasCommand() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s Backend_startGrain_Params) SetCommand(v spk.Manifest_Command) error {
@@ -1269,16 +1314,16 @@ func (s Backend_startGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_startGrain_Params_Promise is a wrapper for a Backend_startGrain_Params promised by a client call.
-type Backend_startGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_startGrain_Params_Future is a wrapper for a Backend_startGrain_Params promised by a client call.
+type Backend_startGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_startGrain_Params_Promise) Struct() (Backend_startGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_startGrain_Params_Future) Struct() (Backend_startGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_startGrain_Params{s}, err
 }
 
-func (p Backend_startGrain_Params_Promise) Command() spk.Manifest_Command_Promise {
-	return spk.Manifest_Command_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p Backend_startGrain_Params_Future) Command() spk.Manifest_Command_Future {
+	return spk.Manifest_Command_Future{Future: p.Future.Field(3, nil)}
 }
 
 type Backend_startGrain_Results struct{ capnp.Struct }
@@ -1297,7 +1342,7 @@ func NewRootBackend_startGrain_Results(s *capnp.Segment) (Backend_startGrain_Res
 }
 
 func ReadRootBackend_startGrain_Results(msg *capnp.Message) (Backend_startGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_startGrain_Results{root.Struct()}, err
 }
 
@@ -1312,12 +1357,11 @@ func (s Backend_startGrain_Results) Supervisor() supervisor.Supervisor {
 }
 
 func (s Backend_startGrain_Results) HasSupervisor() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_startGrain_Results) SetSupervisor(v supervisor.Supervisor) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1347,16 +1391,16 @@ func (s Backend_startGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_startGrain_Results_Promise is a wrapper for a Backend_startGrain_Results promised by a client call.
-type Backend_startGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_startGrain_Results_Future is a wrapper for a Backend_startGrain_Results promised by a client call.
+type Backend_startGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_startGrain_Results_Promise) Struct() (Backend_startGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_startGrain_Results_Future) Struct() (Backend_startGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_startGrain_Results{s}, err
 }
 
-func (p Backend_startGrain_Results_Promise) Supervisor() supervisor.Supervisor {
-	return supervisor.Supervisor{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Backend_startGrain_Results_Future) Supervisor() supervisor.Supervisor {
+	return supervisor.Supervisor{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Backend_getGrain_Params struct{ capnp.Struct }
@@ -1375,7 +1419,7 @@ func NewRootBackend_getGrain_Params(s *capnp.Segment) (Backend_getGrain_Params, 
 }
 
 func ReadRootBackend_getGrain_Params(msg *capnp.Message) (Backend_getGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getGrain_Params{root.Struct()}, err
 }
 
@@ -1390,8 +1434,7 @@ func (s Backend_getGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_getGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_getGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -1409,8 +1452,7 @@ func (s Backend_getGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_getGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_getGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -1444,11 +1486,11 @@ func (s Backend_getGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_getGrain_Params_Promise is a wrapper for a Backend_getGrain_Params promised by a client call.
-type Backend_getGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_getGrain_Params_Future is a wrapper for a Backend_getGrain_Params promised by a client call.
+type Backend_getGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getGrain_Params_Promise) Struct() (Backend_getGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getGrain_Params_Future) Struct() (Backend_getGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_getGrain_Params{s}, err
 }
 
@@ -1468,7 +1510,7 @@ func NewRootBackend_getGrain_Results(s *capnp.Segment) (Backend_getGrain_Results
 }
 
 func ReadRootBackend_getGrain_Results(msg *capnp.Message) (Backend_getGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getGrain_Results{root.Struct()}, err
 }
 
@@ -1483,12 +1525,11 @@ func (s Backend_getGrain_Results) Supervisor() supervisor.Supervisor {
 }
 
 func (s Backend_getGrain_Results) HasSupervisor() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_getGrain_Results) SetSupervisor(v supervisor.Supervisor) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1518,16 +1559,16 @@ func (s Backend_getGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_getGrain_Results_Promise is a wrapper for a Backend_getGrain_Results promised by a client call.
-type Backend_getGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_getGrain_Results_Future is a wrapper for a Backend_getGrain_Results promised by a client call.
+type Backend_getGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getGrain_Results_Promise) Struct() (Backend_getGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getGrain_Results_Future) Struct() (Backend_getGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_getGrain_Results{s}, err
 }
 
-func (p Backend_getGrain_Results_Promise) Supervisor() supervisor.Supervisor {
-	return supervisor.Supervisor{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Backend_getGrain_Results_Future) Supervisor() supervisor.Supervisor {
+	return supervisor.Supervisor{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Backend_deleteGrain_Params struct{ capnp.Struct }
@@ -1546,7 +1587,7 @@ func NewRootBackend_deleteGrain_Params(s *capnp.Segment) (Backend_deleteGrain_Pa
 }
 
 func ReadRootBackend_deleteGrain_Params(msg *capnp.Message) (Backend_deleteGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteGrain_Params{root.Struct()}, err
 }
 
@@ -1561,8 +1602,7 @@ func (s Backend_deleteGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_deleteGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_deleteGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -1580,8 +1620,7 @@ func (s Backend_deleteGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_deleteGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_deleteGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -1615,11 +1654,11 @@ func (s Backend_deleteGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_deleteGrain_Params_Promise is a wrapper for a Backend_deleteGrain_Params promised by a client call.
-type Backend_deleteGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_deleteGrain_Params_Future is a wrapper for a Backend_deleteGrain_Params promised by a client call.
+type Backend_deleteGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteGrain_Params_Promise) Struct() (Backend_deleteGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteGrain_Params_Future) Struct() (Backend_deleteGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteGrain_Params{s}, err
 }
 
@@ -1639,7 +1678,7 @@ func NewRootBackend_deleteGrain_Results(s *capnp.Segment) (Backend_deleteGrain_R
 }
 
 func ReadRootBackend_deleteGrain_Results(msg *capnp.Message) (Backend_deleteGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteGrain_Results{root.Struct()}, err
 }
 
@@ -1670,11 +1709,11 @@ func (s Backend_deleteGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_deleteGrain_Results_Promise is a wrapper for a Backend_deleteGrain_Results promised by a client call.
-type Backend_deleteGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_deleteGrain_Results_Future is a wrapper for a Backend_deleteGrain_Results promised by a client call.
+type Backend_deleteGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteGrain_Results_Promise) Struct() (Backend_deleteGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteGrain_Results_Future) Struct() (Backend_deleteGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteGrain_Results{s}, err
 }
 
@@ -1694,7 +1733,7 @@ func NewRootBackend_installPackage_Params(s *capnp.Segment) (Backend_installPack
 }
 
 func ReadRootBackend_installPackage_Params(msg *capnp.Message) (Backend_installPackage_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_installPackage_Params{root.Struct()}, err
 }
 
@@ -1725,11 +1764,11 @@ func (s Backend_installPackage_Params_List) String() string {
 	return str
 }
 
-// Backend_installPackage_Params_Promise is a wrapper for a Backend_installPackage_Params promised by a client call.
-type Backend_installPackage_Params_Promise struct{ *capnp.Pipeline }
+// Backend_installPackage_Params_Future is a wrapper for a Backend_installPackage_Params promised by a client call.
+type Backend_installPackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_installPackage_Params_Promise) Struct() (Backend_installPackage_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_installPackage_Params_Future) Struct() (Backend_installPackage_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_installPackage_Params{s}, err
 }
 
@@ -1749,7 +1788,7 @@ func NewRootBackend_installPackage_Results(s *capnp.Segment) (Backend_installPac
 }
 
 func ReadRootBackend_installPackage_Results(msg *capnp.Message) (Backend_installPackage_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_installPackage_Results{root.Struct()}, err
 }
 
@@ -1764,12 +1803,11 @@ func (s Backend_installPackage_Results) Stream() Backend_PackageUploadStream {
 }
 
 func (s Backend_installPackage_Results) HasStream() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_installPackage_Results) SetStream(v Backend_PackageUploadStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1799,16 +1837,16 @@ func (s Backend_installPackage_Results_List) String() string {
 	return str
 }
 
-// Backend_installPackage_Results_Promise is a wrapper for a Backend_installPackage_Results promised by a client call.
-type Backend_installPackage_Results_Promise struct{ *capnp.Pipeline }
+// Backend_installPackage_Results_Future is a wrapper for a Backend_installPackage_Results promised by a client call.
+type Backend_installPackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_installPackage_Results_Promise) Struct() (Backend_installPackage_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_installPackage_Results_Future) Struct() (Backend_installPackage_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_installPackage_Results{s}, err
 }
 
-func (p Backend_installPackage_Results_Promise) Stream() Backend_PackageUploadStream {
-	return Backend_PackageUploadStream{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Backend_installPackage_Results_Future) Stream() Backend_PackageUploadStream {
+	return Backend_PackageUploadStream{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Backend_tryGetPackage_Params struct{ capnp.Struct }
@@ -1827,7 +1865,7 @@ func NewRootBackend_tryGetPackage_Params(s *capnp.Segment) (Backend_tryGetPackag
 }
 
 func ReadRootBackend_tryGetPackage_Params(msg *capnp.Message) (Backend_tryGetPackage_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_tryGetPackage_Params{root.Struct()}, err
 }
 
@@ -1842,8 +1880,7 @@ func (s Backend_tryGetPackage_Params) PackageId() (string, error) {
 }
 
 func (s Backend_tryGetPackage_Params) HasPackageId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_tryGetPackage_Params) PackageIdBytes() ([]byte, error) {
@@ -1877,11 +1914,11 @@ func (s Backend_tryGetPackage_Params_List) String() string {
 	return str
 }
 
-// Backend_tryGetPackage_Params_Promise is a wrapper for a Backend_tryGetPackage_Params promised by a client call.
-type Backend_tryGetPackage_Params_Promise struct{ *capnp.Pipeline }
+// Backend_tryGetPackage_Params_Future is a wrapper for a Backend_tryGetPackage_Params promised by a client call.
+type Backend_tryGetPackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_tryGetPackage_Params_Promise) Struct() (Backend_tryGetPackage_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_tryGetPackage_Params_Future) Struct() (Backend_tryGetPackage_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_tryGetPackage_Params{s}, err
 }
 
@@ -1901,7 +1938,7 @@ func NewRootBackend_tryGetPackage_Results(s *capnp.Segment) (Backend_tryGetPacka
 }
 
 func ReadRootBackend_tryGetPackage_Results(msg *capnp.Message) (Backend_tryGetPackage_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_tryGetPackage_Results{root.Struct()}, err
 }
 
@@ -1916,8 +1953,7 @@ func (s Backend_tryGetPackage_Results) AppId() (string, error) {
 }
 
 func (s Backend_tryGetPackage_Results) HasAppId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_tryGetPackage_Results) AppIdBytes() ([]byte, error) {
@@ -1935,8 +1971,7 @@ func (s Backend_tryGetPackage_Results) Manifest() (spk.Manifest, error) {
 }
 
 func (s Backend_tryGetPackage_Results) HasManifest() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_tryGetPackage_Results) SetManifest(v spk.Manifest) error {
@@ -1960,8 +1995,7 @@ func (s Backend_tryGetPackage_Results) AuthorPgpKeyFingerprint() (string, error)
 }
 
 func (s Backend_tryGetPackage_Results) HasAuthorPgpKeyFingerprint() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_tryGetPackage_Results) AuthorPgpKeyFingerprintBytes() ([]byte, error) {
@@ -1995,16 +2029,16 @@ func (s Backend_tryGetPackage_Results_List) String() string {
 	return str
 }
 
-// Backend_tryGetPackage_Results_Promise is a wrapper for a Backend_tryGetPackage_Results promised by a client call.
-type Backend_tryGetPackage_Results_Promise struct{ *capnp.Pipeline }
+// Backend_tryGetPackage_Results_Future is a wrapper for a Backend_tryGetPackage_Results promised by a client call.
+type Backend_tryGetPackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_tryGetPackage_Results_Promise) Struct() (Backend_tryGetPackage_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_tryGetPackage_Results_Future) Struct() (Backend_tryGetPackage_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_tryGetPackage_Results{s}, err
 }
 
-func (p Backend_tryGetPackage_Results_Promise) Manifest() spk.Manifest_Promise {
-	return spk.Manifest_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p Backend_tryGetPackage_Results_Future) Manifest() spk.Manifest_Future {
+	return spk.Manifest_Future{Future: p.Future.Field(1, nil)}
 }
 
 type Backend_deletePackage_Params struct{ capnp.Struct }
@@ -2023,7 +2057,7 @@ func NewRootBackend_deletePackage_Params(s *capnp.Segment) (Backend_deletePackag
 }
 
 func ReadRootBackend_deletePackage_Params(msg *capnp.Message) (Backend_deletePackage_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deletePackage_Params{root.Struct()}, err
 }
 
@@ -2038,8 +2072,7 @@ func (s Backend_deletePackage_Params) PackageId() (string, error) {
 }
 
 func (s Backend_deletePackage_Params) HasPackageId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_deletePackage_Params) PackageIdBytes() ([]byte, error) {
@@ -2073,11 +2106,11 @@ func (s Backend_deletePackage_Params_List) String() string {
 	return str
 }
 
-// Backend_deletePackage_Params_Promise is a wrapper for a Backend_deletePackage_Params promised by a client call.
-type Backend_deletePackage_Params_Promise struct{ *capnp.Pipeline }
+// Backend_deletePackage_Params_Future is a wrapper for a Backend_deletePackage_Params promised by a client call.
+type Backend_deletePackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deletePackage_Params_Promise) Struct() (Backend_deletePackage_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deletePackage_Params_Future) Struct() (Backend_deletePackage_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_deletePackage_Params{s}, err
 }
 
@@ -2097,7 +2130,7 @@ func NewRootBackend_deletePackage_Results(s *capnp.Segment) (Backend_deletePacka
 }
 
 func ReadRootBackend_deletePackage_Results(msg *capnp.Message) (Backend_deletePackage_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deletePackage_Results{root.Struct()}, err
 }
 
@@ -2128,11 +2161,11 @@ func (s Backend_deletePackage_Results_List) String() string {
 	return str
 }
 
-// Backend_deletePackage_Results_Promise is a wrapper for a Backend_deletePackage_Results promised by a client call.
-type Backend_deletePackage_Results_Promise struct{ *capnp.Pipeline }
+// Backend_deletePackage_Results_Future is a wrapper for a Backend_deletePackage_Results promised by a client call.
+type Backend_deletePackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deletePackage_Results_Promise) Struct() (Backend_deletePackage_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deletePackage_Results_Future) Struct() (Backend_deletePackage_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_deletePackage_Results{s}, err
 }
 
@@ -2152,7 +2185,7 @@ func NewRootBackend_backupGrain_Params(s *capnp.Segment) (Backend_backupGrain_Pa
 }
 
 func ReadRootBackend_backupGrain_Params(msg *capnp.Message) (Backend_backupGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_backupGrain_Params{root.Struct()}, err
 }
 
@@ -2167,8 +2200,7 @@ func (s Backend_backupGrain_Params) BackupId() (string, error) {
 }
 
 func (s Backend_backupGrain_Params) HasBackupId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_backupGrain_Params) BackupIdBytes() ([]byte, error) {
@@ -2186,8 +2218,7 @@ func (s Backend_backupGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_backupGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_backupGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -2205,8 +2236,7 @@ func (s Backend_backupGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_backupGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_backupGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -2224,8 +2254,7 @@ func (s Backend_backupGrain_Params) Info() (grain.GrainInfo, error) {
 }
 
 func (s Backend_backupGrain_Params) HasInfo() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s Backend_backupGrain_Params) SetInfo(v grain.GrainInfo) error {
@@ -2265,16 +2294,16 @@ func (s Backend_backupGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_backupGrain_Params_Promise is a wrapper for a Backend_backupGrain_Params promised by a client call.
-type Backend_backupGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_backupGrain_Params_Future is a wrapper for a Backend_backupGrain_Params promised by a client call.
+type Backend_backupGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_backupGrain_Params_Promise) Struct() (Backend_backupGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_backupGrain_Params_Future) Struct() (Backend_backupGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_backupGrain_Params{s}, err
 }
 
-func (p Backend_backupGrain_Params_Promise) Info() grain.GrainInfo_Promise {
-	return grain.GrainInfo_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p Backend_backupGrain_Params_Future) Info() grain.GrainInfo_Future {
+	return grain.GrainInfo_Future{Future: p.Future.Field(3, nil)}
 }
 
 type Backend_backupGrain_Results struct{ capnp.Struct }
@@ -2293,7 +2322,7 @@ func NewRootBackend_backupGrain_Results(s *capnp.Segment) (Backend_backupGrain_R
 }
 
 func ReadRootBackend_backupGrain_Results(msg *capnp.Message) (Backend_backupGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_backupGrain_Results{root.Struct()}, err
 }
 
@@ -2324,11 +2353,11 @@ func (s Backend_backupGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_backupGrain_Results_Promise is a wrapper for a Backend_backupGrain_Results promised by a client call.
-type Backend_backupGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_backupGrain_Results_Future is a wrapper for a Backend_backupGrain_Results promised by a client call.
+type Backend_backupGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_backupGrain_Results_Promise) Struct() (Backend_backupGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_backupGrain_Results_Future) Struct() (Backend_backupGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_backupGrain_Results{s}, err
 }
 
@@ -2348,7 +2377,7 @@ func NewRootBackend_restoreGrain_Params(s *capnp.Segment) (Backend_restoreGrain_
 }
 
 func ReadRootBackend_restoreGrain_Params(msg *capnp.Message) (Backend_restoreGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_restoreGrain_Params{root.Struct()}, err
 }
 
@@ -2363,8 +2392,7 @@ func (s Backend_restoreGrain_Params) BackupId() (string, error) {
 }
 
 func (s Backend_restoreGrain_Params) HasBackupId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_restoreGrain_Params) BackupIdBytes() ([]byte, error) {
@@ -2382,8 +2410,7 @@ func (s Backend_restoreGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_restoreGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_restoreGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -2401,8 +2428,7 @@ func (s Backend_restoreGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_restoreGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_restoreGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -2436,11 +2462,11 @@ func (s Backend_restoreGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_restoreGrain_Params_Promise is a wrapper for a Backend_restoreGrain_Params promised by a client call.
-type Backend_restoreGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_restoreGrain_Params_Future is a wrapper for a Backend_restoreGrain_Params promised by a client call.
+type Backend_restoreGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_restoreGrain_Params_Promise) Struct() (Backend_restoreGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_restoreGrain_Params_Future) Struct() (Backend_restoreGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_restoreGrain_Params{s}, err
 }
 
@@ -2460,7 +2486,7 @@ func NewRootBackend_restoreGrain_Results(s *capnp.Segment) (Backend_restoreGrain
 }
 
 func ReadRootBackend_restoreGrain_Results(msg *capnp.Message) (Backend_restoreGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_restoreGrain_Results{root.Struct()}, err
 }
 
@@ -2475,8 +2501,7 @@ func (s Backend_restoreGrain_Results) Info() (grain.GrainInfo, error) {
 }
 
 func (s Backend_restoreGrain_Results) HasInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_restoreGrain_Results) SetInfo(v grain.GrainInfo) error {
@@ -2516,16 +2541,16 @@ func (s Backend_restoreGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_restoreGrain_Results_Promise is a wrapper for a Backend_restoreGrain_Results promised by a client call.
-type Backend_restoreGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_restoreGrain_Results_Future is a wrapper for a Backend_restoreGrain_Results promised by a client call.
+type Backend_restoreGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_restoreGrain_Results_Promise) Struct() (Backend_restoreGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_restoreGrain_Results_Future) Struct() (Backend_restoreGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_restoreGrain_Results{s}, err
 }
 
-func (p Backend_restoreGrain_Results_Promise) Info() grain.GrainInfo_Promise {
-	return grain.GrainInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p Backend_restoreGrain_Results_Future) Info() grain.GrainInfo_Future {
+	return grain.GrainInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
 type Backend_uploadBackup_Params struct{ capnp.Struct }
@@ -2544,7 +2569,7 @@ func NewRootBackend_uploadBackup_Params(s *capnp.Segment) (Backend_uploadBackup_
 }
 
 func ReadRootBackend_uploadBackup_Params(msg *capnp.Message) (Backend_uploadBackup_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_uploadBackup_Params{root.Struct()}, err
 }
 
@@ -2559,8 +2584,7 @@ func (s Backend_uploadBackup_Params) BackupId() (string, error) {
 }
 
 func (s Backend_uploadBackup_Params) HasBackupId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_uploadBackup_Params) BackupIdBytes() ([]byte, error) {
@@ -2594,11 +2618,11 @@ func (s Backend_uploadBackup_Params_List) String() string {
 	return str
 }
 
-// Backend_uploadBackup_Params_Promise is a wrapper for a Backend_uploadBackup_Params promised by a client call.
-type Backend_uploadBackup_Params_Promise struct{ *capnp.Pipeline }
+// Backend_uploadBackup_Params_Future is a wrapper for a Backend_uploadBackup_Params promised by a client call.
+type Backend_uploadBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_uploadBackup_Params_Promise) Struct() (Backend_uploadBackup_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_uploadBackup_Params_Future) Struct() (Backend_uploadBackup_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_uploadBackup_Params{s}, err
 }
 
@@ -2618,7 +2642,7 @@ func NewRootBackend_uploadBackup_Results(s *capnp.Segment) (Backend_uploadBackup
 }
 
 func ReadRootBackend_uploadBackup_Results(msg *capnp.Message) (Backend_uploadBackup_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_uploadBackup_Results{root.Struct()}, err
 }
 
@@ -2633,12 +2657,11 @@ func (s Backend_uploadBackup_Results) Stream() util.ByteStream {
 }
 
 func (s Backend_uploadBackup_Results) HasStream() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_uploadBackup_Results) SetStream(v util.ByteStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2668,16 +2691,16 @@ func (s Backend_uploadBackup_Results_List) String() string {
 	return str
 }
 
-// Backend_uploadBackup_Results_Promise is a wrapper for a Backend_uploadBackup_Results promised by a client call.
-type Backend_uploadBackup_Results_Promise struct{ *capnp.Pipeline }
+// Backend_uploadBackup_Results_Future is a wrapper for a Backend_uploadBackup_Results promised by a client call.
+type Backend_uploadBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_uploadBackup_Results_Promise) Struct() (Backend_uploadBackup_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_uploadBackup_Results_Future) Struct() (Backend_uploadBackup_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_uploadBackup_Results{s}, err
 }
 
-func (p Backend_uploadBackup_Results_Promise) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p Backend_uploadBackup_Results_Future) Stream() util.ByteStream {
+	return util.ByteStream{Client: p.Future.Field(0, nil).Client()}
 }
 
 type Backend_downloadBackup_Params struct{ capnp.Struct }
@@ -2696,7 +2719,7 @@ func NewRootBackend_downloadBackup_Params(s *capnp.Segment) (Backend_downloadBac
 }
 
 func ReadRootBackend_downloadBackup_Params(msg *capnp.Message) (Backend_downloadBackup_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_downloadBackup_Params{root.Struct()}, err
 }
 
@@ -2711,8 +2734,7 @@ func (s Backend_downloadBackup_Params) BackupId() (string, error) {
 }
 
 func (s Backend_downloadBackup_Params) HasBackupId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_downloadBackup_Params) BackupIdBytes() ([]byte, error) {
@@ -2730,12 +2752,11 @@ func (s Backend_downloadBackup_Params) Stream() util.ByteStream {
 }
 
 func (s Backend_downloadBackup_Params) HasStream() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_downloadBackup_Params) SetStream(v util.ByteStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2765,16 +2786,16 @@ func (s Backend_downloadBackup_Params_List) String() string {
 	return str
 }
 
-// Backend_downloadBackup_Params_Promise is a wrapper for a Backend_downloadBackup_Params promised by a client call.
-type Backend_downloadBackup_Params_Promise struct{ *capnp.Pipeline }
+// Backend_downloadBackup_Params_Future is a wrapper for a Backend_downloadBackup_Params promised by a client call.
+type Backend_downloadBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_downloadBackup_Params_Promise) Struct() (Backend_downloadBackup_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_downloadBackup_Params_Future) Struct() (Backend_downloadBackup_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_downloadBackup_Params{s}, err
 }
 
-func (p Backend_downloadBackup_Params_Promise) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p Backend_downloadBackup_Params_Future) Stream() util.ByteStream {
+	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
 }
 
 type Backend_downloadBackup_Results struct{ capnp.Struct }
@@ -2793,7 +2814,7 @@ func NewRootBackend_downloadBackup_Results(s *capnp.Segment) (Backend_downloadBa
 }
 
 func ReadRootBackend_downloadBackup_Results(msg *capnp.Message) (Backend_downloadBackup_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_downloadBackup_Results{root.Struct()}, err
 }
 
@@ -2824,11 +2845,11 @@ func (s Backend_downloadBackup_Results_List) String() string {
 	return str
 }
 
-// Backend_downloadBackup_Results_Promise is a wrapper for a Backend_downloadBackup_Results promised by a client call.
-type Backend_downloadBackup_Results_Promise struct{ *capnp.Pipeline }
+// Backend_downloadBackup_Results_Future is a wrapper for a Backend_downloadBackup_Results promised by a client call.
+type Backend_downloadBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_downloadBackup_Results_Promise) Struct() (Backend_downloadBackup_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_downloadBackup_Results_Future) Struct() (Backend_downloadBackup_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_downloadBackup_Results{s}, err
 }
 
@@ -2848,7 +2869,7 @@ func NewRootBackend_deleteBackup_Params(s *capnp.Segment) (Backend_deleteBackup_
 }
 
 func ReadRootBackend_deleteBackup_Params(msg *capnp.Message) (Backend_deleteBackup_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteBackup_Params{root.Struct()}, err
 }
 
@@ -2863,8 +2884,7 @@ func (s Backend_deleteBackup_Params) BackupId() (string, error) {
 }
 
 func (s Backend_deleteBackup_Params) HasBackupId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_deleteBackup_Params) BackupIdBytes() ([]byte, error) {
@@ -2898,11 +2918,11 @@ func (s Backend_deleteBackup_Params_List) String() string {
 	return str
 }
 
-// Backend_deleteBackup_Params_Promise is a wrapper for a Backend_deleteBackup_Params promised by a client call.
-type Backend_deleteBackup_Params_Promise struct{ *capnp.Pipeline }
+// Backend_deleteBackup_Params_Future is a wrapper for a Backend_deleteBackup_Params promised by a client call.
+type Backend_deleteBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteBackup_Params_Promise) Struct() (Backend_deleteBackup_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteBackup_Params_Future) Struct() (Backend_deleteBackup_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteBackup_Params{s}, err
 }
 
@@ -2922,7 +2942,7 @@ func NewRootBackend_deleteBackup_Results(s *capnp.Segment) (Backend_deleteBackup
 }
 
 func ReadRootBackend_deleteBackup_Results(msg *capnp.Message) (Backend_deleteBackup_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteBackup_Results{root.Struct()}, err
 }
 
@@ -2953,11 +2973,11 @@ func (s Backend_deleteBackup_Results_List) String() string {
 	return str
 }
 
-// Backend_deleteBackup_Results_Promise is a wrapper for a Backend_deleteBackup_Results promised by a client call.
-type Backend_deleteBackup_Results_Promise struct{ *capnp.Pipeline }
+// Backend_deleteBackup_Results_Future is a wrapper for a Backend_deleteBackup_Results promised by a client call.
+type Backend_deleteBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteBackup_Results_Promise) Struct() (Backend_deleteBackup_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteBackup_Results_Future) Struct() (Backend_deleteBackup_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteBackup_Results{s}, err
 }
 
@@ -2977,7 +2997,7 @@ func NewRootBackend_getUserStorageUsage_Params(s *capnp.Segment) (Backend_getUse
 }
 
 func ReadRootBackend_getUserStorageUsage_Params(msg *capnp.Message) (Backend_getUserStorageUsage_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getUserStorageUsage_Params{root.Struct()}, err
 }
 
@@ -2992,8 +3012,7 @@ func (s Backend_getUserStorageUsage_Params) UserId() (string, error) {
 }
 
 func (s Backend_getUserStorageUsage_Params) HasUserId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_getUserStorageUsage_Params) UserIdBytes() ([]byte, error) {
@@ -3027,11 +3046,11 @@ func (s Backend_getUserStorageUsage_Params_List) String() string {
 	return str
 }
 
-// Backend_getUserStorageUsage_Params_Promise is a wrapper for a Backend_getUserStorageUsage_Params promised by a client call.
-type Backend_getUserStorageUsage_Params_Promise struct{ *capnp.Pipeline }
+// Backend_getUserStorageUsage_Params_Future is a wrapper for a Backend_getUserStorageUsage_Params promised by a client call.
+type Backend_getUserStorageUsage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getUserStorageUsage_Params_Promise) Struct() (Backend_getUserStorageUsage_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getUserStorageUsage_Params_Future) Struct() (Backend_getUserStorageUsage_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_getUserStorageUsage_Params{s}, err
 }
 
@@ -3051,7 +3070,7 @@ func NewRootBackend_getUserStorageUsage_Results(s *capnp.Segment) (Backend_getUs
 }
 
 func ReadRootBackend_getUserStorageUsage_Results(msg *capnp.Message) (Backend_getUserStorageUsage_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getUserStorageUsage_Results{root.Struct()}, err
 }
 
@@ -3090,11 +3109,11 @@ func (s Backend_getUserStorageUsage_Results_List) String() string {
 	return str
 }
 
-// Backend_getUserStorageUsage_Results_Promise is a wrapper for a Backend_getUserStorageUsage_Results promised by a client call.
-type Backend_getUserStorageUsage_Results_Promise struct{ *capnp.Pipeline }
+// Backend_getUserStorageUsage_Results_Future is a wrapper for a Backend_getUserStorageUsage_Results promised by a client call.
+type Backend_getUserStorageUsage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getUserStorageUsage_Results_Promise) Struct() (Backend_getUserStorageUsage_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getUserStorageUsage_Results_Future) Struct() (Backend_getUserStorageUsage_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_getUserStorageUsage_Results{s}, err
 }
 
@@ -3114,7 +3133,7 @@ func NewRootBackend_transferGrain_Params(s *capnp.Segment) (Backend_transferGrai
 }
 
 func ReadRootBackend_transferGrain_Params(msg *capnp.Message) (Backend_transferGrain_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_transferGrain_Params{root.Struct()}, err
 }
 
@@ -3129,8 +3148,7 @@ func (s Backend_transferGrain_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_transferGrain_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_transferGrain_Params) OwnerIdBytes() ([]byte, error) {
@@ -3148,8 +3166,7 @@ func (s Backend_transferGrain_Params) GrainId() (string, error) {
 }
 
 func (s Backend_transferGrain_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_transferGrain_Params) GrainIdBytes() ([]byte, error) {
@@ -3167,8 +3184,7 @@ func (s Backend_transferGrain_Params) NewOwnerId() (string, error) {
 }
 
 func (s Backend_transferGrain_Params) HasNewOwnerId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Backend_transferGrain_Params) NewOwnerIdBytes() ([]byte, error) {
@@ -3202,11 +3218,11 @@ func (s Backend_transferGrain_Params_List) String() string {
 	return str
 }
 
-// Backend_transferGrain_Params_Promise is a wrapper for a Backend_transferGrain_Params promised by a client call.
-type Backend_transferGrain_Params_Promise struct{ *capnp.Pipeline }
+// Backend_transferGrain_Params_Future is a wrapper for a Backend_transferGrain_Params promised by a client call.
+type Backend_transferGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_transferGrain_Params_Promise) Struct() (Backend_transferGrain_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_transferGrain_Params_Future) Struct() (Backend_transferGrain_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_transferGrain_Params{s}, err
 }
 
@@ -3226,7 +3242,7 @@ func NewRootBackend_transferGrain_Results(s *capnp.Segment) (Backend_transferGra
 }
 
 func ReadRootBackend_transferGrain_Results(msg *capnp.Message) (Backend_transferGrain_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_transferGrain_Results{root.Struct()}, err
 }
 
@@ -3257,11 +3273,11 @@ func (s Backend_transferGrain_Results_List) String() string {
 	return str
 }
 
-// Backend_transferGrain_Results_Promise is a wrapper for a Backend_transferGrain_Results promised by a client call.
-type Backend_transferGrain_Results_Promise struct{ *capnp.Pipeline }
+// Backend_transferGrain_Results_Future is a wrapper for a Backend_transferGrain_Results promised by a client call.
+type Backend_transferGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_transferGrain_Results_Promise) Struct() (Backend_transferGrain_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_transferGrain_Results_Future) Struct() (Backend_transferGrain_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_transferGrain_Results{s}, err
 }
 
@@ -3281,7 +3297,7 @@ func NewRootBackend_deleteUser_Params(s *capnp.Segment) (Backend_deleteUser_Para
 }
 
 func ReadRootBackend_deleteUser_Params(msg *capnp.Message) (Backend_deleteUser_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteUser_Params{root.Struct()}, err
 }
 
@@ -3296,8 +3312,7 @@ func (s Backend_deleteUser_Params) UserId() (string, error) {
 }
 
 func (s Backend_deleteUser_Params) HasUserId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_deleteUser_Params) UserIdBytes() ([]byte, error) {
@@ -3331,11 +3346,11 @@ func (s Backend_deleteUser_Params_List) String() string {
 	return str
 }
 
-// Backend_deleteUser_Params_Promise is a wrapper for a Backend_deleteUser_Params promised by a client call.
-type Backend_deleteUser_Params_Promise struct{ *capnp.Pipeline }
+// Backend_deleteUser_Params_Future is a wrapper for a Backend_deleteUser_Params promised by a client call.
+type Backend_deleteUser_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteUser_Params_Promise) Struct() (Backend_deleteUser_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteUser_Params_Future) Struct() (Backend_deleteUser_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteUser_Params{s}, err
 }
 
@@ -3355,7 +3370,7 @@ func NewRootBackend_deleteUser_Results(s *capnp.Segment) (Backend_deleteUser_Res
 }
 
 func ReadRootBackend_deleteUser_Results(msg *capnp.Message) (Backend_deleteUser_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_deleteUser_Results{root.Struct()}, err
 }
 
@@ -3386,11 +3401,11 @@ func (s Backend_deleteUser_Results_List) String() string {
 	return str
 }
 
-// Backend_deleteUser_Results_Promise is a wrapper for a Backend_deleteUser_Results promised by a client call.
-type Backend_deleteUser_Results_Promise struct{ *capnp.Pipeline }
+// Backend_deleteUser_Results_Future is a wrapper for a Backend_deleteUser_Results promised by a client call.
+type Backend_deleteUser_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteUser_Results_Promise) Struct() (Backend_deleteUser_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_deleteUser_Results_Future) Struct() (Backend_deleteUser_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_deleteUser_Results{s}, err
 }
 
@@ -3410,7 +3425,7 @@ func NewRootBackend_ping_Params(s *capnp.Segment) (Backend_ping_Params, error) {
 }
 
 func ReadRootBackend_ping_Params(msg *capnp.Message) (Backend_ping_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_ping_Params{root.Struct()}, err
 }
 
@@ -3441,11 +3456,11 @@ func (s Backend_ping_Params_List) String() string {
 	return str
 }
 
-// Backend_ping_Params_Promise is a wrapper for a Backend_ping_Params promised by a client call.
-type Backend_ping_Params_Promise struct{ *capnp.Pipeline }
+// Backend_ping_Params_Future is a wrapper for a Backend_ping_Params promised by a client call.
+type Backend_ping_Params_Future struct{ *capnp.Future }
 
-func (p Backend_ping_Params_Promise) Struct() (Backend_ping_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_ping_Params_Future) Struct() (Backend_ping_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_ping_Params{s}, err
 }
 
@@ -3465,7 +3480,7 @@ func NewRootBackend_ping_Results(s *capnp.Segment) (Backend_ping_Results, error)
 }
 
 func ReadRootBackend_ping_Results(msg *capnp.Message) (Backend_ping_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_ping_Results{root.Struct()}, err
 }
 
@@ -3496,11 +3511,11 @@ func (s Backend_ping_Results_List) String() string {
 	return str
 }
 
-// Backend_ping_Results_Promise is a wrapper for a Backend_ping_Results promised by a client call.
-type Backend_ping_Results_Promise struct{ *capnp.Pipeline }
+// Backend_ping_Results_Future is a wrapper for a Backend_ping_Results promised by a client call.
+type Backend_ping_Results_Future struct{ *capnp.Future }
 
-func (p Backend_ping_Results_Promise) Struct() (Backend_ping_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_ping_Results_Future) Struct() (Backend_ping_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_ping_Results{s}, err
 }
 
@@ -3520,7 +3535,7 @@ func NewRootBackend_getGrainStorageUsage_Params(s *capnp.Segment) (Backend_getGr
 }
 
 func ReadRootBackend_getGrainStorageUsage_Params(msg *capnp.Message) (Backend_getGrainStorageUsage_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getGrainStorageUsage_Params{root.Struct()}, err
 }
 
@@ -3535,8 +3550,7 @@ func (s Backend_getGrainStorageUsage_Params) OwnerId() (string, error) {
 }
 
 func (s Backend_getGrainStorageUsage_Params) HasOwnerId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Backend_getGrainStorageUsage_Params) OwnerIdBytes() ([]byte, error) {
@@ -3554,8 +3568,7 @@ func (s Backend_getGrainStorageUsage_Params) GrainId() (string, error) {
 }
 
 func (s Backend_getGrainStorageUsage_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Backend_getGrainStorageUsage_Params) GrainIdBytes() ([]byte, error) {
@@ -3589,11 +3602,11 @@ func (s Backend_getGrainStorageUsage_Params_List) String() string {
 	return str
 }
 
-// Backend_getGrainStorageUsage_Params_Promise is a wrapper for a Backend_getGrainStorageUsage_Params promised by a client call.
-type Backend_getGrainStorageUsage_Params_Promise struct{ *capnp.Pipeline }
+// Backend_getGrainStorageUsage_Params_Future is a wrapper for a Backend_getGrainStorageUsage_Params promised by a client call.
+type Backend_getGrainStorageUsage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getGrainStorageUsage_Params_Promise) Struct() (Backend_getGrainStorageUsage_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getGrainStorageUsage_Params_Future) Struct() (Backend_getGrainStorageUsage_Params, error) {
+	s, err := p.Future.Struct()
 	return Backend_getGrainStorageUsage_Params{s}, err
 }
 
@@ -3613,7 +3626,7 @@ func NewRootBackend_getGrainStorageUsage_Results(s *capnp.Segment) (Backend_getG
 }
 
 func ReadRootBackend_getGrainStorageUsage_Results(msg *capnp.Message) (Backend_getGrainStorageUsage_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Backend_getGrainStorageUsage_Results{root.Struct()}, err
 }
 
@@ -3652,159 +3665,145 @@ func (s Backend_getGrainStorageUsage_Results_List) String() string {
 	return str
 }
 
-// Backend_getGrainStorageUsage_Results_Promise is a wrapper for a Backend_getGrainStorageUsage_Results promised by a client call.
-type Backend_getGrainStorageUsage_Results_Promise struct{ *capnp.Pipeline }
+// Backend_getGrainStorageUsage_Results_Future is a wrapper for a Backend_getGrainStorageUsage_Results promised by a client call.
+type Backend_getGrainStorageUsage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getGrainStorageUsage_Results_Promise) Struct() (Backend_getGrainStorageUsage_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Backend_getGrainStorageUsage_Results_Future) Struct() (Backend_getGrainStorageUsage_Results, error) {
+	s, err := p.Future.Struct()
 	return Backend_getGrainStorageUsage_Results{s}, err
 }
 
-type GatewayRouter struct{ Client capnp.Client }
+type GatewayRouter struct{ Client *capnp.Client }
 
 // GatewayRouter_TypeID is the unique identifier for the type GatewayRouter.
 const GatewayRouter_TypeID = 0xc3a9d72077d3a1da
 
-func (c GatewayRouter) OpenUiSession(ctx context.Context, params func(GatewayRouter_openUiSession_Params) error, opts ...capnp.CallOption) GatewayRouter_openUiSession_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_openUiSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) OpenUiSession(ctx context.Context, params func(GatewayRouter_openUiSession_Params) error) (GatewayRouter_openUiSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      0,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "openUiSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_openUiSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_openUiSession_Params{Struct: s}) }
 	}
-	return GatewayRouter_openUiSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_openUiSession_Results_Future{Future: ans.Future()}, release
 }
-func (c GatewayRouter) OpenApiSession(ctx context.Context, params func(GatewayRouter_openApiSession_Params) error, opts ...capnp.CallOption) GatewayRouter_openApiSession_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_openApiSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) OpenApiSession(ctx context.Context, params func(GatewayRouter_openApiSession_Params) error) (GatewayRouter_openApiSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      1,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "openApiSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_openApiSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_openApiSession_Params{Struct: s}) }
 	}
-	return GatewayRouter_openApiSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_openApiSession_Results_Future{Future: ans.Future()}, release
 }
-func (c GatewayRouter) GetStaticAsset(ctx context.Context, params func(GatewayRouter_getStaticAsset_Params) error, opts ...capnp.CallOption) GatewayRouter_getStaticAsset_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_getStaticAsset_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) GetStaticAsset(ctx context.Context, params func(GatewayRouter_getStaticAsset_Params) error) (GatewayRouter_getStaticAsset_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      2,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "getStaticAsset",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_getStaticAsset_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_getStaticAsset_Params{Struct: s}) }
 	}
-	return GatewayRouter_getStaticAsset_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_getStaticAsset_Results_Future{Future: ans.Future()}, release
 }
-func (c GatewayRouter) GetStaticPublishingHost(ctx context.Context, params func(GatewayRouter_getStaticPublishingHost_Params) error, opts ...capnp.CallOption) GatewayRouter_getStaticPublishingHost_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_getStaticPublishingHost_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) GetStaticPublishingHost(ctx context.Context, params func(GatewayRouter_getStaticPublishingHost_Params) error) (GatewayRouter_getStaticPublishingHost_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      3,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "getStaticPublishingHost",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_getStaticPublishingHost_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_getStaticPublishingHost_Params{Struct: s}) }
 	}
-	return GatewayRouter_getStaticPublishingHost_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_getStaticPublishingHost_Results_Future{Future: ans.Future()}, release
 }
-func (c GatewayRouter) RouteForeignHostname(ctx context.Context, params func(GatewayRouter_routeForeignHostname_Params) error, opts ...capnp.CallOption) GatewayRouter_routeForeignHostname_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_routeForeignHostname_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) RouteForeignHostname(ctx context.Context, params func(GatewayRouter_routeForeignHostname_Params) error) (GatewayRouter_routeForeignHostname_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      4,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "routeForeignHostname",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_routeForeignHostname_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_routeForeignHostname_Params{Struct: s}) }
 	}
-	return GatewayRouter_routeForeignHostname_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_routeForeignHostname_Results_Future{Future: ans.Future()}, release
 }
-func (c GatewayRouter) SubscribeTlsKeys(ctx context.Context, params func(GatewayRouter_subscribeTlsKeys_Params) error, opts ...capnp.CallOption) GatewayRouter_subscribeTlsKeys_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_subscribeTlsKeys_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter) SubscribeTlsKeys(ctx context.Context, params func(GatewayRouter_subscribeTlsKeys_Params) error) (GatewayRouter_subscribeTlsKeys_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc3a9d72077d3a1da,
 			MethodID:      5,
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "subscribeTlsKeys",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_subscribeTlsKeys_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_subscribeTlsKeys_Params{Struct: s}) }
 	}
-	return GatewayRouter_subscribeTlsKeys_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_subscribeTlsKeys_Results_Future{Future: ans.Future()}, release
 }
 
+// A GatewayRouter_Server is a GatewayRouter with a local implementation.
 type GatewayRouter_Server interface {
-	OpenUiSession(GatewayRouter_openUiSession) error
+	OpenUiSession(context.Context, GatewayRouter_openUiSession) error
 
-	OpenApiSession(GatewayRouter_openApiSession) error
+	OpenApiSession(context.Context, GatewayRouter_openApiSession) error
 
-	GetStaticAsset(GatewayRouter_getStaticAsset) error
+	GetStaticAsset(context.Context, GatewayRouter_getStaticAsset) error
 
-	GetStaticPublishingHost(GatewayRouter_getStaticPublishingHost) error
+	GetStaticPublishingHost(context.Context, GatewayRouter_getStaticPublishingHost) error
 
-	RouteForeignHostname(GatewayRouter_routeForeignHostname) error
+	RouteForeignHostname(context.Context, GatewayRouter_routeForeignHostname) error
 
-	SubscribeTlsKeys(GatewayRouter_subscribeTlsKeys) error
+	SubscribeTlsKeys(context.Context, GatewayRouter_subscribeTlsKeys) error
 }
 
-func GatewayRouter_ServerToClient(s GatewayRouter_Server) GatewayRouter {
-	c, _ := s.(server.Closer)
-	return GatewayRouter{Client: server.New(GatewayRouter_Methods(nil, s), c)}
+// GatewayRouter_NewServer creates a new Server from an implementation of GatewayRouter_Server.
+func GatewayRouter_NewServer(s GatewayRouter_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(GatewayRouter_Methods(nil, s), s, c, policy)
 }
 
+// GatewayRouter_ServerToClient creates a new Client from an implementation of GatewayRouter_Server.
+// The caller is responsible for calling Release on the returned Client.
+func GatewayRouter_ServerToClient(s GatewayRouter_Server, policy *server.Policy) GatewayRouter {
+	return GatewayRouter{Client: capnp.NewClient(GatewayRouter_NewServer(s, policy))}
+}
+
+// GatewayRouter_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 6)
@@ -3817,11 +3816,9 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "openUiSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_openUiSession{c, opts, GatewayRouter_openUiSession_Params{Struct: p}, GatewayRouter_openUiSession_Results{Struct: r}}
-			return s.OpenUiSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.OpenUiSession(ctx, GatewayRouter_openUiSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -3831,11 +3828,9 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "openApiSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_openApiSession{c, opts, GatewayRouter_openApiSession_Params{Struct: p}, GatewayRouter_openApiSession_Results{Struct: r}}
-			return s.OpenApiSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.OpenApiSession(ctx, GatewayRouter_openApiSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3845,11 +3840,9 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "getStaticAsset",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_getStaticAsset{c, opts, GatewayRouter_getStaticAsset_Params{Struct: p}, GatewayRouter_getStaticAsset_Results{Struct: r}}
-			return s.GetStaticAsset(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetStaticAsset(ctx, GatewayRouter_getStaticAsset{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 3},
 	})
 
 	methods = append(methods, server.Method{
@@ -3859,11 +3852,9 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "getStaticPublishingHost",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_getStaticPublishingHost{c, opts, GatewayRouter_getStaticPublishingHost_Params{Struct: p}, GatewayRouter_getStaticPublishingHost_Results{Struct: r}}
-			return s.GetStaticPublishingHost(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetStaticPublishingHost(ctx, GatewayRouter_getStaticPublishingHost{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3873,11 +3864,9 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "routeForeignHostname",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_routeForeignHostname{c, opts, GatewayRouter_routeForeignHostname_Params{Struct: p}, GatewayRouter_routeForeignHostname_Results{Struct: r}}
-			return s.RouteForeignHostname(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.RouteForeignHostname(ctx, GatewayRouter_routeForeignHostname{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -3887,62 +3876,114 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 			InterfaceName: "backend.capnp:GatewayRouter",
 			MethodName:    "subscribeTlsKeys",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_subscribeTlsKeys{c, opts, GatewayRouter_subscribeTlsKeys_Params{Struct: p}, GatewayRouter_subscribeTlsKeys_Results{Struct: r}}
-			return s.SubscribeTlsKeys(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SubscribeTlsKeys(ctx, GatewayRouter_subscribeTlsKeys{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// GatewayRouter_openUiSession holds the arguments for a server call to GatewayRouter.openUiSession.
+// GatewayRouter_openUiSession holds the state for a server call to GatewayRouter.openUiSession.
+// See server.Call for documentation.
 type GatewayRouter_openUiSession struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_openUiSession_Params
-	Results GatewayRouter_openUiSession_Results
+	*server.Call
 }
 
-// GatewayRouter_openApiSession holds the arguments for a server call to GatewayRouter.openApiSession.
+// Args returns the call's arguments.
+func (c GatewayRouter_openUiSession) Args() GatewayRouter_openUiSession_Params {
+	return GatewayRouter_openUiSession_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_openUiSession) AllocResults() (GatewayRouter_openUiSession_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return GatewayRouter_openUiSession_Results{Struct: r}, err
+}
+
+// GatewayRouter_openApiSession holds the state for a server call to GatewayRouter.openApiSession.
+// See server.Call for documentation.
 type GatewayRouter_openApiSession struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_openApiSession_Params
-	Results GatewayRouter_openApiSession_Results
+	*server.Call
 }
 
-// GatewayRouter_getStaticAsset holds the arguments for a server call to GatewayRouter.getStaticAsset.
+// Args returns the call's arguments.
+func (c GatewayRouter_openApiSession) Args() GatewayRouter_openApiSession_Params {
+	return GatewayRouter_openApiSession_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_openApiSession) AllocResults() (GatewayRouter_openApiSession_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_openApiSession_Results{Struct: r}, err
+}
+
+// GatewayRouter_getStaticAsset holds the state for a server call to GatewayRouter.getStaticAsset.
+// See server.Call for documentation.
 type GatewayRouter_getStaticAsset struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_getStaticAsset_Params
-	Results GatewayRouter_getStaticAsset_Results
+	*server.Call
 }
 
-// GatewayRouter_getStaticPublishingHost holds the arguments for a server call to GatewayRouter.getStaticPublishingHost.
+// Args returns the call's arguments.
+func (c GatewayRouter_getStaticAsset) Args() GatewayRouter_getStaticAsset_Params {
+	return GatewayRouter_getStaticAsset_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_getStaticAsset) AllocResults() (GatewayRouter_getStaticAsset_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
+	return GatewayRouter_getStaticAsset_Results{Struct: r}, err
+}
+
+// GatewayRouter_getStaticPublishingHost holds the state for a server call to GatewayRouter.getStaticPublishingHost.
+// See server.Call for documentation.
 type GatewayRouter_getStaticPublishingHost struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_getStaticPublishingHost_Params
-	Results GatewayRouter_getStaticPublishingHost_Results
+	*server.Call
 }
 
-// GatewayRouter_routeForeignHostname holds the arguments for a server call to GatewayRouter.routeForeignHostname.
+// Args returns the call's arguments.
+func (c GatewayRouter_getStaticPublishingHost) Args() GatewayRouter_getStaticPublishingHost_Params {
+	return GatewayRouter_getStaticPublishingHost_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_getStaticPublishingHost) AllocResults() (GatewayRouter_getStaticPublishingHost_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getStaticPublishingHost_Results{Struct: r}, err
+}
+
+// GatewayRouter_routeForeignHostname holds the state for a server call to GatewayRouter.routeForeignHostname.
+// See server.Call for documentation.
 type GatewayRouter_routeForeignHostname struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_routeForeignHostname_Params
-	Results GatewayRouter_routeForeignHostname_Results
+	*server.Call
 }
 
-// GatewayRouter_subscribeTlsKeys holds the arguments for a server call to GatewayRouter.subscribeTlsKeys.
+// Args returns the call's arguments.
+func (c GatewayRouter_routeForeignHostname) Args() GatewayRouter_routeForeignHostname_Params {
+	return GatewayRouter_routeForeignHostname_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_routeForeignHostname) AllocResults() (GatewayRouter_routeForeignHostname_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_routeForeignHostname_Results{Struct: r}, err
+}
+
+// GatewayRouter_subscribeTlsKeys holds the state for a server call to GatewayRouter.subscribeTlsKeys.
+// See server.Call for documentation.
 type GatewayRouter_subscribeTlsKeys struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_subscribeTlsKeys_Params
-	Results GatewayRouter_subscribeTlsKeys_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c GatewayRouter_subscribeTlsKeys) Args() GatewayRouter_subscribeTlsKeys_Params {
+	return GatewayRouter_subscribeTlsKeys_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_subscribeTlsKeys) AllocResults() (GatewayRouter_subscribeTlsKeys_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return GatewayRouter_subscribeTlsKeys_Results{Struct: r}, err
 }
 
 type GatewayRouter_ForeignHostnameInfo struct{ capnp.Struct }
@@ -3982,7 +4023,7 @@ func NewRootGatewayRouter_ForeignHostnameInfo(s *capnp.Segment) (GatewayRouter_F
 }
 
 func ReadRootGatewayRouter_ForeignHostnameInfo(msg *capnp.Message) (GatewayRouter_ForeignHostnameInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_ForeignHostnameInfo{root.Struct()}, err
 }
 
@@ -4011,8 +4052,7 @@ func (s GatewayRouter_ForeignHostnameInfo) HasStaticPublishing() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_ForeignHostnameInfo) StaticPublishingBytes() ([]byte, error) {
@@ -4060,49 +4100,55 @@ func (s GatewayRouter_ForeignHostnameInfo_List) String() string {
 	return str
 }
 
-// GatewayRouter_ForeignHostnameInfo_Promise is a wrapper for a GatewayRouter_ForeignHostnameInfo promised by a client call.
-type GatewayRouter_ForeignHostnameInfo_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_ForeignHostnameInfo_Future is a wrapper for a GatewayRouter_ForeignHostnameInfo promised by a client call.
+type GatewayRouter_ForeignHostnameInfo_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_ForeignHostnameInfo_Promise) Struct() (GatewayRouter_ForeignHostnameInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_ForeignHostnameInfo_Future) Struct() (GatewayRouter_ForeignHostnameInfo, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_ForeignHostnameInfo{s}, err
 }
 
-type GatewayRouter_TlsKeyCallback struct{ Client capnp.Client }
+type GatewayRouter_TlsKeyCallback struct{ Client *capnp.Client }
 
 // GatewayRouter_TlsKeyCallback_TypeID is the unique identifier for the type GatewayRouter_TlsKeyCallback.
 const GatewayRouter_TlsKeyCallback_TypeID = 0xa37265bba0f4c58f
 
-func (c GatewayRouter_TlsKeyCallback) SetKeys(ctx context.Context, params func(GatewayRouter_TlsKeyCallback_setKeys_Params) error, opts ...capnp.CallOption) GatewayRouter_TlsKeyCallback_setKeys_Results_Promise {
-	if c.Client == nil {
-		return GatewayRouter_TlsKeyCallback_setKeys_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c GatewayRouter_TlsKeyCallback) SetKeys(ctx context.Context, params func(GatewayRouter_TlsKeyCallback_setKeys_Params) error) (GatewayRouter_TlsKeyCallback_setKeys_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa37265bba0f4c58f,
 			MethodID:      0,
 			InterfaceName: "backend.capnp:GatewayRouter.TlsKeyCallback",
 			MethodName:    "setKeys",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(GatewayRouter_TlsKeyCallback_setKeys_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_TlsKeyCallback_setKeys_Params{Struct: s}) }
 	}
-	return GatewayRouter_TlsKeyCallback_setKeys_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_TlsKeyCallback_setKeys_Results_Future{Future: ans.Future()}, release
 }
 
+// A GatewayRouter_TlsKeyCallback_Server is a GatewayRouter_TlsKeyCallback with a local implementation.
 type GatewayRouter_TlsKeyCallback_Server interface {
-	SetKeys(GatewayRouter_TlsKeyCallback_setKeys) error
+	SetKeys(context.Context, GatewayRouter_TlsKeyCallback_setKeys) error
 }
 
-func GatewayRouter_TlsKeyCallback_ServerToClient(s GatewayRouter_TlsKeyCallback_Server) GatewayRouter_TlsKeyCallback {
-	c, _ := s.(server.Closer)
-	return GatewayRouter_TlsKeyCallback{Client: server.New(GatewayRouter_TlsKeyCallback_Methods(nil, s), c)}
+// GatewayRouter_TlsKeyCallback_NewServer creates a new Server from an implementation of GatewayRouter_TlsKeyCallback_Server.
+func GatewayRouter_TlsKeyCallback_NewServer(s GatewayRouter_TlsKeyCallback_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(GatewayRouter_TlsKeyCallback_Methods(nil, s), s, c, policy)
 }
 
+// GatewayRouter_TlsKeyCallback_ServerToClient creates a new Client from an implementation of GatewayRouter_TlsKeyCallback_Server.
+// The caller is responsible for calling Release on the returned Client.
+func GatewayRouter_TlsKeyCallback_ServerToClient(s GatewayRouter_TlsKeyCallback_Server, policy *server.Policy) GatewayRouter_TlsKeyCallback {
+	return GatewayRouter_TlsKeyCallback{Client: capnp.NewClient(GatewayRouter_TlsKeyCallback_NewServer(s, policy))}
+}
+
+// GatewayRouter_TlsKeyCallback_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func GatewayRouter_TlsKeyCallback_Methods(methods []server.Method, s GatewayRouter_TlsKeyCallback_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -4115,22 +4161,29 @@ func GatewayRouter_TlsKeyCallback_Methods(methods []server.Method, s GatewayRout
 			InterfaceName: "backend.capnp:GatewayRouter.TlsKeyCallback",
 			MethodName:    "setKeys",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := GatewayRouter_TlsKeyCallback_setKeys{c, opts, GatewayRouter_TlsKeyCallback_setKeys_Params{Struct: p}, GatewayRouter_TlsKeyCallback_setKeys_Results{Struct: r}}
-			return s.SetKeys(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SetKeys(ctx, GatewayRouter_TlsKeyCallback_setKeys{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// GatewayRouter_TlsKeyCallback_setKeys holds the arguments for a server call to GatewayRouter_TlsKeyCallback.setKeys.
+// GatewayRouter_TlsKeyCallback_setKeys holds the state for a server call to GatewayRouter_TlsKeyCallback.setKeys.
+// See server.Call for documentation.
 type GatewayRouter_TlsKeyCallback_setKeys struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  GatewayRouter_TlsKeyCallback_setKeys_Params
-	Results GatewayRouter_TlsKeyCallback_setKeys_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c GatewayRouter_TlsKeyCallback_setKeys) Args() GatewayRouter_TlsKeyCallback_setKeys_Params {
+	return GatewayRouter_TlsKeyCallback_setKeys_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_TlsKeyCallback_setKeys) AllocResults() (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return GatewayRouter_TlsKeyCallback_setKeys_Results{Struct: r}, err
 }
 
 type GatewayRouter_TlsKeyCallback_setKeys_Params struct{ capnp.Struct }
@@ -4149,7 +4202,7 @@ func NewRootGatewayRouter_TlsKeyCallback_setKeys_Params(s *capnp.Segment) (Gatew
 }
 
 func ReadRootGatewayRouter_TlsKeyCallback_setKeys_Params(msg *capnp.Message) (GatewayRouter_TlsKeyCallback_setKeys_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_TlsKeyCallback_setKeys_Params{root.Struct()}, err
 }
 
@@ -4164,8 +4217,7 @@ func (s GatewayRouter_TlsKeyCallback_setKeys_Params) Key() (string, error) {
 }
 
 func (s GatewayRouter_TlsKeyCallback_setKeys_Params) HasKey() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_TlsKeyCallback_setKeys_Params) KeyBytes() ([]byte, error) {
@@ -4183,8 +4235,7 @@ func (s GatewayRouter_TlsKeyCallback_setKeys_Params) CertChain() (string, error)
 }
 
 func (s GatewayRouter_TlsKeyCallback_setKeys_Params) HasCertChain() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s GatewayRouter_TlsKeyCallback_setKeys_Params) CertChainBytes() ([]byte, error) {
@@ -4218,11 +4269,11 @@ func (s GatewayRouter_TlsKeyCallback_setKeys_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_TlsKeyCallback_setKeys_Params_Promise is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Params promised by a client call.
-type GatewayRouter_TlsKeyCallback_setKeys_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_TlsKeyCallback_setKeys_Params_Future is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Params promised by a client call.
+type GatewayRouter_TlsKeyCallback_setKeys_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_TlsKeyCallback_setKeys_Params_Promise) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_TlsKeyCallback_setKeys_Params_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_TlsKeyCallback_setKeys_Params{s}, err
 }
 
@@ -4242,7 +4293,7 @@ func NewRootGatewayRouter_TlsKeyCallback_setKeys_Results(s *capnp.Segment) (Gate
 }
 
 func ReadRootGatewayRouter_TlsKeyCallback_setKeys_Results(msg *capnp.Message) (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_TlsKeyCallback_setKeys_Results{root.Struct()}, err
 }
 
@@ -4273,11 +4324,11 @@ func (s GatewayRouter_TlsKeyCallback_setKeys_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_TlsKeyCallback_setKeys_Results_Promise is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Results promised by a client call.
-type GatewayRouter_TlsKeyCallback_setKeys_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_TlsKeyCallback_setKeys_Results_Future is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Results promised by a client call.
+type GatewayRouter_TlsKeyCallback_setKeys_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_TlsKeyCallback_setKeys_Results_Promise) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_TlsKeyCallback_setKeys_Results_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_TlsKeyCallback_setKeys_Results{s}, err
 }
 
@@ -4297,7 +4348,7 @@ func NewRootGatewayRouter_openUiSession_Params(s *capnp.Segment) (GatewayRouter_
 }
 
 func ReadRootGatewayRouter_openUiSession_Params(msg *capnp.Message) (GatewayRouter_openUiSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_openUiSession_Params{root.Struct()}, err
 }
 
@@ -4312,8 +4363,7 @@ func (s GatewayRouter_openUiSession_Params) SessionCookie() (string, error) {
 }
 
 func (s GatewayRouter_openUiSession_Params) HasSessionCookie() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_openUiSession_Params) SessionCookieBytes() ([]byte, error) {
@@ -4331,8 +4381,7 @@ func (s GatewayRouter_openUiSession_Params) Params() (websession.WebSession_Para
 }
 
 func (s GatewayRouter_openUiSession_Params) HasParams() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s GatewayRouter_openUiSession_Params) SetParams(v websession.WebSession_Params) error {
@@ -4372,16 +4421,16 @@ func (s GatewayRouter_openUiSession_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_openUiSession_Params_Promise is a wrapper for a GatewayRouter_openUiSession_Params promised by a client call.
-type GatewayRouter_openUiSession_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_openUiSession_Params_Future is a wrapper for a GatewayRouter_openUiSession_Params promised by a client call.
+type GatewayRouter_openUiSession_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openUiSession_Params_Promise) Struct() (GatewayRouter_openUiSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_openUiSession_Params_Future) Struct() (GatewayRouter_openUiSession_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_openUiSession_Params{s}, err
 }
 
-func (p GatewayRouter_openUiSession_Params_Promise) Params() websession.WebSession_Params_Promise {
-	return websession.WebSession_Params_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p GatewayRouter_openUiSession_Params_Future) Params() websession.WebSession_Params_Future {
+	return websession.WebSession_Params_Future{Future: p.Future.Field(1, nil)}
 }
 
 type GatewayRouter_openUiSession_Results struct{ capnp.Struct }
@@ -4400,7 +4449,7 @@ func NewRootGatewayRouter_openUiSession_Results(s *capnp.Segment) (GatewayRouter
 }
 
 func ReadRootGatewayRouter_openUiSession_Results(msg *capnp.Message) (GatewayRouter_openUiSession_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_openUiSession_Results{root.Struct()}, err
 }
 
@@ -4415,12 +4464,11 @@ func (s GatewayRouter_openUiSession_Results) Session() websession.WebSession {
 }
 
 func (s GatewayRouter_openUiSession_Results) HasSession() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_openUiSession_Results) SetSession(v websession.WebSession) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4434,12 +4482,11 @@ func (s GatewayRouter_openUiSession_Results) LoadingIndicator() util.Handle {
 }
 
 func (s GatewayRouter_openUiSession_Results) HasLoadingIndicator() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s GatewayRouter_openUiSession_Results) SetLoadingIndicator(v util.Handle) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4469,20 +4516,20 @@ func (s GatewayRouter_openUiSession_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_openUiSession_Results_Promise is a wrapper for a GatewayRouter_openUiSession_Results promised by a client call.
-type GatewayRouter_openUiSession_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_openUiSession_Results_Future is a wrapper for a GatewayRouter_openUiSession_Results promised by a client call.
+type GatewayRouter_openUiSession_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openUiSession_Results_Promise) Struct() (GatewayRouter_openUiSession_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_openUiSession_Results_Future) Struct() (GatewayRouter_openUiSession_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_openUiSession_Results{s}, err
 }
 
-func (p GatewayRouter_openUiSession_Results_Promise) Session() websession.WebSession {
-	return websession.WebSession{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p GatewayRouter_openUiSession_Results_Future) Session() websession.WebSession {
+	return websession.WebSession{Client: p.Future.Field(0, nil).Client()}
 }
 
-func (p GatewayRouter_openUiSession_Results_Promise) LoadingIndicator() util.Handle {
-	return util.Handle{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p GatewayRouter_openUiSession_Results_Future) LoadingIndicator() util.Handle {
+	return util.Handle{Client: p.Future.Field(1, nil).Client()}
 }
 
 type GatewayRouter_openApiSession_Params struct{ capnp.Struct }
@@ -4501,7 +4548,7 @@ func NewRootGatewayRouter_openApiSession_Params(s *capnp.Segment) (GatewayRouter
 }
 
 func ReadRootGatewayRouter_openApiSession_Params(msg *capnp.Message) (GatewayRouter_openApiSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_openApiSession_Params{root.Struct()}, err
 }
 
@@ -4516,8 +4563,7 @@ func (s GatewayRouter_openApiSession_Params) ApiToken() (string, error) {
 }
 
 func (s GatewayRouter_openApiSession_Params) HasApiToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_openApiSession_Params) ApiTokenBytes() ([]byte, error) {
@@ -4551,11 +4597,11 @@ func (s GatewayRouter_openApiSession_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_openApiSession_Params_Promise is a wrapper for a GatewayRouter_openApiSession_Params promised by a client call.
-type GatewayRouter_openApiSession_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_openApiSession_Params_Future is a wrapper for a GatewayRouter_openApiSession_Params promised by a client call.
+type GatewayRouter_openApiSession_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openApiSession_Params_Promise) Struct() (GatewayRouter_openApiSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_openApiSession_Params_Future) Struct() (GatewayRouter_openApiSession_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_openApiSession_Params{s}, err
 }
 
@@ -4575,7 +4621,7 @@ func NewRootGatewayRouter_openApiSession_Results(s *capnp.Segment) (GatewayRoute
 }
 
 func ReadRootGatewayRouter_openApiSession_Results(msg *capnp.Message) (GatewayRouter_openApiSession_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_openApiSession_Results{root.Struct()}, err
 }
 
@@ -4590,12 +4636,11 @@ func (s GatewayRouter_openApiSession_Results) Session() apisession.ApiSession {
 }
 
 func (s GatewayRouter_openApiSession_Results) HasSession() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_openApiSession_Results) SetSession(v apisession.ApiSession) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4625,16 +4670,16 @@ func (s GatewayRouter_openApiSession_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_openApiSession_Results_Promise is a wrapper for a GatewayRouter_openApiSession_Results promised by a client call.
-type GatewayRouter_openApiSession_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_openApiSession_Results_Future is a wrapper for a GatewayRouter_openApiSession_Results promised by a client call.
+type GatewayRouter_openApiSession_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openApiSession_Results_Promise) Struct() (GatewayRouter_openApiSession_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_openApiSession_Results_Future) Struct() (GatewayRouter_openApiSession_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_openApiSession_Results{s}, err
 }
 
-func (p GatewayRouter_openApiSession_Results_Promise) Session() apisession.ApiSession {
-	return apisession.ApiSession{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p GatewayRouter_openApiSession_Results_Future) Session() apisession.ApiSession {
+	return apisession.ApiSession{Client: p.Future.Field(0, nil).Client()}
 }
 
 type GatewayRouter_getStaticAsset_Params struct{ capnp.Struct }
@@ -4653,7 +4698,7 @@ func NewRootGatewayRouter_getStaticAsset_Params(s *capnp.Segment) (GatewayRouter
 }
 
 func ReadRootGatewayRouter_getStaticAsset_Params(msg *capnp.Message) (GatewayRouter_getStaticAsset_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_getStaticAsset_Params{root.Struct()}, err
 }
 
@@ -4668,8 +4713,7 @@ func (s GatewayRouter_getStaticAsset_Params) Id() (string, error) {
 }
 
 func (s GatewayRouter_getStaticAsset_Params) HasId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_getStaticAsset_Params) IdBytes() ([]byte, error) {
@@ -4703,11 +4747,11 @@ func (s GatewayRouter_getStaticAsset_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_getStaticAsset_Params_Promise is a wrapper for a GatewayRouter_getStaticAsset_Params promised by a client call.
-type GatewayRouter_getStaticAsset_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_getStaticAsset_Params_Future is a wrapper for a GatewayRouter_getStaticAsset_Params promised by a client call.
+type GatewayRouter_getStaticAsset_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticAsset_Params_Promise) Struct() (GatewayRouter_getStaticAsset_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_getStaticAsset_Params_Future) Struct() (GatewayRouter_getStaticAsset_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_getStaticAsset_Params{s}, err
 }
 
@@ -4727,7 +4771,7 @@ func NewRootGatewayRouter_getStaticAsset_Results(s *capnp.Segment) (GatewayRoute
 }
 
 func ReadRootGatewayRouter_getStaticAsset_Results(msg *capnp.Message) (GatewayRouter_getStaticAsset_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_getStaticAsset_Results{root.Struct()}, err
 }
 
@@ -4742,8 +4786,7 @@ func (s GatewayRouter_getStaticAsset_Results) Content() ([]byte, error) {
 }
 
 func (s GatewayRouter_getStaticAsset_Results) HasContent() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_getStaticAsset_Results) SetContent(v []byte) error {
@@ -4756,8 +4799,7 @@ func (s GatewayRouter_getStaticAsset_Results) Type() (string, error) {
 }
 
 func (s GatewayRouter_getStaticAsset_Results) HasType() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s GatewayRouter_getStaticAsset_Results) TypeBytes() ([]byte, error) {
@@ -4775,8 +4817,7 @@ func (s GatewayRouter_getStaticAsset_Results) Encoding() (string, error) {
 }
 
 func (s GatewayRouter_getStaticAsset_Results) HasEncoding() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s GatewayRouter_getStaticAsset_Results) EncodingBytes() ([]byte, error) {
@@ -4810,11 +4851,11 @@ func (s GatewayRouter_getStaticAsset_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_getStaticAsset_Results_Promise is a wrapper for a GatewayRouter_getStaticAsset_Results promised by a client call.
-type GatewayRouter_getStaticAsset_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_getStaticAsset_Results_Future is a wrapper for a GatewayRouter_getStaticAsset_Results promised by a client call.
+type GatewayRouter_getStaticAsset_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticAsset_Results_Promise) Struct() (GatewayRouter_getStaticAsset_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_getStaticAsset_Results_Future) Struct() (GatewayRouter_getStaticAsset_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_getStaticAsset_Results{s}, err
 }
 
@@ -4834,7 +4875,7 @@ func NewRootGatewayRouter_getStaticPublishingHost_Params(s *capnp.Segment) (Gate
 }
 
 func ReadRootGatewayRouter_getStaticPublishingHost_Params(msg *capnp.Message) (GatewayRouter_getStaticPublishingHost_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_getStaticPublishingHost_Params{root.Struct()}, err
 }
 
@@ -4849,8 +4890,7 @@ func (s GatewayRouter_getStaticPublishingHost_Params) PublicId() (string, error)
 }
 
 func (s GatewayRouter_getStaticPublishingHost_Params) HasPublicId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_getStaticPublishingHost_Params) PublicIdBytes() ([]byte, error) {
@@ -4884,11 +4924,11 @@ func (s GatewayRouter_getStaticPublishingHost_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_getStaticPublishingHost_Params_Promise is a wrapper for a GatewayRouter_getStaticPublishingHost_Params promised by a client call.
-type GatewayRouter_getStaticPublishingHost_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_getStaticPublishingHost_Params_Future is a wrapper for a GatewayRouter_getStaticPublishingHost_Params promised by a client call.
+type GatewayRouter_getStaticPublishingHost_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticPublishingHost_Params_Promise) Struct() (GatewayRouter_getStaticPublishingHost_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_getStaticPublishingHost_Params_Future) Struct() (GatewayRouter_getStaticPublishingHost_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_getStaticPublishingHost_Params{s}, err
 }
 
@@ -4908,7 +4948,7 @@ func NewRootGatewayRouter_getStaticPublishingHost_Results(s *capnp.Segment) (Gat
 }
 
 func ReadRootGatewayRouter_getStaticPublishingHost_Results(msg *capnp.Message) (GatewayRouter_getStaticPublishingHost_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_getStaticPublishingHost_Results{root.Struct()}, err
 }
 
@@ -4923,12 +4963,11 @@ func (s GatewayRouter_getStaticPublishingHost_Results) Supervisor() supervisor.S
 }
 
 func (s GatewayRouter_getStaticPublishingHost_Results) HasSupervisor() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_getStaticPublishingHost_Results) SetSupervisor(v supervisor.Supervisor) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4958,16 +4997,16 @@ func (s GatewayRouter_getStaticPublishingHost_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_getStaticPublishingHost_Results_Promise is a wrapper for a GatewayRouter_getStaticPublishingHost_Results promised by a client call.
-type GatewayRouter_getStaticPublishingHost_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_getStaticPublishingHost_Results_Future is a wrapper for a GatewayRouter_getStaticPublishingHost_Results promised by a client call.
+type GatewayRouter_getStaticPublishingHost_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticPublishingHost_Results_Promise) Struct() (GatewayRouter_getStaticPublishingHost_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_getStaticPublishingHost_Results_Future) Struct() (GatewayRouter_getStaticPublishingHost_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_getStaticPublishingHost_Results{s}, err
 }
 
-func (p GatewayRouter_getStaticPublishingHost_Results_Promise) Supervisor() supervisor.Supervisor {
-	return supervisor.Supervisor{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p GatewayRouter_getStaticPublishingHost_Results_Future) Supervisor() supervisor.Supervisor {
+	return supervisor.Supervisor{Client: p.Future.Field(0, nil).Client()}
 }
 
 type GatewayRouter_routeForeignHostname_Params struct{ capnp.Struct }
@@ -4986,7 +5025,7 @@ func NewRootGatewayRouter_routeForeignHostname_Params(s *capnp.Segment) (Gateway
 }
 
 func ReadRootGatewayRouter_routeForeignHostname_Params(msg *capnp.Message) (GatewayRouter_routeForeignHostname_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_routeForeignHostname_Params{root.Struct()}, err
 }
 
@@ -5001,8 +5040,7 @@ func (s GatewayRouter_routeForeignHostname_Params) Hostname() (string, error) {
 }
 
 func (s GatewayRouter_routeForeignHostname_Params) HasHostname() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_routeForeignHostname_Params) HostnameBytes() ([]byte, error) {
@@ -5036,11 +5074,11 @@ func (s GatewayRouter_routeForeignHostname_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_routeForeignHostname_Params_Promise is a wrapper for a GatewayRouter_routeForeignHostname_Params promised by a client call.
-type GatewayRouter_routeForeignHostname_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_routeForeignHostname_Params_Future is a wrapper for a GatewayRouter_routeForeignHostname_Params promised by a client call.
+type GatewayRouter_routeForeignHostname_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_routeForeignHostname_Params_Promise) Struct() (GatewayRouter_routeForeignHostname_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_routeForeignHostname_Params_Future) Struct() (GatewayRouter_routeForeignHostname_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_routeForeignHostname_Params{s}, err
 }
 
@@ -5060,7 +5098,7 @@ func NewRootGatewayRouter_routeForeignHostname_Results(s *capnp.Segment) (Gatewa
 }
 
 func ReadRootGatewayRouter_routeForeignHostname_Results(msg *capnp.Message) (GatewayRouter_routeForeignHostname_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_routeForeignHostname_Results{root.Struct()}, err
 }
 
@@ -5075,8 +5113,7 @@ func (s GatewayRouter_routeForeignHostname_Results) Info() (GatewayRouter_Foreig
 }
 
 func (s GatewayRouter_routeForeignHostname_Results) HasInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_routeForeignHostname_Results) SetInfo(v GatewayRouter_ForeignHostnameInfo) error {
@@ -5116,16 +5153,16 @@ func (s GatewayRouter_routeForeignHostname_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_routeForeignHostname_Results_Promise is a wrapper for a GatewayRouter_routeForeignHostname_Results promised by a client call.
-type GatewayRouter_routeForeignHostname_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_routeForeignHostname_Results_Future is a wrapper for a GatewayRouter_routeForeignHostname_Results promised by a client call.
+type GatewayRouter_routeForeignHostname_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_routeForeignHostname_Results_Promise) Struct() (GatewayRouter_routeForeignHostname_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_routeForeignHostname_Results_Future) Struct() (GatewayRouter_routeForeignHostname_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_routeForeignHostname_Results{s}, err
 }
 
-func (p GatewayRouter_routeForeignHostname_Results_Promise) Info() GatewayRouter_ForeignHostnameInfo_Promise {
-	return GatewayRouter_ForeignHostnameInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p GatewayRouter_routeForeignHostname_Results_Future) Info() GatewayRouter_ForeignHostnameInfo_Future {
+	return GatewayRouter_ForeignHostnameInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
 type GatewayRouter_subscribeTlsKeys_Params struct{ capnp.Struct }
@@ -5144,7 +5181,7 @@ func NewRootGatewayRouter_subscribeTlsKeys_Params(s *capnp.Segment) (GatewayRout
 }
 
 func ReadRootGatewayRouter_subscribeTlsKeys_Params(msg *capnp.Message) (GatewayRouter_subscribeTlsKeys_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_subscribeTlsKeys_Params{root.Struct()}, err
 }
 
@@ -5159,12 +5196,11 @@ func (s GatewayRouter_subscribeTlsKeys_Params) Callback() GatewayRouter_TlsKeyCa
 }
 
 func (s GatewayRouter_subscribeTlsKeys_Params) HasCallback() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s GatewayRouter_subscribeTlsKeys_Params) SetCallback(v GatewayRouter_TlsKeyCallback) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -5194,16 +5230,16 @@ func (s GatewayRouter_subscribeTlsKeys_Params_List) String() string {
 	return str
 }
 
-// GatewayRouter_subscribeTlsKeys_Params_Promise is a wrapper for a GatewayRouter_subscribeTlsKeys_Params promised by a client call.
-type GatewayRouter_subscribeTlsKeys_Params_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_subscribeTlsKeys_Params_Future is a wrapper for a GatewayRouter_subscribeTlsKeys_Params promised by a client call.
+type GatewayRouter_subscribeTlsKeys_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_subscribeTlsKeys_Params_Promise) Struct() (GatewayRouter_subscribeTlsKeys_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_subscribeTlsKeys_Params_Future) Struct() (GatewayRouter_subscribeTlsKeys_Params, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_subscribeTlsKeys_Params{s}, err
 }
 
-func (p GatewayRouter_subscribeTlsKeys_Params_Promise) Callback() GatewayRouter_TlsKeyCallback {
-	return GatewayRouter_TlsKeyCallback{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p GatewayRouter_subscribeTlsKeys_Params_Future) Callback() GatewayRouter_TlsKeyCallback {
+	return GatewayRouter_TlsKeyCallback{Client: p.Future.Field(0, nil).Client()}
 }
 
 type GatewayRouter_subscribeTlsKeys_Results struct{ capnp.Struct }
@@ -5222,7 +5258,7 @@ func NewRootGatewayRouter_subscribeTlsKeys_Results(s *capnp.Segment) (GatewayRou
 }
 
 func ReadRootGatewayRouter_subscribeTlsKeys_Results(msg *capnp.Message) (GatewayRouter_subscribeTlsKeys_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return GatewayRouter_subscribeTlsKeys_Results{root.Struct()}, err
 }
 
@@ -5253,71 +5289,73 @@ func (s GatewayRouter_subscribeTlsKeys_Results_List) String() string {
 	return str
 }
 
-// GatewayRouter_subscribeTlsKeys_Results_Promise is a wrapper for a GatewayRouter_subscribeTlsKeys_Results promised by a client call.
-type GatewayRouter_subscribeTlsKeys_Results_Promise struct{ *capnp.Pipeline }
+// GatewayRouter_subscribeTlsKeys_Results_Future is a wrapper for a GatewayRouter_subscribeTlsKeys_Results promised by a client call.
+type GatewayRouter_subscribeTlsKeys_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_subscribeTlsKeys_Results_Promise) Struct() (GatewayRouter_subscribeTlsKeys_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p GatewayRouter_subscribeTlsKeys_Results_Future) Struct() (GatewayRouter_subscribeTlsKeys_Results, error) {
+	s, err := p.Future.Struct()
 	return GatewayRouter_subscribeTlsKeys_Results{s}, err
 }
 
-type SandstormCoreFactory struct{ Client capnp.Client }
+type SandstormCoreFactory struct{ Client *capnp.Client }
 
 // SandstormCoreFactory_TypeID is the unique identifier for the type SandstormCoreFactory.
 const SandstormCoreFactory_TypeID = 0xf0832c3f66256d2b
 
-func (c SandstormCoreFactory) GetSandstormCore(ctx context.Context, params func(SandstormCoreFactory_getSandstormCore_Params) error, opts ...capnp.CallOption) SandstormCoreFactory_getSandstormCore_Results_Promise {
-	if c.Client == nil {
-		return SandstormCoreFactory_getSandstormCore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormCoreFactory) GetSandstormCore(ctx context.Context, params func(SandstormCoreFactory_getSandstormCore_Params) error) (SandstormCoreFactory_getSandstormCore_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xf0832c3f66256d2b,
 			MethodID:      0,
 			InterfaceName: "backend.capnp:SandstormCoreFactory",
 			MethodName:    "getSandstormCore",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormCoreFactory_getSandstormCore_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCoreFactory_getSandstormCore_Params{Struct: s}) }
 	}
-	return SandstormCoreFactory_getSandstormCore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormCoreFactory_getSandstormCore_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormCoreFactory) GetGatewayRouter(ctx context.Context, params func(SandstormCoreFactory_getGatewayRouter_Params) error, opts ...capnp.CallOption) SandstormCoreFactory_getGatewayRouter_Results_Promise {
-	if c.Client == nil {
-		return SandstormCoreFactory_getGatewayRouter_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormCoreFactory) GetGatewayRouter(ctx context.Context, params func(SandstormCoreFactory_getGatewayRouter_Params) error) (SandstormCoreFactory_getGatewayRouter_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xf0832c3f66256d2b,
 			MethodID:      1,
 			InterfaceName: "backend.capnp:SandstormCoreFactory",
 			MethodName:    "getGatewayRouter",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormCoreFactory_getGatewayRouter_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCoreFactory_getGatewayRouter_Params{Struct: s}) }
 	}
-	return SandstormCoreFactory_getGatewayRouter_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormCoreFactory_getGatewayRouter_Results_Future{Future: ans.Future()}, release
 }
 
+// A SandstormCoreFactory_Server is a SandstormCoreFactory with a local implementation.
 type SandstormCoreFactory_Server interface {
-	GetSandstormCore(SandstormCoreFactory_getSandstormCore) error
+	GetSandstormCore(context.Context, SandstormCoreFactory_getSandstormCore) error
 
-	GetGatewayRouter(SandstormCoreFactory_getGatewayRouter) error
+	GetGatewayRouter(context.Context, SandstormCoreFactory_getGatewayRouter) error
 }
 
-func SandstormCoreFactory_ServerToClient(s SandstormCoreFactory_Server) SandstormCoreFactory {
-	c, _ := s.(server.Closer)
-	return SandstormCoreFactory{Client: server.New(SandstormCoreFactory_Methods(nil, s), c)}
+// SandstormCoreFactory_NewServer creates a new Server from an implementation of SandstormCoreFactory_Server.
+func SandstormCoreFactory_NewServer(s SandstormCoreFactory_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(SandstormCoreFactory_Methods(nil, s), s, c, policy)
 }
 
+// SandstormCoreFactory_ServerToClient creates a new Client from an implementation of SandstormCoreFactory_Server.
+// The caller is responsible for calling Release on the returned Client.
+func SandstormCoreFactory_ServerToClient(s SandstormCoreFactory_Server, policy *server.Policy) SandstormCoreFactory {
+	return SandstormCoreFactory{Client: capnp.NewClient(SandstormCoreFactory_NewServer(s, policy))}
+}
+
+// SandstormCoreFactory_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func SandstormCoreFactory_Methods(methods []server.Method, s SandstormCoreFactory_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -5330,11 +5368,9 @@ func SandstormCoreFactory_Methods(methods []server.Method, s SandstormCoreFactor
 			InterfaceName: "backend.capnp:SandstormCoreFactory",
 			MethodName:    "getSandstormCore",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormCoreFactory_getSandstormCore{c, opts, SandstormCoreFactory_getSandstormCore_Params{Struct: p}, SandstormCoreFactory_getSandstormCore_Results{Struct: r}}
-			return s.GetSandstormCore(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSandstormCore(ctx, SandstormCoreFactory_getSandstormCore{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -5344,30 +5380,46 @@ func SandstormCoreFactory_Methods(methods []server.Method, s SandstormCoreFactor
 			InterfaceName: "backend.capnp:SandstormCoreFactory",
 			MethodName:    "getGatewayRouter",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormCoreFactory_getGatewayRouter{c, opts, SandstormCoreFactory_getGatewayRouter_Params{Struct: p}, SandstormCoreFactory_getGatewayRouter_Results{Struct: r}}
-			return s.GetGatewayRouter(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetGatewayRouter(ctx, SandstormCoreFactory_getGatewayRouter{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// SandstormCoreFactory_getSandstormCore holds the arguments for a server call to SandstormCoreFactory.getSandstormCore.
+// SandstormCoreFactory_getSandstormCore holds the state for a server call to SandstormCoreFactory.getSandstormCore.
+// See server.Call for documentation.
 type SandstormCoreFactory_getSandstormCore struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormCoreFactory_getSandstormCore_Params
-	Results SandstormCoreFactory_getSandstormCore_Results
+	*server.Call
 }
 
-// SandstormCoreFactory_getGatewayRouter holds the arguments for a server call to SandstormCoreFactory.getGatewayRouter.
+// Args returns the call's arguments.
+func (c SandstormCoreFactory_getSandstormCore) Args() SandstormCoreFactory_getSandstormCore_Params {
+	return SandstormCoreFactory_getSandstormCore_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormCoreFactory_getSandstormCore) AllocResults() (SandstormCoreFactory_getSandstormCore_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCoreFactory_getSandstormCore_Results{Struct: r}, err
+}
+
+// SandstormCoreFactory_getGatewayRouter holds the state for a server call to SandstormCoreFactory.getGatewayRouter.
+// See server.Call for documentation.
 type SandstormCoreFactory_getGatewayRouter struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormCoreFactory_getGatewayRouter_Params
-	Results SandstormCoreFactory_getGatewayRouter_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormCoreFactory_getGatewayRouter) Args() SandstormCoreFactory_getGatewayRouter_Params {
+	return SandstormCoreFactory_getGatewayRouter_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormCoreFactory_getGatewayRouter) AllocResults() (SandstormCoreFactory_getGatewayRouter_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCoreFactory_getGatewayRouter_Results{Struct: r}, err
 }
 
 type SandstormCoreFactory_getSandstormCore_Params struct{ capnp.Struct }
@@ -5386,7 +5438,7 @@ func NewRootSandstormCoreFactory_getSandstormCore_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormCoreFactory_getSandstormCore_Params(msg *capnp.Message) (SandstormCoreFactory_getSandstormCore_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormCoreFactory_getSandstormCore_Params{root.Struct()}, err
 }
 
@@ -5401,8 +5453,7 @@ func (s SandstormCoreFactory_getSandstormCore_Params) GrainId() (string, error) 
 }
 
 func (s SandstormCoreFactory_getSandstormCore_Params) HasGrainId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormCoreFactory_getSandstormCore_Params) GrainIdBytes() ([]byte, error) {
@@ -5436,11 +5487,11 @@ func (s SandstormCoreFactory_getSandstormCore_Params_List) String() string {
 	return str
 }
 
-// SandstormCoreFactory_getSandstormCore_Params_Promise is a wrapper for a SandstormCoreFactory_getSandstormCore_Params promised by a client call.
-type SandstormCoreFactory_getSandstormCore_Params_Promise struct{ *capnp.Pipeline }
+// SandstormCoreFactory_getSandstormCore_Params_Future is a wrapper for a SandstormCoreFactory_getSandstormCore_Params promised by a client call.
+type SandstormCoreFactory_getSandstormCore_Params_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getSandstormCore_Params_Promise) Struct() (SandstormCoreFactory_getSandstormCore_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormCoreFactory_getSandstormCore_Params_Future) Struct() (SandstormCoreFactory_getSandstormCore_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormCoreFactory_getSandstormCore_Params{s}, err
 }
 
@@ -5460,7 +5511,7 @@ func NewRootSandstormCoreFactory_getSandstormCore_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormCoreFactory_getSandstormCore_Results(msg *capnp.Message) (SandstormCoreFactory_getSandstormCore_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormCoreFactory_getSandstormCore_Results{root.Struct()}, err
 }
 
@@ -5475,12 +5526,11 @@ func (s SandstormCoreFactory_getSandstormCore_Results) Core() supervisor.Sandsto
 }
 
 func (s SandstormCoreFactory_getSandstormCore_Results) HasCore() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormCoreFactory_getSandstormCore_Results) SetCore(v supervisor.SandstormCore) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -5510,16 +5560,16 @@ func (s SandstormCoreFactory_getSandstormCore_Results_List) String() string {
 	return str
 }
 
-// SandstormCoreFactory_getSandstormCore_Results_Promise is a wrapper for a SandstormCoreFactory_getSandstormCore_Results promised by a client call.
-type SandstormCoreFactory_getSandstormCore_Results_Promise struct{ *capnp.Pipeline }
+// SandstormCoreFactory_getSandstormCore_Results_Future is a wrapper for a SandstormCoreFactory_getSandstormCore_Results promised by a client call.
+type SandstormCoreFactory_getSandstormCore_Results_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getSandstormCore_Results_Promise) Struct() (SandstormCoreFactory_getSandstormCore_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormCoreFactory_getSandstormCore_Results_Future) Struct() (SandstormCoreFactory_getSandstormCore_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormCoreFactory_getSandstormCore_Results{s}, err
 }
 
-func (p SandstormCoreFactory_getSandstormCore_Results_Promise) Core() supervisor.SandstormCore {
-	return supervisor.SandstormCore{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormCoreFactory_getSandstormCore_Results_Future) Core() supervisor.SandstormCore {
+	return supervisor.SandstormCore{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormCoreFactory_getGatewayRouter_Params struct{ capnp.Struct }
@@ -5538,7 +5588,7 @@ func NewRootSandstormCoreFactory_getGatewayRouter_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormCoreFactory_getGatewayRouter_Params(msg *capnp.Message) (SandstormCoreFactory_getGatewayRouter_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormCoreFactory_getGatewayRouter_Params{root.Struct()}, err
 }
 
@@ -5569,11 +5619,11 @@ func (s SandstormCoreFactory_getGatewayRouter_Params_List) String() string {
 	return str
 }
 
-// SandstormCoreFactory_getGatewayRouter_Params_Promise is a wrapper for a SandstormCoreFactory_getGatewayRouter_Params promised by a client call.
-type SandstormCoreFactory_getGatewayRouter_Params_Promise struct{ *capnp.Pipeline }
+// SandstormCoreFactory_getGatewayRouter_Params_Future is a wrapper for a SandstormCoreFactory_getGatewayRouter_Params promised by a client call.
+type SandstormCoreFactory_getGatewayRouter_Params_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getGatewayRouter_Params_Promise) Struct() (SandstormCoreFactory_getGatewayRouter_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormCoreFactory_getGatewayRouter_Params_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormCoreFactory_getGatewayRouter_Params{s}, err
 }
 
@@ -5593,7 +5643,7 @@ func NewRootSandstormCoreFactory_getGatewayRouter_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormCoreFactory_getGatewayRouter_Results(msg *capnp.Message) (SandstormCoreFactory_getGatewayRouter_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormCoreFactory_getGatewayRouter_Results{root.Struct()}, err
 }
 
@@ -5608,12 +5658,11 @@ func (s SandstormCoreFactory_getGatewayRouter_Results) Router() GatewayRouter {
 }
 
 func (s SandstormCoreFactory_getGatewayRouter_Results) HasRouter() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormCoreFactory_getGatewayRouter_Results) SetRouter(v GatewayRouter) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -5643,16 +5692,16 @@ func (s SandstormCoreFactory_getGatewayRouter_Results_List) String() string {
 	return str
 }
 
-// SandstormCoreFactory_getGatewayRouter_Results_Promise is a wrapper for a SandstormCoreFactory_getGatewayRouter_Results promised by a client call.
-type SandstormCoreFactory_getGatewayRouter_Results_Promise struct{ *capnp.Pipeline }
+// SandstormCoreFactory_getGatewayRouter_Results_Future is a wrapper for a SandstormCoreFactory_getGatewayRouter_Results promised by a client call.
+type SandstormCoreFactory_getGatewayRouter_Results_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getGatewayRouter_Results_Promise) Struct() (SandstormCoreFactory_getGatewayRouter_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormCoreFactory_getGatewayRouter_Results{s}, err
 }
 
-func (p SandstormCoreFactory_getGatewayRouter_Results_Promise) Router() GatewayRouter {
-	return GatewayRouter{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Router() GatewayRouter {
+	return GatewayRouter{Client: p.Future.Field(0, nil).Client()}
 }
 
 const schema_dcbc0d702b1b47a5 = "x\xda\xccY}t\x14U\x96\xbf\xb7\xaa;E\x1cb" +

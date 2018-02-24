@@ -26,7 +26,7 @@ const (
 
 // Constants defined in appid-replacements-test.capnp.
 var (
-	TestAppIdReplacementList = appidreplacements.AppIdReplacement_List{List: capnp.MustUnmarshalRootPtr(x_bee445adfb01a777[0:712]).List()}
+	TestAppIdReplacementList = appidreplacements.AppIdReplacement_List{List: capnp.MustUnmarshalRoot(x_bee445adfb01a777[0:712]).List()}
 )
 
 type TestIds struct{ capnp.Struct }
@@ -45,7 +45,7 @@ func NewRootTestIds(s *capnp.Segment) (TestIds, error) {
 }
 
 func ReadRootTestIds(msg *capnp.Message) (TestIds, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return TestIds{root.Struct()}, err
 }
 
@@ -72,11 +72,11 @@ func (s TestIds_List) String() string {
 	return str
 }
 
-// TestIds_Promise is a wrapper for a TestIds promised by a client call.
-type TestIds_Promise struct{ *capnp.Pipeline }
+// TestIds_Future is a wrapper for a TestIds promised by a client call.
+type TestIds_Future struct{ *capnp.Future }
 
-func (p TestIds_Promise) Struct() (TestIds, error) {
-	s, err := p.Pipeline.Struct()
+func (p TestIds_Future) Struct() (TestIds, error) {
+	s, err := p.Future.Struct()
 	return TestIds{s}, err
 }
 

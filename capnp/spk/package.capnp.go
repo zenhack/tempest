@@ -42,7 +42,7 @@ func NewRootPackageDefinition(s *capnp.Segment) (PackageDefinition, error) {
 }
 
 func ReadRootPackageDefinition(msg *capnp.Message) (PackageDefinition, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PackageDefinition{root.Struct()}, err
 }
 
@@ -57,8 +57,7 @@ func (s PackageDefinition) Id() (string, error) {
 }
 
 func (s PackageDefinition) HasId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s PackageDefinition) IdBytes() ([]byte, error) {
@@ -76,8 +75,7 @@ func (s PackageDefinition) Manifest() (Manifest, error) {
 }
 
 func (s PackageDefinition) HasManifest() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s PackageDefinition) SetManifest(v Manifest) error {
@@ -101,8 +99,7 @@ func (s PackageDefinition) SourceMap() (SourceMap, error) {
 }
 
 func (s PackageDefinition) HasSourceMap() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s PackageDefinition) SetSourceMap(v SourceMap) error {
@@ -126,8 +123,7 @@ func (s PackageDefinition) FileList() (string, error) {
 }
 
 func (s PackageDefinition) HasFileList() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s PackageDefinition) FileListBytes() ([]byte, error) {
@@ -145,8 +141,7 @@ func (s PackageDefinition) AlwaysInclude() (capnp.TextList, error) {
 }
 
 func (s PackageDefinition) HasAlwaysInclude() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s PackageDefinition) SetAlwaysInclude(v capnp.TextList) error {
@@ -170,8 +165,7 @@ func (s PackageDefinition) BridgeConfig() (BridgeConfig, error) {
 }
 
 func (s PackageDefinition) HasBridgeConfig() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s PackageDefinition) SetBridgeConfig(v BridgeConfig) error {
@@ -211,24 +205,24 @@ func (s PackageDefinition_List) String() string {
 	return str
 }
 
-// PackageDefinition_Promise is a wrapper for a PackageDefinition promised by a client call.
-type PackageDefinition_Promise struct{ *capnp.Pipeline }
+// PackageDefinition_Future is a wrapper for a PackageDefinition promised by a client call.
+type PackageDefinition_Future struct{ *capnp.Future }
 
-func (p PackageDefinition_Promise) Struct() (PackageDefinition, error) {
-	s, err := p.Pipeline.Struct()
+func (p PackageDefinition_Future) Struct() (PackageDefinition, error) {
+	s, err := p.Future.Struct()
 	return PackageDefinition{s}, err
 }
 
-func (p PackageDefinition_Promise) Manifest() Manifest_Promise {
-	return Manifest_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p PackageDefinition_Future) Manifest() Manifest_Future {
+	return Manifest_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p PackageDefinition_Promise) SourceMap() SourceMap_Promise {
-	return SourceMap_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p PackageDefinition_Future) SourceMap() SourceMap_Future {
+	return SourceMap_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p PackageDefinition_Promise) BridgeConfig() BridgeConfig_Promise {
-	return BridgeConfig_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p PackageDefinition_Future) BridgeConfig() BridgeConfig_Future {
+	return BridgeConfig_Future{Future: p.Future.Field(5, nil)}
 }
 
 type Manifest struct{ capnp.Struct }
@@ -247,7 +241,7 @@ func NewRootManifest(s *capnp.Segment) (Manifest, error) {
 }
 
 func ReadRootManifest(msg *capnp.Message) (Manifest, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Manifest{root.Struct()}, err
 }
 
@@ -262,8 +256,7 @@ func (s Manifest) AppTitle() (util.LocalizedText, error) {
 }
 
 func (s Manifest) HasAppTitle() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s Manifest) SetAppTitle(v util.LocalizedText) error {
@@ -303,8 +296,7 @@ func (s Manifest) AppMarketingVersion() (util.LocalizedText, error) {
 }
 
 func (s Manifest) HasAppMarketingVersion() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Manifest) SetAppMarketingVersion(v util.LocalizedText) error {
@@ -344,8 +336,7 @@ func (s Manifest) Metadata() (Metadata, error) {
 }
 
 func (s Manifest) HasMetadata() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s Manifest) SetMetadata(v Metadata) error {
@@ -369,8 +360,7 @@ func (s Manifest) Actions() (Manifest_Action_List, error) {
 }
 
 func (s Manifest) HasActions() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Manifest) SetActions(v Manifest_Action_List) error {
@@ -394,8 +384,7 @@ func (s Manifest) ContinueCommand() (Manifest_Command, error) {
 }
 
 func (s Manifest) HasContinueCommand() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Manifest) SetContinueCommand(v Manifest_Command) error {
@@ -431,28 +420,28 @@ func (s Manifest_List) String() string {
 	return str
 }
 
-// Manifest_Promise is a wrapper for a Manifest promised by a client call.
-type Manifest_Promise struct{ *capnp.Pipeline }
+// Manifest_Future is a wrapper for a Manifest promised by a client call.
+type Manifest_Future struct{ *capnp.Future }
 
-func (p Manifest_Promise) Struct() (Manifest, error) {
-	s, err := p.Pipeline.Struct()
+func (p Manifest_Future) Struct() (Manifest, error) {
+	s, err := p.Future.Struct()
 	return Manifest{s}, err
 }
 
-func (p Manifest_Promise) AppTitle() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p Manifest_Future) AppTitle() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
 
-func (p Manifest_Promise) AppMarketingVersion() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p Manifest_Future) AppMarketingVersion() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p Manifest_Promise) Metadata() Metadata_Promise {
-	return Metadata_Promise{Pipeline: p.Pipeline.GetPipeline(4)}
+func (p Manifest_Future) Metadata() Metadata_Future {
+	return Metadata_Future{Future: p.Future.Field(4, nil)}
 }
 
-func (p Manifest_Promise) ContinueCommand() Manifest_Command_Promise {
-	return Manifest_Command_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p Manifest_Future) ContinueCommand() Manifest_Command_Future {
+	return Manifest_Command_Future{Future: p.Future.Field(1, nil)}
 }
 
 type Manifest_Command struct{ capnp.Struct }
@@ -471,7 +460,7 @@ func NewRootManifest_Command(s *capnp.Segment) (Manifest_Command, error) {
 }
 
 func ReadRootManifest_Command(msg *capnp.Message) (Manifest_Command, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Manifest_Command{root.Struct()}, err
 }
 
@@ -486,8 +475,7 @@ func (s Manifest_Command) Argv() (capnp.TextList, error) {
 }
 
 func (s Manifest_Command) HasArgv() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Manifest_Command) SetArgv(v capnp.TextList) error {
@@ -511,8 +499,7 @@ func (s Manifest_Command) Environ() (util.KeyValue_List, error) {
 }
 
 func (s Manifest_Command) HasEnviron() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Manifest_Command) SetEnviron(v util.KeyValue_List) error {
@@ -536,8 +523,7 @@ func (s Manifest_Command) DeprecatedExecutablePath() (string, error) {
 }
 
 func (s Manifest_Command) HasDeprecatedExecutablePath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Manifest_Command) DeprecatedExecutablePathBytes() ([]byte, error) {
@@ -569,11 +555,11 @@ func (s Manifest_Command_List) String() string {
 	return str
 }
 
-// Manifest_Command_Promise is a wrapper for a Manifest_Command promised by a client call.
-type Manifest_Command_Promise struct{ *capnp.Pipeline }
+// Manifest_Command_Future is a wrapper for a Manifest_Command promised by a client call.
+type Manifest_Command_Future struct{ *capnp.Future }
 
-func (p Manifest_Command_Promise) Struct() (Manifest_Command, error) {
-	s, err := p.Pipeline.Struct()
+func (p Manifest_Command_Future) Struct() (Manifest_Command, error) {
+	s, err := p.Future.Struct()
 	return Manifest_Command{s}, err
 }
 
@@ -612,7 +598,7 @@ func NewRootManifest_Action(s *capnp.Segment) (Manifest_Action, error) {
 }
 
 func ReadRootManifest_Action(msg *capnp.Message) (Manifest_Action, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Manifest_Action{root.Struct()}, err
 }
 
@@ -643,8 +629,7 @@ func (s Manifest_Action_input) HasCapability() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Manifest_Action_input) SetCapability(v powerbox.PowerboxDescriptor_List) error {
@@ -670,8 +655,7 @@ func (s Manifest_Action) Command() (Manifest_Command, error) {
 }
 
 func (s Manifest_Action) HasCommand() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Manifest_Action) SetCommand(v Manifest_Command) error {
@@ -695,8 +679,7 @@ func (s Manifest_Action) Title() (util.LocalizedText, error) {
 }
 
 func (s Manifest_Action) HasTitle() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Manifest_Action) SetTitle(v util.LocalizedText) error {
@@ -720,8 +703,7 @@ func (s Manifest_Action) NounPhrase() (util.LocalizedText, error) {
 }
 
 func (s Manifest_Action) HasNounPhrase() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s Manifest_Action) SetNounPhrase(v util.LocalizedText) error {
@@ -745,8 +727,7 @@ func (s Manifest_Action) Description() (util.LocalizedText, error) {
 }
 
 func (s Manifest_Action) HasDescription() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s Manifest_Action) SetDescription(v util.LocalizedText) error {
@@ -784,40 +765,40 @@ func (s Manifest_Action_List) String() string {
 	return str
 }
 
-// Manifest_Action_Promise is a wrapper for a Manifest_Action promised by a client call.
-type Manifest_Action_Promise struct{ *capnp.Pipeline }
+// Manifest_Action_Future is a wrapper for a Manifest_Action promised by a client call.
+type Manifest_Action_Future struct{ *capnp.Future }
 
-func (p Manifest_Action_Promise) Struct() (Manifest_Action, error) {
-	s, err := p.Pipeline.Struct()
+func (p Manifest_Action_Future) Struct() (Manifest_Action, error) {
+	s, err := p.Future.Struct()
 	return Manifest_Action{s}, err
 }
 
-func (p Manifest_Action_Promise) Input() Manifest_Action_input_Promise {
-	return Manifest_Action_input_Promise{p.Pipeline}
+func (p Manifest_Action_Future) Input() Manifest_Action_input_Future {
+	return Manifest_Action_input_Future{p.Future}
 }
 
-// Manifest_Action_input_Promise is a wrapper for a Manifest_Action_input promised by a client call.
-type Manifest_Action_input_Promise struct{ *capnp.Pipeline }
+// Manifest_Action_input_Future is a wrapper for a Manifest_Action_input promised by a client call.
+type Manifest_Action_input_Future struct{ *capnp.Future }
 
-func (p Manifest_Action_input_Promise) Struct() (Manifest_Action_input, error) {
-	s, err := p.Pipeline.Struct()
+func (p Manifest_Action_input_Future) Struct() (Manifest_Action_input, error) {
+	s, err := p.Future.Struct()
 	return Manifest_Action_input{s}, err
 }
 
-func (p Manifest_Action_Promise) Command() Manifest_Command_Promise {
-	return Manifest_Command_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p Manifest_Action_Future) Command() Manifest_Command_Future {
+	return Manifest_Command_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p Manifest_Action_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p Manifest_Action_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p Manifest_Action_Promise) NounPhrase() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(4)}
+func (p Manifest_Action_Future) NounPhrase() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(4, nil)}
 }
 
-func (p Manifest_Action_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p Manifest_Action_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
 
 type SourceMap struct{ capnp.Struct }
@@ -836,7 +817,7 @@ func NewRootSourceMap(s *capnp.Segment) (SourceMap, error) {
 }
 
 func ReadRootSourceMap(msg *capnp.Message) (SourceMap, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SourceMap{root.Struct()}, err
 }
 
@@ -851,8 +832,7 @@ func (s SourceMap) SearchPath() (SourceMap_Mapping_List, error) {
 }
 
 func (s SourceMap) HasSearchPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SourceMap) SetSearchPath(v SourceMap_Mapping_List) error {
@@ -888,11 +868,11 @@ func (s SourceMap_List) String() string {
 	return str
 }
 
-// SourceMap_Promise is a wrapper for a SourceMap promised by a client call.
-type SourceMap_Promise struct{ *capnp.Pipeline }
+// SourceMap_Future is a wrapper for a SourceMap promised by a client call.
+type SourceMap_Future struct{ *capnp.Future }
 
-func (p SourceMap_Promise) Struct() (SourceMap, error) {
-	s, err := p.Pipeline.Struct()
+func (p SourceMap_Future) Struct() (SourceMap, error) {
+	s, err := p.Future.Struct()
 	return SourceMap{s}, err
 }
 
@@ -912,7 +892,7 @@ func NewRootSourceMap_Mapping(s *capnp.Segment) (SourceMap_Mapping, error) {
 }
 
 func ReadRootSourceMap_Mapping(msg *capnp.Message) (SourceMap_Mapping, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SourceMap_Mapping{root.Struct()}, err
 }
 
@@ -927,8 +907,7 @@ func (s SourceMap_Mapping) PackagePath() (string, error) {
 }
 
 func (s SourceMap_Mapping) HasPackagePath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SourceMap_Mapping) PackagePathBytes() ([]byte, error) {
@@ -946,8 +925,7 @@ func (s SourceMap_Mapping) SourcePath() (string, error) {
 }
 
 func (s SourceMap_Mapping) HasSourcePath() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SourceMap_Mapping) SourcePathBytes() ([]byte, error) {
@@ -965,8 +943,7 @@ func (s SourceMap_Mapping) HidePaths() (capnp.TextList, error) {
 }
 
 func (s SourceMap_Mapping) HasHidePaths() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s SourceMap_Mapping) SetHidePaths(v capnp.TextList) error {
@@ -1006,11 +983,11 @@ func (s SourceMap_Mapping_List) String() string {
 	return str
 }
 
-// SourceMap_Mapping_Promise is a wrapper for a SourceMap_Mapping promised by a client call.
-type SourceMap_Mapping_Promise struct{ *capnp.Pipeline }
+// SourceMap_Mapping_Future is a wrapper for a SourceMap_Mapping promised by a client call.
+type SourceMap_Mapping_Future struct{ *capnp.Future }
 
-func (p SourceMap_Mapping_Promise) Struct() (SourceMap_Mapping, error) {
-	s, err := p.Pipeline.Struct()
+func (p SourceMap_Mapping_Future) Struct() (SourceMap_Mapping, error) {
+	s, err := p.Future.Struct()
 	return SourceMap_Mapping{s}, err
 }
 
@@ -1030,7 +1007,7 @@ func NewRootBridgeConfig(s *capnp.Segment) (BridgeConfig, error) {
 }
 
 func ReadRootBridgeConfig(msg *capnp.Message) (BridgeConfig, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return BridgeConfig{root.Struct()}, err
 }
 
@@ -1045,8 +1022,7 @@ func (s BridgeConfig) ViewInfo() (grain.UiView_ViewInfo, error) {
 }
 
 func (s BridgeConfig) HasViewInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s BridgeConfig) SetViewInfo(v grain.UiView_ViewInfo) error {
@@ -1070,8 +1046,7 @@ func (s BridgeConfig) ApiPath() (string, error) {
 }
 
 func (s BridgeConfig) HasApiPath() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s BridgeConfig) ApiPathBytes() ([]byte, error) {
@@ -1097,8 +1072,7 @@ func (s BridgeConfig) PowerboxApis() (BridgeConfig_PowerboxApi_List, error) {
 }
 
 func (s BridgeConfig) HasPowerboxApis() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s BridgeConfig) SetPowerboxApis(v BridgeConfig_PowerboxApi_List) error {
@@ -1134,16 +1108,16 @@ func (s BridgeConfig_List) String() string {
 	return str
 }
 
-// BridgeConfig_Promise is a wrapper for a BridgeConfig promised by a client call.
-type BridgeConfig_Promise struct{ *capnp.Pipeline }
+// BridgeConfig_Future is a wrapper for a BridgeConfig promised by a client call.
+type BridgeConfig_Future struct{ *capnp.Future }
 
-func (p BridgeConfig_Promise) Struct() (BridgeConfig, error) {
-	s, err := p.Pipeline.Struct()
+func (p BridgeConfig_Future) Struct() (BridgeConfig, error) {
+	s, err := p.Future.Struct()
 	return BridgeConfig{s}, err
 }
 
-func (p BridgeConfig_Promise) ViewInfo() grain.UiView_ViewInfo_Promise {
-	return grain.UiView_ViewInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p BridgeConfig_Future) ViewInfo() grain.UiView_ViewInfo_Future {
+	return grain.UiView_ViewInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
 type BridgeConfig_PowerboxApi struct{ capnp.Struct }
@@ -1162,7 +1136,7 @@ func NewRootBridgeConfig_PowerboxApi(s *capnp.Segment) (BridgeConfig_PowerboxApi
 }
 
 func ReadRootBridgeConfig_PowerboxApi(msg *capnp.Message) (BridgeConfig_PowerboxApi, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return BridgeConfig_PowerboxApi{root.Struct()}, err
 }
 
@@ -1177,8 +1151,7 @@ func (s BridgeConfig_PowerboxApi) Name() (string, error) {
 }
 
 func (s BridgeConfig_PowerboxApi) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s BridgeConfig_PowerboxApi) NameBytes() ([]byte, error) {
@@ -1196,8 +1169,7 @@ func (s BridgeConfig_PowerboxApi) DisplayInfo() (powerbox.PowerboxDisplayInfo, e
 }
 
 func (s BridgeConfig_PowerboxApi) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s BridgeConfig_PowerboxApi) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
@@ -1221,8 +1193,7 @@ func (s BridgeConfig_PowerboxApi) Path() (string, error) {
 }
 
 func (s BridgeConfig_PowerboxApi) HasPath() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s BridgeConfig_PowerboxApi) PathBytes() ([]byte, error) {
@@ -1240,8 +1211,7 @@ func (s BridgeConfig_PowerboxApi) Tag() (apisession.ApiSession_PowerboxTag, erro
 }
 
 func (s BridgeConfig_PowerboxApi) HasTag() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s BridgeConfig_PowerboxApi) SetTag(v apisession.ApiSession_PowerboxTag) error {
@@ -1265,8 +1235,7 @@ func (s BridgeConfig_PowerboxApi) Permissions() (capnp.BitList, error) {
 }
 
 func (s BridgeConfig_PowerboxApi) HasPermissions() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s BridgeConfig_PowerboxApi) SetPermissions(v capnp.BitList) error {
@@ -1306,20 +1275,20 @@ func (s BridgeConfig_PowerboxApi_List) String() string {
 	return str
 }
 
-// BridgeConfig_PowerboxApi_Promise is a wrapper for a BridgeConfig_PowerboxApi promised by a client call.
-type BridgeConfig_PowerboxApi_Promise struct{ *capnp.Pipeline }
+// BridgeConfig_PowerboxApi_Future is a wrapper for a BridgeConfig_PowerboxApi promised by a client call.
+type BridgeConfig_PowerboxApi_Future struct{ *capnp.Future }
 
-func (p BridgeConfig_PowerboxApi_Promise) Struct() (BridgeConfig_PowerboxApi, error) {
-	s, err := p.Pipeline.Struct()
+func (p BridgeConfig_PowerboxApi_Future) Struct() (BridgeConfig_PowerboxApi, error) {
+	s, err := p.Future.Struct()
 	return BridgeConfig_PowerboxApi{s}, err
 }
 
-func (p BridgeConfig_PowerboxApi_Promise) DisplayInfo() powerbox.PowerboxDisplayInfo_Promise {
-	return powerbox.PowerboxDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p BridgeConfig_PowerboxApi_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
+	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p BridgeConfig_PowerboxApi_Promise) Tag() apisession.ApiSession_PowerboxTag_Promise {
-	return apisession.ApiSession_PowerboxTag_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p BridgeConfig_PowerboxApi_Future) Tag() apisession.ApiSession_PowerboxTag_Future {
+	return apisession.ApiSession_PowerboxTag_Future{Future: p.Future.Field(3, nil)}
 }
 
 type Metadata struct{ capnp.Struct }
@@ -1365,7 +1334,7 @@ func NewRootMetadata(s *capnp.Segment) (Metadata, error) {
 }
 
 func ReadRootMetadata(msg *capnp.Message) (Metadata, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Metadata{root.Struct()}, err
 }
 
@@ -1382,8 +1351,7 @@ func (s Metadata_icons) AppGrid() (Metadata_Icon, error) {
 }
 
 func (s Metadata_icons) HasAppGrid() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Metadata_icons) SetAppGrid(v Metadata_Icon) error {
@@ -1407,8 +1375,7 @@ func (s Metadata_icons) Grain() (Metadata_Icon, error) {
 }
 
 func (s Metadata_icons) HasGrain() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Metadata_icons) SetGrain(v Metadata_Icon) error {
@@ -1432,8 +1399,7 @@ func (s Metadata_icons) Market() (Metadata_Icon, error) {
 }
 
 func (s Metadata_icons) HasMarket() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Metadata_icons) SetMarket(v Metadata_Icon) error {
@@ -1457,8 +1423,7 @@ func (s Metadata_icons) MarketBig() (Metadata_Icon, error) {
 }
 
 func (s Metadata_icons) HasMarketBig() bool {
-	p, err := s.Struct.Ptr(15)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(15)
 }
 
 func (s Metadata_icons) SetMarketBig(v Metadata_Icon) error {
@@ -1482,8 +1447,7 @@ func (s Metadata) Website() (string, error) {
 }
 
 func (s Metadata) HasWebsite() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s Metadata) WebsiteBytes() ([]byte, error) {
@@ -1501,8 +1465,7 @@ func (s Metadata) CodeUrl() (string, error) {
 }
 
 func (s Metadata) HasCodeUrl() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s Metadata) CodeUrlBytes() ([]byte, error) {
@@ -1548,8 +1511,7 @@ func (s Metadata_license) HasProprietary() bool {
 	if s.Struct.Uint16(0) != 2 {
 		return false
 	}
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s Metadata_license) SetProprietary(v util.LocalizedText) error {
@@ -1581,8 +1543,7 @@ func (s Metadata_license) HasPublicDomain() bool {
 	if s.Struct.Uint16(0) != 3 {
 		return false
 	}
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s Metadata_license) SetPublicDomain(v util.LocalizedText) error {
@@ -1608,8 +1569,7 @@ func (s Metadata_license) Notices() (util.LocalizedText, error) {
 }
 
 func (s Metadata_license) HasNotices() bool {
-	p, err := s.Struct.Ptr(6)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(6)
 }
 
 func (s Metadata_license) SetNotices(v util.LocalizedText) error {
@@ -1633,8 +1593,7 @@ func (s Metadata) Categories() (Category_List, error) {
 }
 
 func (s Metadata) HasCategories() bool {
-	p, err := s.Struct.Ptr(7)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(7)
 }
 
 func (s Metadata) SetCategories(v Category_List) error {
@@ -1660,8 +1619,7 @@ func (s Metadata_author) UpstreamAuthor() (string, error) {
 }
 
 func (s Metadata_author) HasUpstreamAuthor() bool {
-	p, err := s.Struct.Ptr(16)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(16)
 }
 
 func (s Metadata_author) UpstreamAuthorBytes() ([]byte, error) {
@@ -1679,8 +1637,7 @@ func (s Metadata_author) ContactEmail() (string, error) {
 }
 
 func (s Metadata_author) HasContactEmail() bool {
-	p, err := s.Struct.Ptr(8)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(8)
 }
 
 func (s Metadata_author) ContactEmailBytes() ([]byte, error) {
@@ -1698,8 +1655,7 @@ func (s Metadata_author) PgpSignature() ([]byte, error) {
 }
 
 func (s Metadata_author) HasPgpSignature() bool {
-	p, err := s.Struct.Ptr(9)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(9)
 }
 
 func (s Metadata_author) SetPgpSignature(v []byte) error {
@@ -1712,8 +1668,7 @@ func (s Metadata) PgpKeyring() ([]byte, error) {
 }
 
 func (s Metadata) HasPgpKeyring() bool {
-	p, err := s.Struct.Ptr(10)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(10)
 }
 
 func (s Metadata) SetPgpKeyring(v []byte) error {
@@ -1726,8 +1681,7 @@ func (s Metadata) Description() (util.LocalizedText, error) {
 }
 
 func (s Metadata) HasDescription() bool {
-	p, err := s.Struct.Ptr(11)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(11)
 }
 
 func (s Metadata) SetDescription(v util.LocalizedText) error {
@@ -1751,8 +1705,7 @@ func (s Metadata) ShortDescription() (util.LocalizedText, error) {
 }
 
 func (s Metadata) HasShortDescription() bool {
-	p, err := s.Struct.Ptr(12)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(12)
 }
 
 func (s Metadata) SetShortDescription(v util.LocalizedText) error {
@@ -1776,8 +1729,7 @@ func (s Metadata) Screenshots() (Metadata_Screenshot_List, error) {
 }
 
 func (s Metadata) HasScreenshots() bool {
-	p, err := s.Struct.Ptr(13)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(13)
 }
 
 func (s Metadata) SetScreenshots(v Metadata_Screenshot_List) error {
@@ -1801,8 +1753,7 @@ func (s Metadata) ChangeLog() (util.LocalizedText, error) {
 }
 
 func (s Metadata) HasChangeLog() bool {
-	p, err := s.Struct.Ptr(14)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(14)
 }
 
 func (s Metadata) SetChangeLog(v util.LocalizedText) error {
@@ -1838,84 +1789,82 @@ func (s Metadata_List) String() string {
 	return str
 }
 
-// Metadata_Promise is a wrapper for a Metadata promised by a client call.
-type Metadata_Promise struct{ *capnp.Pipeline }
+// Metadata_Future is a wrapper for a Metadata promised by a client call.
+type Metadata_Future struct{ *capnp.Future }
 
-func (p Metadata_Promise) Struct() (Metadata, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_Future) Struct() (Metadata, error) {
+	s, err := p.Future.Struct()
 	return Metadata{s}, err
 }
 
-func (p Metadata_Promise) Icons() Metadata_icons_Promise { return Metadata_icons_Promise{p.Pipeline} }
+func (p Metadata_Future) Icons() Metadata_icons_Future { return Metadata_icons_Future{p.Future} }
 
-// Metadata_icons_Promise is a wrapper for a Metadata_icons promised by a client call.
-type Metadata_icons_Promise struct{ *capnp.Pipeline }
+// Metadata_icons_Future is a wrapper for a Metadata_icons promised by a client call.
+type Metadata_icons_Future struct{ *capnp.Future }
 
-func (p Metadata_icons_Promise) Struct() (Metadata_icons, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_icons_Future) Struct() (Metadata_icons, error) {
+	s, err := p.Future.Struct()
 	return Metadata_icons{s}, err
 }
 
-func (p Metadata_icons_Promise) AppGrid() Metadata_Icon_Promise {
-	return Metadata_Icon_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p Metadata_icons_Future) AppGrid() Metadata_Icon_Future {
+	return Metadata_Icon_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p Metadata_icons_Promise) Grain() Metadata_Icon_Promise {
-	return Metadata_Icon_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p Metadata_icons_Future) Grain() Metadata_Icon_Future {
+	return Metadata_Icon_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p Metadata_icons_Promise) Market() Metadata_Icon_Promise {
-	return Metadata_Icon_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p Metadata_icons_Future) Market() Metadata_Icon_Future {
+	return Metadata_Icon_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p Metadata_icons_Promise) MarketBig() Metadata_Icon_Promise {
-	return Metadata_Icon_Promise{Pipeline: p.Pipeline.GetPipeline(15)}
+func (p Metadata_icons_Future) MarketBig() Metadata_Icon_Future {
+	return Metadata_Icon_Future{Future: p.Future.Field(15, nil)}
 }
 
-func (p Metadata_Promise) License() Metadata_license_Promise {
-	return Metadata_license_Promise{p.Pipeline}
-}
+func (p Metadata_Future) License() Metadata_license_Future { return Metadata_license_Future{p.Future} }
 
-// Metadata_license_Promise is a wrapper for a Metadata_license promised by a client call.
-type Metadata_license_Promise struct{ *capnp.Pipeline }
+// Metadata_license_Future is a wrapper for a Metadata_license promised by a client call.
+type Metadata_license_Future struct{ *capnp.Future }
 
-func (p Metadata_license_Promise) Struct() (Metadata_license, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_license_Future) Struct() (Metadata_license, error) {
+	s, err := p.Future.Struct()
 	return Metadata_license{s}, err
 }
 
-func (p Metadata_license_Promise) Proprietary() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p Metadata_license_Future) Proprietary() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(5, nil)}
 }
 
-func (p Metadata_license_Promise) PublicDomain() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p Metadata_license_Future) PublicDomain() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(5, nil)}
 }
 
-func (p Metadata_license_Promise) Notices() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(6)}
+func (p Metadata_license_Future) Notices() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(6, nil)}
 }
 
-func (p Metadata_Promise) Author() Metadata_author_Promise { return Metadata_author_Promise{p.Pipeline} }
+func (p Metadata_Future) Author() Metadata_author_Future { return Metadata_author_Future{p.Future} }
 
-// Metadata_author_Promise is a wrapper for a Metadata_author promised by a client call.
-type Metadata_author_Promise struct{ *capnp.Pipeline }
+// Metadata_author_Future is a wrapper for a Metadata_author promised by a client call.
+type Metadata_author_Future struct{ *capnp.Future }
 
-func (p Metadata_author_Promise) Struct() (Metadata_author, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_author_Future) Struct() (Metadata_author, error) {
+	s, err := p.Future.Struct()
 	return Metadata_author{s}, err
 }
 
-func (p Metadata_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(11)}
+func (p Metadata_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(11, nil)}
 }
 
-func (p Metadata_Promise) ShortDescription() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(12)}
+func (p Metadata_Future) ShortDescription() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(12, nil)}
 }
 
-func (p Metadata_Promise) ChangeLog() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(14)}
+func (p Metadata_Future) ChangeLog() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(14, nil)}
 }
 
 type Metadata_Icon struct{ capnp.Struct }
@@ -1956,7 +1905,7 @@ func NewRootMetadata_Icon(s *capnp.Segment) (Metadata_Icon, error) {
 }
 
 func ReadRootMetadata_Icon(msg *capnp.Message) (Metadata_Icon, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Metadata_Icon{root.Struct()}, err
 }
 
@@ -1985,8 +1934,7 @@ func (s Metadata_Icon) HasSvg() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Metadata_Icon) SvgBytes() ([]byte, error) {
@@ -2011,8 +1959,7 @@ func (s Metadata_Icon_png) Dpi1x() ([]byte, error) {
 }
 
 func (s Metadata_Icon_png) HasDpi1x() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Metadata_Icon_png) SetDpi1x(v []byte) error {
@@ -2025,8 +1972,7 @@ func (s Metadata_Icon_png) Dpi2x() ([]byte, error) {
 }
 
 func (s Metadata_Icon_png) HasDpi2x() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Metadata_Icon_png) SetDpi2x(v []byte) error {
@@ -2051,23 +1997,23 @@ func (s Metadata_Icon_List) String() string {
 	return str
 }
 
-// Metadata_Icon_Promise is a wrapper for a Metadata_Icon promised by a client call.
-type Metadata_Icon_Promise struct{ *capnp.Pipeline }
+// Metadata_Icon_Future is a wrapper for a Metadata_Icon promised by a client call.
+type Metadata_Icon_Future struct{ *capnp.Future }
 
-func (p Metadata_Icon_Promise) Struct() (Metadata_Icon, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_Icon_Future) Struct() (Metadata_Icon, error) {
+	s, err := p.Future.Struct()
 	return Metadata_Icon{s}, err
 }
 
-func (p Metadata_Icon_Promise) Png() Metadata_Icon_png_Promise {
-	return Metadata_Icon_png_Promise{p.Pipeline}
+func (p Metadata_Icon_Future) Png() Metadata_Icon_png_Future {
+	return Metadata_Icon_png_Future{p.Future}
 }
 
-// Metadata_Icon_png_Promise is a wrapper for a Metadata_Icon_png promised by a client call.
-type Metadata_Icon_png_Promise struct{ *capnp.Pipeline }
+// Metadata_Icon_png_Future is a wrapper for a Metadata_Icon_png promised by a client call.
+type Metadata_Icon_png_Future struct{ *capnp.Future }
 
-func (p Metadata_Icon_png_Promise) Struct() (Metadata_Icon_png, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_Icon_png_Future) Struct() (Metadata_Icon_png, error) {
+	s, err := p.Future.Struct()
 	return Metadata_Icon_png{s}, err
 }
 
@@ -2108,7 +2054,7 @@ func NewRootMetadata_Screenshot(s *capnp.Segment) (Metadata_Screenshot, error) {
 }
 
 func ReadRootMetadata_Screenshot(msg *capnp.Message) (Metadata_Screenshot, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Metadata_Screenshot{root.Struct()}, err
 }
 
@@ -2153,8 +2099,7 @@ func (s Metadata_Screenshot) HasPng() bool {
 	if s.Struct.Uint16(8) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Metadata_Screenshot) SetPng(v []byte) error {
@@ -2174,8 +2119,7 @@ func (s Metadata_Screenshot) HasJpeg() bool {
 	if s.Struct.Uint16(8) != 2 {
 		return false
 	}
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Metadata_Screenshot) SetJpeg(v []byte) error {
@@ -2205,11 +2149,11 @@ func (s Metadata_Screenshot_List) String() string {
 	return str
 }
 
-// Metadata_Screenshot_Promise is a wrapper for a Metadata_Screenshot promised by a client call.
-type Metadata_Screenshot_Promise struct{ *capnp.Pipeline }
+// Metadata_Screenshot_Future is a wrapper for a Metadata_Screenshot promised by a client call.
+type Metadata_Screenshot_Future struct{ *capnp.Future }
 
-func (p Metadata_Screenshot_Promise) Struct() (Metadata_Screenshot, error) {
-	s, err := p.Pipeline.Struct()
+func (p Metadata_Screenshot_Future) Struct() (Metadata_Screenshot, error) {
+	s, err := p.Future.Struct()
 	return Metadata_Screenshot{s}, err
 }
 
@@ -2229,7 +2173,7 @@ func NewRootOsiLicenseInfo(s *capnp.Segment) (OsiLicenseInfo, error) {
 }
 
 func ReadRootOsiLicenseInfo(msg *capnp.Message) (OsiLicenseInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return OsiLicenseInfo{root.Struct()}, err
 }
 
@@ -2244,8 +2188,7 @@ func (s OsiLicenseInfo) Id() (string, error) {
 }
 
 func (s OsiLicenseInfo) HasId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s OsiLicenseInfo) IdBytes() ([]byte, error) {
@@ -2263,8 +2206,7 @@ func (s OsiLicenseInfo) Title() (string, error) {
 }
 
 func (s OsiLicenseInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s OsiLicenseInfo) TitleBytes() ([]byte, error) {
@@ -2302,11 +2244,11 @@ func (s OsiLicenseInfo_List) String() string {
 	return str
 }
 
-// OsiLicenseInfo_Promise is a wrapper for a OsiLicenseInfo promised by a client call.
-type OsiLicenseInfo_Promise struct{ *capnp.Pipeline }
+// OsiLicenseInfo_Future is a wrapper for a OsiLicenseInfo promised by a client call.
+type OsiLicenseInfo_Future struct{ *capnp.Future }
 
-func (p OsiLicenseInfo_Promise) Struct() (OsiLicenseInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p OsiLicenseInfo_Future) Struct() (OsiLicenseInfo, error) {
+	s, err := p.Future.Struct()
 	return OsiLicenseInfo{s}, err
 }
 
@@ -2466,7 +2408,7 @@ func NewRootAppId(s *capnp.Segment) (AppId, error) {
 }
 
 func ReadRootAppId(msg *capnp.Message) (AppId, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return AppId{root.Struct()}, err
 }
 
@@ -2525,11 +2467,11 @@ func (s AppId_List) String() string {
 	return str
 }
 
-// AppId_Promise is a wrapper for a AppId promised by a client call.
-type AppId_Promise struct{ *capnp.Pipeline }
+// AppId_Future is a wrapper for a AppId promised by a client call.
+type AppId_Future struct{ *capnp.Future }
 
-func (p AppId_Promise) Struct() (AppId, error) {
-	s, err := p.Pipeline.Struct()
+func (p AppId_Future) Struct() (AppId, error) {
+	s, err := p.Future.Struct()
 	return AppId{s}, err
 }
 
@@ -2549,7 +2491,7 @@ func NewRootPackageId(s *capnp.Segment) (PackageId, error) {
 }
 
 func ReadRootPackageId(msg *capnp.Message) (PackageId, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PackageId{root.Struct()}, err
 }
 
@@ -2592,11 +2534,11 @@ func (s PackageId_List) String() string {
 	return str
 }
 
-// PackageId_Promise is a wrapper for a PackageId promised by a client call.
-type PackageId_Promise struct{ *capnp.Pipeline }
+// PackageId_Future is a wrapper for a PackageId promised by a client call.
+type PackageId_Future struct{ *capnp.Future }
 
-func (p PackageId_Promise) Struct() (PackageId, error) {
-	s, err := p.Pipeline.Struct()
+func (p PackageId_Future) Struct() (PackageId, error) {
+	s, err := p.Future.Struct()
 	return PackageId{s}, err
 }
 
@@ -2616,7 +2558,7 @@ func NewRootVerifiedInfo(s *capnp.Segment) (VerifiedInfo, error) {
 }
 
 func ReadRootVerifiedInfo(msg *capnp.Message) (VerifiedInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return VerifiedInfo{root.Struct()}, err
 }
 
@@ -2631,8 +2573,7 @@ func (s VerifiedInfo) AppId() (AppId, error) {
 }
 
 func (s VerifiedInfo) HasAppId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s VerifiedInfo) SetAppId(v AppId) error {
@@ -2656,8 +2597,7 @@ func (s VerifiedInfo) PackageId() (PackageId, error) {
 }
 
 func (s VerifiedInfo) HasPackageId() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s VerifiedInfo) SetPackageId(v PackageId) error {
@@ -2681,8 +2621,7 @@ func (s VerifiedInfo) Title() (util.LocalizedText, error) {
 }
 
 func (s VerifiedInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s VerifiedInfo) SetTitle(v util.LocalizedText) error {
@@ -2714,8 +2653,7 @@ func (s VerifiedInfo) MarketingVersion() (util.LocalizedText, error) {
 }
 
 func (s VerifiedInfo) HasMarketingVersion() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s VerifiedInfo) SetMarketingVersion(v util.LocalizedText) error {
@@ -2739,8 +2677,7 @@ func (s VerifiedInfo) AuthorPgpKeyFingerprint() (string, error) {
 }
 
 func (s VerifiedInfo) HasAuthorPgpKeyFingerprint() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s VerifiedInfo) AuthorPgpKeyFingerprintBytes() ([]byte, error) {
@@ -2758,8 +2695,7 @@ func (s VerifiedInfo) Metadata() (Metadata, error) {
 }
 
 func (s VerifiedInfo) HasMetadata() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s VerifiedInfo) SetMetadata(v Metadata) error {
@@ -2795,32 +2731,32 @@ func (s VerifiedInfo_List) String() string {
 	return str
 }
 
-// VerifiedInfo_Promise is a wrapper for a VerifiedInfo promised by a client call.
-type VerifiedInfo_Promise struct{ *capnp.Pipeline }
+// VerifiedInfo_Future is a wrapper for a VerifiedInfo promised by a client call.
+type VerifiedInfo_Future struct{ *capnp.Future }
 
-func (p VerifiedInfo_Promise) Struct() (VerifiedInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p VerifiedInfo_Future) Struct() (VerifiedInfo, error) {
+	s, err := p.Future.Struct()
 	return VerifiedInfo{s}, err
 }
 
-func (p VerifiedInfo_Promise) AppId() AppId_Promise {
-	return AppId_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p VerifiedInfo_Future) AppId() AppId_Future {
+	return AppId_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p VerifiedInfo_Promise) PackageId() PackageId_Promise {
-	return PackageId_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p VerifiedInfo_Future) PackageId() PackageId_Future {
+	return PackageId_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p VerifiedInfo_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p VerifiedInfo_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p VerifiedInfo_Promise) MarketingVersion() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p VerifiedInfo_Future) MarketingVersion() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
 
-func (p VerifiedInfo_Promise) Metadata() Metadata_Promise {
-	return Metadata_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p VerifiedInfo_Future) Metadata() Metadata_Future {
+	return Metadata_Future{Future: p.Future.Field(5, nil)}
 }
 
 type CategoryInfo struct{ capnp.Struct }
@@ -2839,7 +2775,7 @@ func NewRootCategoryInfo(s *capnp.Segment) (CategoryInfo, error) {
 }
 
 func ReadRootCategoryInfo(msg *capnp.Message) (CategoryInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return CategoryInfo{root.Struct()}, err
 }
 
@@ -2854,8 +2790,7 @@ func (s CategoryInfo) Title() (string, error) {
 }
 
 func (s CategoryInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s CategoryInfo) TitleBytes() ([]byte, error) {
@@ -2885,11 +2820,11 @@ func (s CategoryInfo_List) String() string {
 	return str
 }
 
-// CategoryInfo_Promise is a wrapper for a CategoryInfo promised by a client call.
-type CategoryInfo_Promise struct{ *capnp.Pipeline }
+// CategoryInfo_Future is a wrapper for a CategoryInfo promised by a client call.
+type CategoryInfo_Future struct{ *capnp.Future }
 
-func (p CategoryInfo_Promise) Struct() (CategoryInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p CategoryInfo_Future) Struct() (CategoryInfo, error) {
+	s, err := p.Future.Struct()
 	return CategoryInfo{s}, err
 }
 
@@ -3009,7 +2944,7 @@ func NewRootKeyFile(s *capnp.Segment) (KeyFile, error) {
 }
 
 func ReadRootKeyFile(msg *capnp.Message) (KeyFile, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return KeyFile{root.Struct()}, err
 }
 
@@ -3024,8 +2959,7 @@ func (s KeyFile) PublicKey() ([]byte, error) {
 }
 
 func (s KeyFile) HasPublicKey() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s KeyFile) SetPublicKey(v []byte) error {
@@ -3038,8 +2972,7 @@ func (s KeyFile) PrivateKey() ([]byte, error) {
 }
 
 func (s KeyFile) HasPrivateKey() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s KeyFile) SetPrivateKey(v []byte) error {
@@ -3064,11 +2997,11 @@ func (s KeyFile_List) String() string {
 	return str
 }
 
-// KeyFile_Promise is a wrapper for a KeyFile promised by a client call.
-type KeyFile_Promise struct{ *capnp.Pipeline }
+// KeyFile_Future is a wrapper for a KeyFile promised by a client call.
+type KeyFile_Future struct{ *capnp.Future }
 
-func (p KeyFile_Promise) Struct() (KeyFile, error) {
-	s, err := p.Pipeline.Struct()
+func (p KeyFile_Future) Struct() (KeyFile, error) {
+	s, err := p.Future.Struct()
 	return KeyFile{s}, err
 }
 
@@ -3088,7 +3021,7 @@ func NewRootSignature(s *capnp.Segment) (Signature, error) {
 }
 
 func ReadRootSignature(msg *capnp.Message) (Signature, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Signature{root.Struct()}, err
 }
 
@@ -3103,8 +3036,7 @@ func (s Signature) PublicKey() ([]byte, error) {
 }
 
 func (s Signature) HasPublicKey() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Signature) SetPublicKey(v []byte) error {
@@ -3117,8 +3049,7 @@ func (s Signature) Signature() ([]byte, error) {
 }
 
 func (s Signature) HasSignature() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Signature) SetSignature(v []byte) error {
@@ -3143,11 +3074,11 @@ func (s Signature_List) String() string {
 	return str
 }
 
-// Signature_Promise is a wrapper for a Signature promised by a client call.
-type Signature_Promise struct{ *capnp.Pipeline }
+// Signature_Future is a wrapper for a Signature promised by a client call.
+type Signature_Future struct{ *capnp.Future }
 
-func (p Signature_Promise) Struct() (Signature, error) {
-	s, err := p.Pipeline.Struct()
+func (p Signature_Future) Struct() (Signature, error) {
+	s, err := p.Future.Struct()
 	return Signature{s}, err
 }
 
@@ -3167,7 +3098,7 @@ func NewRootArchive(s *capnp.Segment) (Archive, error) {
 }
 
 func ReadRootArchive(msg *capnp.Message) (Archive, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Archive{root.Struct()}, err
 }
 
@@ -3182,8 +3113,7 @@ func (s Archive) Files() (Archive_File_List, error) {
 }
 
 func (s Archive) HasFiles() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Archive) SetFiles(v Archive_File_List) error {
@@ -3219,11 +3149,11 @@ func (s Archive_List) String() string {
 	return str
 }
 
-// Archive_Promise is a wrapper for a Archive promised by a client call.
-type Archive_Promise struct{ *capnp.Pipeline }
+// Archive_Future is a wrapper for a Archive promised by a client call.
+type Archive_Future struct{ *capnp.Future }
 
-func (p Archive_Promise) Struct() (Archive, error) {
-	s, err := p.Pipeline.Struct()
+func (p Archive_Future) Struct() (Archive, error) {
+	s, err := p.Future.Struct()
 	return Archive{s}, err
 }
 
@@ -3267,7 +3197,7 @@ func NewRootArchive_File(s *capnp.Segment) (Archive_File, error) {
 }
 
 func ReadRootArchive_File(msg *capnp.Message) (Archive_File, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Archive_File{root.Struct()}, err
 }
 
@@ -3285,8 +3215,7 @@ func (s Archive_File) Name() (string, error) {
 }
 
 func (s Archive_File) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Archive_File) NameBytes() ([]byte, error) {
@@ -3318,8 +3247,7 @@ func (s Archive_File) HasRegular() bool {
 	if s.Struct.Uint16(0) != 0 {
 		return false
 	}
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Archive_File) SetRegular(v []byte) error {
@@ -3339,8 +3267,7 @@ func (s Archive_File) HasExecutable() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Archive_File) SetExecutable(v []byte) error {
@@ -3360,8 +3287,7 @@ func (s Archive_File) HasSymlink() bool {
 	if s.Struct.Uint16(0) != 2 {
 		return false
 	}
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Archive_File) SymlinkBytes() ([]byte, error) {
@@ -3386,8 +3312,7 @@ func (s Archive_File) HasDirectory() bool {
 	if s.Struct.Uint16(0) != 3 {
 		return false
 	}
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Archive_File) SetDirectory(v Archive_File_List) error {
@@ -3425,11 +3350,11 @@ func (s Archive_File_List) String() string {
 	return str
 }
 
-// Archive_File_Promise is a wrapper for a Archive_File promised by a client call.
-type Archive_File_Promise struct{ *capnp.Pipeline }
+// Archive_File_Future is a wrapper for a Archive_File promised by a client call.
+type Archive_File_Future struct{ *capnp.Future }
 
-func (p Archive_File_Promise) Struct() (Archive_File, error) {
-	s, err := p.Pipeline.Struct()
+func (p Archive_File_Future) Struct() (Archive_File, error) {
+	s, err := p.Future.Struct()
 	return Archive_File{s}, err
 }
 

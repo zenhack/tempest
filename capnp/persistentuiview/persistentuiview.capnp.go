@@ -3,7 +3,7 @@
 package persistentuiview
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	capnp "zombiezen.com/go/capnproto2"
@@ -12,153 +12,139 @@ import (
 	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
-type PersistentUiView struct{ Client capnp.Client }
+type PersistentUiView struct{ Client *capnp.Client }
 
 // PersistentUiView_TypeID is the unique identifier for the type PersistentUiView.
 const PersistentUiView_TypeID = 0x826f7187e23c37c9
 
-func (c PersistentUiView) GetViewInfo(ctx context.Context, params func(grain.UiView_getViewInfo_Params) error, opts ...capnp.CallOption) grain.UiView_ViewInfo_Promise {
-	if c.Client == nil {
-		return grain.UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) GetViewInfo(ctx context.Context, params func(grain.UiView_getViewInfo_Params) error) (grain.UiView_ViewInfo_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.UiView_getViewInfo_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_getViewInfo_Params{Struct: s}) }
 	}
-	return grain.UiView_ViewInfo_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.UiView_ViewInfo_Future{Future: ans.Future()}, release
 }
-func (c PersistentUiView) NewSession(ctx context.Context, params func(grain.UiView_newSession_Params) error, opts ...capnp.CallOption) grain.UiView_newSession_Results_Promise {
-	if c.Client == nil {
-		return grain.UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) NewSession(ctx context.Context, params func(grain.UiView_newSession_Params) error) (grain.UiView_newSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.UiView_newSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newSession_Params{Struct: s}) }
 	}
-	return grain.UiView_newSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.UiView_newSession_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentUiView) NewRequestSession(ctx context.Context, params func(grain.UiView_newRequestSession_Params) error, opts ...capnp.CallOption) grain.UiView_newRequestSession_Results_Promise {
-	if c.Client == nil {
-		return grain.UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) NewRequestSession(ctx context.Context, params func(grain.UiView_newRequestSession_Params) error) (grain.UiView_newRequestSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.UiView_newRequestSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newRequestSession_Params{Struct: s}) }
 	}
-	return grain.UiView_newRequestSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.UiView_newRequestSession_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentUiView) NewOfferSession(ctx context.Context, params func(grain.UiView_newOfferSession_Params) error, opts ...capnp.CallOption) grain.UiView_newOfferSession_Results_Promise {
-	if c.Client == nil {
-		return grain.UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) NewOfferSession(ctx context.Context, params func(grain.UiView_newOfferSession_Params) error) (grain.UiView_newOfferSession_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdbb4d798ea67e2e7,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.UiView_newOfferSession_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newOfferSession_Params{Struct: s}) }
 	}
-	return grain.UiView_newOfferSession_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentUiView) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
-	if c.Client == nil {
-		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error {
 			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
 		}
 	}
-	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
-	if c.Client == nil {
-		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
 	}
-	return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// A PersistentUiView_Server is a PersistentUiView with a local implementation.
 type PersistentUiView_Server interface {
-	GetViewInfo(grain.UiView_getViewInfo) error
+	GetViewInfo(context.Context, grain.UiView_getViewInfo) error
 
-	NewSession(grain.UiView_newSession) error
+	NewSession(context.Context, grain.UiView_newSession) error
 
-	NewRequestSession(grain.UiView_newRequestSession) error
+	NewRequestSession(context.Context, grain.UiView_newRequestSession) error
 
-	NewOfferSession(grain.UiView_newOfferSession) error
+	NewOfferSession(context.Context, grain.UiView_newOfferSession) error
 
-	AddRequirements(supervisor.SystemPersistent_addRequirements) error
+	AddRequirements(context.Context, supervisor.SystemPersistent_addRequirements) error
 
-	Save(persistent.Persistent_save) error
+	Save(context.Context, persistent.Persistent_save) error
 }
 
-func PersistentUiView_ServerToClient(s PersistentUiView_Server) PersistentUiView {
-	c, _ := s.(server.Closer)
-	return PersistentUiView{Client: server.New(PersistentUiView_Methods(nil, s), c)}
+// PersistentUiView_NewServer creates a new Server from an implementation of PersistentUiView_Server.
+func PersistentUiView_NewServer(s PersistentUiView_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(PersistentUiView_Methods(nil, s), s, c, policy)
 }
 
+// PersistentUiView_ServerToClient creates a new Client from an implementation of PersistentUiView_Server.
+// The caller is responsible for calling Release on the returned Client.
+func PersistentUiView_ServerToClient(s PersistentUiView_Server, policy *server.Policy) PersistentUiView {
+	return PersistentUiView{Client: capnp.NewClient(PersistentUiView_NewServer(s, policy))}
+}
+
+// PersistentUiView_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 6)
@@ -171,11 +157,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "getViewInfo",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.UiView_getViewInfo{c, opts, grain.UiView_getViewInfo_Params{Struct: p}, grain.UiView_ViewInfo{Struct: r}}
-			return s.GetViewInfo(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetViewInfo(ctx, grain.UiView_getViewInfo{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 8},
 	})
 
 	methods = append(methods, server.Method{
@@ -185,11 +169,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.UiView_newSession{c, opts, grain.UiView_newSession_Params{Struct: p}, grain.UiView_newSession_Results{Struct: r}}
-			return s.NewSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewSession(ctx, grain.UiView_newSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -199,11 +181,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newRequestSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.UiView_newRequestSession{c, opts, grain.UiView_newRequestSession_Params{Struct: p}, grain.UiView_newRequestSession_Results{Struct: r}}
-			return s.NewRequestSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewRequestSession(ctx, grain.UiView_newRequestSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -213,11 +193,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "grain.capnp:UiView",
 			MethodName:    "newOfferSession",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.UiView_newOfferSession{c, opts, grain.UiView_newOfferSession_Params{Struct: p}, grain.UiView_newOfferSession_Results{Struct: r}}
-			return s.NewOfferSession(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.NewOfferSession(ctx, grain.UiView_newOfferSession{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -227,11 +205,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := supervisor.SystemPersistent_addRequirements{c, opts, supervisor.SystemPersistent_addRequirements_Params{Struct: p}, supervisor.SystemPersistent_addRequirements_Results{Struct: r}}
-			return s.AddRequirements(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AddRequirements(ctx, supervisor.SystemPersistent_addRequirements{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -241,11 +217,9 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := persistent.Persistent_save{c, opts, persistent.Persistent_SaveParams{Struct: p}, persistent.Persistent_SaveResults{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, persistent.Persistent_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods

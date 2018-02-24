@@ -3,7 +3,7 @@
 package websession
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	math "math"
 	strconv "strconv"
 	util "zenhack.net/go/sandstorm/capnp/util"
@@ -22,8 +22,8 @@ const (
 
 // Constants defined in web-session.capnp.
 var (
-	WebSession_Context_headerWhitelist  = capnp.TextList{List: capnp.MustUnmarshalRootPtr(x_a8cb0f2f1a756b32[0:248]).List()}
-	WebSession_Response_headerWhitelist = capnp.TextList{List: capnp.MustUnmarshalRootPtr(x_a8cb0f2f1a756b32[248:320]).List()}
+	WebSession_Context_headerWhitelist  = capnp.TextList{List: capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[0:248]).List()}
+	WebSession_Response_headerWhitelist = capnp.TextList{List: capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[248:320]).List()}
 )
 
 type HttpStatusDescriptor struct{ capnp.Struct }
@@ -42,7 +42,7 @@ func NewRootHttpStatusDescriptor(s *capnp.Segment) (HttpStatusDescriptor, error)
 }
 
 func ReadRootHttpStatusDescriptor(msg *capnp.Message) (HttpStatusDescriptor, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HttpStatusDescriptor{root.Struct()}, err
 }
 
@@ -65,8 +65,7 @@ func (s HttpStatusDescriptor) Title() (string, error) {
 }
 
 func (s HttpStatusDescriptor) HasTitle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HttpStatusDescriptor) TitleBytes() ([]byte, error) {
@@ -100,423 +99,361 @@ func (s HttpStatusDescriptor_List) String() string {
 	return str
 }
 
-// HttpStatusDescriptor_Promise is a wrapper for a HttpStatusDescriptor promised by a client call.
-type HttpStatusDescriptor_Promise struct{ *capnp.Pipeline }
+// HttpStatusDescriptor_Future is a wrapper for a HttpStatusDescriptor promised by a client call.
+type HttpStatusDescriptor_Future struct{ *capnp.Future }
 
-func (p HttpStatusDescriptor_Promise) Struct() (HttpStatusDescriptor, error) {
-	s, err := p.Pipeline.Struct()
+func (p HttpStatusDescriptor_Future) Struct() (HttpStatusDescriptor, error) {
+	s, err := p.Future.Struct()
 	return HttpStatusDescriptor{s}, err
 }
 
-type WebSession struct{ Client capnp.Client }
+type WebSession struct{ Client *capnp.Client }
 
 // WebSession_TypeID is the unique identifier for the type WebSession.
 const WebSession_TypeID = 0xa50711a14d35a8ce
 
-func (c WebSession) Get(ctx context.Context, params func(WebSession_get_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Get(ctx context.Context, params func(WebSession_get_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      0,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "get",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_get_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_get_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Post(ctx context.Context, params func(WebSession_post_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Post(ctx context.Context, params func(WebSession_post_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      1,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "post",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_post_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_post_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) OpenWebSocket(ctx context.Context, params func(WebSession_openWebSocket_Params) error, opts ...capnp.CallOption) WebSession_openWebSocket_Results_Promise {
-	if c.Client == nil {
-		return WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) OpenWebSocket(ctx context.Context, params func(WebSession_openWebSocket_Params) error) (WebSession_openWebSocket_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      2,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "openWebSocket",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_openWebSocket_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_openWebSocket_Params{Struct: s}) }
 	}
-	return WebSession_openWebSocket_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_openWebSocket_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Put(ctx context.Context, params func(WebSession_put_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Put(ctx context.Context, params func(WebSession_put_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      3,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "put",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_put_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_put_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Delete(ctx context.Context, params func(WebSession_delete_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Delete(ctx context.Context, params func(WebSession_delete_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      4,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "delete",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_delete_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_delete_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) PostStreaming(ctx context.Context, params func(WebSession_postStreaming_Params) error, opts ...capnp.CallOption) WebSession_postStreaming_Results_Promise {
-	if c.Client == nil {
-		return WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) PostStreaming(ctx context.Context, params func(WebSession_postStreaming_Params) error) (WebSession_postStreaming_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      5,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "postStreaming",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_postStreaming_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_postStreaming_Params{Struct: s}) }
 	}
-	return WebSession_postStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_postStreaming_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSession) PutStreaming(ctx context.Context, params func(WebSession_putStreaming_Params) error, opts ...capnp.CallOption) WebSession_putStreaming_Results_Promise {
-	if c.Client == nil {
-		return WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) PutStreaming(ctx context.Context, params func(WebSession_putStreaming_Params) error) (WebSession_putStreaming_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      6,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "putStreaming",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_putStreaming_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_putStreaming_Params{Struct: s}) }
 	}
-	return WebSession_putStreaming_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_putStreaming_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Propfind(ctx context.Context, params func(WebSession_propfind_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Propfind(ctx context.Context, params func(WebSession_propfind_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      7,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "propfind",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_propfind_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_propfind_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Proppatch(ctx context.Context, params func(WebSession_proppatch_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Proppatch(ctx context.Context, params func(WebSession_proppatch_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      8,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "proppatch",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_proppatch_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_proppatch_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Mkcol(ctx context.Context, params func(WebSession_mkcol_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Mkcol(ctx context.Context, params func(WebSession_mkcol_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      9,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "mkcol",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_mkcol_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_mkcol_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Copy(ctx context.Context, params func(WebSession_copy_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Copy(ctx context.Context, params func(WebSession_copy_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      10,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "copy",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_copy_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_copy_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Move(ctx context.Context, params func(WebSession_move_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Move(ctx context.Context, params func(WebSession_move_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      11,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "move",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_move_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_move_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Lock(ctx context.Context, params func(WebSession_lock_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Lock(ctx context.Context, params func(WebSession_lock_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      12,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "lock",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_lock_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_lock_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Unlock(ctx context.Context, params func(WebSession_unlock_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Unlock(ctx context.Context, params func(WebSession_unlock_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      13,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "unlock",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_unlock_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_unlock_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Acl(ctx context.Context, params func(WebSession_acl_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Acl(ctx context.Context, params func(WebSession_acl_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      14,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "acl",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_acl_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_acl_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Report(ctx context.Context, params func(WebSession_report_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Report(ctx context.Context, params func(WebSession_report_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      15,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "report",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_report_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_report_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Options(ctx context.Context, params func(WebSession_options_Params) error, opts ...capnp.CallOption) WebSession_Options_Promise {
-	if c.Client == nil {
-		return WebSession_Options_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Options(ctx context.Context, params func(WebSession_options_Params) error) (WebSession_Options_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      16,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "options",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_options_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_options_Params{Struct: s}) }
 	}
-	return WebSession_Options_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Options_Future{Future: ans.Future()}, release
 }
-func (c WebSession) Patch(ctx context.Context, params func(WebSession_patch_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession) Patch(ctx context.Context, params func(WebSession_patch_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xa50711a14d35a8ce,
 			MethodID:      17,
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "patch",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_patch_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_patch_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 
+// A WebSession_Server is a WebSession with a local implementation.
 type WebSession_Server interface {
-	Get(WebSession_get) error
+	Get(context.Context, WebSession_get) error
 
-	Post(WebSession_post) error
+	Post(context.Context, WebSession_post) error
 
-	OpenWebSocket(WebSession_openWebSocket) error
+	OpenWebSocket(context.Context, WebSession_openWebSocket) error
 
-	Put(WebSession_put) error
+	Put(context.Context, WebSession_put) error
 
-	Delete(WebSession_delete) error
+	Delete(context.Context, WebSession_delete) error
 
-	PostStreaming(WebSession_postStreaming) error
+	PostStreaming(context.Context, WebSession_postStreaming) error
 
-	PutStreaming(WebSession_putStreaming) error
+	PutStreaming(context.Context, WebSession_putStreaming) error
 
-	Propfind(WebSession_propfind) error
+	Propfind(context.Context, WebSession_propfind) error
 
-	Proppatch(WebSession_proppatch) error
+	Proppatch(context.Context, WebSession_proppatch) error
 
-	Mkcol(WebSession_mkcol) error
+	Mkcol(context.Context, WebSession_mkcol) error
 
-	Copy(WebSession_copy) error
+	Copy(context.Context, WebSession_copy) error
 
-	Move(WebSession_move) error
+	Move(context.Context, WebSession_move) error
 
-	Lock(WebSession_lock) error
+	Lock(context.Context, WebSession_lock) error
 
-	Unlock(WebSession_unlock) error
+	Unlock(context.Context, WebSession_unlock) error
 
-	Acl(WebSession_acl) error
+	Acl(context.Context, WebSession_acl) error
 
-	Report(WebSession_report) error
+	Report(context.Context, WebSession_report) error
 
-	Options(WebSession_options) error
+	Options(context.Context, WebSession_options) error
 
-	Patch(WebSession_patch) error
+	Patch(context.Context, WebSession_patch) error
 }
 
-func WebSession_ServerToClient(s WebSession_Server) WebSession {
-	c, _ := s.(server.Closer)
-	return WebSession{Client: server.New(WebSession_Methods(nil, s), c)}
+// WebSession_NewServer creates a new Server from an implementation of WebSession_Server.
+func WebSession_NewServer(s WebSession_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(WebSession_Methods(nil, s), s, c, policy)
 }
 
+// WebSession_ServerToClient creates a new Client from an implementation of WebSession_Server.
+// The caller is responsible for calling Release on the returned Client.
+func WebSession_ServerToClient(s WebSession_Server, policy *server.Policy) WebSession {
+	return WebSession{Client: capnp.NewClient(WebSession_NewServer(s, policy))}
+}
+
+// WebSession_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 18)
@@ -529,11 +466,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "get",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_get{c, opts, WebSession_get_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Get(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Get(ctx, WebSession_get{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -543,11 +478,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "post",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_post{c, opts, WebSession_post_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Post(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Post(ctx, WebSession_post{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -557,11 +490,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "openWebSocket",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_openWebSocket{c, opts, WebSession_openWebSocket_Params{Struct: p}, WebSession_openWebSocket_Results{Struct: r}}
-			return s.OpenWebSocket(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.OpenWebSocket(ctx, WebSession_openWebSocket{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -571,11 +502,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "put",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_put{c, opts, WebSession_put_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Put(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Put(ctx, WebSession_put{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -585,11 +514,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "delete",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_delete{c, opts, WebSession_delete_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Delete(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Delete(ctx, WebSession_delete{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -599,11 +526,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "postStreaming",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_postStreaming{c, opts, WebSession_postStreaming_Params{Struct: p}, WebSession_postStreaming_Results{Struct: r}}
-			return s.PostStreaming(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.PostStreaming(ctx, WebSession_postStreaming{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -613,11 +538,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "putStreaming",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_putStreaming{c, opts, WebSession_putStreaming_Params{Struct: p}, WebSession_putStreaming_Results{Struct: r}}
-			return s.PutStreaming(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.PutStreaming(ctx, WebSession_putStreaming{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -627,11 +550,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "propfind",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_propfind{c, opts, WebSession_propfind_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Propfind(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Propfind(ctx, WebSession_propfind{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -641,11 +562,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "proppatch",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_proppatch{c, opts, WebSession_proppatch_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Proppatch(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Proppatch(ctx, WebSession_proppatch{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -655,11 +574,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "mkcol",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_mkcol{c, opts, WebSession_mkcol_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Mkcol(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Mkcol(ctx, WebSession_mkcol{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -669,11 +586,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "copy",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_copy{c, opts, WebSession_copy_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Copy(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Copy(ctx, WebSession_copy{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -683,11 +598,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "move",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_move{c, opts, WebSession_move_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Move(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Move(ctx, WebSession_move{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -697,11 +610,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "lock",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_lock{c, opts, WebSession_lock_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Lock(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Lock(ctx, WebSession_lock{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -711,11 +622,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "unlock",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_unlock{c, opts, WebSession_unlock_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Unlock(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Unlock(ctx, WebSession_unlock{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -725,11 +634,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "acl",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_acl{c, opts, WebSession_acl_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Acl(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Acl(ctx, WebSession_acl{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -739,11 +646,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "report",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_report{c, opts, WebSession_report_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Report(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Report(ctx, WebSession_report{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -753,11 +658,9 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "options",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_options{c, opts, WebSession_options_Params{Struct: p}, WebSession_Options{Struct: r}}
-			return s.Options(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Options(ctx, WebSession_options{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -767,158 +670,318 @@ func WebSession_Methods(methods []server.Method, s WebSession_Server) []server.M
 			InterfaceName: "web-session.capnp:WebSession",
 			MethodName:    "patch",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_patch{c, opts, WebSession_patch_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.Patch(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Patch(ctx, WebSession_patch{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	return methods
 }
 
-// WebSession_get holds the arguments for a server call to WebSession.get.
+// WebSession_get holds the state for a server call to WebSession.get.
+// See server.Call for documentation.
 type WebSession_get struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_get_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_post holds the arguments for a server call to WebSession.post.
+// Args returns the call's arguments.
+func (c WebSession_get) Args() WebSession_get_Params {
+	return WebSession_get_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_get) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_post holds the state for a server call to WebSession.post.
+// See server.Call for documentation.
 type WebSession_post struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_post_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_openWebSocket holds the arguments for a server call to WebSession.openWebSocket.
+// Args returns the call's arguments.
+func (c WebSession_post) Args() WebSession_post_Params {
+	return WebSession_post_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_post) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_openWebSocket holds the state for a server call to WebSession.openWebSocket.
+// See server.Call for documentation.
 type WebSession_openWebSocket struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_openWebSocket_Params
-	Results WebSession_openWebSocket_Results
+	*server.Call
 }
 
-// WebSession_put holds the arguments for a server call to WebSession.put.
+// Args returns the call's arguments.
+func (c WebSession_openWebSocket) Args() WebSession_openWebSocket_Params {
+	return WebSession_openWebSocket_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_openWebSocket) AllocResults() (WebSession_openWebSocket_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return WebSession_openWebSocket_Results{Struct: r}, err
+}
+
+// WebSession_put holds the state for a server call to WebSession.put.
+// See server.Call for documentation.
 type WebSession_put struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_put_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_delete holds the arguments for a server call to WebSession.delete.
+// Args returns the call's arguments.
+func (c WebSession_put) Args() WebSession_put_Params {
+	return WebSession_put_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_put) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_delete holds the state for a server call to WebSession.delete.
+// See server.Call for documentation.
 type WebSession_delete struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_delete_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_postStreaming holds the arguments for a server call to WebSession.postStreaming.
+// Args returns the call's arguments.
+func (c WebSession_delete) Args() WebSession_delete_Params {
+	return WebSession_delete_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_delete) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_postStreaming holds the state for a server call to WebSession.postStreaming.
+// See server.Call for documentation.
 type WebSession_postStreaming struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_postStreaming_Params
-	Results WebSession_postStreaming_Results
+	*server.Call
 }
 
-// WebSession_putStreaming holds the arguments for a server call to WebSession.putStreaming.
+// Args returns the call's arguments.
+func (c WebSession_postStreaming) Args() WebSession_postStreaming_Params {
+	return WebSession_postStreaming_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_postStreaming) AllocResults() (WebSession_postStreaming_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSession_postStreaming_Results{Struct: r}, err
+}
+
+// WebSession_putStreaming holds the state for a server call to WebSession.putStreaming.
+// See server.Call for documentation.
 type WebSession_putStreaming struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_putStreaming_Params
-	Results WebSession_putStreaming_Results
+	*server.Call
 }
 
-// WebSession_propfind holds the arguments for a server call to WebSession.propfind.
+// Args returns the call's arguments.
+func (c WebSession_putStreaming) Args() WebSession_putStreaming_Params {
+	return WebSession_putStreaming_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_putStreaming) AllocResults() (WebSession_putStreaming_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSession_putStreaming_Results{Struct: r}, err
+}
+
+// WebSession_propfind holds the state for a server call to WebSession.propfind.
+// See server.Call for documentation.
 type WebSession_propfind struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_propfind_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_proppatch holds the arguments for a server call to WebSession.proppatch.
+// Args returns the call's arguments.
+func (c WebSession_propfind) Args() WebSession_propfind_Params {
+	return WebSession_propfind_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_propfind) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_proppatch holds the state for a server call to WebSession.proppatch.
+// See server.Call for documentation.
 type WebSession_proppatch struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_proppatch_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_mkcol holds the arguments for a server call to WebSession.mkcol.
+// Args returns the call's arguments.
+func (c WebSession_proppatch) Args() WebSession_proppatch_Params {
+	return WebSession_proppatch_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_proppatch) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_mkcol holds the state for a server call to WebSession.mkcol.
+// See server.Call for documentation.
 type WebSession_mkcol struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_mkcol_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_copy holds the arguments for a server call to WebSession.copy.
+// Args returns the call's arguments.
+func (c WebSession_mkcol) Args() WebSession_mkcol_Params {
+	return WebSession_mkcol_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_mkcol) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_copy holds the state for a server call to WebSession.copy.
+// See server.Call for documentation.
 type WebSession_copy struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_copy_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_move holds the arguments for a server call to WebSession.move.
+// Args returns the call's arguments.
+func (c WebSession_copy) Args() WebSession_copy_Params {
+	return WebSession_copy_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_copy) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_move holds the state for a server call to WebSession.move.
+// See server.Call for documentation.
 type WebSession_move struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_move_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_lock holds the arguments for a server call to WebSession.lock.
+// Args returns the call's arguments.
+func (c WebSession_move) Args() WebSession_move_Params {
+	return WebSession_move_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_move) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_lock holds the state for a server call to WebSession.lock.
+// See server.Call for documentation.
 type WebSession_lock struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_lock_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_unlock holds the arguments for a server call to WebSession.unlock.
+// Args returns the call's arguments.
+func (c WebSession_lock) Args() WebSession_lock_Params {
+	return WebSession_lock_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_lock) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_unlock holds the state for a server call to WebSession.unlock.
+// See server.Call for documentation.
 type WebSession_unlock struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_unlock_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_acl holds the arguments for a server call to WebSession.acl.
+// Args returns the call's arguments.
+func (c WebSession_unlock) Args() WebSession_unlock_Params {
+	return WebSession_unlock_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_unlock) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_acl holds the state for a server call to WebSession.acl.
+// See server.Call for documentation.
 type WebSession_acl struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_acl_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_report holds the arguments for a server call to WebSession.report.
+// Args returns the call's arguments.
+func (c WebSession_acl) Args() WebSession_acl_Params {
+	return WebSession_acl_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_acl) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_report holds the state for a server call to WebSession.report.
+// See server.Call for documentation.
 type WebSession_report struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_report_Params
-	Results WebSession_Response
+	*server.Call
 }
 
-// WebSession_options holds the arguments for a server call to WebSession.options.
+// Args returns the call's arguments.
+func (c WebSession_report) Args() WebSession_report_Params {
+	return WebSession_report_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_report) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
+}
+
+// WebSession_options holds the state for a server call to WebSession.options.
+// See server.Call for documentation.
 type WebSession_options struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_options_Params
-	Results WebSession_Options
+	*server.Call
 }
 
-// WebSession_patch holds the arguments for a server call to WebSession.patch.
+// Args returns the call's arguments.
+func (c WebSession_options) Args() WebSession_options_Params {
+	return WebSession_options_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_options) AllocResults() (WebSession_Options, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return WebSession_Options{Struct: r}, err
+}
+
+// WebSession_patch holds the state for a server call to WebSession.patch.
+// See server.Call for documentation.
 type WebSession_patch struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_patch_Params
-	Results WebSession_Response
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c WebSession_patch) Args() WebSession_patch_Params {
+	return WebSession_patch_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_patch) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
 }
 
 type WebSession_Params struct{ capnp.Struct }
@@ -937,7 +1000,7 @@ func NewRootWebSession_Params(s *capnp.Segment) (WebSession_Params, error) {
 }
 
 func ReadRootWebSession_Params(msg *capnp.Message) (WebSession_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Params{root.Struct()}, err
 }
 
@@ -952,8 +1015,7 @@ func (s WebSession_Params) BasePath() (string, error) {
 }
 
 func (s WebSession_Params) HasBasePath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Params) BasePathBytes() ([]byte, error) {
@@ -971,8 +1033,7 @@ func (s WebSession_Params) UserAgent() (string, error) {
 }
 
 func (s WebSession_Params) HasUserAgent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Params) UserAgentBytes() ([]byte, error) {
@@ -990,8 +1051,7 @@ func (s WebSession_Params) AcceptableLanguages() (capnp.TextList, error) {
 }
 
 func (s WebSession_Params) HasAcceptableLanguages() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Params) SetAcceptableLanguages(v capnp.TextList) error {
@@ -1031,11 +1091,11 @@ func (s WebSession_Params_List) String() string {
 	return str
 }
 
-// WebSession_Params_Promise is a wrapper for a WebSession_Params promised by a client call.
-type WebSession_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_Params_Future is a wrapper for a WebSession_Params promised by a client call.
+type WebSession_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_Params_Promise) Struct() (WebSession_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Params_Future) Struct() (WebSession_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Params{s}, err
 }
 
@@ -1083,7 +1143,7 @@ func NewRootWebSession_Context(s *capnp.Segment) (WebSession_Context, error) {
 }
 
 func ReadRootWebSession_Context(msg *capnp.Message) (WebSession_Context, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Context{root.Struct()}, err
 }
 
@@ -1098,8 +1158,7 @@ func (s WebSession_Context) Cookies() (util.KeyValue_List, error) {
 }
 
 func (s WebSession_Context) HasCookies() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Context) SetCookies(v util.KeyValue_List) error {
@@ -1123,12 +1182,11 @@ func (s WebSession_Context) ResponseStream() util.ByteStream {
 }
 
 func (s WebSession_Context) HasResponseStream() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Context) SetResponseStream(v util.ByteStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1142,8 +1200,7 @@ func (s WebSession_Context) Accept() (WebSession_AcceptedType_List, error) {
 }
 
 func (s WebSession_Context) HasAccept() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Context) SetAccept(v WebSession_AcceptedType_List) error {
@@ -1167,8 +1224,7 @@ func (s WebSession_Context) AcceptEncoding() (WebSession_AcceptedEncoding_List, 
 }
 
 func (s WebSession_Context) HasAcceptEncoding() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s WebSession_Context) SetAcceptEncoding(v WebSession_AcceptedEncoding_List) error {
@@ -1220,8 +1276,7 @@ func (s WebSession_Context_eTagPrecondition) HasMatchesOneOf() bool {
 	if s.Struct.Uint16(0) != 2 {
 		return false
 	}
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s WebSession_Context_eTagPrecondition) SetMatchesOneOf(v WebSession_ETag_List) error {
@@ -1253,8 +1308,7 @@ func (s WebSession_Context_eTagPrecondition) HasMatchesNoneOf() bool {
 	if s.Struct.Uint16(0) != 3 {
 		return false
 	}
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s WebSession_Context_eTagPrecondition) SetMatchesNoneOf(v WebSession_ETag_List) error {
@@ -1280,8 +1334,7 @@ func (s WebSession_Context) AdditionalHeaders() (WebSession_Context_Header_List,
 }
 
 func (s WebSession_Context) HasAdditionalHeaders() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_Context) SetAdditionalHeaders(v WebSession_Context_Header_List) error {
@@ -1321,27 +1374,27 @@ func (s WebSession_Context_List) String() string {
 	return str
 }
 
-// WebSession_Context_Promise is a wrapper for a WebSession_Context promised by a client call.
-type WebSession_Context_Promise struct{ *capnp.Pipeline }
+// WebSession_Context_Future is a wrapper for a WebSession_Context promised by a client call.
+type WebSession_Context_Future struct{ *capnp.Future }
 
-func (p WebSession_Context_Promise) Struct() (WebSession_Context, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Context_Future) Struct() (WebSession_Context, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Context{s}, err
 }
 
-func (p WebSession_Context_Promise) ResponseStream() util.ByteStream {
-	return util.ByteStream{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p WebSession_Context_Future) ResponseStream() util.ByteStream {
+	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
 }
 
-func (p WebSession_Context_Promise) ETagPrecondition() WebSession_Context_eTagPrecondition_Promise {
-	return WebSession_Context_eTagPrecondition_Promise{p.Pipeline}
+func (p WebSession_Context_Future) ETagPrecondition() WebSession_Context_eTagPrecondition_Future {
+	return WebSession_Context_eTagPrecondition_Future{p.Future}
 }
 
-// WebSession_Context_eTagPrecondition_Promise is a wrapper for a WebSession_Context_eTagPrecondition promised by a client call.
-type WebSession_Context_eTagPrecondition_Promise struct{ *capnp.Pipeline }
+// WebSession_Context_eTagPrecondition_Future is a wrapper for a WebSession_Context_eTagPrecondition promised by a client call.
+type WebSession_Context_eTagPrecondition_Future struct{ *capnp.Future }
 
-func (p WebSession_Context_eTagPrecondition_Promise) Struct() (WebSession_Context_eTagPrecondition, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Context_eTagPrecondition_Future) Struct() (WebSession_Context_eTagPrecondition, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Context_eTagPrecondition{s}, err
 }
 
@@ -1361,7 +1414,7 @@ func NewRootWebSession_Context_Header(s *capnp.Segment) (WebSession_Context_Head
 }
 
 func ReadRootWebSession_Context_Header(msg *capnp.Message) (WebSession_Context_Header, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Context_Header{root.Struct()}, err
 }
 
@@ -1376,8 +1429,7 @@ func (s WebSession_Context_Header) Name() (string, error) {
 }
 
 func (s WebSession_Context_Header) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Context_Header) NameBytes() ([]byte, error) {
@@ -1395,8 +1447,7 @@ func (s WebSession_Context_Header) Value() (string, error) {
 }
 
 func (s WebSession_Context_Header) HasValue() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Context_Header) ValueBytes() ([]byte, error) {
@@ -1430,11 +1481,11 @@ func (s WebSession_Context_Header_List) String() string {
 	return str
 }
 
-// WebSession_Context_Header_Promise is a wrapper for a WebSession_Context_Header promised by a client call.
-type WebSession_Context_Header_Promise struct{ *capnp.Pipeline }
+// WebSession_Context_Header_Future is a wrapper for a WebSession_Context_Header promised by a client call.
+type WebSession_Context_Header_Future struct{ *capnp.Future }
 
-func (p WebSession_Context_Header_Promise) Struct() (WebSession_Context_Header, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Context_Header_Future) Struct() (WebSession_Context_Header, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Context_Header{s}, err
 }
 
@@ -1454,7 +1505,7 @@ func NewRootWebSession_PostContent(s *capnp.Segment) (WebSession_PostContent, er
 }
 
 func ReadRootWebSession_PostContent(msg *capnp.Message) (WebSession_PostContent, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_PostContent{root.Struct()}, err
 }
 
@@ -1469,8 +1520,7 @@ func (s WebSession_PostContent) MimeType() (string, error) {
 }
 
 func (s WebSession_PostContent) HasMimeType() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_PostContent) MimeTypeBytes() ([]byte, error) {
@@ -1488,8 +1538,7 @@ func (s WebSession_PostContent) Content() ([]byte, error) {
 }
 
 func (s WebSession_PostContent) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_PostContent) SetContent(v []byte) error {
@@ -1502,8 +1551,7 @@ func (s WebSession_PostContent) Encoding() (string, error) {
 }
 
 func (s WebSession_PostContent) HasEncoding() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_PostContent) EncodingBytes() ([]byte, error) {
@@ -1537,11 +1585,11 @@ func (s WebSession_PostContent_List) String() string {
 	return str
 }
 
-// WebSession_PostContent_Promise is a wrapper for a WebSession_PostContent promised by a client call.
-type WebSession_PostContent_Promise struct{ *capnp.Pipeline }
+// WebSession_PostContent_Future is a wrapper for a WebSession_PostContent promised by a client call.
+type WebSession_PostContent_Future struct{ *capnp.Future }
 
-func (p WebSession_PostContent_Promise) Struct() (WebSession_PostContent, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_PostContent_Future) Struct() (WebSession_PostContent, error) {
+	s, err := p.Future.Struct()
 	return WebSession_PostContent{s}, err
 }
 
@@ -1561,7 +1609,7 @@ func NewRootWebSession_PutContent(s *capnp.Segment) (WebSession_PutContent, erro
 }
 
 func ReadRootWebSession_PutContent(msg *capnp.Message) (WebSession_PutContent, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_PutContent{root.Struct()}, err
 }
 
@@ -1576,8 +1624,7 @@ func (s WebSession_PutContent) MimeType() (string, error) {
 }
 
 func (s WebSession_PutContent) HasMimeType() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_PutContent) MimeTypeBytes() ([]byte, error) {
@@ -1595,8 +1642,7 @@ func (s WebSession_PutContent) Content() ([]byte, error) {
 }
 
 func (s WebSession_PutContent) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_PutContent) SetContent(v []byte) error {
@@ -1609,8 +1655,7 @@ func (s WebSession_PutContent) Encoding() (string, error) {
 }
 
 func (s WebSession_PutContent) HasEncoding() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_PutContent) EncodingBytes() ([]byte, error) {
@@ -1644,11 +1689,11 @@ func (s WebSession_PutContent_List) String() string {
 	return str
 }
 
-// WebSession_PutContent_Promise is a wrapper for a WebSession_PutContent promised by a client call.
-type WebSession_PutContent_Promise struct{ *capnp.Pipeline }
+// WebSession_PutContent_Future is a wrapper for a WebSession_PutContent promised by a client call.
+type WebSession_PutContent_Future struct{ *capnp.Future }
 
-func (p WebSession_PutContent_Promise) Struct() (WebSession_PutContent, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_PutContent_Future) Struct() (WebSession_PutContent, error) {
+	s, err := p.Future.Struct()
 	return WebSession_PutContent{s}, err
 }
 
@@ -1668,7 +1713,7 @@ func NewRootWebSession_ETag(s *capnp.Segment) (WebSession_ETag, error) {
 }
 
 func ReadRootWebSession_ETag(msg *capnp.Message) (WebSession_ETag, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_ETag{root.Struct()}, err
 }
 
@@ -1683,8 +1728,7 @@ func (s WebSession_ETag) Value() (string, error) {
 }
 
 func (s WebSession_ETag) HasValue() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_ETag) ValueBytes() ([]byte, error) {
@@ -1724,11 +1768,11 @@ func (s WebSession_ETag_List) String() string {
 	return str
 }
 
-// WebSession_ETag_Promise is a wrapper for a WebSession_ETag promised by a client call.
-type WebSession_ETag_Promise struct{ *capnp.Pipeline }
+// WebSession_ETag_Future is a wrapper for a WebSession_ETag promised by a client call.
+type WebSession_ETag_Future struct{ *capnp.Future }
 
-func (p WebSession_ETag_Promise) Struct() (WebSession_ETag, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_ETag_Future) Struct() (WebSession_ETag, error) {
+	s, err := p.Future.Struct()
 	return WebSession_ETag{s}, err
 }
 
@@ -1770,7 +1814,7 @@ func NewRootWebSession_Cookie(s *capnp.Segment) (WebSession_Cookie, error) {
 }
 
 func ReadRootWebSession_Cookie(msg *capnp.Message) (WebSession_Cookie, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Cookie{root.Struct()}, err
 }
 
@@ -1785,8 +1829,7 @@ func (s WebSession_Cookie) Name() (string, error) {
 }
 
 func (s WebSession_Cookie) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Cookie) NameBytes() ([]byte, error) {
@@ -1804,8 +1847,7 @@ func (s WebSession_Cookie) Value() (string, error) {
 }
 
 func (s WebSession_Cookie) HasValue() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Cookie) ValueBytes() ([]byte, error) {
@@ -1865,8 +1907,7 @@ func (s WebSession_Cookie) Path() (string, error) {
 }
 
 func (s WebSession_Cookie) HasPath() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Cookie) PathBytes() ([]byte, error) {
@@ -1900,23 +1941,23 @@ func (s WebSession_Cookie_List) String() string {
 	return str
 }
 
-// WebSession_Cookie_Promise is a wrapper for a WebSession_Cookie promised by a client call.
-type WebSession_Cookie_Promise struct{ *capnp.Pipeline }
+// WebSession_Cookie_Future is a wrapper for a WebSession_Cookie promised by a client call.
+type WebSession_Cookie_Future struct{ *capnp.Future }
 
-func (p WebSession_Cookie_Promise) Struct() (WebSession_Cookie, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Cookie_Future) Struct() (WebSession_Cookie, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Cookie{s}, err
 }
 
-func (p WebSession_Cookie_Promise) Expires() WebSession_Cookie_expires_Promise {
-	return WebSession_Cookie_expires_Promise{p.Pipeline}
+func (p WebSession_Cookie_Future) Expires() WebSession_Cookie_expires_Future {
+	return WebSession_Cookie_expires_Future{p.Future}
 }
 
-// WebSession_Cookie_expires_Promise is a wrapper for a WebSession_Cookie_expires promised by a client call.
-type WebSession_Cookie_expires_Promise struct{ *capnp.Pipeline }
+// WebSession_Cookie_expires_Future is a wrapper for a WebSession_Cookie_expires promised by a client call.
+type WebSession_Cookie_expires_Future struct{ *capnp.Future }
 
-func (p WebSession_Cookie_expires_Promise) Struct() (WebSession_Cookie_expires, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Cookie_expires_Future) Struct() (WebSession_Cookie_expires, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Cookie_expires{s}, err
 }
 
@@ -1936,7 +1977,7 @@ func NewRootWebSession_AcceptedType(s *capnp.Segment) (WebSession_AcceptedType, 
 }
 
 func ReadRootWebSession_AcceptedType(msg *capnp.Message) (WebSession_AcceptedType, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_AcceptedType{root.Struct()}, err
 }
 
@@ -1951,8 +1992,7 @@ func (s WebSession_AcceptedType) MimeType() (string, error) {
 }
 
 func (s WebSession_AcceptedType) HasMimeType() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_AcceptedType) MimeTypeBytes() ([]byte, error) {
@@ -1994,11 +2034,11 @@ func (s WebSession_AcceptedType_List) String() string {
 	return str
 }
 
-// WebSession_AcceptedType_Promise is a wrapper for a WebSession_AcceptedType promised by a client call.
-type WebSession_AcceptedType_Promise struct{ *capnp.Pipeline }
+// WebSession_AcceptedType_Future is a wrapper for a WebSession_AcceptedType promised by a client call.
+type WebSession_AcceptedType_Future struct{ *capnp.Future }
 
-func (p WebSession_AcceptedType_Promise) Struct() (WebSession_AcceptedType, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_AcceptedType_Future) Struct() (WebSession_AcceptedType, error) {
+	s, err := p.Future.Struct()
 	return WebSession_AcceptedType{s}, err
 }
 
@@ -2018,7 +2058,7 @@ func NewRootWebSession_AcceptedEncoding(s *capnp.Segment) (WebSession_AcceptedEn
 }
 
 func ReadRootWebSession_AcceptedEncoding(msg *capnp.Message) (WebSession_AcceptedEncoding, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_AcceptedEncoding{root.Struct()}, err
 }
 
@@ -2033,8 +2073,7 @@ func (s WebSession_AcceptedEncoding) ContentCoding() (string, error) {
 }
 
 func (s WebSession_AcceptedEncoding) HasContentCoding() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_AcceptedEncoding) ContentCodingBytes() ([]byte, error) {
@@ -2076,11 +2115,11 @@ func (s WebSession_AcceptedEncoding_List) String() string {
 	return str
 }
 
-// WebSession_AcceptedEncoding_Promise is a wrapper for a WebSession_AcceptedEncoding promised by a client call.
-type WebSession_AcceptedEncoding_Promise struct{ *capnp.Pipeline }
+// WebSession_AcceptedEncoding_Future is a wrapper for a WebSession_AcceptedEncoding promised by a client call.
+type WebSession_AcceptedEncoding_Future struct{ *capnp.Future }
 
-func (p WebSession_AcceptedEncoding_Promise) Struct() (WebSession_AcceptedEncoding, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_AcceptedEncoding_Future) Struct() (WebSession_AcceptedEncoding, error) {
+	s, err := p.Future.Struct()
 	return WebSession_AcceptedEncoding{s}, err
 }
 
@@ -2176,7 +2215,7 @@ func NewRootWebSession_Response(s *capnp.Segment) (WebSession_Response, error) {
 }
 
 func ReadRootWebSession_Response(msg *capnp.Message) (WebSession_Response, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Response{root.Struct()}, err
 }
 
@@ -2194,8 +2233,7 @@ func (s WebSession_Response) SetCookies() (WebSession_Cookie_List, error) {
 }
 
 func (s WebSession_Response) HasSetCookies() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Response) SetSetCookies(v WebSession_Cookie_List) error {
@@ -2219,8 +2257,7 @@ func (s WebSession_Response) CachePolicy() (WebSession_CachePolicy, error) {
 }
 
 func (s WebSession_Response) HasCachePolicy() bool {
-	p, err := s.Struct.Ptr(6)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(6)
 }
 
 func (s WebSession_Response) SetCachePolicy(v WebSession_CachePolicy) error {
@@ -2260,8 +2297,7 @@ func (s WebSession_Response_content) Encoding() (string, error) {
 }
 
 func (s WebSession_Response_content) HasEncoding() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_content) EncodingBytes() ([]byte, error) {
@@ -2279,8 +2315,7 @@ func (s WebSession_Response_content) Language() (string, error) {
 }
 
 func (s WebSession_Response_content) HasLanguage() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Response_content) LanguageBytes() ([]byte, error) {
@@ -2298,8 +2333,7 @@ func (s WebSession_Response_content) MimeType() (string, error) {
 }
 
 func (s WebSession_Response_content) HasMimeType() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_Response_content) MimeTypeBytes() ([]byte, error) {
@@ -2317,8 +2351,7 @@ func (s WebSession_Response_content) ETag() (WebSession_ETag, error) {
 }
 
 func (s WebSession_Response_content) HasETag() bool {
-	p, err := s.Struct.Ptr(7)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(7)
 }
 
 func (s WebSession_Response_content) SetETag(v WebSession_ETag) error {
@@ -2355,8 +2388,7 @@ func (s WebSession_Response_content_body) HasBytes() bool {
 	if s.Struct.Uint16(0) != 0 {
 		return false
 	}
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s WebSession_Response_content_body) SetBytes(v []byte) error {
@@ -2376,13 +2408,12 @@ func (s WebSession_Response_content_body) HasStream() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s WebSession_Response_content_body) SetStream(v util.Handle) error {
 	s.Struct.SetUint16(0, 1)
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(4, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2414,8 +2445,7 @@ func (s WebSession_Response_content_disposition) HasDownload() bool {
 	if s.Struct.Uint16(6) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s WebSession_Response_content_disposition) DownloadBytes() ([]byte, error) {
@@ -2450,8 +2480,7 @@ func (s WebSession_Response_noContent) ETag() (WebSession_ETag, error) {
 }
 
 func (s WebSession_Response_noContent) HasETag() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_noContent) SetETag(v WebSession_ETag) error {
@@ -2483,8 +2512,7 @@ func (s WebSession_Response_preconditionFailed) MatchingETag() (WebSession_ETag,
 }
 
 func (s WebSession_Response_preconditionFailed) HasMatchingETag() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_preconditionFailed) SetMatchingETag(v WebSession_ETag) error {
@@ -2532,8 +2560,7 @@ func (s WebSession_Response_redirect) Location() (string, error) {
 }
 
 func (s WebSession_Response_redirect) HasLocation() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_redirect) LocationBytes() ([]byte, error) {
@@ -2567,8 +2594,7 @@ func (s WebSession_Response_clientError) DescriptionHtml() (string, error) {
 }
 
 func (s WebSession_Response_clientError) HasDescriptionHtml() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_clientError) DescriptionHtmlBytes() ([]byte, error) {
@@ -2586,8 +2612,7 @@ func (s WebSession_Response_clientError) NonHtmlBody() (WebSession_Response_Erro
 }
 
 func (s WebSession_Response_clientError) HasNonHtmlBody() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Response_clientError) SetNonHtmlBody(v WebSession_Response_ErrorBody) error {
@@ -2619,8 +2644,7 @@ func (s WebSession_Response_serverError) DescriptionHtml() (string, error) {
 }
 
 func (s WebSession_Response_serverError) HasDescriptionHtml() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_serverError) DescriptionHtmlBytes() ([]byte, error) {
@@ -2638,8 +2662,7 @@ func (s WebSession_Response_serverError) NonHtmlBody() (WebSession_Response_Erro
 }
 
 func (s WebSession_Response_serverError) HasNonHtmlBody() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Response_serverError) SetNonHtmlBody(v WebSession_Response_ErrorBody) error {
@@ -2663,8 +2686,7 @@ func (s WebSession_Response) AdditionalHeaders() (WebSession_Response_Header_Lis
 }
 
 func (s WebSession_Response) HasAdditionalHeaders() bool {
-	p, err := s.Struct.Ptr(8)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(8)
 }
 
 func (s WebSession_Response) SetAdditionalHeaders(v WebSession_Response_Header_List) error {
@@ -2704,136 +2726,136 @@ func (s WebSession_Response_List) String() string {
 	return str
 }
 
-// WebSession_Response_Promise is a wrapper for a WebSession_Response promised by a client call.
-type WebSession_Response_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_Future is a wrapper for a WebSession_Response promised by a client call.
+type WebSession_Response_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_Promise) Struct() (WebSession_Response, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_Future) Struct() (WebSession_Response, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response{s}, err
 }
 
-func (p WebSession_Response_Promise) CachePolicy() WebSession_CachePolicy_Promise {
-	return WebSession_CachePolicy_Promise{Pipeline: p.Pipeline.GetPipeline(6)}
+func (p WebSession_Response_Future) CachePolicy() WebSession_CachePolicy_Future {
+	return WebSession_CachePolicy_Future{Future: p.Future.Field(6, nil)}
 }
 
-func (p WebSession_Response_Promise) Content() WebSession_Response_content_Promise {
-	return WebSession_Response_content_Promise{p.Pipeline}
+func (p WebSession_Response_Future) Content() WebSession_Response_content_Future {
+	return WebSession_Response_content_Future{p.Future}
 }
 
-// WebSession_Response_content_Promise is a wrapper for a WebSession_Response_content promised by a client call.
-type WebSession_Response_content_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_content_Future is a wrapper for a WebSession_Response_content promised by a client call.
+type WebSession_Response_content_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_content_Promise) Struct() (WebSession_Response_content, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_content_Future) Struct() (WebSession_Response_content, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_content{s}, err
 }
 
-func (p WebSession_Response_content_Promise) ETag() WebSession_ETag_Promise {
-	return WebSession_ETag_Promise{Pipeline: p.Pipeline.GetPipeline(7)}
+func (p WebSession_Response_content_Future) ETag() WebSession_ETag_Future {
+	return WebSession_ETag_Future{Future: p.Future.Field(7, nil)}
 }
 
-func (p WebSession_Response_content_Promise) Body() WebSession_Response_content_body_Promise {
-	return WebSession_Response_content_body_Promise{p.Pipeline}
+func (p WebSession_Response_content_Future) Body() WebSession_Response_content_body_Future {
+	return WebSession_Response_content_body_Future{p.Future}
 }
 
-// WebSession_Response_content_body_Promise is a wrapper for a WebSession_Response_content_body promised by a client call.
-type WebSession_Response_content_body_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_content_body_Future is a wrapper for a WebSession_Response_content_body promised by a client call.
+type WebSession_Response_content_body_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_content_body_Promise) Struct() (WebSession_Response_content_body, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_content_body_Future) Struct() (WebSession_Response_content_body, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_content_body{s}, err
 }
 
-func (p WebSession_Response_content_body_Promise) Stream() util.Handle {
-	return util.Handle{Client: p.Pipeline.GetPipeline(4).Client()}
+func (p WebSession_Response_content_body_Future) Stream() util.Handle {
+	return util.Handle{Client: p.Future.Field(4, nil).Client()}
 }
 
-func (p WebSession_Response_content_Promise) Disposition() WebSession_Response_content_disposition_Promise {
-	return WebSession_Response_content_disposition_Promise{p.Pipeline}
+func (p WebSession_Response_content_Future) Disposition() WebSession_Response_content_disposition_Future {
+	return WebSession_Response_content_disposition_Future{p.Future}
 }
 
-// WebSession_Response_content_disposition_Promise is a wrapper for a WebSession_Response_content_disposition promised by a client call.
-type WebSession_Response_content_disposition_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_content_disposition_Future is a wrapper for a WebSession_Response_content_disposition promised by a client call.
+type WebSession_Response_content_disposition_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_content_disposition_Promise) Struct() (WebSession_Response_content_disposition, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_content_disposition_Future) Struct() (WebSession_Response_content_disposition, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_content_disposition{s}, err
 }
 
-func (p WebSession_Response_Promise) NoContent() WebSession_Response_noContent_Promise {
-	return WebSession_Response_noContent_Promise{p.Pipeline}
+func (p WebSession_Response_Future) NoContent() WebSession_Response_noContent_Future {
+	return WebSession_Response_noContent_Future{p.Future}
 }
 
-// WebSession_Response_noContent_Promise is a wrapper for a WebSession_Response_noContent promised by a client call.
-type WebSession_Response_noContent_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_noContent_Future is a wrapper for a WebSession_Response_noContent promised by a client call.
+type WebSession_Response_noContent_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_noContent_Promise) Struct() (WebSession_Response_noContent, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_noContent_Future) Struct() (WebSession_Response_noContent, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_noContent{s}, err
 }
 
-func (p WebSession_Response_noContent_Promise) ETag() WebSession_ETag_Promise {
-	return WebSession_ETag_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_Response_noContent_Future) ETag() WebSession_ETag_Future {
+	return WebSession_ETag_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_Response_Promise) PreconditionFailed() WebSession_Response_preconditionFailed_Promise {
-	return WebSession_Response_preconditionFailed_Promise{p.Pipeline}
+func (p WebSession_Response_Future) PreconditionFailed() WebSession_Response_preconditionFailed_Future {
+	return WebSession_Response_preconditionFailed_Future{p.Future}
 }
 
-// WebSession_Response_preconditionFailed_Promise is a wrapper for a WebSession_Response_preconditionFailed promised by a client call.
-type WebSession_Response_preconditionFailed_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_preconditionFailed_Future is a wrapper for a WebSession_Response_preconditionFailed promised by a client call.
+type WebSession_Response_preconditionFailed_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_preconditionFailed_Promise) Struct() (WebSession_Response_preconditionFailed, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_preconditionFailed_Future) Struct() (WebSession_Response_preconditionFailed, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_preconditionFailed{s}, err
 }
 
-func (p WebSession_Response_preconditionFailed_Promise) MatchingETag() WebSession_ETag_Promise {
-	return WebSession_ETag_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_Response_preconditionFailed_Future) MatchingETag() WebSession_ETag_Future {
+	return WebSession_ETag_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_Response_Promise) Redirect() WebSession_Response_redirect_Promise {
-	return WebSession_Response_redirect_Promise{p.Pipeline}
+func (p WebSession_Response_Future) Redirect() WebSession_Response_redirect_Future {
+	return WebSession_Response_redirect_Future{p.Future}
 }
 
-// WebSession_Response_redirect_Promise is a wrapper for a WebSession_Response_redirect promised by a client call.
-type WebSession_Response_redirect_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_redirect_Future is a wrapper for a WebSession_Response_redirect promised by a client call.
+type WebSession_Response_redirect_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_redirect_Promise) Struct() (WebSession_Response_redirect, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_redirect_Future) Struct() (WebSession_Response_redirect, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_redirect{s}, err
 }
 
-func (p WebSession_Response_Promise) ClientError() WebSession_Response_clientError_Promise {
-	return WebSession_Response_clientError_Promise{p.Pipeline}
+func (p WebSession_Response_Future) ClientError() WebSession_Response_clientError_Future {
+	return WebSession_Response_clientError_Future{p.Future}
 }
 
-// WebSession_Response_clientError_Promise is a wrapper for a WebSession_Response_clientError promised by a client call.
-type WebSession_Response_clientError_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_clientError_Future is a wrapper for a WebSession_Response_clientError promised by a client call.
+type WebSession_Response_clientError_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_clientError_Promise) Struct() (WebSession_Response_clientError, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_clientError_Future) Struct() (WebSession_Response_clientError, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_clientError{s}, err
 }
 
-func (p WebSession_Response_clientError_Promise) NonHtmlBody() WebSession_Response_ErrorBody_Promise {
-	return WebSession_Response_ErrorBody_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_Response_clientError_Future) NonHtmlBody() WebSession_Response_ErrorBody_Future {
+	return WebSession_Response_ErrorBody_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p WebSession_Response_Promise) ServerError() WebSession_Response_serverError_Promise {
-	return WebSession_Response_serverError_Promise{p.Pipeline}
+func (p WebSession_Response_Future) ServerError() WebSession_Response_serverError_Future {
+	return WebSession_Response_serverError_Future{p.Future}
 }
 
-// WebSession_Response_serverError_Promise is a wrapper for a WebSession_Response_serverError promised by a client call.
-type WebSession_Response_serverError_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_serverError_Future is a wrapper for a WebSession_Response_serverError promised by a client call.
+type WebSession_Response_serverError_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_serverError_Promise) Struct() (WebSession_Response_serverError, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_serverError_Future) Struct() (WebSession_Response_serverError, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_serverError{s}, err
 }
 
-func (p WebSession_Response_serverError_Promise) NonHtmlBody() WebSession_Response_ErrorBody_Promise {
-	return WebSession_Response_ErrorBody_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_Response_serverError_Future) NonHtmlBody() WebSession_Response_ErrorBody_Future {
+	return WebSession_Response_ErrorBody_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_Response_SuccessCode uint16
@@ -3042,7 +3064,7 @@ func NewRootWebSession_Response_Header(s *capnp.Segment) (WebSession_Response_He
 }
 
 func ReadRootWebSession_Response_Header(msg *capnp.Message) (WebSession_Response_Header, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Response_Header{root.Struct()}, err
 }
 
@@ -3057,8 +3079,7 @@ func (s WebSession_Response_Header) Name() (string, error) {
 }
 
 func (s WebSession_Response_Header) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Response_Header) NameBytes() ([]byte, error) {
@@ -3076,8 +3097,7 @@ func (s WebSession_Response_Header) Value() (string, error) {
 }
 
 func (s WebSession_Response_Header) HasValue() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_Header) ValueBytes() ([]byte, error) {
@@ -3111,11 +3131,11 @@ func (s WebSession_Response_Header_List) String() string {
 	return str
 }
 
-// WebSession_Response_Header_Promise is a wrapper for a WebSession_Response_Header promised by a client call.
-type WebSession_Response_Header_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_Header_Future is a wrapper for a WebSession_Response_Header promised by a client call.
+type WebSession_Response_Header_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_Header_Promise) Struct() (WebSession_Response_Header, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_Header_Future) Struct() (WebSession_Response_Header, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_Header{s}, err
 }
 
@@ -3135,7 +3155,7 @@ func NewRootWebSession_Response_ErrorBody(s *capnp.Segment) (WebSession_Response
 }
 
 func ReadRootWebSession_Response_ErrorBody(msg *capnp.Message) (WebSession_Response_ErrorBody, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Response_ErrorBody{root.Struct()}, err
 }
 
@@ -3150,8 +3170,7 @@ func (s WebSession_Response_ErrorBody) Data() ([]byte, error) {
 }
 
 func (s WebSession_Response_ErrorBody) HasData() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Response_ErrorBody) SetData(v []byte) error {
@@ -3164,8 +3183,7 @@ func (s WebSession_Response_ErrorBody) Encoding() (string, error) {
 }
 
 func (s WebSession_Response_ErrorBody) HasEncoding() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_Response_ErrorBody) EncodingBytes() ([]byte, error) {
@@ -3183,8 +3201,7 @@ func (s WebSession_Response_ErrorBody) Language() (string, error) {
 }
 
 func (s WebSession_Response_ErrorBody) HasLanguage() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_Response_ErrorBody) LanguageBytes() ([]byte, error) {
@@ -3202,8 +3219,7 @@ func (s WebSession_Response_ErrorBody) MimeType() (string, error) {
 }
 
 func (s WebSession_Response_ErrorBody) HasMimeType() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_Response_ErrorBody) MimeTypeBytes() ([]byte, error) {
@@ -3237,115 +3253,109 @@ func (s WebSession_Response_ErrorBody_List) String() string {
 	return str
 }
 
-// WebSession_Response_ErrorBody_Promise is a wrapper for a WebSession_Response_ErrorBody promised by a client call.
-type WebSession_Response_ErrorBody_Promise struct{ *capnp.Pipeline }
+// WebSession_Response_ErrorBody_Future is a wrapper for a WebSession_Response_ErrorBody promised by a client call.
+type WebSession_Response_ErrorBody_Future struct{ *capnp.Future }
 
-func (p WebSession_Response_ErrorBody_Promise) Struct() (WebSession_Response_ErrorBody, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Response_ErrorBody_Future) Struct() (WebSession_Response_ErrorBody, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Response_ErrorBody{s}, err
 }
 
-type WebSession_RequestStream struct{ Client capnp.Client }
+type WebSession_RequestStream struct{ Client *capnp.Client }
 
 // WebSession_RequestStream_TypeID is the unique identifier for the type WebSession_RequestStream.
 const WebSession_RequestStream_TypeID = 0x99ffc2f3f69a6a9f
 
-func (c WebSession_RequestStream) GetResponse(ctx context.Context, params func(WebSession_RequestStream_getResponse_Params) error, opts ...capnp.CallOption) WebSession_Response_Promise {
-	if c.Client == nil {
-		return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession_RequestStream) GetResponse(ctx context.Context, params func(WebSession_RequestStream_getResponse_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0x99ffc2f3f69a6a9f,
 			MethodID:      0,
 			InterfaceName: "web-session.capnp:WebSession.RequestStream",
 			MethodName:    "getResponse",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_RequestStream_getResponse_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_RequestStream_getResponse_Params{Struct: s}) }
 	}
-	return WebSession_Response_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_Response_Future{Future: ans.Future()}, release
 }
-func (c WebSession_RequestStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error, opts ...capnp.CallOption) util.ByteStream_write_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession_RequestStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error) (util.ByteStream_write_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      0,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
 	}
-	return util.ByteStream_write_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_write_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSession_RequestStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error, opts ...capnp.CallOption) util.ByteStream_done_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession_RequestStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error) (util.ByteStream_done_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      1,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_done_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_done_Params{Struct: s}) }
 	}
-	return util.ByteStream_done_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_done_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSession_RequestStream) ExpectSize(ctx context.Context, params func(util.ByteStream_expectSize_Params) error, opts ...capnp.CallOption) util.ByteStream_expectSize_Results_Promise {
-	if c.Client == nil {
-		return util.ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession_RequestStream) ExpectSize(ctx context.Context, params func(util.ByteStream_expectSize_Params) error) (util.ByteStream_expectSize_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
 			MethodID:      2,
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params{Struct: s}) }
 	}
-	return util.ByteStream_expectSize_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
+// A WebSession_RequestStream_Server is a WebSession_RequestStream with a local implementation.
 type WebSession_RequestStream_Server interface {
-	GetResponse(WebSession_RequestStream_getResponse) error
+	GetResponse(context.Context, WebSession_RequestStream_getResponse) error
 
-	Write(util.ByteStream_write) error
+	Write(context.Context, util.ByteStream_write) error
 
-	Done(util.ByteStream_done) error
+	Done(context.Context, util.ByteStream_done) error
 
-	ExpectSize(util.ByteStream_expectSize) error
+	ExpectSize(context.Context, util.ByteStream_expectSize) error
 }
 
-func WebSession_RequestStream_ServerToClient(s WebSession_RequestStream_Server) WebSession_RequestStream {
-	c, _ := s.(server.Closer)
-	return WebSession_RequestStream{Client: server.New(WebSession_RequestStream_Methods(nil, s), c)}
+// WebSession_RequestStream_NewServer creates a new Server from an implementation of WebSession_RequestStream_Server.
+func WebSession_RequestStream_NewServer(s WebSession_RequestStream_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(WebSession_RequestStream_Methods(nil, s), s, c, policy)
 }
 
+// WebSession_RequestStream_ServerToClient creates a new Client from an implementation of WebSession_RequestStream_Server.
+// The caller is responsible for calling Release on the returned Client.
+func WebSession_RequestStream_ServerToClient(s WebSession_RequestStream_Server, policy *server.Policy) WebSession_RequestStream {
+	return WebSession_RequestStream{Client: capnp.NewClient(WebSession_RequestStream_NewServer(s, policy))}
+}
+
+// WebSession_RequestStream_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func WebSession_RequestStream_Methods(methods []server.Method, s WebSession_RequestStream_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 4)
@@ -3358,11 +3368,9 @@ func WebSession_RequestStream_Methods(methods []server.Method, s WebSession_Requ
 			InterfaceName: "web-session.capnp:WebSession.RequestStream",
 			MethodName:    "getResponse",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_RequestStream_getResponse{c, opts, WebSession_RequestStream_getResponse_Params{Struct: p}, WebSession_Response{Struct: r}}
-			return s.GetResponse(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetResponse(ctx, WebSession_RequestStream_getResponse{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 9},
 	})
 
 	methods = append(methods, server.Method{
@@ -3372,11 +3380,9 @@ func WebSession_RequestStream_Methods(methods []server.Method, s WebSession_Requ
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "write",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_write{c, opts, util.ByteStream_write_Params{Struct: p}, util.ByteStream_write_Results{Struct: r}}
-			return s.Write(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Write(ctx, util.ByteStream_write{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3386,11 +3392,9 @@ func WebSession_RequestStream_Methods(methods []server.Method, s WebSession_Requ
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "done",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_done{c, opts, util.ByteStream_done_Params{Struct: p}, util.ByteStream_done_Results{Struct: r}}
-			return s.Done(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Done(ctx, util.ByteStream_done{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -3400,22 +3404,29 @@ func WebSession_RequestStream_Methods(methods []server.Method, s WebSession_Requ
 			InterfaceName: "util.capnp:ByteStream",
 			MethodName:    "expectSize",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := util.ByteStream_expectSize{c, opts, util.ByteStream_expectSize_Params{Struct: p}, util.ByteStream_expectSize_Results{Struct: r}}
-			return s.ExpectSize(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ExpectSize(ctx, util.ByteStream_expectSize{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// WebSession_RequestStream_getResponse holds the arguments for a server call to WebSession_RequestStream.getResponse.
+// WebSession_RequestStream_getResponse holds the state for a server call to WebSession_RequestStream.getResponse.
+// See server.Call for documentation.
 type WebSession_RequestStream_getResponse struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_RequestStream_getResponse_Params
-	Results WebSession_Response
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c WebSession_RequestStream_getResponse) Args() WebSession_RequestStream_getResponse_Params {
+	return WebSession_RequestStream_getResponse_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_RequestStream_getResponse) AllocResults() (WebSession_Response, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
+	return WebSession_Response{Struct: r}, err
 }
 
 type WebSession_RequestStream_getResponse_Params struct{ capnp.Struct }
@@ -3434,7 +3445,7 @@ func NewRootWebSession_RequestStream_getResponse_Params(s *capnp.Segment) (WebSe
 }
 
 func ReadRootWebSession_RequestStream_getResponse_Params(msg *capnp.Message) (WebSession_RequestStream_getResponse_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_RequestStream_getResponse_Params{root.Struct()}, err
 }
 
@@ -3465,49 +3476,55 @@ func (s WebSession_RequestStream_getResponse_Params_List) String() string {
 	return str
 }
 
-// WebSession_RequestStream_getResponse_Params_Promise is a wrapper for a WebSession_RequestStream_getResponse_Params promised by a client call.
-type WebSession_RequestStream_getResponse_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_RequestStream_getResponse_Params_Future is a wrapper for a WebSession_RequestStream_getResponse_Params promised by a client call.
+type WebSession_RequestStream_getResponse_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_RequestStream_getResponse_Params_Promise) Struct() (WebSession_RequestStream_getResponse_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_RequestStream_getResponse_Params_Future) Struct() (WebSession_RequestStream_getResponse_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_RequestStream_getResponse_Params{s}, err
 }
 
-type WebSession_WebSocketStream struct{ Client capnp.Client }
+type WebSession_WebSocketStream struct{ Client *capnp.Client }
 
 // WebSession_WebSocketStream_TypeID is the unique identifier for the type WebSession_WebSocketStream.
 const WebSession_WebSocketStream_TypeID = 0xf001fc1d5e574a07
 
-func (c WebSession_WebSocketStream) SendBytes(ctx context.Context, params func(WebSession_WebSocketStream_sendBytes_Params) error, opts ...capnp.CallOption) WebSession_WebSocketStream_sendBytes_Results_Promise {
-	if c.Client == nil {
-		return WebSession_WebSocketStream_sendBytes_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSession_WebSocketStream) SendBytes(ctx context.Context, params func(WebSession_WebSocketStream_sendBytes_Params) error) (WebSession_WebSocketStream_sendBytes_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xf001fc1d5e574a07,
 			MethodID:      0,
 			InterfaceName: "web-session.capnp:WebSession.WebSocketStream",
 			MethodName:    "sendBytes",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSession_WebSocketStream_sendBytes_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_WebSocketStream_sendBytes_Params{Struct: s}) }
 	}
-	return WebSession_WebSocketStream_sendBytes_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSession_WebSocketStream_sendBytes_Results_Future{Future: ans.Future()}, release
 }
 
+// A WebSession_WebSocketStream_Server is a WebSession_WebSocketStream with a local implementation.
 type WebSession_WebSocketStream_Server interface {
-	SendBytes(WebSession_WebSocketStream_sendBytes) error
+	SendBytes(context.Context, WebSession_WebSocketStream_sendBytes) error
 }
 
-func WebSession_WebSocketStream_ServerToClient(s WebSession_WebSocketStream_Server) WebSession_WebSocketStream {
-	c, _ := s.(server.Closer)
-	return WebSession_WebSocketStream{Client: server.New(WebSession_WebSocketStream_Methods(nil, s), c)}
+// WebSession_WebSocketStream_NewServer creates a new Server from an implementation of WebSession_WebSocketStream_Server.
+func WebSession_WebSocketStream_NewServer(s WebSession_WebSocketStream_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(WebSession_WebSocketStream_Methods(nil, s), s, c, policy)
 }
 
+// WebSession_WebSocketStream_ServerToClient creates a new Client from an implementation of WebSession_WebSocketStream_Server.
+// The caller is responsible for calling Release on the returned Client.
+func WebSession_WebSocketStream_ServerToClient(s WebSession_WebSocketStream_Server, policy *server.Policy) WebSession_WebSocketStream {
+	return WebSession_WebSocketStream{Client: capnp.NewClient(WebSession_WebSocketStream_NewServer(s, policy))}
+}
+
+// WebSession_WebSocketStream_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func WebSession_WebSocketStream_Methods(methods []server.Method, s WebSession_WebSocketStream_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -3520,22 +3537,29 @@ func WebSession_WebSocketStream_Methods(methods []server.Method, s WebSession_We
 			InterfaceName: "web-session.capnp:WebSession.WebSocketStream",
 			MethodName:    "sendBytes",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSession_WebSocketStream_sendBytes{c, opts, WebSession_WebSocketStream_sendBytes_Params{Struct: p}, WebSession_WebSocketStream_sendBytes_Results{Struct: r}}
-			return s.SendBytes(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SendBytes(ctx, WebSession_WebSocketStream_sendBytes{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// WebSession_WebSocketStream_sendBytes holds the arguments for a server call to WebSession_WebSocketStream.sendBytes.
+// WebSession_WebSocketStream_sendBytes holds the state for a server call to WebSession_WebSocketStream.sendBytes.
+// See server.Call for documentation.
 type WebSession_WebSocketStream_sendBytes struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSession_WebSocketStream_sendBytes_Params
-	Results WebSession_WebSocketStream_sendBytes_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c WebSession_WebSocketStream_sendBytes) Args() WebSession_WebSocketStream_sendBytes_Params {
+	return WebSession_WebSocketStream_sendBytes_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSession_WebSocketStream_sendBytes) AllocResults() (WebSession_WebSocketStream_sendBytes_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return WebSession_WebSocketStream_sendBytes_Results{Struct: r}, err
 }
 
 type WebSession_WebSocketStream_sendBytes_Params struct{ capnp.Struct }
@@ -3554,7 +3578,7 @@ func NewRootWebSession_WebSocketStream_sendBytes_Params(s *capnp.Segment) (WebSe
 }
 
 func ReadRootWebSession_WebSocketStream_sendBytes_Params(msg *capnp.Message) (WebSession_WebSocketStream_sendBytes_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_WebSocketStream_sendBytes_Params{root.Struct()}, err
 }
 
@@ -3569,8 +3593,7 @@ func (s WebSession_WebSocketStream_sendBytes_Params) Message() ([]byte, error) {
 }
 
 func (s WebSession_WebSocketStream_sendBytes_Params) HasMessage() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_WebSocketStream_sendBytes_Params) SetMessage(v []byte) error {
@@ -3599,11 +3622,11 @@ func (s WebSession_WebSocketStream_sendBytes_Params_List) String() string {
 	return str
 }
 
-// WebSession_WebSocketStream_sendBytes_Params_Promise is a wrapper for a WebSession_WebSocketStream_sendBytes_Params promised by a client call.
-type WebSession_WebSocketStream_sendBytes_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_WebSocketStream_sendBytes_Params_Future is a wrapper for a WebSession_WebSocketStream_sendBytes_Params promised by a client call.
+type WebSession_WebSocketStream_sendBytes_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_WebSocketStream_sendBytes_Params_Promise) Struct() (WebSession_WebSocketStream_sendBytes_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_WebSocketStream_sendBytes_Params_Future) Struct() (WebSession_WebSocketStream_sendBytes_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_WebSocketStream_sendBytes_Params{s}, err
 }
 
@@ -3623,7 +3646,7 @@ func NewRootWebSession_WebSocketStream_sendBytes_Results(s *capnp.Segment) (WebS
 }
 
 func ReadRootWebSession_WebSocketStream_sendBytes_Results(msg *capnp.Message) (WebSession_WebSocketStream_sendBytes_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_WebSocketStream_sendBytes_Results{root.Struct()}, err
 }
 
@@ -3654,11 +3677,11 @@ func (s WebSession_WebSocketStream_sendBytes_Results_List) String() string {
 	return str
 }
 
-// WebSession_WebSocketStream_sendBytes_Results_Promise is a wrapper for a WebSession_WebSocketStream_sendBytes_Results promised by a client call.
-type WebSession_WebSocketStream_sendBytes_Results_Promise struct{ *capnp.Pipeline }
+// WebSession_WebSocketStream_sendBytes_Results_Future is a wrapper for a WebSession_WebSocketStream_sendBytes_Results promised by a client call.
+type WebSession_WebSocketStream_sendBytes_Results_Future struct{ *capnp.Future }
 
-func (p WebSession_WebSocketStream_sendBytes_Results_Promise) Struct() (WebSession_WebSocketStream_sendBytes_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_WebSocketStream_sendBytes_Results_Future) Struct() (WebSession_WebSocketStream_sendBytes_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSession_WebSocketStream_sendBytes_Results{s}, err
 }
 
@@ -3678,7 +3701,7 @@ func NewRootWebSession_CachePolicy(s *capnp.Segment) (WebSession_CachePolicy, er
 }
 
 func ReadRootWebSession_CachePolicy(msg *capnp.Message) (WebSession_CachePolicy, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_CachePolicy{root.Struct()}, err
 }
 
@@ -3741,11 +3764,11 @@ func (s WebSession_CachePolicy_List) String() string {
 	return str
 }
 
-// WebSession_CachePolicy_Promise is a wrapper for a WebSession_CachePolicy promised by a client call.
-type WebSession_CachePolicy_Promise struct{ *capnp.Pipeline }
+// WebSession_CachePolicy_Future is a wrapper for a WebSession_CachePolicy promised by a client call.
+type WebSession_CachePolicy_Future struct{ *capnp.Future }
 
-func (p WebSession_CachePolicy_Promise) Struct() (WebSession_CachePolicy, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_CachePolicy_Future) Struct() (WebSession_CachePolicy, error) {
+	s, err := p.Future.Struct()
 	return WebSession_CachePolicy{s}, err
 }
 
@@ -3835,7 +3858,7 @@ func NewRootWebSession_Options(s *capnp.Segment) (WebSession_Options, error) {
 }
 
 func ReadRootWebSession_Options(msg *capnp.Message) (WebSession_Options, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_Options{root.Struct()}, err
 }
 
@@ -3874,8 +3897,7 @@ func (s WebSession_Options) DavExtensions() (capnp.TextList, error) {
 }
 
 func (s WebSession_Options) HasDavExtensions() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_Options) SetDavExtensions(v capnp.TextList) error {
@@ -3915,11 +3937,11 @@ func (s WebSession_Options_List) String() string {
 	return str
 }
 
-// WebSession_Options_Promise is a wrapper for a WebSession_Options promised by a client call.
-type WebSession_Options_Promise struct{ *capnp.Pipeline }
+// WebSession_Options_Future is a wrapper for a WebSession_Options promised by a client call.
+type WebSession_Options_Future struct{ *capnp.Future }
 
-func (p WebSession_Options_Promise) Struct() (WebSession_Options, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_Options_Future) Struct() (WebSession_Options, error) {
+	s, err := p.Future.Struct()
 	return WebSession_Options{s}, err
 }
 
@@ -3999,7 +4021,7 @@ func NewRootWebSession_get_Params(s *capnp.Segment) (WebSession_get_Params, erro
 }
 
 func ReadRootWebSession_get_Params(msg *capnp.Message) (WebSession_get_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_get_Params{root.Struct()}, err
 }
 
@@ -4014,8 +4036,7 @@ func (s WebSession_get_Params) Path() (string, error) {
 }
 
 func (s WebSession_get_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_get_Params) PathBytes() ([]byte, error) {
@@ -4033,8 +4054,7 @@ func (s WebSession_get_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_get_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_get_Params) SetContext(v WebSession_Context) error {
@@ -4082,16 +4102,16 @@ func (s WebSession_get_Params_List) String() string {
 	return str
 }
 
-// WebSession_get_Params_Promise is a wrapper for a WebSession_get_Params promised by a client call.
-type WebSession_get_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_get_Params_Future is a wrapper for a WebSession_get_Params promised by a client call.
+type WebSession_get_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_get_Params_Promise) Struct() (WebSession_get_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_get_Params_Future) Struct() (WebSession_get_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_get_Params{s}, err
 }
 
-func (p WebSession_get_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_get_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
 type WebSession_post_Params struct{ capnp.Struct }
@@ -4110,7 +4130,7 @@ func NewRootWebSession_post_Params(s *capnp.Segment) (WebSession_post_Params, er
 }
 
 func ReadRootWebSession_post_Params(msg *capnp.Message) (WebSession_post_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_post_Params{root.Struct()}, err
 }
 
@@ -4125,8 +4145,7 @@ func (s WebSession_post_Params) Path() (string, error) {
 }
 
 func (s WebSession_post_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_post_Params) PathBytes() ([]byte, error) {
@@ -4144,8 +4163,7 @@ func (s WebSession_post_Params) Content() (WebSession_PostContent, error) {
 }
 
 func (s WebSession_post_Params) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_post_Params) SetContent(v WebSession_PostContent) error {
@@ -4169,8 +4187,7 @@ func (s WebSession_post_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_post_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_post_Params) SetContext(v WebSession_Context) error {
@@ -4210,20 +4227,20 @@ func (s WebSession_post_Params_List) String() string {
 	return str
 }
 
-// WebSession_post_Params_Promise is a wrapper for a WebSession_post_Params promised by a client call.
-type WebSession_post_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_post_Params_Future is a wrapper for a WebSession_post_Params promised by a client call.
+type WebSession_post_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_post_Params_Promise) Struct() (WebSession_post_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_post_Params_Future) Struct() (WebSession_post_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_post_Params{s}, err
 }
 
-func (p WebSession_post_Params_Promise) Content() WebSession_PostContent_Promise {
-	return WebSession_PostContent_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_post_Params_Future) Content() WebSession_PostContent_Future {
+	return WebSession_PostContent_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_post_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_post_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_openWebSocket_Params struct{ capnp.Struct }
@@ -4242,7 +4259,7 @@ func NewRootWebSession_openWebSocket_Params(s *capnp.Segment) (WebSession_openWe
 }
 
 func ReadRootWebSession_openWebSocket_Params(msg *capnp.Message) (WebSession_openWebSocket_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_openWebSocket_Params{root.Struct()}, err
 }
 
@@ -4257,8 +4274,7 @@ func (s WebSession_openWebSocket_Params) Path() (string, error) {
 }
 
 func (s WebSession_openWebSocket_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_openWebSocket_Params) PathBytes() ([]byte, error) {
@@ -4276,8 +4292,7 @@ func (s WebSession_openWebSocket_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_openWebSocket_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_openWebSocket_Params) SetContext(v WebSession_Context) error {
@@ -4301,8 +4316,7 @@ func (s WebSession_openWebSocket_Params) Protocol() (capnp.TextList, error) {
 }
 
 func (s WebSession_openWebSocket_Params) HasProtocol() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_openWebSocket_Params) SetProtocol(v capnp.TextList) error {
@@ -4326,12 +4340,11 @@ func (s WebSession_openWebSocket_Params) ClientStream() WebSession_WebSocketStre
 }
 
 func (s WebSession_openWebSocket_Params) HasClientStream() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_openWebSocket_Params) SetClientStream(v WebSession_WebSocketStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(3, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4361,20 +4374,20 @@ func (s WebSession_openWebSocket_Params_List) String() string {
 	return str
 }
 
-// WebSession_openWebSocket_Params_Promise is a wrapper for a WebSession_openWebSocket_Params promised by a client call.
-type WebSession_openWebSocket_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_openWebSocket_Params_Future is a wrapper for a WebSession_openWebSocket_Params promised by a client call.
+type WebSession_openWebSocket_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_openWebSocket_Params_Promise) Struct() (WebSession_openWebSocket_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_openWebSocket_Params_Future) Struct() (WebSession_openWebSocket_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_openWebSocket_Params{s}, err
 }
 
-func (p WebSession_openWebSocket_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_openWebSocket_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_openWebSocket_Params_Promise) ClientStream() WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{Client: p.Pipeline.GetPipeline(3).Client()}
+func (p WebSession_openWebSocket_Params_Future) ClientStream() WebSession_WebSocketStream {
+	return WebSession_WebSocketStream{Client: p.Future.Field(3, nil).Client()}
 }
 
 type WebSession_openWebSocket_Results struct{ capnp.Struct }
@@ -4393,7 +4406,7 @@ func NewRootWebSession_openWebSocket_Results(s *capnp.Segment) (WebSession_openW
 }
 
 func ReadRootWebSession_openWebSocket_Results(msg *capnp.Message) (WebSession_openWebSocket_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_openWebSocket_Results{root.Struct()}, err
 }
 
@@ -4408,8 +4421,7 @@ func (s WebSession_openWebSocket_Results) Protocol() (capnp.TextList, error) {
 }
 
 func (s WebSession_openWebSocket_Results) HasProtocol() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_openWebSocket_Results) SetProtocol(v capnp.TextList) error {
@@ -4433,12 +4445,11 @@ func (s WebSession_openWebSocket_Results) ServerStream() WebSession_WebSocketStr
 }
 
 func (s WebSession_openWebSocket_Results) HasServerStream() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_openWebSocket_Results) SetServerStream(v WebSession_WebSocketStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4468,16 +4479,16 @@ func (s WebSession_openWebSocket_Results_List) String() string {
 	return str
 }
 
-// WebSession_openWebSocket_Results_Promise is a wrapper for a WebSession_openWebSocket_Results promised by a client call.
-type WebSession_openWebSocket_Results_Promise struct{ *capnp.Pipeline }
+// WebSession_openWebSocket_Results_Future is a wrapper for a WebSession_openWebSocket_Results promised by a client call.
+type WebSession_openWebSocket_Results_Future struct{ *capnp.Future }
 
-func (p WebSession_openWebSocket_Results_Promise) Struct() (WebSession_openWebSocket_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_openWebSocket_Results_Future) Struct() (WebSession_openWebSocket_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSession_openWebSocket_Results{s}, err
 }
 
-func (p WebSession_openWebSocket_Results_Promise) ServerStream() WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p WebSession_openWebSocket_Results_Future) ServerStream() WebSession_WebSocketStream {
+	return WebSession_WebSocketStream{Client: p.Future.Field(1, nil).Client()}
 }
 
 type WebSession_put_Params struct{ capnp.Struct }
@@ -4496,7 +4507,7 @@ func NewRootWebSession_put_Params(s *capnp.Segment) (WebSession_put_Params, erro
 }
 
 func ReadRootWebSession_put_Params(msg *capnp.Message) (WebSession_put_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_put_Params{root.Struct()}, err
 }
 
@@ -4511,8 +4522,7 @@ func (s WebSession_put_Params) Path() (string, error) {
 }
 
 func (s WebSession_put_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_put_Params) PathBytes() ([]byte, error) {
@@ -4530,8 +4540,7 @@ func (s WebSession_put_Params) Content() (WebSession_PutContent, error) {
 }
 
 func (s WebSession_put_Params) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_put_Params) SetContent(v WebSession_PutContent) error {
@@ -4555,8 +4564,7 @@ func (s WebSession_put_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_put_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_put_Params) SetContext(v WebSession_Context) error {
@@ -4596,20 +4604,20 @@ func (s WebSession_put_Params_List) String() string {
 	return str
 }
 
-// WebSession_put_Params_Promise is a wrapper for a WebSession_put_Params promised by a client call.
-type WebSession_put_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_put_Params_Future is a wrapper for a WebSession_put_Params promised by a client call.
+type WebSession_put_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_put_Params_Promise) Struct() (WebSession_put_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_put_Params_Future) Struct() (WebSession_put_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_put_Params{s}, err
 }
 
-func (p WebSession_put_Params_Promise) Content() WebSession_PutContent_Promise {
-	return WebSession_PutContent_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_put_Params_Future) Content() WebSession_PutContent_Future {
+	return WebSession_PutContent_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_put_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_put_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_delete_Params struct{ capnp.Struct }
@@ -4628,7 +4636,7 @@ func NewRootWebSession_delete_Params(s *capnp.Segment) (WebSession_delete_Params
 }
 
 func ReadRootWebSession_delete_Params(msg *capnp.Message) (WebSession_delete_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_delete_Params{root.Struct()}, err
 }
 
@@ -4643,8 +4651,7 @@ func (s WebSession_delete_Params) Path() (string, error) {
 }
 
 func (s WebSession_delete_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_delete_Params) PathBytes() ([]byte, error) {
@@ -4662,8 +4669,7 @@ func (s WebSession_delete_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_delete_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_delete_Params) SetContext(v WebSession_Context) error {
@@ -4703,16 +4709,16 @@ func (s WebSession_delete_Params_List) String() string {
 	return str
 }
 
-// WebSession_delete_Params_Promise is a wrapper for a WebSession_delete_Params promised by a client call.
-type WebSession_delete_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_delete_Params_Future is a wrapper for a WebSession_delete_Params promised by a client call.
+type WebSession_delete_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_delete_Params_Promise) Struct() (WebSession_delete_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_delete_Params_Future) Struct() (WebSession_delete_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_delete_Params{s}, err
 }
 
-func (p WebSession_delete_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_delete_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
 type WebSession_postStreaming_Params struct{ capnp.Struct }
@@ -4731,7 +4737,7 @@ func NewRootWebSession_postStreaming_Params(s *capnp.Segment) (WebSession_postSt
 }
 
 func ReadRootWebSession_postStreaming_Params(msg *capnp.Message) (WebSession_postStreaming_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_postStreaming_Params{root.Struct()}, err
 }
 
@@ -4746,8 +4752,7 @@ func (s WebSession_postStreaming_Params) Path() (string, error) {
 }
 
 func (s WebSession_postStreaming_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_postStreaming_Params) PathBytes() ([]byte, error) {
@@ -4765,8 +4770,7 @@ func (s WebSession_postStreaming_Params) MimeType() (string, error) {
 }
 
 func (s WebSession_postStreaming_Params) HasMimeType() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_postStreaming_Params) MimeTypeBytes() ([]byte, error) {
@@ -4784,8 +4788,7 @@ func (s WebSession_postStreaming_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_postStreaming_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_postStreaming_Params) SetContext(v WebSession_Context) error {
@@ -4809,8 +4812,7 @@ func (s WebSession_postStreaming_Params) Encoding() (string, error) {
 }
 
 func (s WebSession_postStreaming_Params) HasEncoding() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_postStreaming_Params) EncodingBytes() ([]byte, error) {
@@ -4844,16 +4846,16 @@ func (s WebSession_postStreaming_Params_List) String() string {
 	return str
 }
 
-// WebSession_postStreaming_Params_Promise is a wrapper for a WebSession_postStreaming_Params promised by a client call.
-type WebSession_postStreaming_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_postStreaming_Params_Future is a wrapper for a WebSession_postStreaming_Params promised by a client call.
+type WebSession_postStreaming_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_postStreaming_Params_Promise) Struct() (WebSession_postStreaming_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_postStreaming_Params_Future) Struct() (WebSession_postStreaming_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_postStreaming_Params{s}, err
 }
 
-func (p WebSession_postStreaming_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_postStreaming_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_postStreaming_Results struct{ capnp.Struct }
@@ -4872,7 +4874,7 @@ func NewRootWebSession_postStreaming_Results(s *capnp.Segment) (WebSession_postS
 }
 
 func ReadRootWebSession_postStreaming_Results(msg *capnp.Message) (WebSession_postStreaming_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_postStreaming_Results{root.Struct()}, err
 }
 
@@ -4887,12 +4889,11 @@ func (s WebSession_postStreaming_Results) Stream() WebSession_RequestStream {
 }
 
 func (s WebSession_postStreaming_Results) HasStream() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_postStreaming_Results) SetStream(v WebSession_RequestStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -4922,16 +4923,16 @@ func (s WebSession_postStreaming_Results_List) String() string {
 	return str
 }
 
-// WebSession_postStreaming_Results_Promise is a wrapper for a WebSession_postStreaming_Results promised by a client call.
-type WebSession_postStreaming_Results_Promise struct{ *capnp.Pipeline }
+// WebSession_postStreaming_Results_Future is a wrapper for a WebSession_postStreaming_Results promised by a client call.
+type WebSession_postStreaming_Results_Future struct{ *capnp.Future }
 
-func (p WebSession_postStreaming_Results_Promise) Struct() (WebSession_postStreaming_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_postStreaming_Results_Future) Struct() (WebSession_postStreaming_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSession_postStreaming_Results{s}, err
 }
 
-func (p WebSession_postStreaming_Results_Promise) Stream() WebSession_RequestStream {
-	return WebSession_RequestStream{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSession_postStreaming_Results_Future) Stream() WebSession_RequestStream {
+	return WebSession_RequestStream{Client: p.Future.Field(0, nil).Client()}
 }
 
 type WebSession_putStreaming_Params struct{ capnp.Struct }
@@ -4950,7 +4951,7 @@ func NewRootWebSession_putStreaming_Params(s *capnp.Segment) (WebSession_putStre
 }
 
 func ReadRootWebSession_putStreaming_Params(msg *capnp.Message) (WebSession_putStreaming_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_putStreaming_Params{root.Struct()}, err
 }
 
@@ -4965,8 +4966,7 @@ func (s WebSession_putStreaming_Params) Path() (string, error) {
 }
 
 func (s WebSession_putStreaming_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_putStreaming_Params) PathBytes() ([]byte, error) {
@@ -4984,8 +4984,7 @@ func (s WebSession_putStreaming_Params) MimeType() (string, error) {
 }
 
 func (s WebSession_putStreaming_Params) HasMimeType() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_putStreaming_Params) MimeTypeBytes() ([]byte, error) {
@@ -5003,8 +5002,7 @@ func (s WebSession_putStreaming_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_putStreaming_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_putStreaming_Params) SetContext(v WebSession_Context) error {
@@ -5028,8 +5026,7 @@ func (s WebSession_putStreaming_Params) Encoding() (string, error) {
 }
 
 func (s WebSession_putStreaming_Params) HasEncoding() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSession_putStreaming_Params) EncodingBytes() ([]byte, error) {
@@ -5063,16 +5060,16 @@ func (s WebSession_putStreaming_Params_List) String() string {
 	return str
 }
 
-// WebSession_putStreaming_Params_Promise is a wrapper for a WebSession_putStreaming_Params promised by a client call.
-type WebSession_putStreaming_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_putStreaming_Params_Future is a wrapper for a WebSession_putStreaming_Params promised by a client call.
+type WebSession_putStreaming_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_putStreaming_Params_Promise) Struct() (WebSession_putStreaming_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_putStreaming_Params_Future) Struct() (WebSession_putStreaming_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_putStreaming_Params{s}, err
 }
 
-func (p WebSession_putStreaming_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_putStreaming_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_putStreaming_Results struct{ capnp.Struct }
@@ -5091,7 +5088,7 @@ func NewRootWebSession_putStreaming_Results(s *capnp.Segment) (WebSession_putStr
 }
 
 func ReadRootWebSession_putStreaming_Results(msg *capnp.Message) (WebSession_putStreaming_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_putStreaming_Results{root.Struct()}, err
 }
 
@@ -5106,12 +5103,11 @@ func (s WebSession_putStreaming_Results) Stream() WebSession_RequestStream {
 }
 
 func (s WebSession_putStreaming_Results) HasStream() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_putStreaming_Results) SetStream(v WebSession_RequestStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -5141,16 +5137,16 @@ func (s WebSession_putStreaming_Results_List) String() string {
 	return str
 }
 
-// WebSession_putStreaming_Results_Promise is a wrapper for a WebSession_putStreaming_Results promised by a client call.
-type WebSession_putStreaming_Results_Promise struct{ *capnp.Pipeline }
+// WebSession_putStreaming_Results_Future is a wrapper for a WebSession_putStreaming_Results promised by a client call.
+type WebSession_putStreaming_Results_Future struct{ *capnp.Future }
 
-func (p WebSession_putStreaming_Results_Promise) Struct() (WebSession_putStreaming_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_putStreaming_Results_Future) Struct() (WebSession_putStreaming_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSession_putStreaming_Results{s}, err
 }
 
-func (p WebSession_putStreaming_Results_Promise) Stream() WebSession_RequestStream {
-	return WebSession_RequestStream{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSession_putStreaming_Results_Future) Stream() WebSession_RequestStream {
+	return WebSession_RequestStream{Client: p.Future.Field(0, nil).Client()}
 }
 
 type WebSession_propfind_Params struct{ capnp.Struct }
@@ -5169,7 +5165,7 @@ func NewRootWebSession_propfind_Params(s *capnp.Segment) (WebSession_propfind_Pa
 }
 
 func ReadRootWebSession_propfind_Params(msg *capnp.Message) (WebSession_propfind_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_propfind_Params{root.Struct()}, err
 }
 
@@ -5184,8 +5180,7 @@ func (s WebSession_propfind_Params) Path() (string, error) {
 }
 
 func (s WebSession_propfind_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_propfind_Params) PathBytes() ([]byte, error) {
@@ -5203,8 +5198,7 @@ func (s WebSession_propfind_Params) XmlContent() (string, error) {
 }
 
 func (s WebSession_propfind_Params) HasXmlContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_propfind_Params) XmlContentBytes() ([]byte, error) {
@@ -5230,8 +5224,7 @@ func (s WebSession_propfind_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_propfind_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_propfind_Params) SetContext(v WebSession_Context) error {
@@ -5271,16 +5264,16 @@ func (s WebSession_propfind_Params_List) String() string {
 	return str
 }
 
-// WebSession_propfind_Params_Promise is a wrapper for a WebSession_propfind_Params promised by a client call.
-type WebSession_propfind_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_propfind_Params_Future is a wrapper for a WebSession_propfind_Params promised by a client call.
+type WebSession_propfind_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_propfind_Params_Promise) Struct() (WebSession_propfind_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_propfind_Params_Future) Struct() (WebSession_propfind_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_propfind_Params{s}, err
 }
 
-func (p WebSession_propfind_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_propfind_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_proppatch_Params struct{ capnp.Struct }
@@ -5299,7 +5292,7 @@ func NewRootWebSession_proppatch_Params(s *capnp.Segment) (WebSession_proppatch_
 }
 
 func ReadRootWebSession_proppatch_Params(msg *capnp.Message) (WebSession_proppatch_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_proppatch_Params{root.Struct()}, err
 }
 
@@ -5314,8 +5307,7 @@ func (s WebSession_proppatch_Params) Path() (string, error) {
 }
 
 func (s WebSession_proppatch_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_proppatch_Params) PathBytes() ([]byte, error) {
@@ -5333,8 +5325,7 @@ func (s WebSession_proppatch_Params) XmlContent() (string, error) {
 }
 
 func (s WebSession_proppatch_Params) HasXmlContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_proppatch_Params) XmlContentBytes() ([]byte, error) {
@@ -5352,8 +5343,7 @@ func (s WebSession_proppatch_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_proppatch_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_proppatch_Params) SetContext(v WebSession_Context) error {
@@ -5393,16 +5383,16 @@ func (s WebSession_proppatch_Params_List) String() string {
 	return str
 }
 
-// WebSession_proppatch_Params_Promise is a wrapper for a WebSession_proppatch_Params promised by a client call.
-type WebSession_proppatch_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_proppatch_Params_Future is a wrapper for a WebSession_proppatch_Params promised by a client call.
+type WebSession_proppatch_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_proppatch_Params_Promise) Struct() (WebSession_proppatch_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_proppatch_Params_Future) Struct() (WebSession_proppatch_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_proppatch_Params{s}, err
 }
 
-func (p WebSession_proppatch_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_proppatch_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_mkcol_Params struct{ capnp.Struct }
@@ -5421,7 +5411,7 @@ func NewRootWebSession_mkcol_Params(s *capnp.Segment) (WebSession_mkcol_Params, 
 }
 
 func ReadRootWebSession_mkcol_Params(msg *capnp.Message) (WebSession_mkcol_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_mkcol_Params{root.Struct()}, err
 }
 
@@ -5436,8 +5426,7 @@ func (s WebSession_mkcol_Params) Path() (string, error) {
 }
 
 func (s WebSession_mkcol_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_mkcol_Params) PathBytes() ([]byte, error) {
@@ -5455,8 +5444,7 @@ func (s WebSession_mkcol_Params) Content() (WebSession_PostContent, error) {
 }
 
 func (s WebSession_mkcol_Params) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_mkcol_Params) SetContent(v WebSession_PostContent) error {
@@ -5480,8 +5468,7 @@ func (s WebSession_mkcol_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_mkcol_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_mkcol_Params) SetContext(v WebSession_Context) error {
@@ -5521,20 +5508,20 @@ func (s WebSession_mkcol_Params_List) String() string {
 	return str
 }
 
-// WebSession_mkcol_Params_Promise is a wrapper for a WebSession_mkcol_Params promised by a client call.
-type WebSession_mkcol_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_mkcol_Params_Future is a wrapper for a WebSession_mkcol_Params promised by a client call.
+type WebSession_mkcol_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_mkcol_Params_Promise) Struct() (WebSession_mkcol_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_mkcol_Params_Future) Struct() (WebSession_mkcol_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_mkcol_Params{s}, err
 }
 
-func (p WebSession_mkcol_Params_Promise) Content() WebSession_PostContent_Promise {
-	return WebSession_PostContent_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_mkcol_Params_Future) Content() WebSession_PostContent_Future {
+	return WebSession_PostContent_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_mkcol_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_mkcol_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_copy_Params struct{ capnp.Struct }
@@ -5553,7 +5540,7 @@ func NewRootWebSession_copy_Params(s *capnp.Segment) (WebSession_copy_Params, er
 }
 
 func ReadRootWebSession_copy_Params(msg *capnp.Message) (WebSession_copy_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_copy_Params{root.Struct()}, err
 }
 
@@ -5568,8 +5555,7 @@ func (s WebSession_copy_Params) Path() (string, error) {
 }
 
 func (s WebSession_copy_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_copy_Params) PathBytes() ([]byte, error) {
@@ -5587,8 +5573,7 @@ func (s WebSession_copy_Params) Destination() (string, error) {
 }
 
 func (s WebSession_copy_Params) HasDestination() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_copy_Params) DestinationBytes() ([]byte, error) {
@@ -5622,8 +5607,7 @@ func (s WebSession_copy_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_copy_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_copy_Params) SetContext(v WebSession_Context) error {
@@ -5663,16 +5647,16 @@ func (s WebSession_copy_Params_List) String() string {
 	return str
 }
 
-// WebSession_copy_Params_Promise is a wrapper for a WebSession_copy_Params promised by a client call.
-type WebSession_copy_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_copy_Params_Future is a wrapper for a WebSession_copy_Params promised by a client call.
+type WebSession_copy_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_copy_Params_Promise) Struct() (WebSession_copy_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_copy_Params_Future) Struct() (WebSession_copy_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_copy_Params{s}, err
 }
 
-func (p WebSession_copy_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_copy_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_move_Params struct{ capnp.Struct }
@@ -5691,7 +5675,7 @@ func NewRootWebSession_move_Params(s *capnp.Segment) (WebSession_move_Params, er
 }
 
 func ReadRootWebSession_move_Params(msg *capnp.Message) (WebSession_move_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_move_Params{root.Struct()}, err
 }
 
@@ -5706,8 +5690,7 @@ func (s WebSession_move_Params) Path() (string, error) {
 }
 
 func (s WebSession_move_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_move_Params) PathBytes() ([]byte, error) {
@@ -5725,8 +5708,7 @@ func (s WebSession_move_Params) Destination() (string, error) {
 }
 
 func (s WebSession_move_Params) HasDestination() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_move_Params) DestinationBytes() ([]byte, error) {
@@ -5752,8 +5734,7 @@ func (s WebSession_move_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_move_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_move_Params) SetContext(v WebSession_Context) error {
@@ -5793,16 +5774,16 @@ func (s WebSession_move_Params_List) String() string {
 	return str
 }
 
-// WebSession_move_Params_Promise is a wrapper for a WebSession_move_Params promised by a client call.
-type WebSession_move_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_move_Params_Future is a wrapper for a WebSession_move_Params promised by a client call.
+type WebSession_move_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_move_Params_Promise) Struct() (WebSession_move_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_move_Params_Future) Struct() (WebSession_move_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_move_Params{s}, err
 }
 
-func (p WebSession_move_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_move_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_lock_Params struct{ capnp.Struct }
@@ -5821,7 +5802,7 @@ func NewRootWebSession_lock_Params(s *capnp.Segment) (WebSession_lock_Params, er
 }
 
 func ReadRootWebSession_lock_Params(msg *capnp.Message) (WebSession_lock_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_lock_Params{root.Struct()}, err
 }
 
@@ -5836,8 +5817,7 @@ func (s WebSession_lock_Params) Path() (string, error) {
 }
 
 func (s WebSession_lock_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_lock_Params) PathBytes() ([]byte, error) {
@@ -5855,8 +5835,7 @@ func (s WebSession_lock_Params) XmlContent() (string, error) {
 }
 
 func (s WebSession_lock_Params) HasXmlContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_lock_Params) XmlContentBytes() ([]byte, error) {
@@ -5882,8 +5861,7 @@ func (s WebSession_lock_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_lock_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_lock_Params) SetContext(v WebSession_Context) error {
@@ -5923,16 +5901,16 @@ func (s WebSession_lock_Params_List) String() string {
 	return str
 }
 
-// WebSession_lock_Params_Promise is a wrapper for a WebSession_lock_Params promised by a client call.
-type WebSession_lock_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_lock_Params_Future is a wrapper for a WebSession_lock_Params promised by a client call.
+type WebSession_lock_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_lock_Params_Promise) Struct() (WebSession_lock_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_lock_Params_Future) Struct() (WebSession_lock_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_lock_Params{s}, err
 }
 
-func (p WebSession_lock_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_lock_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_unlock_Params struct{ capnp.Struct }
@@ -5951,7 +5929,7 @@ func NewRootWebSession_unlock_Params(s *capnp.Segment) (WebSession_unlock_Params
 }
 
 func ReadRootWebSession_unlock_Params(msg *capnp.Message) (WebSession_unlock_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_unlock_Params{root.Struct()}, err
 }
 
@@ -5966,8 +5944,7 @@ func (s WebSession_unlock_Params) Path() (string, error) {
 }
 
 func (s WebSession_unlock_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_unlock_Params) PathBytes() ([]byte, error) {
@@ -5985,8 +5962,7 @@ func (s WebSession_unlock_Params) LockToken() (string, error) {
 }
 
 func (s WebSession_unlock_Params) HasLockToken() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_unlock_Params) LockTokenBytes() ([]byte, error) {
@@ -6004,8 +5980,7 @@ func (s WebSession_unlock_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_unlock_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_unlock_Params) SetContext(v WebSession_Context) error {
@@ -6045,16 +6020,16 @@ func (s WebSession_unlock_Params_List) String() string {
 	return str
 }
 
-// WebSession_unlock_Params_Promise is a wrapper for a WebSession_unlock_Params promised by a client call.
-type WebSession_unlock_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_unlock_Params_Future is a wrapper for a WebSession_unlock_Params promised by a client call.
+type WebSession_unlock_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_unlock_Params_Promise) Struct() (WebSession_unlock_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_unlock_Params_Future) Struct() (WebSession_unlock_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_unlock_Params{s}, err
 }
 
-func (p WebSession_unlock_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_unlock_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_acl_Params struct{ capnp.Struct }
@@ -6073,7 +6048,7 @@ func NewRootWebSession_acl_Params(s *capnp.Segment) (WebSession_acl_Params, erro
 }
 
 func ReadRootWebSession_acl_Params(msg *capnp.Message) (WebSession_acl_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_acl_Params{root.Struct()}, err
 }
 
@@ -6088,8 +6063,7 @@ func (s WebSession_acl_Params) Path() (string, error) {
 }
 
 func (s WebSession_acl_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_acl_Params) PathBytes() ([]byte, error) {
@@ -6107,8 +6081,7 @@ func (s WebSession_acl_Params) XmlContent() (string, error) {
 }
 
 func (s WebSession_acl_Params) HasXmlContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_acl_Params) XmlContentBytes() ([]byte, error) {
@@ -6126,8 +6099,7 @@ func (s WebSession_acl_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_acl_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_acl_Params) SetContext(v WebSession_Context) error {
@@ -6167,16 +6139,16 @@ func (s WebSession_acl_Params_List) String() string {
 	return str
 }
 
-// WebSession_acl_Params_Promise is a wrapper for a WebSession_acl_Params promised by a client call.
-type WebSession_acl_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_acl_Params_Future is a wrapper for a WebSession_acl_Params promised by a client call.
+type WebSession_acl_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_acl_Params_Promise) Struct() (WebSession_acl_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_acl_Params_Future) Struct() (WebSession_acl_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_acl_Params{s}, err
 }
 
-func (p WebSession_acl_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_acl_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_report_Params struct{ capnp.Struct }
@@ -6195,7 +6167,7 @@ func NewRootWebSession_report_Params(s *capnp.Segment) (WebSession_report_Params
 }
 
 func ReadRootWebSession_report_Params(msg *capnp.Message) (WebSession_report_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_report_Params{root.Struct()}, err
 }
 
@@ -6210,8 +6182,7 @@ func (s WebSession_report_Params) Path() (string, error) {
 }
 
 func (s WebSession_report_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_report_Params) PathBytes() ([]byte, error) {
@@ -6229,8 +6200,7 @@ func (s WebSession_report_Params) Content() (WebSession_PostContent, error) {
 }
 
 func (s WebSession_report_Params) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_report_Params) SetContent(v WebSession_PostContent) error {
@@ -6254,8 +6224,7 @@ func (s WebSession_report_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_report_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_report_Params) SetContext(v WebSession_Context) error {
@@ -6295,20 +6264,20 @@ func (s WebSession_report_Params_List) String() string {
 	return str
 }
 
-// WebSession_report_Params_Promise is a wrapper for a WebSession_report_Params promised by a client call.
-type WebSession_report_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_report_Params_Future is a wrapper for a WebSession_report_Params promised by a client call.
+type WebSession_report_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_report_Params_Promise) Struct() (WebSession_report_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_report_Params_Future) Struct() (WebSession_report_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_report_Params{s}, err
 }
 
-func (p WebSession_report_Params_Promise) Content() WebSession_PostContent_Promise {
-	return WebSession_PostContent_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_report_Params_Future) Content() WebSession_PostContent_Future {
+	return WebSession_PostContent_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_report_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_report_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 type WebSession_options_Params struct{ capnp.Struct }
@@ -6327,7 +6296,7 @@ func NewRootWebSession_options_Params(s *capnp.Segment) (WebSession_options_Para
 }
 
 func ReadRootWebSession_options_Params(msg *capnp.Message) (WebSession_options_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_options_Params{root.Struct()}, err
 }
 
@@ -6342,8 +6311,7 @@ func (s WebSession_options_Params) Path() (string, error) {
 }
 
 func (s WebSession_options_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_options_Params) PathBytes() ([]byte, error) {
@@ -6361,8 +6329,7 @@ func (s WebSession_options_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_options_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_options_Params) SetContext(v WebSession_Context) error {
@@ -6402,16 +6369,16 @@ func (s WebSession_options_Params_List) String() string {
 	return str
 }
 
-// WebSession_options_Params_Promise is a wrapper for a WebSession_options_Params promised by a client call.
-type WebSession_options_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_options_Params_Future is a wrapper for a WebSession_options_Params promised by a client call.
+type WebSession_options_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_options_Params_Promise) Struct() (WebSession_options_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_options_Params_Future) Struct() (WebSession_options_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_options_Params{s}, err
 }
 
-func (p WebSession_options_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_options_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
 type WebSession_patch_Params struct{ capnp.Struct }
@@ -6430,7 +6397,7 @@ func NewRootWebSession_patch_Params(s *capnp.Segment) (WebSession_patch_Params, 
 }
 
 func ReadRootWebSession_patch_Params(msg *capnp.Message) (WebSession_patch_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSession_patch_Params{root.Struct()}, err
 }
 
@@ -6445,8 +6412,7 @@ func (s WebSession_patch_Params) Path() (string, error) {
 }
 
 func (s WebSession_patch_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSession_patch_Params) PathBytes() ([]byte, error) {
@@ -6464,8 +6430,7 @@ func (s WebSession_patch_Params) Content() (WebSession_PostContent, error) {
 }
 
 func (s WebSession_patch_Params) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSession_patch_Params) SetContent(v WebSession_PostContent) error {
@@ -6489,8 +6454,7 @@ func (s WebSession_patch_Params) Context() (WebSession_Context, error) {
 }
 
 func (s WebSession_patch_Params) HasContext() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSession_patch_Params) SetContext(v WebSession_Context) error {
@@ -6530,20 +6494,20 @@ func (s WebSession_patch_Params_List) String() string {
 	return str
 }
 
-// WebSession_patch_Params_Promise is a wrapper for a WebSession_patch_Params promised by a client call.
-type WebSession_patch_Params_Promise struct{ *capnp.Pipeline }
+// WebSession_patch_Params_Future is a wrapper for a WebSession_patch_Params promised by a client call.
+type WebSession_patch_Params_Future struct{ *capnp.Future }
 
-func (p WebSession_patch_Params_Promise) Struct() (WebSession_patch_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSession_patch_Params_Future) Struct() (WebSession_patch_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSession_patch_Params{s}, err
 }
 
-func (p WebSession_patch_Params_Promise) Content() WebSession_PostContent_Promise {
-	return WebSession_PostContent_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p WebSession_patch_Params_Future) Content() WebSession_PostContent_Future {
+	return WebSession_PostContent_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p WebSession_patch_Params_Promise) Context() WebSession_Context_Promise {
-	return WebSession_Context_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p WebSession_patch_Params_Future) Context() WebSession_Context_Future {
+	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
 const schema_a8cb0f2f1a756b32 = "x\xda\xcc{}x\\U\x99\xf8\xfb\xde;\x93\xdb\x96" +

@@ -3,7 +3,7 @@
 package hacksession
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	email "zenhack.net/go/sandstorm/capnp/email"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
@@ -14,461 +14,391 @@ import (
 	server "zombiezen.com/go/capnproto2/server"
 )
 
-type HackSessionContext struct{ Client capnp.Client }
+type HackSessionContext struct{ Client *capnp.Client }
 
 // HackSessionContext_TypeID is the unique identifier for the type HackSessionContext.
 const HackSessionContext_TypeID = 0xe14c1f5321159b8f
 
-func (c HackSessionContext) GetPublicId(ctx context.Context, params func(HackSessionContext_getPublicId_Params) error, opts ...capnp.CallOption) HackSessionContext_getPublicId_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_getPublicId_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) GetPublicId(ctx context.Context, params func(HackSessionContext_getPublicId_Params) error) (HackSessionContext_getPublicId_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      0,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getPublicId",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_getPublicId_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getPublicId_Params{Struct: s}) }
 	}
-	return HackSessionContext_getPublicId_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_getPublicId_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) HttpGet(ctx context.Context, params func(HackSessionContext_httpGet_Params) error, opts ...capnp.CallOption) HackSessionContext_httpGet_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_httpGet_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) HttpGet(ctx context.Context, params func(HackSessionContext_httpGet_Params) error) (HackSessionContext_httpGet_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      1,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "httpGet",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_httpGet_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_httpGet_Params{Struct: s}) }
 	}
-	return HackSessionContext_httpGet_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_httpGet_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) GetUserAddress(ctx context.Context, params func(HackSessionContext_getUserAddress_Params) error, opts ...capnp.CallOption) email.EmailAddress_Promise {
-	if c.Client == nil {
-		return email.EmailAddress_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) GetUserAddress(ctx context.Context, params func(HackSessionContext_getUserAddress_Params) error) (email.EmailAddress_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      2,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getUserAddress",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_getUserAddress_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getUserAddress_Params{Struct: s}) }
 	}
-	return email.EmailAddress_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailAddress_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ObsoleteGenerateApiToken(ctx context.Context, params func(HackSessionContext_obsoleteGenerateApiToken_Params) error, opts ...capnp.CallOption) HackSessionContext_obsoleteGenerateApiToken_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_obsoleteGenerateApiToken_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ObsoleteGenerateApiToken(ctx context.Context, params func(HackSessionContext_obsoleteGenerateApiToken_Params) error) (HackSessionContext_obsoleteGenerateApiToken_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      3,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGenerateApiToken",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error {
 			return params(HackSessionContext_obsoleteGenerateApiToken_Params{Struct: s})
 		}
 	}
-	return HackSessionContext_obsoleteGenerateApiToken_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_obsoleteGenerateApiToken_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ObsoleteListApiTokens(ctx context.Context, params func(HackSessionContext_obsoleteListApiTokens_Params) error, opts ...capnp.CallOption) HackSessionContext_obsoleteListApiTokens_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_obsoleteListApiTokens_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ObsoleteListApiTokens(ctx context.Context, params func(HackSessionContext_obsoleteListApiTokens_Params) error) (HackSessionContext_obsoleteListApiTokens_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      4,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteListApiTokens",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteListApiTokens_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteListApiTokens_Params{Struct: s}) }
 	}
-	return HackSessionContext_obsoleteListApiTokens_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_obsoleteListApiTokens_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ObsoleteRevokeApiToken(ctx context.Context, params func(HackSessionContext_obsoleteRevokeApiToken_Params) error, opts ...capnp.CallOption) HackSessionContext_obsoleteRevokeApiToken_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_obsoleteRevokeApiToken_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ObsoleteRevokeApiToken(ctx context.Context, params func(HackSessionContext_obsoleteRevokeApiToken_Params) error) (HackSessionContext_obsoleteRevokeApiToken_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      5,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteRevokeApiToken",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteRevokeApiToken_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteRevokeApiToken_Params{Struct: s}) }
 	}
-	return HackSessionContext_obsoleteRevokeApiToken_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_obsoleteRevokeApiToken_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ObsoleteGetIpNetwork(ctx context.Context, params func(HackSessionContext_obsoleteGetIpNetwork_Params) error, opts ...capnp.CallOption) HackSessionContext_obsoleteGetIpNetwork_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_obsoleteGetIpNetwork_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ObsoleteGetIpNetwork(ctx context.Context, params func(HackSessionContext_obsoleteGetIpNetwork_Params) error) (HackSessionContext_obsoleteGetIpNetwork_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      6,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGetIpNetwork",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpNetwork_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpNetwork_Params{Struct: s}) }
 	}
-	return HackSessionContext_obsoleteGetIpNetwork_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_obsoleteGetIpNetwork_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ObsoleteGetIpInterface(ctx context.Context, params func(HackSessionContext_obsoleteGetIpInterface_Params) error, opts ...capnp.CallOption) HackSessionContext_obsoleteGetIpInterface_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_obsoleteGetIpInterface_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ObsoleteGetIpInterface(ctx context.Context, params func(HackSessionContext_obsoleteGetIpInterface_Params) error) (HackSessionContext_obsoleteGetIpInterface_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      7,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGetIpInterface",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpInterface_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpInterface_Params{Struct: s}) }
 	}
-	return HackSessionContext_obsoleteGetIpInterface_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_obsoleteGetIpInterface_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) GetUiViewForEndpoint(ctx context.Context, params func(HackSessionContext_getUiViewForEndpoint_Params) error, opts ...capnp.CallOption) HackSessionContext_getUiViewForEndpoint_Results_Promise {
-	if c.Client == nil {
-		return HackSessionContext_getUiViewForEndpoint_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) GetUiViewForEndpoint(ctx context.Context, params func(HackSessionContext_getUiViewForEndpoint_Params) error) (HackSessionContext_getUiViewForEndpoint_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      8,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getUiViewForEndpoint",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(HackSessionContext_getUiViewForEndpoint_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getUiViewForEndpoint_Params{Struct: s}) }
 	}
-	return HackSessionContext_getUiViewForEndpoint_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return HackSessionContext_getUiViewForEndpoint_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) GetSharedPermissions(ctx context.Context, params func(grain.SessionContext_getSharedPermissions_Params) error, opts ...capnp.CallOption) grain.SessionContext_getSharedPermissions_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_getSharedPermissions_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) GetSharedPermissions(ctx context.Context, params func(grain.SessionContext_getSharedPermissions_Params) error) (grain.SessionContext_getSharedPermissions_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      0,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "getSharedPermissions",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_getSharedPermissions_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_getSharedPermissions_Params{Struct: s}) }
 	}
-	return grain.SessionContext_getSharedPermissions_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_getSharedPermissions_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) TieToUser(ctx context.Context, params func(grain.SessionContext_tieToUser_Params) error, opts ...capnp.CallOption) grain.SessionContext_tieToUser_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) TieToUser(ctx context.Context, params func(grain.SessionContext_tieToUser_Params) error) (grain.SessionContext_tieToUser_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      1,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "tieToUser",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_tieToUser_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_tieToUser_Params{Struct: s}) }
 	}
-	return grain.SessionContext_tieToUser_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_tieToUser_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) Offer(ctx context.Context, params func(grain.SessionContext_offer_Params) error, opts ...capnp.CallOption) grain.SessionContext_offer_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) Offer(ctx context.Context, params func(grain.SessionContext_offer_Params) error) (grain.SessionContext_offer_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      2,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "offer",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_offer_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_offer_Params{Struct: s}) }
 	}
-	return grain.SessionContext_offer_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_offer_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) Request(ctx context.Context, params func(grain.SessionContext_request_Params) error, opts ...capnp.CallOption) grain.SessionContext_request_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) Request(ctx context.Context, params func(grain.SessionContext_request_Params) error) (grain.SessionContext_request_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      3,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "request",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_request_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_request_Params{Struct: s}) }
 	}
-	return grain.SessionContext_request_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_request_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) FulfillRequest(ctx context.Context, params func(grain.SessionContext_fulfillRequest_Params) error, opts ...capnp.CallOption) grain.SessionContext_fulfillRequest_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) FulfillRequest(ctx context.Context, params func(grain.SessionContext_fulfillRequest_Params) error) (grain.SessionContext_fulfillRequest_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      4,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "fulfillRequest",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_fulfillRequest_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_fulfillRequest_Params{Struct: s}) }
 	}
-	return grain.SessionContext_fulfillRequest_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_fulfillRequest_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) Close(ctx context.Context, params func(grain.SessionContext_close_Params) error, opts ...capnp.CallOption) grain.SessionContext_close_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) Close(ctx context.Context, params func(grain.SessionContext_close_Params) error) (grain.SessionContext_close_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      5,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "close",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_close_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_close_Params{Struct: s}) }
 	}
-	return grain.SessionContext_close_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_close_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) OpenView(ctx context.Context, params func(grain.SessionContext_openView_Params) error, opts ...capnp.CallOption) grain.SessionContext_openView_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_openView_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) OpenView(ctx context.Context, params func(grain.SessionContext_openView_Params) error) (grain.SessionContext_openView_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      6,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "openView",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_openView_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_openView_Params{Struct: s}) }
 	}
-	return grain.SessionContext_openView_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_openView_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) ClaimRequest(ctx context.Context, params func(grain.SessionContext_claimRequest_Params) error, opts ...capnp.CallOption) grain.SessionContext_claimRequest_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_claimRequest_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) ClaimRequest(ctx context.Context, params func(grain.SessionContext_claimRequest_Params) error) (grain.SessionContext_claimRequest_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      7,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "claimRequest",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_claimRequest_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_claimRequest_Params{Struct: s}) }
 	}
-	return grain.SessionContext_claimRequest_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_claimRequest_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) Activity(ctx context.Context, params func(grain.SessionContext_activity_Params) error, opts ...capnp.CallOption) grain.SessionContext_activity_Results_Promise {
-	if c.Client == nil {
-		return grain.SessionContext_activity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) Activity(ctx context.Context, params func(grain.SessionContext_activity_Params) error) (grain.SessionContext_activity_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xbf3e401d5a63f336,
 			MethodID:      8,
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "activity",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(grain.SessionContext_activity_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_activity_Params{Struct: s}) }
 	}
-	return grain.SessionContext_activity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return grain.SessionContext_activity_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) Send(ctx context.Context, params func(email.EmailSendPort_send_Params) error, opts ...capnp.CallOption) email.EmailSendPort_send_Results_Promise {
-	if c.Client == nil {
-		return email.EmailSendPort_send_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) Send(ctx context.Context, params func(email.EmailSendPort_send_Params) error) (email.EmailSendPort_send_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xec831dbf4cc9bcca,
 			MethodID:      0,
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "send",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
 	}
-	return email.EmailSendPort_send_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error, opts ...capnp.CallOption) email.EmailSendPort_hintAddress_Results_Promise {
-	if c.Client == nil {
-		return email.EmailSendPort_hintAddress_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error) (email.EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xec831dbf4cc9bcca,
 			MethodID:      1,
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "hintAddress",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
 	}
-	return email.EmailSendPort_hintAddress_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// A HackSessionContext_Server is a HackSessionContext with a local implementation.
 type HackSessionContext_Server interface {
-	GetPublicId(HackSessionContext_getPublicId) error
+	GetPublicId(context.Context, HackSessionContext_getPublicId) error
 
-	HttpGet(HackSessionContext_httpGet) error
+	HttpGet(context.Context, HackSessionContext_httpGet) error
 
-	GetUserAddress(HackSessionContext_getUserAddress) error
+	GetUserAddress(context.Context, HackSessionContext_getUserAddress) error
 
-	ObsoleteGenerateApiToken(HackSessionContext_obsoleteGenerateApiToken) error
+	ObsoleteGenerateApiToken(context.Context, HackSessionContext_obsoleteGenerateApiToken) error
 
-	ObsoleteListApiTokens(HackSessionContext_obsoleteListApiTokens) error
+	ObsoleteListApiTokens(context.Context, HackSessionContext_obsoleteListApiTokens) error
 
-	ObsoleteRevokeApiToken(HackSessionContext_obsoleteRevokeApiToken) error
+	ObsoleteRevokeApiToken(context.Context, HackSessionContext_obsoleteRevokeApiToken) error
 
-	ObsoleteGetIpNetwork(HackSessionContext_obsoleteGetIpNetwork) error
+	ObsoleteGetIpNetwork(context.Context, HackSessionContext_obsoleteGetIpNetwork) error
 
-	ObsoleteGetIpInterface(HackSessionContext_obsoleteGetIpInterface) error
+	ObsoleteGetIpInterface(context.Context, HackSessionContext_obsoleteGetIpInterface) error
 
-	GetUiViewForEndpoint(HackSessionContext_getUiViewForEndpoint) error
+	GetUiViewForEndpoint(context.Context, HackSessionContext_getUiViewForEndpoint) error
 
-	GetSharedPermissions(grain.SessionContext_getSharedPermissions) error
+	GetSharedPermissions(context.Context, grain.SessionContext_getSharedPermissions) error
 
-	TieToUser(grain.SessionContext_tieToUser) error
+	TieToUser(context.Context, grain.SessionContext_tieToUser) error
 
-	Offer(grain.SessionContext_offer) error
+	Offer(context.Context, grain.SessionContext_offer) error
 
-	Request(grain.SessionContext_request) error
+	Request(context.Context, grain.SessionContext_request) error
 
-	FulfillRequest(grain.SessionContext_fulfillRequest) error
+	FulfillRequest(context.Context, grain.SessionContext_fulfillRequest) error
 
-	Close(grain.SessionContext_close) error
+	Close(context.Context, grain.SessionContext_close) error
 
-	OpenView(grain.SessionContext_openView) error
+	OpenView(context.Context, grain.SessionContext_openView) error
 
-	ClaimRequest(grain.SessionContext_claimRequest) error
+	ClaimRequest(context.Context, grain.SessionContext_claimRequest) error
 
-	Activity(grain.SessionContext_activity) error
+	Activity(context.Context, grain.SessionContext_activity) error
 
-	Send(email.EmailSendPort_send) error
+	Send(context.Context, email.EmailSendPort_send) error
 
-	HintAddress(email.EmailSendPort_hintAddress) error
+	HintAddress(context.Context, email.EmailSendPort_hintAddress) error
 }
 
-func HackSessionContext_ServerToClient(s HackSessionContext_Server) HackSessionContext {
-	c, _ := s.(server.Closer)
-	return HackSessionContext{Client: server.New(HackSessionContext_Methods(nil, s), c)}
+// HackSessionContext_NewServer creates a new Server from an implementation of HackSessionContext_Server.
+func HackSessionContext_NewServer(s HackSessionContext_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(HackSessionContext_Methods(nil, s), s, c, policy)
 }
 
+// HackSessionContext_ServerToClient creates a new Client from an implementation of HackSessionContext_Server.
+// The caller is responsible for calling Release on the returned Client.
+func HackSessionContext_ServerToClient(s HackSessionContext_Server, policy *server.Policy) HackSessionContext {
+	return HackSessionContext{Client: capnp.NewClient(HackSessionContext_NewServer(s, policy))}
+}
+
+// HackSessionContext_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 20)
@@ -481,11 +411,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getPublicId",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_getPublicId{c, opts, HackSessionContext_getPublicId_Params{Struct: p}, HackSessionContext_getPublicId_Results{Struct: r}}
-			return s.GetPublicId(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetPublicId(ctx, HackSessionContext_getPublicId{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 8, PointerCount: 3},
 	})
 
 	methods = append(methods, server.Method{
@@ -495,11 +423,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "httpGet",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_httpGet{c, opts, HackSessionContext_httpGet_Params{Struct: p}, HackSessionContext_httpGet_Results{Struct: r}}
-			return s.HttpGet(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.HttpGet(ctx, HackSessionContext_httpGet{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -509,11 +435,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getUserAddress",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_getUserAddress{c, opts, HackSessionContext_getUserAddress_Params{Struct: p}, email.EmailAddress{Struct: r}}
-			return s.GetUserAddress(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetUserAddress(ctx, HackSessionContext_getUserAddress{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -523,11 +447,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGenerateApiToken",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_obsoleteGenerateApiToken{c, opts, HackSessionContext_obsoleteGenerateApiToken_Params{Struct: p}, HackSessionContext_obsoleteGenerateApiToken_Results{Struct: r}}
-			return s.ObsoleteGenerateApiToken(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ObsoleteGenerateApiToken(ctx, HackSessionContext_obsoleteGenerateApiToken{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 3},
 	})
 
 	methods = append(methods, server.Method{
@@ -537,11 +459,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteListApiTokens",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_obsoleteListApiTokens{c, opts, HackSessionContext_obsoleteListApiTokens_Params{Struct: p}, HackSessionContext_obsoleteListApiTokens_Results{Struct: r}}
-			return s.ObsoleteListApiTokens(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ObsoleteListApiTokens(ctx, HackSessionContext_obsoleteListApiTokens{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -551,11 +471,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteRevokeApiToken",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_obsoleteRevokeApiToken{c, opts, HackSessionContext_obsoleteRevokeApiToken_Params{Struct: p}, HackSessionContext_obsoleteRevokeApiToken_Results{Struct: r}}
-			return s.ObsoleteRevokeApiToken(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ObsoleteRevokeApiToken(ctx, HackSessionContext_obsoleteRevokeApiToken{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -565,11 +483,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGetIpNetwork",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_obsoleteGetIpNetwork{c, opts, HackSessionContext_obsoleteGetIpNetwork_Params{Struct: p}, HackSessionContext_obsoleteGetIpNetwork_Results{Struct: r}}
-			return s.ObsoleteGetIpNetwork(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ObsoleteGetIpNetwork(ctx, HackSessionContext_obsoleteGetIpNetwork{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -579,11 +495,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "obsoleteGetIpInterface",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_obsoleteGetIpInterface{c, opts, HackSessionContext_obsoleteGetIpInterface_Params{Struct: p}, HackSessionContext_obsoleteGetIpInterface_Results{Struct: r}}
-			return s.ObsoleteGetIpInterface(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ObsoleteGetIpInterface(ctx, HackSessionContext_obsoleteGetIpInterface{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -593,11 +507,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "hack-session.capnp:HackSessionContext",
 			MethodName:    "getUiViewForEndpoint",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := HackSessionContext_getUiViewForEndpoint{c, opts, HackSessionContext_getUiViewForEndpoint_Params{Struct: p}, HackSessionContext_getUiViewForEndpoint_Results{Struct: r}}
-			return s.GetUiViewForEndpoint(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetUiViewForEndpoint(ctx, HackSessionContext_getUiViewForEndpoint{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -607,11 +519,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "getSharedPermissions",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_getSharedPermissions{c, opts, grain.SessionContext_getSharedPermissions_Params{Struct: p}, grain.SessionContext_getSharedPermissions_Results{Struct: r}}
-			return s.GetSharedPermissions(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSharedPermissions(ctx, grain.SessionContext_getSharedPermissions{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -621,11 +531,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "tieToUser",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_tieToUser{c, opts, grain.SessionContext_tieToUser_Params{Struct: p}, grain.SessionContext_tieToUser_Results{Struct: r}}
-			return s.TieToUser(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.TieToUser(ctx, grain.SessionContext_tieToUser{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -635,11 +543,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "offer",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_offer{c, opts, grain.SessionContext_offer_Params{Struct: p}, grain.SessionContext_offer_Results{Struct: r}}
-			return s.Offer(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Offer(ctx, grain.SessionContext_offer{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -649,11 +555,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "request",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_request{c, opts, grain.SessionContext_request_Params{Struct: p}, grain.SessionContext_request_Results{Struct: r}}
-			return s.Request(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Request(ctx, grain.SessionContext_request{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -663,11 +567,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "fulfillRequest",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_fulfillRequest{c, opts, grain.SessionContext_fulfillRequest_Params{Struct: p}, grain.SessionContext_fulfillRequest_Results{Struct: r}}
-			return s.FulfillRequest(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.FulfillRequest(ctx, grain.SessionContext_fulfillRequest{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -677,11 +579,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "close",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_close{c, opts, grain.SessionContext_close_Params{Struct: p}, grain.SessionContext_close_Results{Struct: r}}
-			return s.Close(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Close(ctx, grain.SessionContext_close{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -691,11 +591,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "openView",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_openView{c, opts, grain.SessionContext_openView_Params{Struct: p}, grain.SessionContext_openView_Results{Struct: r}}
-			return s.OpenView(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.OpenView(ctx, grain.SessionContext_openView{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -705,11 +603,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "claimRequest",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_claimRequest{c, opts, grain.SessionContext_claimRequest_Params{Struct: p}, grain.SessionContext_claimRequest_Results{Struct: r}}
-			return s.ClaimRequest(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ClaimRequest(ctx, grain.SessionContext_claimRequest{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -719,11 +615,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "grain.capnp:SessionContext",
 			MethodName:    "activity",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := grain.SessionContext_activity{c, opts, grain.SessionContext_activity_Params{Struct: p}, grain.SessionContext_activity_Results{Struct: r}}
-			return s.Activity(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Activity(ctx, grain.SessionContext_activity{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -733,11 +627,9 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "send",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailSendPort_send{c, opts, email.EmailSendPort_send_Params{Struct: p}, email.EmailSendPort_send_Results{Struct: r}}
-			return s.Send(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Send(ctx, email.EmailSendPort_send{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -747,86 +639,165 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "hintAddress",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailSendPort_hintAddress{c, opts, email.EmailSendPort_hintAddress_Params{Struct: p}, email.EmailSendPort_hintAddress_Results{Struct: r}}
-			return s.HintAddress(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.HintAddress(ctx, email.EmailSendPort_hintAddress{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// HackSessionContext_getPublicId holds the arguments for a server call to HackSessionContext.getPublicId.
+// HackSessionContext_getPublicId holds the state for a server call to HackSessionContext.getPublicId.
+// See server.Call for documentation.
 type HackSessionContext_getPublicId struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_getPublicId_Params
-	Results HackSessionContext_getPublicId_Results
+	*server.Call
 }
 
-// HackSessionContext_httpGet holds the arguments for a server call to HackSessionContext.httpGet.
+// Args returns the call's arguments.
+func (c HackSessionContext_getPublicId) Args() HackSessionContext_getPublicId_Params {
+	return HackSessionContext_getPublicId_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_getPublicId) AllocResults() (HackSessionContext_getPublicId_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 3})
+	return HackSessionContext_getPublicId_Results{Struct: r}, err
+}
+
+// HackSessionContext_httpGet holds the state for a server call to HackSessionContext.httpGet.
+// See server.Call for documentation.
 type HackSessionContext_httpGet struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_httpGet_Params
-	Results HackSessionContext_httpGet_Results
+	*server.Call
 }
 
-// HackSessionContext_getUserAddress holds the arguments for a server call to HackSessionContext.getUserAddress.
+// Args returns the call's arguments.
+func (c HackSessionContext_httpGet) Args() HackSessionContext_httpGet_Params {
+	return HackSessionContext_httpGet_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_httpGet) AllocResults() (HackSessionContext_httpGet_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return HackSessionContext_httpGet_Results{Struct: r}, err
+}
+
+// HackSessionContext_getUserAddress holds the state for a server call to HackSessionContext.getUserAddress.
+// See server.Call for documentation.
 type HackSessionContext_getUserAddress struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_getUserAddress_Params
-	Results email.EmailAddress
+	*server.Call
 }
 
-// HackSessionContext_obsoleteGenerateApiToken holds the arguments for a server call to HackSessionContext.obsoleteGenerateApiToken.
+// Args returns the call's arguments.
+func (c HackSessionContext_getUserAddress) Args() HackSessionContext_getUserAddress_Params {
+	return HackSessionContext_getUserAddress_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_getUserAddress) AllocResults() (email.EmailAddress, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return email.EmailAddress{Struct: r}, err
+}
+
+// HackSessionContext_obsoleteGenerateApiToken holds the state for a server call to HackSessionContext.obsoleteGenerateApiToken.
+// See server.Call for documentation.
 type HackSessionContext_obsoleteGenerateApiToken struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_obsoleteGenerateApiToken_Params
-	Results HackSessionContext_obsoleteGenerateApiToken_Results
+	*server.Call
 }
 
-// HackSessionContext_obsoleteListApiTokens holds the arguments for a server call to HackSessionContext.obsoleteListApiTokens.
+// Args returns the call's arguments.
+func (c HackSessionContext_obsoleteGenerateApiToken) Args() HackSessionContext_obsoleteGenerateApiToken_Params {
+	return HackSessionContext_obsoleteGenerateApiToken_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_obsoleteGenerateApiToken) AllocResults() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
+	return HackSessionContext_obsoleteGenerateApiToken_Results{Struct: r}, err
+}
+
+// HackSessionContext_obsoleteListApiTokens holds the state for a server call to HackSessionContext.obsoleteListApiTokens.
+// See server.Call for documentation.
 type HackSessionContext_obsoleteListApiTokens struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_obsoleteListApiTokens_Params
-	Results HackSessionContext_obsoleteListApiTokens_Results
+	*server.Call
 }
 
-// HackSessionContext_obsoleteRevokeApiToken holds the arguments for a server call to HackSessionContext.obsoleteRevokeApiToken.
+// Args returns the call's arguments.
+func (c HackSessionContext_obsoleteListApiTokens) Args() HackSessionContext_obsoleteListApiTokens_Params {
+	return HackSessionContext_obsoleteListApiTokens_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_obsoleteListApiTokens) AllocResults() (HackSessionContext_obsoleteListApiTokens_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return HackSessionContext_obsoleteListApiTokens_Results{Struct: r}, err
+}
+
+// HackSessionContext_obsoleteRevokeApiToken holds the state for a server call to HackSessionContext.obsoleteRevokeApiToken.
+// See server.Call for documentation.
 type HackSessionContext_obsoleteRevokeApiToken struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_obsoleteRevokeApiToken_Params
-	Results HackSessionContext_obsoleteRevokeApiToken_Results
+	*server.Call
 }
 
-// HackSessionContext_obsoleteGetIpNetwork holds the arguments for a server call to HackSessionContext.obsoleteGetIpNetwork.
+// Args returns the call's arguments.
+func (c HackSessionContext_obsoleteRevokeApiToken) Args() HackSessionContext_obsoleteRevokeApiToken_Params {
+	return HackSessionContext_obsoleteRevokeApiToken_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_obsoleteRevokeApiToken) AllocResults() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return HackSessionContext_obsoleteRevokeApiToken_Results{Struct: r}, err
+}
+
+// HackSessionContext_obsoleteGetIpNetwork holds the state for a server call to HackSessionContext.obsoleteGetIpNetwork.
+// See server.Call for documentation.
 type HackSessionContext_obsoleteGetIpNetwork struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_obsoleteGetIpNetwork_Params
-	Results HackSessionContext_obsoleteGetIpNetwork_Results
+	*server.Call
 }
 
-// HackSessionContext_obsoleteGetIpInterface holds the arguments for a server call to HackSessionContext.obsoleteGetIpInterface.
+// Args returns the call's arguments.
+func (c HackSessionContext_obsoleteGetIpNetwork) Args() HackSessionContext_obsoleteGetIpNetwork_Params {
+	return HackSessionContext_obsoleteGetIpNetwork_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_obsoleteGetIpNetwork) AllocResults() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return HackSessionContext_obsoleteGetIpNetwork_Results{Struct: r}, err
+}
+
+// HackSessionContext_obsoleteGetIpInterface holds the state for a server call to HackSessionContext.obsoleteGetIpInterface.
+// See server.Call for documentation.
 type HackSessionContext_obsoleteGetIpInterface struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_obsoleteGetIpInterface_Params
-	Results HackSessionContext_obsoleteGetIpInterface_Results
+	*server.Call
 }
 
-// HackSessionContext_getUiViewForEndpoint holds the arguments for a server call to HackSessionContext.getUiViewForEndpoint.
+// Args returns the call's arguments.
+func (c HackSessionContext_obsoleteGetIpInterface) Args() HackSessionContext_obsoleteGetIpInterface_Params {
+	return HackSessionContext_obsoleteGetIpInterface_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_obsoleteGetIpInterface) AllocResults() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return HackSessionContext_obsoleteGetIpInterface_Results{Struct: r}, err
+}
+
+// HackSessionContext_getUiViewForEndpoint holds the state for a server call to HackSessionContext.getUiViewForEndpoint.
+// See server.Call for documentation.
 type HackSessionContext_getUiViewForEndpoint struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  HackSessionContext_getUiViewForEndpoint_Params
-	Results HackSessionContext_getUiViewForEndpoint_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c HackSessionContext_getUiViewForEndpoint) Args() HackSessionContext_getUiViewForEndpoint_Params {
+	return HackSessionContext_getUiViewForEndpoint_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c HackSessionContext_getUiViewForEndpoint) AllocResults() (HackSessionContext_getUiViewForEndpoint_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return HackSessionContext_getUiViewForEndpoint_Results{Struct: r}, err
 }
 
 type HackSessionContext_TokenInfo struct{ capnp.Struct }
@@ -845,7 +816,7 @@ func NewRootHackSessionContext_TokenInfo(s *capnp.Segment) (HackSessionContext_T
 }
 
 func ReadRootHackSessionContext_TokenInfo(msg *capnp.Message) (HackSessionContext_TokenInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_TokenInfo{root.Struct()}, err
 }
 
@@ -860,8 +831,7 @@ func (s HackSessionContext_TokenInfo) TokenId() (string, error) {
 }
 
 func (s HackSessionContext_TokenInfo) HasTokenId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_TokenInfo) TokenIdBytes() ([]byte, error) {
@@ -879,8 +849,7 @@ func (s HackSessionContext_TokenInfo) Petname() (string, error) {
 }
 
 func (s HackSessionContext_TokenInfo) HasPetname() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s HackSessionContext_TokenInfo) PetnameBytes() ([]byte, error) {
@@ -898,8 +867,7 @@ func (s HackSessionContext_TokenInfo) UserInfo() (identity.UserInfo, error) {
 }
 
 func (s HackSessionContext_TokenInfo) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s HackSessionContext_TokenInfo) SetUserInfo(v identity.UserInfo) error {
@@ -939,16 +907,16 @@ func (s HackSessionContext_TokenInfo_List) String() string {
 	return str
 }
 
-// HackSessionContext_TokenInfo_Promise is a wrapper for a HackSessionContext_TokenInfo promised by a client call.
-type HackSessionContext_TokenInfo_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_TokenInfo_Future is a wrapper for a HackSessionContext_TokenInfo promised by a client call.
+type HackSessionContext_TokenInfo_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_TokenInfo_Promise) Struct() (HackSessionContext_TokenInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_TokenInfo_Future) Struct() (HackSessionContext_TokenInfo, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_TokenInfo{s}, err
 }
 
-func (p HackSessionContext_TokenInfo_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p HackSessionContext_TokenInfo_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(2, nil)}
 }
 
 type HackSessionContext_getPublicId_Params struct{ capnp.Struct }
@@ -967,7 +935,7 @@ func NewRootHackSessionContext_getPublicId_Params(s *capnp.Segment) (HackSession
 }
 
 func ReadRootHackSessionContext_getPublicId_Params(msg *capnp.Message) (HackSessionContext_getPublicId_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_getPublicId_Params{root.Struct()}, err
 }
 
@@ -998,11 +966,11 @@ func (s HackSessionContext_getPublicId_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_getPublicId_Params_Promise is a wrapper for a HackSessionContext_getPublicId_Params promised by a client call.
-type HackSessionContext_getPublicId_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_getPublicId_Params_Future is a wrapper for a HackSessionContext_getPublicId_Params promised by a client call.
+type HackSessionContext_getPublicId_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getPublicId_Params_Promise) Struct() (HackSessionContext_getPublicId_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_getPublicId_Params_Future) Struct() (HackSessionContext_getPublicId_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_getPublicId_Params{s}, err
 }
 
@@ -1022,7 +990,7 @@ func NewRootHackSessionContext_getPublicId_Results(s *capnp.Segment) (HackSessio
 }
 
 func ReadRootHackSessionContext_getPublicId_Results(msg *capnp.Message) (HackSessionContext_getPublicId_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_getPublicId_Results{root.Struct()}, err
 }
 
@@ -1037,8 +1005,7 @@ func (s HackSessionContext_getPublicId_Results) PublicId() (string, error) {
 }
 
 func (s HackSessionContext_getPublicId_Results) HasPublicId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_getPublicId_Results) PublicIdBytes() ([]byte, error) {
@@ -1056,8 +1023,7 @@ func (s HackSessionContext_getPublicId_Results) Hostname() (string, error) {
 }
 
 func (s HackSessionContext_getPublicId_Results) HasHostname() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s HackSessionContext_getPublicId_Results) HostnameBytes() ([]byte, error) {
@@ -1075,8 +1041,7 @@ func (s HackSessionContext_getPublicId_Results) AutoUrl() (string, error) {
 }
 
 func (s HackSessionContext_getPublicId_Results) HasAutoUrl() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s HackSessionContext_getPublicId_Results) AutoUrlBytes() ([]byte, error) {
@@ -1118,11 +1083,11 @@ func (s HackSessionContext_getPublicId_Results_List) String() string {
 	return str
 }
 
-// HackSessionContext_getPublicId_Results_Promise is a wrapper for a HackSessionContext_getPublicId_Results promised by a client call.
-type HackSessionContext_getPublicId_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_getPublicId_Results_Future is a wrapper for a HackSessionContext_getPublicId_Results promised by a client call.
+type HackSessionContext_getPublicId_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getPublicId_Results_Promise) Struct() (HackSessionContext_getPublicId_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_getPublicId_Results_Future) Struct() (HackSessionContext_getPublicId_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_getPublicId_Results{s}, err
 }
 
@@ -1142,7 +1107,7 @@ func NewRootHackSessionContext_httpGet_Params(s *capnp.Segment) (HackSessionCont
 }
 
 func ReadRootHackSessionContext_httpGet_Params(msg *capnp.Message) (HackSessionContext_httpGet_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_httpGet_Params{root.Struct()}, err
 }
 
@@ -1157,8 +1122,7 @@ func (s HackSessionContext_httpGet_Params) Url() (string, error) {
 }
 
 func (s HackSessionContext_httpGet_Params) HasUrl() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_httpGet_Params) UrlBytes() ([]byte, error) {
@@ -1192,11 +1156,11 @@ func (s HackSessionContext_httpGet_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_httpGet_Params_Promise is a wrapper for a HackSessionContext_httpGet_Params promised by a client call.
-type HackSessionContext_httpGet_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_httpGet_Params_Future is a wrapper for a HackSessionContext_httpGet_Params promised by a client call.
+type HackSessionContext_httpGet_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_httpGet_Params_Promise) Struct() (HackSessionContext_httpGet_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_httpGet_Params_Future) Struct() (HackSessionContext_httpGet_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_httpGet_Params{s}, err
 }
 
@@ -1216,7 +1180,7 @@ func NewRootHackSessionContext_httpGet_Results(s *capnp.Segment) (HackSessionCon
 }
 
 func ReadRootHackSessionContext_httpGet_Results(msg *capnp.Message) (HackSessionContext_httpGet_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_httpGet_Results{root.Struct()}, err
 }
 
@@ -1231,8 +1195,7 @@ func (s HackSessionContext_httpGet_Results) MimeType() (string, error) {
 }
 
 func (s HackSessionContext_httpGet_Results) HasMimeType() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_httpGet_Results) MimeTypeBytes() ([]byte, error) {
@@ -1250,8 +1213,7 @@ func (s HackSessionContext_httpGet_Results) Content() ([]byte, error) {
 }
 
 func (s HackSessionContext_httpGet_Results) HasContent() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s HackSessionContext_httpGet_Results) SetContent(v []byte) error {
@@ -1280,11 +1242,11 @@ func (s HackSessionContext_httpGet_Results_List) String() string {
 	return str
 }
 
-// HackSessionContext_httpGet_Results_Promise is a wrapper for a HackSessionContext_httpGet_Results promised by a client call.
-type HackSessionContext_httpGet_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_httpGet_Results_Future is a wrapper for a HackSessionContext_httpGet_Results promised by a client call.
+type HackSessionContext_httpGet_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_httpGet_Results_Promise) Struct() (HackSessionContext_httpGet_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_httpGet_Results_Future) Struct() (HackSessionContext_httpGet_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_httpGet_Results{s}, err
 }
 
@@ -1304,7 +1266,7 @@ func NewRootHackSessionContext_getUserAddress_Params(s *capnp.Segment) (HackSess
 }
 
 func ReadRootHackSessionContext_getUserAddress_Params(msg *capnp.Message) (HackSessionContext_getUserAddress_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_getUserAddress_Params{root.Struct()}, err
 }
 
@@ -1335,11 +1297,11 @@ func (s HackSessionContext_getUserAddress_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_getUserAddress_Params_Promise is a wrapper for a HackSessionContext_getUserAddress_Params promised by a client call.
-type HackSessionContext_getUserAddress_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_getUserAddress_Params_Future is a wrapper for a HackSessionContext_getUserAddress_Params promised by a client call.
+type HackSessionContext_getUserAddress_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUserAddress_Params_Promise) Struct() (HackSessionContext_getUserAddress_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_getUserAddress_Params_Future) Struct() (HackSessionContext_getUserAddress_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_getUserAddress_Params{s}, err
 }
 
@@ -1359,7 +1321,7 @@ func NewRootHackSessionContext_obsoleteGenerateApiToken_Params(s *capnp.Segment)
 }
 
 func ReadRootHackSessionContext_obsoleteGenerateApiToken_Params(msg *capnp.Message) (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGenerateApiToken_Params{root.Struct()}, err
 }
 
@@ -1374,8 +1336,7 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Params) Petname() (string, e
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) HasPetname() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) PetnameBytes() ([]byte, error) {
@@ -1393,8 +1354,7 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Params) UserInfo() (identity
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) SetUserInfo(v identity.UserInfo) error {
@@ -1442,16 +1402,16 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Params_List) String() string
 	return str
 }
 
-// HackSessionContext_obsoleteGenerateApiToken_Params_Promise is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Params promised by a client call.
-type HackSessionContext_obsoleteGenerateApiToken_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGenerateApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Params promised by a client call.
+type HackSessionContext_obsoleteGenerateApiToken_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGenerateApiToken_Params_Promise) Struct() (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGenerateApiToken_Params{s}, err
 }
 
-func (p HackSessionContext_obsoleteGenerateApiToken_Params_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
 type HackSessionContext_obsoleteGenerateApiToken_Results struct{ capnp.Struct }
@@ -1470,7 +1430,7 @@ func NewRootHackSessionContext_obsoleteGenerateApiToken_Results(s *capnp.Segment
 }
 
 func ReadRootHackSessionContext_obsoleteGenerateApiToken_Results(msg *capnp.Message) (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGenerateApiToken_Results{root.Struct()}, err
 }
 
@@ -1485,8 +1445,7 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Results) Token() (string, er
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasToken() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenBytes() ([]byte, error) {
@@ -1504,8 +1463,7 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Results) EndpointUrl() (stri
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasEndpointUrl() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) EndpointUrlBytes() ([]byte, error) {
@@ -1523,8 +1481,7 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenId() (string, 
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasTokenId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenIdBytes() ([]byte, error) {
@@ -1558,11 +1515,11 @@ func (s HackSessionContext_obsoleteGenerateApiToken_Results_List) String() strin
 	return str
 }
 
-// HackSessionContext_obsoleteGenerateApiToken_Results_Promise is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Results promised by a client call.
-type HackSessionContext_obsoleteGenerateApiToken_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGenerateApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Results promised by a client call.
+type HackSessionContext_obsoleteGenerateApiToken_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGenerateApiToken_Results_Promise) Struct() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGenerateApiToken_Results_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGenerateApiToken_Results{s}, err
 }
 
@@ -1582,7 +1539,7 @@ func NewRootHackSessionContext_obsoleteListApiTokens_Params(s *capnp.Segment) (H
 }
 
 func ReadRootHackSessionContext_obsoleteListApiTokens_Params(msg *capnp.Message) (HackSessionContext_obsoleteListApiTokens_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteListApiTokens_Params{root.Struct()}, err
 }
 
@@ -1613,11 +1570,11 @@ func (s HackSessionContext_obsoleteListApiTokens_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteListApiTokens_Params_Promise is a wrapper for a HackSessionContext_obsoleteListApiTokens_Params promised by a client call.
-type HackSessionContext_obsoleteListApiTokens_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteListApiTokens_Params_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Params promised by a client call.
+type HackSessionContext_obsoleteListApiTokens_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteListApiTokens_Params_Promise) Struct() (HackSessionContext_obsoleteListApiTokens_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteListApiTokens_Params_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteListApiTokens_Params{s}, err
 }
 
@@ -1637,7 +1594,7 @@ func NewRootHackSessionContext_obsoleteListApiTokens_Results(s *capnp.Segment) (
 }
 
 func ReadRootHackSessionContext_obsoleteListApiTokens_Results(msg *capnp.Message) (HackSessionContext_obsoleteListApiTokens_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteListApiTokens_Results{root.Struct()}, err
 }
 
@@ -1652,8 +1609,7 @@ func (s HackSessionContext_obsoleteListApiTokens_Results) Tokens() (HackSessionC
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Results) HasTokens() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Results) SetTokens(v HackSessionContext_TokenInfo_List) error {
@@ -1693,11 +1649,11 @@ func (s HackSessionContext_obsoleteListApiTokens_Results_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteListApiTokens_Results_Promise is a wrapper for a HackSessionContext_obsoleteListApiTokens_Results promised by a client call.
-type HackSessionContext_obsoleteListApiTokens_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteListApiTokens_Results_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Results promised by a client call.
+type HackSessionContext_obsoleteListApiTokens_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteListApiTokens_Results_Promise) Struct() (HackSessionContext_obsoleteListApiTokens_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteListApiTokens_Results_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteListApiTokens_Results{s}, err
 }
 
@@ -1717,7 +1673,7 @@ func NewRootHackSessionContext_obsoleteRevokeApiToken_Params(s *capnp.Segment) (
 }
 
 func ReadRootHackSessionContext_obsoleteRevokeApiToken_Params(msg *capnp.Message) (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteRevokeApiToken_Params{root.Struct()}, err
 }
 
@@ -1732,8 +1688,7 @@ func (s HackSessionContext_obsoleteRevokeApiToken_Params) TokenId() (string, err
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) HasTokenId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) TokenIdBytes() ([]byte, error) {
@@ -1767,11 +1722,11 @@ func (s HackSessionContext_obsoleteRevokeApiToken_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteRevokeApiToken_Params_Promise is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Params promised by a client call.
-type HackSessionContext_obsoleteRevokeApiToken_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteRevokeApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Params promised by a client call.
+type HackSessionContext_obsoleteRevokeApiToken_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteRevokeApiToken_Params_Promise) Struct() (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteRevokeApiToken_Params_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteRevokeApiToken_Params{s}, err
 }
 
@@ -1791,7 +1746,7 @@ func NewRootHackSessionContext_obsoleteRevokeApiToken_Results(s *capnp.Segment) 
 }
 
 func ReadRootHackSessionContext_obsoleteRevokeApiToken_Results(msg *capnp.Message) (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteRevokeApiToken_Results{root.Struct()}, err
 }
 
@@ -1822,11 +1777,11 @@ func (s HackSessionContext_obsoleteRevokeApiToken_Results_List) String() string 
 	return str
 }
 
-// HackSessionContext_obsoleteRevokeApiToken_Results_Promise is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Results promised by a client call.
-type HackSessionContext_obsoleteRevokeApiToken_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteRevokeApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Results promised by a client call.
+type HackSessionContext_obsoleteRevokeApiToken_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteRevokeApiToken_Results_Promise) Struct() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteRevokeApiToken_Results_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteRevokeApiToken_Results{s}, err
 }
 
@@ -1846,7 +1801,7 @@ func NewRootHackSessionContext_obsoleteGetIpNetwork_Params(s *capnp.Segment) (Ha
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpNetwork_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGetIpNetwork_Params{root.Struct()}, err
 }
 
@@ -1877,11 +1832,11 @@ func (s HackSessionContext_obsoleteGetIpNetwork_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteGetIpNetwork_Params_Promise is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Params promised by a client call.
-type HackSessionContext_obsoleteGetIpNetwork_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGetIpNetwork_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Params promised by a client call.
+type HackSessionContext_obsoleteGetIpNetwork_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpNetwork_Params_Promise) Struct() (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGetIpNetwork_Params_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGetIpNetwork_Params{s}, err
 }
 
@@ -1901,7 +1856,7 @@ func NewRootHackSessionContext_obsoleteGetIpNetwork_Results(s *capnp.Segment) (H
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpNetwork_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGetIpNetwork_Results{root.Struct()}, err
 }
 
@@ -1916,12 +1871,11 @@ func (s HackSessionContext_obsoleteGetIpNetwork_Results) Network() ip.IpNetwork 
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) HasNetwork() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) SetNetwork(v ip.IpNetwork) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1951,16 +1905,16 @@ func (s HackSessionContext_obsoleteGetIpNetwork_Results_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteGetIpNetwork_Results_Promise is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Results promised by a client call.
-type HackSessionContext_obsoleteGetIpNetwork_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGetIpNetwork_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Results promised by a client call.
+type HackSessionContext_obsoleteGetIpNetwork_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpNetwork_Results_Promise) Struct() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGetIpNetwork_Results{s}, err
 }
 
-func (p HackSessionContext_obsoleteGetIpNetwork_Results_Promise) Network() ip.IpNetwork {
-	return ip.IpNetwork{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Network() ip.IpNetwork {
+	return ip.IpNetwork{Client: p.Future.Field(0, nil).Client()}
 }
 
 type HackSessionContext_obsoleteGetIpInterface_Params struct{ capnp.Struct }
@@ -1979,7 +1933,7 @@ func NewRootHackSessionContext_obsoleteGetIpInterface_Params(s *capnp.Segment) (
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpInterface_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetIpInterface_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGetIpInterface_Params{root.Struct()}, err
 }
 
@@ -2010,11 +1964,11 @@ func (s HackSessionContext_obsoleteGetIpInterface_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_obsoleteGetIpInterface_Params_Promise is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Params promised by a client call.
-type HackSessionContext_obsoleteGetIpInterface_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGetIpInterface_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Params promised by a client call.
+type HackSessionContext_obsoleteGetIpInterface_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpInterface_Params_Promise) Struct() (HackSessionContext_obsoleteGetIpInterface_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGetIpInterface_Params_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGetIpInterface_Params{s}, err
 }
 
@@ -2034,7 +1988,7 @@ func NewRootHackSessionContext_obsoleteGetIpInterface_Results(s *capnp.Segment) 
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpInterface_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetIpInterface_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_obsoleteGetIpInterface_Results{root.Struct()}, err
 }
 
@@ -2049,12 +2003,11 @@ func (s HackSessionContext_obsoleteGetIpInterface_Results) Interface() ip.IpInte
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Results) HasInterface() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Results) SetInterface(v ip.IpInterface) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2084,16 +2037,16 @@ func (s HackSessionContext_obsoleteGetIpInterface_Results_List) String() string 
 	return str
 }
 
-// HackSessionContext_obsoleteGetIpInterface_Results_Promise is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Results promised by a client call.
-type HackSessionContext_obsoleteGetIpInterface_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_obsoleteGetIpInterface_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Results promised by a client call.
+type HackSessionContext_obsoleteGetIpInterface_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpInterface_Results_Promise) Struct() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_obsoleteGetIpInterface_Results{s}, err
 }
 
-func (p HackSessionContext_obsoleteGetIpInterface_Results_Promise) Interface() ip.IpInterface {
-	return ip.IpInterface{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Interface() ip.IpInterface {
+	return ip.IpInterface{Client: p.Future.Field(0, nil).Client()}
 }
 
 type HackSessionContext_getUiViewForEndpoint_Params struct{ capnp.Struct }
@@ -2112,7 +2065,7 @@ func NewRootHackSessionContext_getUiViewForEndpoint_Params(s *capnp.Segment) (Ha
 }
 
 func ReadRootHackSessionContext_getUiViewForEndpoint_Params(msg *capnp.Message) (HackSessionContext_getUiViewForEndpoint_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_getUiViewForEndpoint_Params{root.Struct()}, err
 }
 
@@ -2127,8 +2080,7 @@ func (s HackSessionContext_getUiViewForEndpoint_Params) Url() (string, error) {
 }
 
 func (s HackSessionContext_getUiViewForEndpoint_Params) HasUrl() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_getUiViewForEndpoint_Params) UrlBytes() ([]byte, error) {
@@ -2162,11 +2114,11 @@ func (s HackSessionContext_getUiViewForEndpoint_Params_List) String() string {
 	return str
 }
 
-// HackSessionContext_getUiViewForEndpoint_Params_Promise is a wrapper for a HackSessionContext_getUiViewForEndpoint_Params promised by a client call.
-type HackSessionContext_getUiViewForEndpoint_Params_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_getUiViewForEndpoint_Params_Future is a wrapper for a HackSessionContext_getUiViewForEndpoint_Params promised by a client call.
+type HackSessionContext_getUiViewForEndpoint_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUiViewForEndpoint_Params_Promise) Struct() (HackSessionContext_getUiViewForEndpoint_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_getUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_getUiViewForEndpoint_Params, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_getUiViewForEndpoint_Params{s}, err
 }
 
@@ -2186,7 +2138,7 @@ func NewRootHackSessionContext_getUiViewForEndpoint_Results(s *capnp.Segment) (H
 }
 
 func ReadRootHackSessionContext_getUiViewForEndpoint_Results(msg *capnp.Message) (HackSessionContext_getUiViewForEndpoint_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return HackSessionContext_getUiViewForEndpoint_Results{root.Struct()}, err
 }
 
@@ -2201,12 +2153,11 @@ func (s HackSessionContext_getUiViewForEndpoint_Results) View() grain.UiView {
 }
 
 func (s HackSessionContext_getUiViewForEndpoint_Results) HasView() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s HackSessionContext_getUiViewForEndpoint_Results) SetView(v grain.UiView) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -2236,75 +2187,77 @@ func (s HackSessionContext_getUiViewForEndpoint_Results_List) String() string {
 	return str
 }
 
-// HackSessionContext_getUiViewForEndpoint_Results_Promise is a wrapper for a HackSessionContext_getUiViewForEndpoint_Results promised by a client call.
-type HackSessionContext_getUiViewForEndpoint_Results_Promise struct{ *capnp.Pipeline }
+// HackSessionContext_getUiViewForEndpoint_Results_Future is a wrapper for a HackSessionContext_getUiViewForEndpoint_Results promised by a client call.
+type HackSessionContext_getUiViewForEndpoint_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUiViewForEndpoint_Results_Promise) Struct() (HackSessionContext_getUiViewForEndpoint_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p HackSessionContext_getUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_getUiViewForEndpoint_Results, error) {
+	s, err := p.Future.Struct()
 	return HackSessionContext_getUiViewForEndpoint_Results{s}, err
 }
 
-func (p HackSessionContext_getUiViewForEndpoint_Results_Promise) View() grain.UiView {
-	return grain.UiView{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p HackSessionContext_getUiViewForEndpoint_Results_Future) View() grain.UiView {
+	return grain.UiView{Client: p.Future.Field(0, nil).Client()}
 }
 
-type HackEmailSession struct{ Client capnp.Client }
+type HackEmailSession struct{ Client *capnp.Client }
 
 // HackEmailSession_TypeID is the unique identifier for the type HackEmailSession.
 const HackEmailSession_TypeID = 0xc3b5ced7344b04a6
 
-func (c HackEmailSession) Send(ctx context.Context, params func(email.EmailSendPort_send_Params) error, opts ...capnp.CallOption) email.EmailSendPort_send_Results_Promise {
-	if c.Client == nil {
-		return email.EmailSendPort_send_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackEmailSession) Send(ctx context.Context, params func(email.EmailSendPort_send_Params) error) (email.EmailSendPort_send_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xec831dbf4cc9bcca,
 			MethodID:      0,
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "send",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
 	}
-	return email.EmailSendPort_send_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
-func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error, opts ...capnp.CallOption) email.EmailSendPort_hintAddress_Results_Promise {
-	if c.Client == nil {
-		return email.EmailSendPort_hintAddress_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error) (email.EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xec831dbf4cc9bcca,
 			MethodID:      1,
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "hintAddress",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
 	}
-	return email.EmailSendPort_hintAddress_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// A HackEmailSession_Server is a HackEmailSession with a local implementation.
 type HackEmailSession_Server interface {
-	Send(email.EmailSendPort_send) error
+	Send(context.Context, email.EmailSendPort_send) error
 
-	HintAddress(email.EmailSendPort_hintAddress) error
+	HintAddress(context.Context, email.EmailSendPort_hintAddress) error
 }
 
-func HackEmailSession_ServerToClient(s HackEmailSession_Server) HackEmailSession {
-	c, _ := s.(server.Closer)
-	return HackEmailSession{Client: server.New(HackEmailSession_Methods(nil, s), c)}
+// HackEmailSession_NewServer creates a new Server from an implementation of HackEmailSession_Server.
+func HackEmailSession_NewServer(s HackEmailSession_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(HackEmailSession_Methods(nil, s), s, c, policy)
 }
 
+// HackEmailSession_ServerToClient creates a new Client from an implementation of HackEmailSession_Server.
+// The caller is responsible for calling Release on the returned Client.
+func HackEmailSession_ServerToClient(s HackEmailSession_Server, policy *server.Policy) HackEmailSession {
+	return HackEmailSession{Client: capnp.NewClient(HackEmailSession_NewServer(s, policy))}
+}
+
+// HackEmailSession_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -2317,11 +2270,9 @@ func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "send",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailSendPort_send{c, opts, email.EmailSendPort_send_Params{Struct: p}, email.EmailSendPort_send_Results{Struct: r}}
-			return s.Send(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Send(ctx, email.EmailSendPort_send{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -2331,11 +2282,9 @@ func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server
 			InterfaceName: "email.capnp:EmailSendPort",
 			MethodName:    "hintAddress",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailSendPort_hintAddress{c, opts, email.EmailSendPort_hintAddress_Params{Struct: p}, email.EmailSendPort_hintAddress_Results{Struct: r}}
-			return s.HintAddress(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.HintAddress(ctx, email.EmailSendPort_hintAddress{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods

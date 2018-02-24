@@ -3,7 +3,7 @@
 package sandstormhttpbridge
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	capnp "zombiezen.com/go/capnproto2"
@@ -12,129 +12,119 @@ import (
 	server "zombiezen.com/go/capnproto2/server"
 )
 
-type SandstormHttpBridge struct{ Client capnp.Client }
+type SandstormHttpBridge struct{ Client *capnp.Client }
 
 // SandstormHttpBridge_TypeID is the unique identifier for the type SandstormHttpBridge.
 const SandstormHttpBridge_TypeID = 0xad678f0d09bdd98a
 
-func (c SandstormHttpBridge) GetSandstormApi(ctx context.Context, params func(SandstormHttpBridge_getSandstormApi_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_getSandstormApi_Results_Promise {
-	if c.Client == nil {
-		return SandstormHttpBridge_getSandstormApi_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormHttpBridge) GetSandstormApi(ctx context.Context, params func(SandstormHttpBridge_getSandstormApi_Params) error) (SandstormHttpBridge_getSandstormApi_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      0,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSandstormApi",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSandstormApi_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSandstormApi_Params{Struct: s}) }
 	}
-	return SandstormHttpBridge_getSandstormApi_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_getSandstormApi_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(SandstormHttpBridge_getSessionContext_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_getSessionContext_Results_Promise {
-	if c.Client == nil {
-		return SandstormHttpBridge_getSessionContext_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(SandstormHttpBridge_getSessionContext_Params) error) (SandstormHttpBridge_getSessionContext_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      1,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSessionContext",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionContext_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionContext_Params{Struct: s}) }
 	}
-	return SandstormHttpBridge_getSessionContext_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_getSessionContext_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormHttpBridge) GetSavedIdentity(ctx context.Context, params func(SandstormHttpBridge_getSavedIdentity_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_getSavedIdentity_Results_Promise {
-	if c.Client == nil {
-		return SandstormHttpBridge_getSavedIdentity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormHttpBridge) GetSavedIdentity(ctx context.Context, params func(SandstormHttpBridge_getSavedIdentity_Params) error) (SandstormHttpBridge_getSavedIdentity_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      2,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSavedIdentity",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSavedIdentity_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSavedIdentity_Params{Struct: s}) }
 	}
-	return SandstormHttpBridge_getSavedIdentity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_getSavedIdentity_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(SandstormHttpBridge_saveIdentity_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_saveIdentity_Results_Promise {
-	if c.Client == nil {
-		return SandstormHttpBridge_saveIdentity_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(SandstormHttpBridge_saveIdentity_Params) error) (SandstormHttpBridge_saveIdentity_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      3,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "saveIdentity",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_saveIdentity_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_saveIdentity_Params{Struct: s}) }
 	}
-	return SandstormHttpBridge_saveIdentity_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_saveIdentity_Results_Future{Future: ans.Future()}, release
 }
-func (c SandstormHttpBridge) SetPersistHook(ctx context.Context, params func(SandstormHttpBridge_setPersistHook_Params) error, opts ...capnp.CallOption) SandstormHttpBridge_setPersistHook_Results_Promise {
-	if c.Client == nil {
-		return SandstormHttpBridge_setPersistHook_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c SandstormHttpBridge) SetPersistHook(ctx context.Context, params func(SandstormHttpBridge_setPersistHook_Params) error) (SandstormHttpBridge_setPersistHook_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xad678f0d09bdd98a,
 			MethodID:      4,
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "setPersistHook",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(SandstormHttpBridge_setPersistHook_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_setPersistHook_Params{Struct: s}) }
 	}
-	return SandstormHttpBridge_setPersistHook_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_setPersistHook_Results_Future{Future: ans.Future()}, release
 }
 
+// A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
 type SandstormHttpBridge_Server interface {
-	GetSandstormApi(SandstormHttpBridge_getSandstormApi) error
+	GetSandstormApi(context.Context, SandstormHttpBridge_getSandstormApi) error
 
-	GetSessionContext(SandstormHttpBridge_getSessionContext) error
+	GetSessionContext(context.Context, SandstormHttpBridge_getSessionContext) error
 
-	GetSavedIdentity(SandstormHttpBridge_getSavedIdentity) error
+	GetSavedIdentity(context.Context, SandstormHttpBridge_getSavedIdentity) error
 
-	SaveIdentity(SandstormHttpBridge_saveIdentity) error
+	SaveIdentity(context.Context, SandstormHttpBridge_saveIdentity) error
 
-	SetPersistHook(SandstormHttpBridge_setPersistHook) error
+	SetPersistHook(context.Context, SandstormHttpBridge_setPersistHook) error
 }
 
-func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server) SandstormHttpBridge {
-	c, _ := s.(server.Closer)
-	return SandstormHttpBridge{Client: server.New(SandstormHttpBridge_Methods(nil, s), c)}
+// SandstormHttpBridge_NewServer creates a new Server from an implementation of SandstormHttpBridge_Server.
+func SandstormHttpBridge_NewServer(s SandstormHttpBridge_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(SandstormHttpBridge_Methods(nil, s), s, c, policy)
 }
 
+// SandstormHttpBridge_ServerToClient creates a new Client from an implementation of SandstormHttpBridge_Server.
+// The caller is responsible for calling Release on the returned Client.
+func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server, policy *server.Policy) SandstormHttpBridge {
+	return SandstormHttpBridge{Client: capnp.NewClient(SandstormHttpBridge_NewServer(s, policy))}
+}
+
+// SandstormHttpBridge_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 5)
@@ -147,11 +137,9 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSandstormApi",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormHttpBridge_getSandstormApi{c, opts, SandstormHttpBridge_getSandstormApi_Params{Struct: p}, SandstormHttpBridge_getSandstormApi_Results{Struct: r}}
-			return s.GetSandstormApi(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSandstormApi(ctx, SandstormHttpBridge_getSandstormApi{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -161,11 +149,9 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSessionContext",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormHttpBridge_getSessionContext{c, opts, SandstormHttpBridge_getSessionContext_Params{Struct: p}, SandstormHttpBridge_getSessionContext_Results{Struct: r}}
-			return s.GetSessionContext(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSessionContext(ctx, SandstormHttpBridge_getSessionContext{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -175,11 +161,9 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "getSavedIdentity",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormHttpBridge_getSavedIdentity{c, opts, SandstormHttpBridge_getSavedIdentity_Params{Struct: p}, SandstormHttpBridge_getSavedIdentity_Results{Struct: r}}
-			return s.GetSavedIdentity(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSavedIdentity(ctx, SandstormHttpBridge_getSavedIdentity{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -189,11 +173,9 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "saveIdentity",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormHttpBridge_saveIdentity{c, opts, SandstormHttpBridge_saveIdentity_Params{Struct: p}, SandstormHttpBridge_saveIdentity_Results{Struct: r}}
-			return s.SaveIdentity(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SaveIdentity(ctx, SandstormHttpBridge_saveIdentity{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	methods = append(methods, server.Method{
@@ -203,54 +185,97 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
 			MethodName:    "setPersistHook",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := SandstormHttpBridge_setPersistHook{c, opts, SandstormHttpBridge_setPersistHook_Params{Struct: p}, SandstormHttpBridge_setPersistHook_Results{Struct: r}}
-			return s.SetPersistHook(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SetPersistHook(ctx, SandstormHttpBridge_setPersistHook{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// SandstormHttpBridge_getSandstormApi holds the arguments for a server call to SandstormHttpBridge.getSandstormApi.
+// SandstormHttpBridge_getSandstormApi holds the state for a server call to SandstormHttpBridge.getSandstormApi.
+// See server.Call for documentation.
 type SandstormHttpBridge_getSandstormApi struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormHttpBridge_getSandstormApi_Params
-	Results SandstormHttpBridge_getSandstormApi_Results
+	*server.Call
 }
 
-// SandstormHttpBridge_getSessionContext holds the arguments for a server call to SandstormHttpBridge.getSessionContext.
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_getSandstormApi) Args() SandstormHttpBridge_getSandstormApi_Params {
+	return SandstormHttpBridge_getSandstormApi_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_getSandstormApi) AllocResults() (SandstormHttpBridge_getSandstormApi_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSandstormApi_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_getSessionContext holds the state for a server call to SandstormHttpBridge.getSessionContext.
+// See server.Call for documentation.
 type SandstormHttpBridge_getSessionContext struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormHttpBridge_getSessionContext_Params
-	Results SandstormHttpBridge_getSessionContext_Results
+	*server.Call
 }
 
-// SandstormHttpBridge_getSavedIdentity holds the arguments for a server call to SandstormHttpBridge.getSavedIdentity.
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_getSessionContext) Args() SandstormHttpBridge_getSessionContext_Params {
+	return SandstormHttpBridge_getSessionContext_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_getSessionContext) AllocResults() (SandstormHttpBridge_getSessionContext_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionContext_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_getSavedIdentity holds the state for a server call to SandstormHttpBridge.getSavedIdentity.
+// See server.Call for documentation.
 type SandstormHttpBridge_getSavedIdentity struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormHttpBridge_getSavedIdentity_Params
-	Results SandstormHttpBridge_getSavedIdentity_Results
+	*server.Call
 }
 
-// SandstormHttpBridge_saveIdentity holds the arguments for a server call to SandstormHttpBridge.saveIdentity.
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_getSavedIdentity) Args() SandstormHttpBridge_getSavedIdentity_Params {
+	return SandstormHttpBridge_getSavedIdentity_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_getSavedIdentity) AllocResults() (SandstormHttpBridge_getSavedIdentity_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSavedIdentity_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_saveIdentity holds the state for a server call to SandstormHttpBridge.saveIdentity.
+// See server.Call for documentation.
 type SandstormHttpBridge_saveIdentity struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormHttpBridge_saveIdentity_Params
-	Results SandstormHttpBridge_saveIdentity_Results
+	*server.Call
 }
 
-// SandstormHttpBridge_setPersistHook holds the arguments for a server call to SandstormHttpBridge.setPersistHook.
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_saveIdentity) Args() SandstormHttpBridge_saveIdentity_Params {
+	return SandstormHttpBridge_saveIdentity_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_saveIdentity) AllocResults() (SandstormHttpBridge_saveIdentity_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormHttpBridge_saveIdentity_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_setPersistHook holds the state for a server call to SandstormHttpBridge.setPersistHook.
+// See server.Call for documentation.
 type SandstormHttpBridge_setPersistHook struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  SandstormHttpBridge_setPersistHook_Params
-	Results SandstormHttpBridge_setPersistHook_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_setPersistHook) Args() SandstormHttpBridge_setPersistHook_Params {
+	return SandstormHttpBridge_setPersistHook_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_setPersistHook) AllocResults() (SandstormHttpBridge_setPersistHook_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormHttpBridge_setPersistHook_Results{Struct: r}, err
 }
 
 type SandstormHttpBridge_getSandstormApi_Params struct{ capnp.Struct }
@@ -269,7 +294,7 @@ func NewRootSandstormHttpBridge_getSandstormApi_Params(s *capnp.Segment) (Sandst
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Params(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSandstormApi_Params{root.Struct()}, err
 }
 
@@ -300,11 +325,11 @@ func (s SandstormHttpBridge_getSandstormApi_Params_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSandstormApi_Params_Promise is a wrapper for a SandstormHttpBridge_getSandstormApi_Params promised by a client call.
-type SandstormHttpBridge_getSandstormApi_Params_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSandstormApi_Params_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Params promised by a client call.
+type SandstormHttpBridge_getSandstormApi_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSandstormApi_Params_Promise) Struct() (SandstormHttpBridge_getSandstormApi_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSandstormApi_Params_Future) Struct() (SandstormHttpBridge_getSandstormApi_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSandstormApi_Params{s}, err
 }
 
@@ -324,7 +349,7 @@ func NewRootSandstormHttpBridge_getSandstormApi_Results(s *capnp.Segment) (Sands
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Results(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSandstormApi_Results{root.Struct()}, err
 }
 
@@ -339,12 +364,11 @@ func (s SandstormHttpBridge_getSandstormApi_Results) Api() grain.SandstormApi {
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) HasApi() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) SetApi(v grain.SandstormApi) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -374,16 +398,16 @@ func (s SandstormHttpBridge_getSandstormApi_Results_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSandstormApi_Results_Promise is a wrapper for a SandstormHttpBridge_getSandstormApi_Results promised by a client call.
-type SandstormHttpBridge_getSandstormApi_Results_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSandstormApi_Results_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Results promised by a client call.
+type SandstormHttpBridge_getSandstormApi_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSandstormApi_Results_Promise) Struct() (SandstormHttpBridge_getSandstormApi_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSandstormApi_Results_Future) Struct() (SandstormHttpBridge_getSandstormApi_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSandstormApi_Results{s}, err
 }
 
-func (p SandstormHttpBridge_getSandstormApi_Results_Promise) Api() grain.SandstormApi {
-	return grain.SandstormApi{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormHttpBridge_getSandstormApi_Results_Future) Api() grain.SandstormApi {
+	return grain.SandstormApi{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormHttpBridge_getSessionContext_Params struct{ capnp.Struct }
@@ -402,7 +426,7 @@ func NewRootSandstormHttpBridge_getSessionContext_Params(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSessionContext_Params{root.Struct()}, err
 }
 
@@ -417,8 +441,7 @@ func (s SandstormHttpBridge_getSessionContext_Params) Id() (string, error) {
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) HasId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) IdBytes() ([]byte, error) {
@@ -452,11 +475,11 @@ func (s SandstormHttpBridge_getSessionContext_Params_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSessionContext_Params_Promise is a wrapper for a SandstormHttpBridge_getSessionContext_Params promised by a client call.
-type SandstormHttpBridge_getSessionContext_Params_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSessionContext_Params_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Params promised by a client call.
+type SandstormHttpBridge_getSessionContext_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionContext_Params_Promise) Struct() (SandstormHttpBridge_getSessionContext_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSessionContext_Params_Future) Struct() (SandstormHttpBridge_getSessionContext_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSessionContext_Params{s}, err
 }
 
@@ -476,7 +499,7 @@ func NewRootSandstormHttpBridge_getSessionContext_Results(s *capnp.Segment) (San
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSessionContext_Results{root.Struct()}, err
 }
 
@@ -491,12 +514,11 @@ func (s SandstormHttpBridge_getSessionContext_Results) Context() grain.SessionCo
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) HasContext() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) SetContext(v grain.SessionContext) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -526,16 +548,16 @@ func (s SandstormHttpBridge_getSessionContext_Results_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSessionContext_Results_Promise is a wrapper for a SandstormHttpBridge_getSessionContext_Results promised by a client call.
-type SandstormHttpBridge_getSessionContext_Results_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSessionContext_Results_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Results promised by a client call.
+type SandstormHttpBridge_getSessionContext_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionContext_Results_Promise) Struct() (SandstormHttpBridge_getSessionContext_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSessionContext_Results_Future) Struct() (SandstormHttpBridge_getSessionContext_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSessionContext_Results{s}, err
 }
 
-func (p SandstormHttpBridge_getSessionContext_Results_Promise) Context() grain.SessionContext {
-	return grain.SessionContext{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormHttpBridge_getSessionContext_Results_Future) Context() grain.SessionContext {
+	return grain.SessionContext{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormHttpBridge_getSavedIdentity_Params struct{ capnp.Struct }
@@ -554,7 +576,7 @@ func NewRootSandstormHttpBridge_getSavedIdentity_Params(s *capnp.Segment) (Sands
 }
 
 func ReadRootSandstormHttpBridge_getSavedIdentity_Params(msg *capnp.Message) (SandstormHttpBridge_getSavedIdentity_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSavedIdentity_Params{root.Struct()}, err
 }
 
@@ -569,8 +591,7 @@ func (s SandstormHttpBridge_getSavedIdentity_Params) IdentityId() (string, error
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) HasIdentityId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) IdentityIdBytes() ([]byte, error) {
@@ -604,11 +625,11 @@ func (s SandstormHttpBridge_getSavedIdentity_Params_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSavedIdentity_Params_Promise is a wrapper for a SandstormHttpBridge_getSavedIdentity_Params promised by a client call.
-type SandstormHttpBridge_getSavedIdentity_Params_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSavedIdentity_Params_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Params promised by a client call.
+type SandstormHttpBridge_getSavedIdentity_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSavedIdentity_Params_Promise) Struct() (SandstormHttpBridge_getSavedIdentity_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSavedIdentity_Params_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSavedIdentity_Params{s}, err
 }
 
@@ -628,7 +649,7 @@ func NewRootSandstormHttpBridge_getSavedIdentity_Results(s *capnp.Segment) (Sand
 }
 
 func ReadRootSandstormHttpBridge_getSavedIdentity_Results(msg *capnp.Message) (SandstormHttpBridge_getSavedIdentity_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_getSavedIdentity_Results{root.Struct()}, err
 }
 
@@ -643,12 +664,11 @@ func (s SandstormHttpBridge_getSavedIdentity_Results) Identity() identity.Identi
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Results) HasIdentity() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Results) SetIdentity(v identity.Identity) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -678,16 +698,16 @@ func (s SandstormHttpBridge_getSavedIdentity_Results_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_getSavedIdentity_Results_Promise is a wrapper for a SandstormHttpBridge_getSavedIdentity_Results promised by a client call.
-type SandstormHttpBridge_getSavedIdentity_Results_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_getSavedIdentity_Results_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Results promised by a client call.
+type SandstormHttpBridge_getSavedIdentity_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSavedIdentity_Results_Promise) Struct() (SandstormHttpBridge_getSavedIdentity_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_getSavedIdentity_Results{s}, err
 }
 
-func (p SandstormHttpBridge_getSavedIdentity_Results_Promise) Identity() identity.Identity {
-	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Identity() identity.Identity {
+	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormHttpBridge_saveIdentity_Params struct{ capnp.Struct }
@@ -706,7 +726,7 @@ func NewRootSandstormHttpBridge_saveIdentity_Params(s *capnp.Segment) (Sandstorm
 }
 
 func ReadRootSandstormHttpBridge_saveIdentity_Params(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_saveIdentity_Params{root.Struct()}, err
 }
 
@@ -721,12 +741,11 @@ func (s SandstormHttpBridge_saveIdentity_Params) Identity() identity.Identity {
 }
 
 func (s SandstormHttpBridge_saveIdentity_Params) HasIdentity() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_saveIdentity_Params) SetIdentity(v identity.Identity) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -756,16 +775,16 @@ func (s SandstormHttpBridge_saveIdentity_Params_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_saveIdentity_Params_Promise is a wrapper for a SandstormHttpBridge_saveIdentity_Params promised by a client call.
-type SandstormHttpBridge_saveIdentity_Params_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_saveIdentity_Params_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Params promised by a client call.
+type SandstormHttpBridge_saveIdentity_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_saveIdentity_Params_Promise) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_saveIdentity_Params_Future) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_saveIdentity_Params{s}, err
 }
 
-func (p SandstormHttpBridge_saveIdentity_Params_Promise) Identity() identity.Identity {
-	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormHttpBridge_saveIdentity_Params_Future) Identity() identity.Identity {
+	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormHttpBridge_saveIdentity_Results struct{ capnp.Struct }
@@ -784,7 +803,7 @@ func NewRootSandstormHttpBridge_saveIdentity_Results(s *capnp.Segment) (Sandstor
 }
 
 func ReadRootSandstormHttpBridge_saveIdentity_Results(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_saveIdentity_Results{root.Struct()}, err
 }
 
@@ -815,11 +834,11 @@ func (s SandstormHttpBridge_saveIdentity_Results_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_saveIdentity_Results_Promise is a wrapper for a SandstormHttpBridge_saveIdentity_Results promised by a client call.
-type SandstormHttpBridge_saveIdentity_Results_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_saveIdentity_Results_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Results promised by a client call.
+type SandstormHttpBridge_saveIdentity_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_saveIdentity_Results_Promise) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_saveIdentity_Results_Future) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_saveIdentity_Results{s}, err
 }
 
@@ -839,7 +858,7 @@ func NewRootSandstormHttpBridge_setPersistHook_Params(s *capnp.Segment) (Sandsto
 }
 
 func ReadRootSandstormHttpBridge_setPersistHook_Params(msg *capnp.Message) (SandstormHttpBridge_setPersistHook_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_setPersistHook_Params{root.Struct()}, err
 }
 
@@ -854,12 +873,11 @@ func (s SandstormHttpBridge_setPersistHook_Params) Hook() PersistHook {
 }
 
 func (s SandstormHttpBridge_setPersistHook_Params) HasHook() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SandstormHttpBridge_setPersistHook_Params) SetHook(v PersistHook) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -889,16 +907,16 @@ func (s SandstormHttpBridge_setPersistHook_Params_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_setPersistHook_Params_Promise is a wrapper for a SandstormHttpBridge_setPersistHook_Params promised by a client call.
-type SandstormHttpBridge_setPersistHook_Params_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_setPersistHook_Params_Future is a wrapper for a SandstormHttpBridge_setPersistHook_Params promised by a client call.
+type SandstormHttpBridge_setPersistHook_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_setPersistHook_Params_Promise) Struct() (SandstormHttpBridge_setPersistHook_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_setPersistHook_Params_Future) Struct() (SandstormHttpBridge_setPersistHook_Params, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_setPersistHook_Params{s}, err
 }
 
-func (p SandstormHttpBridge_setPersistHook_Params_Promise) Hook() PersistHook {
-	return PersistHook{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SandstormHttpBridge_setPersistHook_Params_Future) Hook() PersistHook {
+	return PersistHook{Client: p.Future.Field(0, nil).Client()}
 }
 
 type SandstormHttpBridge_setPersistHook_Results struct{ capnp.Struct }
@@ -917,7 +935,7 @@ func NewRootSandstormHttpBridge_setPersistHook_Results(s *capnp.Segment) (Sandst
 }
 
 func ReadRootSandstormHttpBridge_setPersistHook_Results(msg *capnp.Message) (SandstormHttpBridge_setPersistHook_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SandstormHttpBridge_setPersistHook_Results{root.Struct()}, err
 }
 
@@ -948,71 +966,73 @@ func (s SandstormHttpBridge_setPersistHook_Results_List) String() string {
 	return str
 }
 
-// SandstormHttpBridge_setPersistHook_Results_Promise is a wrapper for a SandstormHttpBridge_setPersistHook_Results promised by a client call.
-type SandstormHttpBridge_setPersistHook_Results_Promise struct{ *capnp.Pipeline }
+// SandstormHttpBridge_setPersistHook_Results_Future is a wrapper for a SandstormHttpBridge_setPersistHook_Results promised by a client call.
+type SandstormHttpBridge_setPersistHook_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_setPersistHook_Results_Promise) Struct() (SandstormHttpBridge_setPersistHook_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p SandstormHttpBridge_setPersistHook_Results_Future) Struct() (SandstormHttpBridge_setPersistHook_Results, error) {
+	s, err := p.Future.Struct()
 	return SandstormHttpBridge_setPersistHook_Results{s}, err
 }
 
-type PersistHook struct{ Client capnp.Client }
+type PersistHook struct{ Client *capnp.Client }
 
 // PersistHook_TypeID is the unique identifier for the type PersistHook.
 const PersistHook_TypeID = 0x9e629b6a29a1a3ac
 
-func (c PersistHook) Restore(ctx context.Context, params func(PersistHook_restore_Params) error, opts ...capnp.CallOption) PersistHook_restore_Results_Promise {
-	if c.Client == nil {
-		return PersistHook_restore_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistHook) Restore(ctx context.Context, params func(PersistHook_restore_Params) error) (PersistHook_restore_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0x9e629b6a29a1a3ac,
 			MethodID:      0,
 			InterfaceName: "sandstorm-http-bridge.capnp:PersistHook",
 			MethodName:    "restore",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(PersistHook_restore_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PersistHook_restore_Params{Struct: s}) }
 	}
-	return PersistHook_restore_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return PersistHook_restore_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistHook) Drop(ctx context.Context, params func(PersistHook_drop_Params) error, opts ...capnp.CallOption) PersistHook_drop_Results_Promise {
-	if c.Client == nil {
-		return PersistHook_drop_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistHook) Drop(ctx context.Context, params func(PersistHook_drop_Params) error) (PersistHook_drop_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0x9e629b6a29a1a3ac,
 			MethodID:      1,
 			InterfaceName: "sandstorm-http-bridge.capnp:PersistHook",
 			MethodName:    "drop",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(PersistHook_drop_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PersistHook_drop_Params{Struct: s}) }
 	}
-	return PersistHook_drop_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return PersistHook_drop_Results_Future{Future: ans.Future()}, release
 }
 
+// A PersistHook_Server is a PersistHook with a local implementation.
 type PersistHook_Server interface {
-	Restore(PersistHook_restore) error
+	Restore(context.Context, PersistHook_restore) error
 
-	Drop(PersistHook_drop) error
+	Drop(context.Context, PersistHook_drop) error
 }
 
-func PersistHook_ServerToClient(s PersistHook_Server) PersistHook {
-	c, _ := s.(server.Closer)
-	return PersistHook{Client: server.New(PersistHook_Methods(nil, s), c)}
+// PersistHook_NewServer creates a new Server from an implementation of PersistHook_Server.
+func PersistHook_NewServer(s PersistHook_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(PersistHook_Methods(nil, s), s, c, policy)
 }
 
+// PersistHook_ServerToClient creates a new Client from an implementation of PersistHook_Server.
+// The caller is responsible for calling Release on the returned Client.
+func PersistHook_ServerToClient(s PersistHook_Server, policy *server.Policy) PersistHook {
+	return PersistHook{Client: capnp.NewClient(PersistHook_NewServer(s, policy))}
+}
+
+// PersistHook_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func PersistHook_Methods(methods []server.Method, s PersistHook_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -1025,11 +1045,9 @@ func PersistHook_Methods(methods []server.Method, s PersistHook_Server) []server
 			InterfaceName: "sandstorm-http-bridge.capnp:PersistHook",
 			MethodName:    "restore",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := PersistHook_restore{c, opts, PersistHook_restore_Params{Struct: p}, PersistHook_restore_Results{Struct: r}}
-			return s.Restore(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Restore(ctx, PersistHook_restore{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -1039,30 +1057,46 @@ func PersistHook_Methods(methods []server.Method, s PersistHook_Server) []server
 			InterfaceName: "sandstorm-http-bridge.capnp:PersistHook",
 			MethodName:    "drop",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := PersistHook_drop{c, opts, PersistHook_drop_Params{Struct: p}, PersistHook_drop_Results{Struct: r}}
-			return s.Drop(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Drop(ctx, PersistHook_drop{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// PersistHook_restore holds the arguments for a server call to PersistHook.restore.
+// PersistHook_restore holds the state for a server call to PersistHook.restore.
+// See server.Call for documentation.
 type PersistHook_restore struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  PersistHook_restore_Params
-	Results PersistHook_restore_Results
+	*server.Call
 }
 
-// PersistHook_drop holds the arguments for a server call to PersistHook.drop.
+// Args returns the call's arguments.
+func (c PersistHook_restore) Args() PersistHook_restore_Params {
+	return PersistHook_restore_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c PersistHook_restore) AllocResults() (PersistHook_restore_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return PersistHook_restore_Results{Struct: r}, err
+}
+
+// PersistHook_drop holds the state for a server call to PersistHook.drop.
+// See server.Call for documentation.
 type PersistHook_drop struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  PersistHook_drop_Params
-	Results PersistHook_drop_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c PersistHook_drop) Args() PersistHook_drop_Params {
+	return PersistHook_drop_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c PersistHook_drop) AllocResults() (PersistHook_drop_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return PersistHook_drop_Results{Struct: r}, err
 }
 
 type PersistHook_restore_Params struct{ capnp.Struct }
@@ -1081,7 +1115,7 @@ func NewRootPersistHook_restore_Params(s *capnp.Segment) (PersistHook_restore_Pa
 }
 
 func ReadRootPersistHook_restore_Params(msg *capnp.Message) (PersistHook_restore_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PersistHook_restore_Params{root.Struct()}, err
 }
 
@@ -1090,24 +1124,15 @@ func (s PersistHook_restore_Params) String() string {
 	return str
 }
 
-func (s PersistHook_restore_Params) ObjectId() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s PersistHook_restore_Params) HasObjectId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s PersistHook_restore_Params) ObjectIdPtr() (capnp.Ptr, error) {
+func (s PersistHook_restore_Params) ObjectId() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s PersistHook_restore_Params) SetObjectId(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s PersistHook_restore_Params) HasObjectId() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s PersistHook_restore_Params) SetObjectIdPtr(v capnp.Ptr) error {
+func (s PersistHook_restore_Params) SetObjectId(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1133,16 +1158,16 @@ func (s PersistHook_restore_Params_List) String() string {
 	return str
 }
 
-// PersistHook_restore_Params_Promise is a wrapper for a PersistHook_restore_Params promised by a client call.
-type PersistHook_restore_Params_Promise struct{ *capnp.Pipeline }
+// PersistHook_restore_Params_Future is a wrapper for a PersistHook_restore_Params promised by a client call.
+type PersistHook_restore_Params_Future struct{ *capnp.Future }
 
-func (p PersistHook_restore_Params_Promise) Struct() (PersistHook_restore_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p PersistHook_restore_Params_Future) Struct() (PersistHook_restore_Params, error) {
+	s, err := p.Future.Struct()
 	return PersistHook_restore_Params{s}, err
 }
 
-func (p PersistHook_restore_Params_Promise) ObjectId() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p PersistHook_restore_Params_Future) ObjectId() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type PersistHook_restore_Results struct{ capnp.Struct }
@@ -1161,7 +1186,7 @@ func NewRootPersistHook_restore_Results(s *capnp.Segment) (PersistHook_restore_R
 }
 
 func ReadRootPersistHook_restore_Results(msg *capnp.Message) (PersistHook_restore_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PersistHook_restore_Results{root.Struct()}, err
 }
 
@@ -1170,24 +1195,15 @@ func (s PersistHook_restore_Results) String() string {
 	return str
 }
 
-func (s PersistHook_restore_Results) Cap() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s PersistHook_restore_Results) HasCap() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s PersistHook_restore_Results) CapPtr() (capnp.Ptr, error) {
+func (s PersistHook_restore_Results) Cap() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s PersistHook_restore_Results) SetCap(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s PersistHook_restore_Results) HasCap() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s PersistHook_restore_Results) SetCapPtr(v capnp.Ptr) error {
+func (s PersistHook_restore_Results) SetCap(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1213,16 +1229,16 @@ func (s PersistHook_restore_Results_List) String() string {
 	return str
 }
 
-// PersistHook_restore_Results_Promise is a wrapper for a PersistHook_restore_Results promised by a client call.
-type PersistHook_restore_Results_Promise struct{ *capnp.Pipeline }
+// PersistHook_restore_Results_Future is a wrapper for a PersistHook_restore_Results promised by a client call.
+type PersistHook_restore_Results_Future struct{ *capnp.Future }
 
-func (p PersistHook_restore_Results_Promise) Struct() (PersistHook_restore_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p PersistHook_restore_Results_Future) Struct() (PersistHook_restore_Results, error) {
+	s, err := p.Future.Struct()
 	return PersistHook_restore_Results{s}, err
 }
 
-func (p PersistHook_restore_Results_Promise) Cap() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p PersistHook_restore_Results_Future) Cap() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type PersistHook_drop_Params struct{ capnp.Struct }
@@ -1241,7 +1257,7 @@ func NewRootPersistHook_drop_Params(s *capnp.Segment) (PersistHook_drop_Params, 
 }
 
 func ReadRootPersistHook_drop_Params(msg *capnp.Message) (PersistHook_drop_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PersistHook_drop_Params{root.Struct()}, err
 }
 
@@ -1250,24 +1266,15 @@ func (s PersistHook_drop_Params) String() string {
 	return str
 }
 
-func (s PersistHook_drop_Params) ObjectId() (capnp.Pointer, error) {
-	return s.Struct.Pointer(0)
-}
-
-func (s PersistHook_drop_Params) HasObjectId() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
-}
-
-func (s PersistHook_drop_Params) ObjectIdPtr() (capnp.Ptr, error) {
+func (s PersistHook_drop_Params) ObjectId() (capnp.Ptr, error) {
 	return s.Struct.Ptr(0)
 }
 
-func (s PersistHook_drop_Params) SetObjectId(v capnp.Pointer) error {
-	return s.Struct.SetPointer(0, v)
+func (s PersistHook_drop_Params) HasObjectId() bool {
+	return s.Struct.HasPtr(0)
 }
 
-func (s PersistHook_drop_Params) SetObjectIdPtr(v capnp.Ptr) error {
+func (s PersistHook_drop_Params) SetObjectId(v capnp.Ptr) error {
 	return s.Struct.SetPtr(0, v)
 }
 
@@ -1293,16 +1300,16 @@ func (s PersistHook_drop_Params_List) String() string {
 	return str
 }
 
-// PersistHook_drop_Params_Promise is a wrapper for a PersistHook_drop_Params promised by a client call.
-type PersistHook_drop_Params_Promise struct{ *capnp.Pipeline }
+// PersistHook_drop_Params_Future is a wrapper for a PersistHook_drop_Params promised by a client call.
+type PersistHook_drop_Params_Future struct{ *capnp.Future }
 
-func (p PersistHook_drop_Params_Promise) Struct() (PersistHook_drop_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p PersistHook_drop_Params_Future) Struct() (PersistHook_drop_Params, error) {
+	s, err := p.Future.Struct()
 	return PersistHook_drop_Params{s}, err
 }
 
-func (p PersistHook_drop_Params_Promise) ObjectId() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(0)
+func (p PersistHook_drop_Params_Future) ObjectId() *capnp.Future {
+	return p.Future.Field(0, nil)
 }
 
 type PersistHook_drop_Results struct{ capnp.Struct }
@@ -1321,7 +1328,7 @@ func NewRootPersistHook_drop_Results(s *capnp.Segment) (PersistHook_drop_Results
 }
 
 func ReadRootPersistHook_drop_Results(msg *capnp.Message) (PersistHook_drop_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return PersistHook_drop_Results{root.Struct()}, err
 }
 
@@ -1352,11 +1359,11 @@ func (s PersistHook_drop_Results_List) String() string {
 	return str
 }
 
-// PersistHook_drop_Results_Promise is a wrapper for a PersistHook_drop_Results promised by a client call.
-type PersistHook_drop_Results_Promise struct{ *capnp.Pipeline }
+// PersistHook_drop_Results_Future is a wrapper for a PersistHook_drop_Results promised by a client call.
+type PersistHook_drop_Results_Future struct{ *capnp.Future }
 
-func (p PersistHook_drop_Results_Promise) Struct() (PersistHook_drop_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p PersistHook_drop_Results_Future) Struct() (PersistHook_drop_Results, error) {
+	s, err := p.Future.Struct()
 	return PersistHook_drop_Results{s}, err
 }
 

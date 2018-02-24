@@ -10,7 +10,7 @@ import (
 
 // Constants defined in mime.capnp.
 var (
-	MimeTypeInfoTable = MimeTypeInfo_List{List: capnp.MustUnmarshalRootPtr(x_9dc702ea30180791[0:55568]).List()}
+	MimeTypeInfoTable = MimeTypeInfo_List{List: capnp.MustUnmarshalRoot(x_9dc702ea30180791[0:55568]).List()}
 )
 
 type MimeTypeInfo struct{ capnp.Struct }
@@ -29,7 +29,7 @@ func NewRootMimeTypeInfo(s *capnp.Segment) (MimeTypeInfo, error) {
 }
 
 func ReadRootMimeTypeInfo(msg *capnp.Message) (MimeTypeInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return MimeTypeInfo{root.Struct()}, err
 }
 
@@ -44,8 +44,7 @@ func (s MimeTypeInfo) Name() (string, error) {
 }
 
 func (s MimeTypeInfo) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s MimeTypeInfo) NameBytes() ([]byte, error) {
@@ -63,8 +62,7 @@ func (s MimeTypeInfo) Extensions() (capnp.TextList, error) {
 }
 
 func (s MimeTypeInfo) HasExtensions() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s MimeTypeInfo) SetExtensions(v capnp.TextList) error {
@@ -100,11 +98,11 @@ func (s MimeTypeInfo_List) String() string {
 	return str
 }
 
-// MimeTypeInfo_Promise is a wrapper for a MimeTypeInfo promised by a client call.
-type MimeTypeInfo_Promise struct{ *capnp.Pipeline }
+// MimeTypeInfo_Future is a wrapper for a MimeTypeInfo promised by a client call.
+type MimeTypeInfo_Future struct{ *capnp.Future }
 
-func (p MimeTypeInfo_Promise) Struct() (MimeTypeInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p MimeTypeInfo_Future) Struct() (MimeTypeInfo, error) {
+	s, err := p.Future.Struct()
 	return MimeTypeInfo{s}, err
 }
 

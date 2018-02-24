@@ -3,7 +3,7 @@
 package identity
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zombiezen.com/go/capnproto2"
 	text "zombiezen.com/go/capnproto2/encoding/text"
@@ -11,41 +11,47 @@ import (
 	server "zombiezen.com/go/capnproto2/server"
 )
 
-type Identity struct{ Client capnp.Client }
+type Identity struct{ Client *capnp.Client }
 
 // Identity_TypeID is the unique identifier for the type Identity.
 const Identity_TypeID = 0xc084987aa951dd18
 
-func (c Identity) GetProfile(ctx context.Context, params func(Identity_getProfile_Params) error, opts ...capnp.CallOption) Identity_getProfile_Results_Promise {
-	if c.Client == nil {
-		return Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c Identity) GetProfile(ctx context.Context, params func(Identity_getProfile_Params) error) (Identity_getProfile_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc084987aa951dd18,
 			MethodID:      0,
 			InterfaceName: "identity.capnp:Identity",
 			MethodName:    "getProfile",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(Identity_getProfile_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Identity_getProfile_Params{Struct: s}) }
 	}
-	return Identity_getProfile_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return Identity_getProfile_Results_Future{Future: ans.Future()}, release
 }
 
+// A Identity_Server is a Identity with a local implementation.
 type Identity_Server interface {
-	GetProfile(Identity_getProfile) error
+	GetProfile(context.Context, Identity_getProfile) error
 }
 
-func Identity_ServerToClient(s Identity_Server) Identity {
-	c, _ := s.(server.Closer)
-	return Identity{Client: server.New(Identity_Methods(nil, s), c)}
+// Identity_NewServer creates a new Server from an implementation of Identity_Server.
+func Identity_NewServer(s Identity_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(Identity_Methods(nil, s), s, c, policy)
 }
 
+// Identity_ServerToClient creates a new Client from an implementation of Identity_Server.
+// The caller is responsible for calling Release on the returned Client.
+func Identity_ServerToClient(s Identity_Server, policy *server.Policy) Identity {
+	return Identity{Client: capnp.NewClient(Identity_NewServer(s, policy))}
+}
+
+// Identity_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func Identity_Methods(methods []server.Method, s Identity_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -58,22 +64,29 @@ func Identity_Methods(methods []server.Method, s Identity_Server) []server.Metho
 			InterfaceName: "identity.capnp:Identity",
 			MethodName:    "getProfile",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := Identity_getProfile{c, opts, Identity_getProfile_Params{Struct: p}, Identity_getProfile_Results{Struct: r}}
-			return s.GetProfile(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetProfile(ctx, Identity_getProfile{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// Identity_getProfile holds the arguments for a server call to Identity.getProfile.
+// Identity_getProfile holds the state for a server call to Identity.getProfile.
+// See server.Call for documentation.
 type Identity_getProfile struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  Identity_getProfile_Params
-	Results Identity_getProfile_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c Identity_getProfile) Args() Identity_getProfile_Params {
+	return Identity_getProfile_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c Identity_getProfile) AllocResults() (Identity_getProfile_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return Identity_getProfile_Results{Struct: r}, err
 }
 
 type Identity_PowerboxTag struct{ capnp.Struct }
@@ -92,7 +105,7 @@ func NewRootIdentity_PowerboxTag(s *capnp.Segment) (Identity_PowerboxTag, error)
 }
 
 func ReadRootIdentity_PowerboxTag(msg *capnp.Message) (Identity_PowerboxTag, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Identity_PowerboxTag{root.Struct()}, err
 }
 
@@ -107,8 +120,7 @@ func (s Identity_PowerboxTag) Permissions() (capnp.BitList, error) {
 }
 
 func (s Identity_PowerboxTag) HasPermissions() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Identity_PowerboxTag) SetPermissions(v capnp.BitList) error {
@@ -148,11 +160,11 @@ func (s Identity_PowerboxTag_List) String() string {
 	return str
 }
 
-// Identity_PowerboxTag_Promise is a wrapper for a Identity_PowerboxTag promised by a client call.
-type Identity_PowerboxTag_Promise struct{ *capnp.Pipeline }
+// Identity_PowerboxTag_Future is a wrapper for a Identity_PowerboxTag promised by a client call.
+type Identity_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p Identity_PowerboxTag_Promise) Struct() (Identity_PowerboxTag, error) {
-	s, err := p.Pipeline.Struct()
+func (p Identity_PowerboxTag_Future) Struct() (Identity_PowerboxTag, error) {
+	s, err := p.Future.Struct()
 	return Identity_PowerboxTag{s}, err
 }
 
@@ -172,7 +184,7 @@ func NewRootIdentity_getProfile_Params(s *capnp.Segment) (Identity_getProfile_Pa
 }
 
 func ReadRootIdentity_getProfile_Params(msg *capnp.Message) (Identity_getProfile_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Identity_getProfile_Params{root.Struct()}, err
 }
 
@@ -203,11 +215,11 @@ func (s Identity_getProfile_Params_List) String() string {
 	return str
 }
 
-// Identity_getProfile_Params_Promise is a wrapper for a Identity_getProfile_Params promised by a client call.
-type Identity_getProfile_Params_Promise struct{ *capnp.Pipeline }
+// Identity_getProfile_Params_Future is a wrapper for a Identity_getProfile_Params promised by a client call.
+type Identity_getProfile_Params_Future struct{ *capnp.Future }
 
-func (p Identity_getProfile_Params_Promise) Struct() (Identity_getProfile_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p Identity_getProfile_Params_Future) Struct() (Identity_getProfile_Params, error) {
+	s, err := p.Future.Struct()
 	return Identity_getProfile_Params{s}, err
 }
 
@@ -227,7 +239,7 @@ func NewRootIdentity_getProfile_Results(s *capnp.Segment) (Identity_getProfile_R
 }
 
 func ReadRootIdentity_getProfile_Results(msg *capnp.Message) (Identity_getProfile_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Identity_getProfile_Results{root.Struct()}, err
 }
 
@@ -242,8 +254,7 @@ func (s Identity_getProfile_Results) Profile() (Profile, error) {
 }
 
 func (s Identity_getProfile_Results) HasProfile() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Identity_getProfile_Results) SetProfile(v Profile) error {
@@ -283,16 +294,16 @@ func (s Identity_getProfile_Results_List) String() string {
 	return str
 }
 
-// Identity_getProfile_Results_Promise is a wrapper for a Identity_getProfile_Results promised by a client call.
-type Identity_getProfile_Results_Promise struct{ *capnp.Pipeline }
+// Identity_getProfile_Results_Future is a wrapper for a Identity_getProfile_Results promised by a client call.
+type Identity_getProfile_Results_Future struct{ *capnp.Future }
 
-func (p Identity_getProfile_Results_Promise) Struct() (Identity_getProfile_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p Identity_getProfile_Results_Future) Struct() (Identity_getProfile_Results, error) {
+	s, err := p.Future.Struct()
 	return Identity_getProfile_Results{s}, err
 }
 
-func (p Identity_getProfile_Results_Promise) Profile() Profile_Promise {
-	return Profile_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p Identity_getProfile_Results_Future) Profile() Profile_Future {
+	return Profile_Future{Future: p.Future.Field(0, nil)}
 }
 
 type Profile struct{ capnp.Struct }
@@ -311,7 +322,7 @@ func NewRootProfile(s *capnp.Segment) (Profile, error) {
 }
 
 func ReadRootProfile(msg *capnp.Message) (Profile, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return Profile{root.Struct()}, err
 }
 
@@ -326,8 +337,7 @@ func (s Profile) DisplayName() (util.LocalizedText, error) {
 }
 
 func (s Profile) HasDisplayName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s Profile) SetDisplayName(v util.LocalizedText) error {
@@ -351,8 +361,7 @@ func (s Profile) PreferredHandle() (string, error) {
 }
 
 func (s Profile) HasPreferredHandle() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s Profile) PreferredHandleBytes() ([]byte, error) {
@@ -370,12 +379,11 @@ func (s Profile) Picture() util.StaticAsset {
 }
 
 func (s Profile) HasPicture() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s Profile) SetPicture(v util.StaticAsset) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(2, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -409,20 +417,20 @@ func (s Profile_List) String() string {
 	return str
 }
 
-// Profile_Promise is a wrapper for a Profile promised by a client call.
-type Profile_Promise struct{ *capnp.Pipeline }
+// Profile_Future is a wrapper for a Profile promised by a client call.
+type Profile_Future struct{ *capnp.Future }
 
-func (p Profile_Promise) Struct() (Profile, error) {
-	s, err := p.Pipeline.Struct()
+func (p Profile_Future) Struct() (Profile, error) {
+	s, err := p.Future.Struct()
 	return Profile{s}, err
 }
 
-func (p Profile_Promise) DisplayName() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p Profile_Future) DisplayName() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p Profile_Promise) Picture() util.StaticAsset {
-	return util.StaticAsset{Client: p.Pipeline.GetPipeline(2).Client()}
+func (p Profile_Future) Picture() util.StaticAsset {
+	return util.StaticAsset{Client: p.Future.Field(2, nil).Client()}
 }
 
 type Profile_Pronouns uint16
@@ -506,7 +514,7 @@ func NewRootUserInfo(s *capnp.Segment) (UserInfo, error) {
 }
 
 func ReadRootUserInfo(msg *capnp.Message) (UserInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return UserInfo{root.Struct()}, err
 }
 
@@ -521,8 +529,7 @@ func (s UserInfo) DisplayName() (util.LocalizedText, error) {
 }
 
 func (s UserInfo) HasDisplayName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s UserInfo) SetDisplayName(v util.LocalizedText) error {
@@ -546,8 +553,7 @@ func (s UserInfo) PreferredHandle() (string, error) {
 }
 
 func (s UserInfo) HasPreferredHandle() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s UserInfo) PreferredHandleBytes() ([]byte, error) {
@@ -565,8 +571,7 @@ func (s UserInfo) PictureUrl() (string, error) {
 }
 
 func (s UserInfo) HasPictureUrl() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s UserInfo) PictureUrlBytes() ([]byte, error) {
@@ -592,8 +597,7 @@ func (s UserInfo) DeprecatedPermissionsBlob() ([]byte, error) {
 }
 
 func (s UserInfo) HasDeprecatedPermissionsBlob() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s UserInfo) SetDeprecatedPermissionsBlob(v []byte) error {
@@ -606,8 +610,7 @@ func (s UserInfo) Permissions() (capnp.BitList, error) {
 }
 
 func (s UserInfo) HasPermissions() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s UserInfo) SetPermissions(v capnp.BitList) error {
@@ -631,8 +634,7 @@ func (s UserInfo) IdentityId() ([]byte, error) {
 }
 
 func (s UserInfo) HasIdentityId() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s UserInfo) SetIdentityId(v []byte) error {
@@ -645,12 +647,11 @@ func (s UserInfo) Identity() Identity {
 }
 
 func (s UserInfo) HasIdentity() bool {
-	p, err := s.Struct.Ptr(6)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(6)
 }
 
 func (s UserInfo) SetIdentity(v Identity) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(6, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -676,20 +677,20 @@ func (s UserInfo_List) String() string {
 	return str
 }
 
-// UserInfo_Promise is a wrapper for a UserInfo promised by a client call.
-type UserInfo_Promise struct{ *capnp.Pipeline }
+// UserInfo_Future is a wrapper for a UserInfo promised by a client call.
+type UserInfo_Future struct{ *capnp.Future }
 
-func (p UserInfo_Promise) Struct() (UserInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p UserInfo_Future) Struct() (UserInfo, error) {
+	s, err := p.Future.Struct()
 	return UserInfo{s}, err
 }
 
-func (p UserInfo_Promise) DisplayName() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p UserInfo_Future) DisplayName() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p UserInfo_Promise) Identity() Identity {
-	return Identity{Client: p.Pipeline.GetPipeline(6).Client()}
+func (p UserInfo_Future) Identity() Identity {
+	return Identity{Client: p.Future.Field(6, nil).Client()}
 }
 
 const schema_c822108a5c3d7d25 = "x\xda\x8c\x94M\x88\x1c\xc5\x1b\xc6\x9f\xa7\xaa{&\x81" +

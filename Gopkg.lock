@@ -23,30 +23,28 @@
   revision = "f5dfe339be1d06f81b22525fe34671ee7d2c8904"
 
 [[projects]]
+  branch = "v3"
   name = "zombiezen.com/go/capnproto2"
   packages = [
     ".",
     "encoding/text",
-    "internal/fulfiller",
+    "internal/errors",
     "internal/nodemap",
     "internal/packed",
-    "internal/queue",
     "internal/schema",
     "internal/strquote",
     "pogs",
     "rpc",
-    "rpc/internal/refcount",
     "schemas",
     "server",
     "std/capnp/persistent",
     "std/capnp/rpc"
   ]
-  revision = "243bfedb776812540b7e2fb8d4e5c19814ab1ed8"
-  version = "v2.17.0"
+  revision = "88fcc4af3c541b3cf4e67f146acf3dfbebbfa95a"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9bfe724523e2101695d9a353edfde7b02a0933aa216d7ec81dd650c3e8a2c562"
+  inputs-digest = "e5d0559e1da455c0ea9ea6533f604322a25e535b20f0d85dde4fbe1b998bf8bd"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -3,7 +3,7 @@
 package webpublishing
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	strconv "strconv"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	capnp "zombiezen.com/go/capnproto2"
@@ -12,151 +12,137 @@ import (
 	server "zombiezen.com/go/capnproto2/server"
 )
 
-type WebSite struct{ Client capnp.Client }
+type WebSite struct{ Client *capnp.Client }
 
 // WebSite_TypeID is the unique identifier for the type WebSite.
 const WebSite_TypeID = 0xdddcca47803e2377
 
-func (c WebSite) GetUrl(ctx context.Context, params func(WebSite_getUrl_Params) error, opts ...capnp.CallOption) WebSite_getUrl_Results_Promise {
-	if c.Client == nil {
-		return WebSite_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) GetUrl(ctx context.Context, params func(WebSite_getUrl_Params) error) (WebSite_getUrl_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      0,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getUrl",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_getUrl_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getUrl_Params{Struct: s}) }
 	}
-	return WebSite_getUrl_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_getUrl_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSite) GetEntities(ctx context.Context, params func(WebSite_getEntities_Params) error, opts ...capnp.CallOption) WebSite_getEntities_Results_Promise {
-	if c.Client == nil {
-		return WebSite_getEntities_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) GetEntities(ctx context.Context, params func(WebSite_getEntities_Params) error) (WebSite_getEntities_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      1,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getEntities",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_getEntities_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getEntities_Params{Struct: s}) }
 	}
-	return WebSite_getEntities_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_getEntities_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSite) GetNotFoundEntities(ctx context.Context, params func(WebSite_getNotFoundEntities_Params) error, opts ...capnp.CallOption) WebSite_getNotFoundEntities_Results_Promise {
-	if c.Client == nil {
-		return WebSite_getNotFoundEntities_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) GetNotFoundEntities(ctx context.Context, params func(WebSite_getNotFoundEntities_Params) error) (WebSite_getNotFoundEntities_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      2,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getNotFoundEntities",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_getNotFoundEntities_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getNotFoundEntities_Params{Struct: s}) }
 	}
-	return WebSite_getNotFoundEntities_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_getNotFoundEntities_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSite) UploadBlob(ctx context.Context, params func(WebSite_uploadBlob_Params) error, opts ...capnp.CallOption) WebSite_uploadBlob_Results_Promise {
-	if c.Client == nil {
-		return WebSite_uploadBlob_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) UploadBlob(ctx context.Context, params func(WebSite_uploadBlob_Params) error) (WebSite_uploadBlob_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      3,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "uploadBlob",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_uploadBlob_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_uploadBlob_Params{Struct: s}) }
 	}
-	return WebSite_uploadBlob_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_uploadBlob_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSite) GetSubsite(ctx context.Context, params func(WebSite_getSubsite_Params) error, opts ...capnp.CallOption) WebSite_getSubsite_Results_Promise {
-	if c.Client == nil {
-		return WebSite_getSubsite_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) GetSubsite(ctx context.Context, params func(WebSite_getSubsite_Params) error) (WebSite_getSubsite_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      4,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getSubsite",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_getSubsite_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getSubsite_Params{Struct: s}) }
 	}
-	return WebSite_getSubsite_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_getSubsite_Results_Future{Future: ans.Future()}, release
 }
-func (c WebSite) ListResources(ctx context.Context, params func(WebSite_listResources_Params) error, opts ...capnp.CallOption) WebSite_listResources_Results_Promise {
-	if c.Client == nil {
-		return WebSite_listResources_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c WebSite) ListResources(ctx context.Context, params func(WebSite_listResources_Params) error) (WebSite_listResources_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xdddcca47803e2377,
 			MethodID:      5,
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "listResources",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(WebSite_listResources_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_listResources_Params{Struct: s}) }
 	}
-	return WebSite_listResources_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return WebSite_listResources_Results_Future{Future: ans.Future()}, release
 }
 
+// A WebSite_Server is a WebSite with a local implementation.
 type WebSite_Server interface {
-	GetUrl(WebSite_getUrl) error
+	GetUrl(context.Context, WebSite_getUrl) error
 
-	GetEntities(WebSite_getEntities) error
+	GetEntities(context.Context, WebSite_getEntities) error
 
-	GetNotFoundEntities(WebSite_getNotFoundEntities) error
+	GetNotFoundEntities(context.Context, WebSite_getNotFoundEntities) error
 
-	UploadBlob(WebSite_uploadBlob) error
+	UploadBlob(context.Context, WebSite_uploadBlob) error
 
-	GetSubsite(WebSite_getSubsite) error
+	GetSubsite(context.Context, WebSite_getSubsite) error
 
-	ListResources(WebSite_listResources) error
+	ListResources(context.Context, WebSite_listResources) error
 }
 
-func WebSite_ServerToClient(s WebSite_Server) WebSite {
-	c, _ := s.(server.Closer)
-	return WebSite{Client: server.New(WebSite_Methods(nil, s), c)}
+// WebSite_NewServer creates a new Server from an implementation of WebSite_Server.
+func WebSite_NewServer(s WebSite_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(WebSite_Methods(nil, s), s, c, policy)
 }
 
+// WebSite_ServerToClient creates a new Client from an implementation of WebSite_Server.
+// The caller is responsible for calling Release on the returned Client.
+func WebSite_ServerToClient(s WebSite_Server, policy *server.Policy) WebSite {
+	return WebSite{Client: capnp.NewClient(WebSite_NewServer(s, policy))}
+}
+
+// WebSite_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 6)
@@ -169,11 +155,9 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getUrl",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_getUrl{c, opts, WebSite_getUrl_Params{Struct: p}, WebSite_getUrl_Results{Struct: r}}
-			return s.GetUrl(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetUrl(ctx, WebSite_getUrl{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -183,11 +167,9 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getEntities",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_getEntities{c, opts, WebSite_getEntities_Params{Struct: p}, WebSite_getEntities_Results{Struct: r}}
-			return s.GetEntities(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetEntities(ctx, WebSite_getEntities{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -197,11 +179,9 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getNotFoundEntities",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_getNotFoundEntities{c, opts, WebSite_getNotFoundEntities_Params{Struct: p}, WebSite_getNotFoundEntities_Results{Struct: r}}
-			return s.GetNotFoundEntities(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetNotFoundEntities(ctx, WebSite_getNotFoundEntities{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -211,11 +191,9 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "uploadBlob",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_uploadBlob{c, opts, WebSite_uploadBlob_Params{Struct: p}, WebSite_uploadBlob_Results{Struct: r}}
-			return s.UploadBlob(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.UploadBlob(ctx, WebSite_uploadBlob{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 2},
 	})
 
 	methods = append(methods, server.Method{
@@ -225,11 +203,9 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "getSubsite",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_getSubsite{c, opts, WebSite_getSubsite_Params{Struct: p}, WebSite_getSubsite_Results{Struct: r}}
-			return s.GetSubsite(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSubsite(ctx, WebSite_getSubsite{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -239,62 +215,114 @@ func WebSite_Methods(methods []server.Method, s WebSite_Server) []server.Method 
 			InterfaceName: "web-publishing.capnp:WebSite",
 			MethodName:    "listResources",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := WebSite_listResources{c, opts, WebSite_listResources_Params{Struct: p}, WebSite_listResources_Results{Struct: r}}
-			return s.ListResources(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.ListResources(ctx, WebSite_listResources{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// WebSite_getUrl holds the arguments for a server call to WebSite.getUrl.
+// WebSite_getUrl holds the state for a server call to WebSite.getUrl.
+// See server.Call for documentation.
 type WebSite_getUrl struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_getUrl_Params
-	Results WebSite_getUrl_Results
+	*server.Call
 }
 
-// WebSite_getEntities holds the arguments for a server call to WebSite.getEntities.
+// Args returns the call's arguments.
+func (c WebSite_getUrl) Args() WebSite_getUrl_Params {
+	return WebSite_getUrl_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_getUrl) AllocResults() (WebSite_getUrl_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSite_getUrl_Results{Struct: r}, err
+}
+
+// WebSite_getEntities holds the state for a server call to WebSite.getEntities.
+// See server.Call for documentation.
 type WebSite_getEntities struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_getEntities_Params
-	Results WebSite_getEntities_Results
+	*server.Call
 }
 
-// WebSite_getNotFoundEntities holds the arguments for a server call to WebSite.getNotFoundEntities.
+// Args returns the call's arguments.
+func (c WebSite_getEntities) Args() WebSite_getEntities_Params {
+	return WebSite_getEntities_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_getEntities) AllocResults() (WebSite_getEntities_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSite_getEntities_Results{Struct: r}, err
+}
+
+// WebSite_getNotFoundEntities holds the state for a server call to WebSite.getNotFoundEntities.
+// See server.Call for documentation.
 type WebSite_getNotFoundEntities struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_getNotFoundEntities_Params
-	Results WebSite_getNotFoundEntities_Results
+	*server.Call
 }
 
-// WebSite_uploadBlob holds the arguments for a server call to WebSite.uploadBlob.
+// Args returns the call's arguments.
+func (c WebSite_getNotFoundEntities) Args() WebSite_getNotFoundEntities_Params {
+	return WebSite_getNotFoundEntities_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_getNotFoundEntities) AllocResults() (WebSite_getNotFoundEntities_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSite_getNotFoundEntities_Results{Struct: r}, err
+}
+
+// WebSite_uploadBlob holds the state for a server call to WebSite.uploadBlob.
+// See server.Call for documentation.
 type WebSite_uploadBlob struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_uploadBlob_Params
-	Results WebSite_uploadBlob_Results
+	*server.Call
 }
 
-// WebSite_getSubsite holds the arguments for a server call to WebSite.getSubsite.
+// Args returns the call's arguments.
+func (c WebSite_uploadBlob) Args() WebSite_uploadBlob_Params {
+	return WebSite_uploadBlob_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_uploadBlob) AllocResults() (WebSite_uploadBlob_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return WebSite_uploadBlob_Results{Struct: r}, err
+}
+
+// WebSite_getSubsite holds the state for a server call to WebSite.getSubsite.
+// See server.Call for documentation.
 type WebSite_getSubsite struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_getSubsite_Params
-	Results WebSite_getSubsite_Results
+	*server.Call
 }
 
-// WebSite_listResources holds the arguments for a server call to WebSite.listResources.
+// Args returns the call's arguments.
+func (c WebSite_getSubsite) Args() WebSite_getSubsite_Params {
+	return WebSite_getSubsite_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_getSubsite) AllocResults() (WebSite_getSubsite_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSite_getSubsite_Results{Struct: r}, err
+}
+
+// WebSite_listResources holds the state for a server call to WebSite.listResources.
+// See server.Call for documentation.
 type WebSite_listResources struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  WebSite_listResources_Params
-	Results WebSite_listResources_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c WebSite_listResources) Args() WebSite_listResources_Params {
+	return WebSite_listResources_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c WebSite_listResources) AllocResults() (WebSite_listResources_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return WebSite_listResources_Results{Struct: r}, err
 }
 
 type WebSite_Entity struct{ capnp.Struct }
@@ -332,7 +360,7 @@ func NewRootWebSite_Entity(s *capnp.Segment) (WebSite_Entity, error) {
 }
 
 func ReadRootWebSite_Entity(msg *capnp.Message) (WebSite_Entity, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_Entity{root.Struct()}, err
 }
 
@@ -347,8 +375,7 @@ func (s WebSite_Entity) MimeType() (string, error) {
 }
 
 func (s WebSite_Entity) HasMimeType() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_Entity) MimeTypeBytes() ([]byte, error) {
@@ -366,8 +393,7 @@ func (s WebSite_Entity) Language() (string, error) {
 }
 
 func (s WebSite_Entity) HasLanguage() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSite_Entity) LanguageBytes() ([]byte, error) {
@@ -385,8 +411,7 @@ func (s WebSite_Entity) Encoding() (string, error) {
 }
 
 func (s WebSite_Entity) HasEncoding() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s WebSite_Entity) EncodingBytes() ([]byte, error) {
@@ -415,8 +440,7 @@ func (s WebSite_Entity_body) HasBytes() bool {
 	if s.Struct.Uint16(0) != 0 {
 		return false
 	}
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSite_Entity_body) SetBytes(v []byte) error {
@@ -436,13 +460,12 @@ func (s WebSite_Entity_body) HasBlob() bool {
 	if s.Struct.Uint16(0) != 1 {
 		return false
 	}
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s WebSite_Entity_body) SetBlob(v util.Blob) error {
 	s.Struct.SetUint16(0, 1)
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(3, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -456,8 +479,7 @@ func (s WebSite_Entity) RedirectTo() (string, error) {
 }
 
 func (s WebSite_Entity) HasRedirectTo() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s WebSite_Entity) RedirectToBytes() ([]byte, error) {
@@ -487,28 +509,28 @@ func (s WebSite_Entity_List) String() string {
 	return str
 }
 
-// WebSite_Entity_Promise is a wrapper for a WebSite_Entity promised by a client call.
-type WebSite_Entity_Promise struct{ *capnp.Pipeline }
+// WebSite_Entity_Future is a wrapper for a WebSite_Entity promised by a client call.
+type WebSite_Entity_Future struct{ *capnp.Future }
 
-func (p WebSite_Entity_Promise) Struct() (WebSite_Entity, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_Entity_Future) Struct() (WebSite_Entity, error) {
+	s, err := p.Future.Struct()
 	return WebSite_Entity{s}, err
 }
 
-func (p WebSite_Entity_Promise) Body() WebSite_Entity_body_Promise {
-	return WebSite_Entity_body_Promise{p.Pipeline}
+func (p WebSite_Entity_Future) Body() WebSite_Entity_body_Future {
+	return WebSite_Entity_body_Future{p.Future}
 }
 
-// WebSite_Entity_body_Promise is a wrapper for a WebSite_Entity_body promised by a client call.
-type WebSite_Entity_body_Promise struct{ *capnp.Pipeline }
+// WebSite_Entity_body_Future is a wrapper for a WebSite_Entity_body promised by a client call.
+type WebSite_Entity_body_Future struct{ *capnp.Future }
 
-func (p WebSite_Entity_body_Promise) Struct() (WebSite_Entity_body, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_Entity_body_Future) Struct() (WebSite_Entity_body, error) {
+	s, err := p.Future.Struct()
 	return WebSite_Entity_body{s}, err
 }
 
-func (p WebSite_Entity_body_Promise) Blob() util.Blob {
-	return util.Blob{Client: p.Pipeline.GetPipeline(3).Client()}
+func (p WebSite_Entity_body_Future) Blob() util.Blob {
+	return util.Blob{Client: p.Future.Field(3, nil).Client()}
 }
 
 type WebSite_getUrl_Params struct{ capnp.Struct }
@@ -527,7 +549,7 @@ func NewRootWebSite_getUrl_Params(s *capnp.Segment) (WebSite_getUrl_Params, erro
 }
 
 func ReadRootWebSite_getUrl_Params(msg *capnp.Message) (WebSite_getUrl_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getUrl_Params{root.Struct()}, err
 }
 
@@ -558,11 +580,11 @@ func (s WebSite_getUrl_Params_List) String() string {
 	return str
 }
 
-// WebSite_getUrl_Params_Promise is a wrapper for a WebSite_getUrl_Params promised by a client call.
-type WebSite_getUrl_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_getUrl_Params_Future is a wrapper for a WebSite_getUrl_Params promised by a client call.
+type WebSite_getUrl_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getUrl_Params_Promise) Struct() (WebSite_getUrl_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getUrl_Params_Future) Struct() (WebSite_getUrl_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getUrl_Params{s}, err
 }
 
@@ -582,7 +604,7 @@ func NewRootWebSite_getUrl_Results(s *capnp.Segment) (WebSite_getUrl_Results, er
 }
 
 func ReadRootWebSite_getUrl_Results(msg *capnp.Message) (WebSite_getUrl_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getUrl_Results{root.Struct()}, err
 }
 
@@ -597,8 +619,7 @@ func (s WebSite_getUrl_Results) Path() (string, error) {
 }
 
 func (s WebSite_getUrl_Results) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getUrl_Results) PathBytes() ([]byte, error) {
@@ -632,11 +653,11 @@ func (s WebSite_getUrl_Results_List) String() string {
 	return str
 }
 
-// WebSite_getUrl_Results_Promise is a wrapper for a WebSite_getUrl_Results promised by a client call.
-type WebSite_getUrl_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_getUrl_Results_Future is a wrapper for a WebSite_getUrl_Results promised by a client call.
+type WebSite_getUrl_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getUrl_Results_Promise) Struct() (WebSite_getUrl_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getUrl_Results_Future) Struct() (WebSite_getUrl_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getUrl_Results{s}, err
 }
 
@@ -656,7 +677,7 @@ func NewRootWebSite_getEntities_Params(s *capnp.Segment) (WebSite_getEntities_Pa
 }
 
 func ReadRootWebSite_getEntities_Params(msg *capnp.Message) (WebSite_getEntities_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getEntities_Params{root.Struct()}, err
 }
 
@@ -671,8 +692,7 @@ func (s WebSite_getEntities_Params) Path() (string, error) {
 }
 
 func (s WebSite_getEntities_Params) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getEntities_Params) PathBytes() ([]byte, error) {
@@ -706,11 +726,11 @@ func (s WebSite_getEntities_Params_List) String() string {
 	return str
 }
 
-// WebSite_getEntities_Params_Promise is a wrapper for a WebSite_getEntities_Params promised by a client call.
-type WebSite_getEntities_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_getEntities_Params_Future is a wrapper for a WebSite_getEntities_Params promised by a client call.
+type WebSite_getEntities_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getEntities_Params_Promise) Struct() (WebSite_getEntities_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getEntities_Params_Future) Struct() (WebSite_getEntities_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getEntities_Params{s}, err
 }
 
@@ -730,7 +750,7 @@ func NewRootWebSite_getEntities_Results(s *capnp.Segment) (WebSite_getEntities_R
 }
 
 func ReadRootWebSite_getEntities_Results(msg *capnp.Message) (WebSite_getEntities_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getEntities_Results{root.Struct()}, err
 }
 
@@ -745,12 +765,11 @@ func (s WebSite_getEntities_Results) Entities() util.Assignable {
 }
 
 func (s WebSite_getEntities_Results) HasEntities() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getEntities_Results) SetEntities(v util.Assignable) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -780,16 +799,16 @@ func (s WebSite_getEntities_Results_List) String() string {
 	return str
 }
 
-// WebSite_getEntities_Results_Promise is a wrapper for a WebSite_getEntities_Results promised by a client call.
-type WebSite_getEntities_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_getEntities_Results_Future is a wrapper for a WebSite_getEntities_Results promised by a client call.
+type WebSite_getEntities_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getEntities_Results_Promise) Struct() (WebSite_getEntities_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getEntities_Results_Future) Struct() (WebSite_getEntities_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getEntities_Results{s}, err
 }
 
-func (p WebSite_getEntities_Results_Promise) Entities() util.Assignable {
-	return util.Assignable{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSite_getEntities_Results_Future) Entities() util.Assignable {
+	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
 }
 
 type WebSite_getNotFoundEntities_Params struct{ capnp.Struct }
@@ -808,7 +827,7 @@ func NewRootWebSite_getNotFoundEntities_Params(s *capnp.Segment) (WebSite_getNot
 }
 
 func ReadRootWebSite_getNotFoundEntities_Params(msg *capnp.Message) (WebSite_getNotFoundEntities_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getNotFoundEntities_Params{root.Struct()}, err
 }
 
@@ -839,11 +858,11 @@ func (s WebSite_getNotFoundEntities_Params_List) String() string {
 	return str
 }
 
-// WebSite_getNotFoundEntities_Params_Promise is a wrapper for a WebSite_getNotFoundEntities_Params promised by a client call.
-type WebSite_getNotFoundEntities_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_getNotFoundEntities_Params_Future is a wrapper for a WebSite_getNotFoundEntities_Params promised by a client call.
+type WebSite_getNotFoundEntities_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getNotFoundEntities_Params_Promise) Struct() (WebSite_getNotFoundEntities_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getNotFoundEntities_Params_Future) Struct() (WebSite_getNotFoundEntities_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getNotFoundEntities_Params{s}, err
 }
 
@@ -863,7 +882,7 @@ func NewRootWebSite_getNotFoundEntities_Results(s *capnp.Segment) (WebSite_getNo
 }
 
 func ReadRootWebSite_getNotFoundEntities_Results(msg *capnp.Message) (WebSite_getNotFoundEntities_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getNotFoundEntities_Results{root.Struct()}, err
 }
 
@@ -878,12 +897,11 @@ func (s WebSite_getNotFoundEntities_Results) Entities() util.Assignable {
 }
 
 func (s WebSite_getNotFoundEntities_Results) HasEntities() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getNotFoundEntities_Results) SetEntities(v util.Assignable) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -913,16 +931,16 @@ func (s WebSite_getNotFoundEntities_Results_List) String() string {
 	return str
 }
 
-// WebSite_getNotFoundEntities_Results_Promise is a wrapper for a WebSite_getNotFoundEntities_Results promised by a client call.
-type WebSite_getNotFoundEntities_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_getNotFoundEntities_Results_Future is a wrapper for a WebSite_getNotFoundEntities_Results promised by a client call.
+type WebSite_getNotFoundEntities_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getNotFoundEntities_Results_Promise) Struct() (WebSite_getNotFoundEntities_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getNotFoundEntities_Results_Future) Struct() (WebSite_getNotFoundEntities_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getNotFoundEntities_Results{s}, err
 }
 
-func (p WebSite_getNotFoundEntities_Results_Promise) Entities() util.Assignable {
-	return util.Assignable{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSite_getNotFoundEntities_Results_Future) Entities() util.Assignable {
+	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
 }
 
 type WebSite_uploadBlob_Params struct{ capnp.Struct }
@@ -941,7 +959,7 @@ func NewRootWebSite_uploadBlob_Params(s *capnp.Segment) (WebSite_uploadBlob_Para
 }
 
 func ReadRootWebSite_uploadBlob_Params(msg *capnp.Message) (WebSite_uploadBlob_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_uploadBlob_Params{root.Struct()}, err
 }
 
@@ -972,11 +990,11 @@ func (s WebSite_uploadBlob_Params_List) String() string {
 	return str
 }
 
-// WebSite_uploadBlob_Params_Promise is a wrapper for a WebSite_uploadBlob_Params promised by a client call.
-type WebSite_uploadBlob_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_uploadBlob_Params_Future is a wrapper for a WebSite_uploadBlob_Params promised by a client call.
+type WebSite_uploadBlob_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_uploadBlob_Params_Promise) Struct() (WebSite_uploadBlob_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_uploadBlob_Params_Future) Struct() (WebSite_uploadBlob_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_uploadBlob_Params{s}, err
 }
 
@@ -996,7 +1014,7 @@ func NewRootWebSite_uploadBlob_Results(s *capnp.Segment) (WebSite_uploadBlob_Res
 }
 
 func ReadRootWebSite_uploadBlob_Results(msg *capnp.Message) (WebSite_uploadBlob_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_uploadBlob_Results{root.Struct()}, err
 }
 
@@ -1011,12 +1029,11 @@ func (s WebSite_uploadBlob_Results) Blob() util.Blob {
 }
 
 func (s WebSite_uploadBlob_Results) HasBlob() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_uploadBlob_Results) SetBlob(v util.Blob) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1030,12 +1047,11 @@ func (s WebSite_uploadBlob_Results) Stream() util.ByteStream {
 }
 
 func (s WebSite_uploadBlob_Results) HasStream() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s WebSite_uploadBlob_Results) SetStream(v util.ByteStream) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1065,20 +1081,20 @@ func (s WebSite_uploadBlob_Results_List) String() string {
 	return str
 }
 
-// WebSite_uploadBlob_Results_Promise is a wrapper for a WebSite_uploadBlob_Results promised by a client call.
-type WebSite_uploadBlob_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_uploadBlob_Results_Future is a wrapper for a WebSite_uploadBlob_Results promised by a client call.
+type WebSite_uploadBlob_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_uploadBlob_Results_Promise) Struct() (WebSite_uploadBlob_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_uploadBlob_Results_Future) Struct() (WebSite_uploadBlob_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_uploadBlob_Results{s}, err
 }
 
-func (p WebSite_uploadBlob_Results_Promise) Blob() util.Blob {
-	return util.Blob{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSite_uploadBlob_Results_Future) Blob() util.Blob {
+	return util.Blob{Client: p.Future.Field(0, nil).Client()}
 }
 
-func (p WebSite_uploadBlob_Results_Promise) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p WebSite_uploadBlob_Results_Future) Stream() util.ByteStream {
+	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
 }
 
 type WebSite_getSubsite_Params struct{ capnp.Struct }
@@ -1097,7 +1113,7 @@ func NewRootWebSite_getSubsite_Params(s *capnp.Segment) (WebSite_getSubsite_Para
 }
 
 func ReadRootWebSite_getSubsite_Params(msg *capnp.Message) (WebSite_getSubsite_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getSubsite_Params{root.Struct()}, err
 }
 
@@ -1112,8 +1128,7 @@ func (s WebSite_getSubsite_Params) Prefix() (string, error) {
 }
 
 func (s WebSite_getSubsite_Params) HasPrefix() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getSubsite_Params) PrefixBytes() ([]byte, error) {
@@ -1147,11 +1162,11 @@ func (s WebSite_getSubsite_Params_List) String() string {
 	return str
 }
 
-// WebSite_getSubsite_Params_Promise is a wrapper for a WebSite_getSubsite_Params promised by a client call.
-type WebSite_getSubsite_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_getSubsite_Params_Future is a wrapper for a WebSite_getSubsite_Params promised by a client call.
+type WebSite_getSubsite_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getSubsite_Params_Promise) Struct() (WebSite_getSubsite_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getSubsite_Params_Future) Struct() (WebSite_getSubsite_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getSubsite_Params{s}, err
 }
 
@@ -1171,7 +1186,7 @@ func NewRootWebSite_getSubsite_Results(s *capnp.Segment) (WebSite_getSubsite_Res
 }
 
 func ReadRootWebSite_getSubsite_Results(msg *capnp.Message) (WebSite_getSubsite_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_getSubsite_Results{root.Struct()}, err
 }
 
@@ -1186,12 +1201,11 @@ func (s WebSite_getSubsite_Results) Site() WebSite {
 }
 
 func (s WebSite_getSubsite_Results) HasSite() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_getSubsite_Results) SetSite(v WebSite) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -1221,16 +1235,16 @@ func (s WebSite_getSubsite_Results_List) String() string {
 	return str
 }
 
-// WebSite_getSubsite_Results_Promise is a wrapper for a WebSite_getSubsite_Results promised by a client call.
-type WebSite_getSubsite_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_getSubsite_Results_Future is a wrapper for a WebSite_getSubsite_Results promised by a client call.
+type WebSite_getSubsite_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getSubsite_Results_Promise) Struct() (WebSite_getSubsite_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_getSubsite_Results_Future) Struct() (WebSite_getSubsite_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_getSubsite_Results{s}, err
 }
 
-func (p WebSite_getSubsite_Results_Promise) Site() WebSite {
-	return WebSite{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p WebSite_getSubsite_Results_Future) Site() WebSite {
+	return WebSite{Client: p.Future.Field(0, nil).Client()}
 }
 
 type WebSite_listResources_Params struct{ capnp.Struct }
@@ -1249,7 +1263,7 @@ func NewRootWebSite_listResources_Params(s *capnp.Segment) (WebSite_listResource
 }
 
 func ReadRootWebSite_listResources_Params(msg *capnp.Message) (WebSite_listResources_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_listResources_Params{root.Struct()}, err
 }
 
@@ -1288,11 +1302,11 @@ func (s WebSite_listResources_Params_List) String() string {
 	return str
 }
 
-// WebSite_listResources_Params_Promise is a wrapper for a WebSite_listResources_Params promised by a client call.
-type WebSite_listResources_Params_Promise struct{ *capnp.Pipeline }
+// WebSite_listResources_Params_Future is a wrapper for a WebSite_listResources_Params promised by a client call.
+type WebSite_listResources_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_listResources_Params_Promise) Struct() (WebSite_listResources_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_listResources_Params_Future) Struct() (WebSite_listResources_Params, error) {
+	s, err := p.Future.Struct()
 	return WebSite_listResources_Params{s}, err
 }
 
@@ -1312,7 +1326,7 @@ func NewRootWebSite_listResources_Results(s *capnp.Segment) (WebSite_listResourc
 }
 
 func ReadRootWebSite_listResources_Results(msg *capnp.Message) (WebSite_listResources_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return WebSite_listResources_Results{root.Struct()}, err
 }
 
@@ -1327,8 +1341,7 @@ func (s WebSite_listResources_Results) Names() (capnp.TextList, error) {
 }
 
 func (s WebSite_listResources_Results) HasNames() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s WebSite_listResources_Results) SetNames(v capnp.TextList) error {
@@ -1368,11 +1381,11 @@ func (s WebSite_listResources_Results_List) String() string {
 	return str
 }
 
-// WebSite_listResources_Results_Promise is a wrapper for a WebSite_listResources_Results promised by a client call.
-type WebSite_listResources_Results_Promise struct{ *capnp.Pipeline }
+// WebSite_listResources_Results_Future is a wrapper for a WebSite_listResources_Results promised by a client call.
+type WebSite_listResources_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_listResources_Results_Promise) Struct() (WebSite_listResources_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p WebSite_listResources_Results_Future) Struct() (WebSite_listResources_Results, error) {
+	s, err := p.Future.Struct()
 	return WebSite_listResources_Results{s}, err
 }
 

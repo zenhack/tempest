@@ -3,7 +3,7 @@
 package emailimpl
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	email "zenhack.net/go/sandstorm/capnp/email"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	capnp "zombiezen.com/go/capnproto2"
@@ -12,109 +12,103 @@ import (
 	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
-type PersistentEmailVerifier struct{ Client capnp.Client }
+type PersistentEmailVerifier struct{ Client *capnp.Client }
 
 // PersistentEmailVerifier_TypeID is the unique identifier for the type PersistentEmailVerifier.
 const PersistentEmailVerifier_TypeID = 0xd76bb6182f0aece3
 
-func (c PersistentEmailVerifier) GetId(ctx context.Context, params func(email.EmailVerifier_getId_Params) error, opts ...capnp.CallOption) email.EmailVerifier_getId_Results_Promise {
-	if c.Client == nil {
-		return email.EmailVerifier_getId_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentEmailVerifier) GetId(ctx context.Context, params func(email.EmailVerifier_getId_Params) error) (email.EmailVerifier_getId_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd458f7ca9d1ba9ff,
 			MethodID:      0,
 			InterfaceName: "email.capnp:EmailVerifier",
 			MethodName:    "getId",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailVerifier_getId_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_getId_Params{Struct: s}) }
 	}
-	return email.EmailVerifier_getId_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailVerifier_getId_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentEmailVerifier) VerifyEmail(ctx context.Context, params func(email.EmailVerifier_verifyEmail_Params) error, opts ...capnp.CallOption) email.EmailVerifier_verifyEmail_Results_Promise {
-	if c.Client == nil {
-		return email.EmailVerifier_verifyEmail_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentEmailVerifier) VerifyEmail(ctx context.Context, params func(email.EmailVerifier_verifyEmail_Params) error) (email.EmailVerifier_verifyEmail_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xd458f7ca9d1ba9ff,
 			MethodID:      1,
 			InterfaceName: "email.capnp:EmailVerifier",
 			MethodName:    "verifyEmail",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(email.EmailVerifier_verifyEmail_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_verifyEmail_Params{Struct: s}) }
 	}
-	return email.EmailVerifier_verifyEmail_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return email.EmailVerifier_verifyEmail_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentEmailVerifier) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
-	if c.Client == nil {
-		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentEmailVerifier) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error {
 			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
 		}
 	}
-	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentEmailVerifier) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
-	if c.Client == nil {
-		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentEmailVerifier) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
 	}
-	return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// A PersistentEmailVerifier_Server is a PersistentEmailVerifier with a local implementation.
 type PersistentEmailVerifier_Server interface {
-	GetId(email.EmailVerifier_getId) error
+	GetId(context.Context, email.EmailVerifier_getId) error
 
-	VerifyEmail(email.EmailVerifier_verifyEmail) error
+	VerifyEmail(context.Context, email.EmailVerifier_verifyEmail) error
 
-	AddRequirements(supervisor.SystemPersistent_addRequirements) error
+	AddRequirements(context.Context, supervisor.SystemPersistent_addRequirements) error
 
-	Save(persistent.Persistent_save) error
+	Save(context.Context, persistent.Persistent_save) error
 }
 
-func PersistentEmailVerifier_ServerToClient(s PersistentEmailVerifier_Server) PersistentEmailVerifier {
-	c, _ := s.(server.Closer)
-	return PersistentEmailVerifier{Client: server.New(PersistentEmailVerifier_Methods(nil, s), c)}
+// PersistentEmailVerifier_NewServer creates a new Server from an implementation of PersistentEmailVerifier_Server.
+func PersistentEmailVerifier_NewServer(s PersistentEmailVerifier_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(PersistentEmailVerifier_Methods(nil, s), s, c, policy)
 }
 
+// PersistentEmailVerifier_ServerToClient creates a new Client from an implementation of PersistentEmailVerifier_Server.
+// The caller is responsible for calling Release on the returned Client.
+func PersistentEmailVerifier_ServerToClient(s PersistentEmailVerifier_Server, policy *server.Policy) PersistentEmailVerifier {
+	return PersistentEmailVerifier{Client: capnp.NewClient(PersistentEmailVerifier_NewServer(s, policy))}
+}
+
+// PersistentEmailVerifier_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailVerifier_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 4)
@@ -127,11 +121,9 @@ func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailV
 			InterfaceName: "email.capnp:EmailVerifier",
 			MethodName:    "getId",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailVerifier_getId{c, opts, email.EmailVerifier_getId_Params{Struct: p}, email.EmailVerifier_getId_Results{Struct: r}}
-			return s.GetId(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetId(ctx, email.EmailVerifier_getId{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -141,11 +133,9 @@ func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailV
 			InterfaceName: "email.capnp:EmailVerifier",
 			MethodName:    "verifyEmail",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := email.EmailVerifier_verifyEmail{c, opts, email.EmailVerifier_verifyEmail_Params{Struct: p}, email.EmailVerifier_verifyEmail_Results{Struct: r}}
-			return s.VerifyEmail(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.VerifyEmail(ctx, email.EmailVerifier_verifyEmail{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -155,11 +145,9 @@ func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailV
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := supervisor.SystemPersistent_addRequirements{c, opts, supervisor.SystemPersistent_addRequirements_Params{Struct: p}, supervisor.SystemPersistent_addRequirements_Results{Struct: r}}
-			return s.AddRequirements(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AddRequirements(ctx, supervisor.SystemPersistent_addRequirements{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -169,75 +157,75 @@ func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailV
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := persistent.Persistent_save{c, opts, persistent.Persistent_SaveParams{Struct: p}, persistent.Persistent_SaveResults{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, persistent.Persistent_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-type PersistentVerifiedEmail struct{ Client capnp.Client }
+type PersistentVerifiedEmail struct{ Client *capnp.Client }
 
 // PersistentVerifiedEmail_TypeID is the unique identifier for the type PersistentVerifiedEmail.
 const PersistentVerifiedEmail_TypeID = 0xe536db3eed324f9b
 
-func (c PersistentVerifiedEmail) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error, opts ...capnp.CallOption) supervisor.SystemPersistent_addRequirements_Results_Promise {
-	if c.Client == nil {
-		return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentVerifiedEmail) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc38cedd77cbed5b4,
 			MethodID:      0,
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error {
 			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
 		}
 	}
-	return supervisor.SystemPersistent_addRequirements_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
-func (c PersistentVerifiedEmail) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error, opts ...capnp.CallOption) persistent.Persistent_SaveResults_Promise {
-	if c.Client == nil {
-		return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c PersistentVerifiedEmail) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xc8cb212fcd9f5691,
 			MethodID:      0,
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
 	}
-	return persistent.Persistent_SaveResults_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// A PersistentVerifiedEmail_Server is a PersistentVerifiedEmail with a local implementation.
 type PersistentVerifiedEmail_Server interface {
-	AddRequirements(supervisor.SystemPersistent_addRequirements) error
+	AddRequirements(context.Context, supervisor.SystemPersistent_addRequirements) error
 
-	Save(persistent.Persistent_save) error
+	Save(context.Context, persistent.Persistent_save) error
 }
 
-func PersistentVerifiedEmail_ServerToClient(s PersistentVerifiedEmail_Server) PersistentVerifiedEmail {
-	c, _ := s.(server.Closer)
-	return PersistentVerifiedEmail{Client: server.New(PersistentVerifiedEmail_Methods(nil, s), c)}
+// PersistentVerifiedEmail_NewServer creates a new Server from an implementation of PersistentVerifiedEmail_Server.
+func PersistentVerifiedEmail_NewServer(s PersistentVerifiedEmail_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(PersistentVerifiedEmail_Methods(nil, s), s, c, policy)
 }
 
+// PersistentVerifiedEmail_ServerToClient creates a new Client from an implementation of PersistentVerifiedEmail_Server.
+// The caller is responsible for calling Release on the returned Client.
+func PersistentVerifiedEmail_ServerToClient(s PersistentVerifiedEmail_Server, policy *server.Policy) PersistentVerifiedEmail {
+	return PersistentVerifiedEmail{Client: capnp.NewClient(PersistentVerifiedEmail_NewServer(s, policy))}
+}
+
+// PersistentVerifiedEmail_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func PersistentVerifiedEmail_Methods(methods []server.Method, s PersistentVerifiedEmail_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 2)
@@ -250,11 +238,9 @@ func PersistentVerifiedEmail_Methods(methods []server.Method, s PersistentVerifi
 			InterfaceName: "supervisor.capnp:SystemPersistent",
 			MethodName:    "addRequirements",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := supervisor.SystemPersistent_addRequirements{c, opts, supervisor.SystemPersistent_addRequirements_Params{Struct: p}, supervisor.SystemPersistent_addRequirements_Results{Struct: r}}
-			return s.AddRequirements(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AddRequirements(ctx, supervisor.SystemPersistent_addRequirements{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	methods = append(methods, server.Method{
@@ -264,11 +250,9 @@ func PersistentVerifiedEmail_Methods(methods []server.Method, s PersistentVerifi
 			InterfaceName: "capnp/persistent.capnp:Persistent",
 			MethodName:    "save",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := persistent.Persistent_save{c, opts, persistent.Persistent_SaveParams{Struct: p}, persistent.Persistent_SaveResults{Struct: r}}
-			return s.Save(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Save(ctx, persistent.Persistent_save{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods

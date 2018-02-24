@@ -3,7 +3,7 @@
 package activity
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 	strconv "strconv"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	util "zenhack.net/go/sandstorm/capnp/util"
@@ -29,7 +29,7 @@ func NewRootActivityEvent(s *capnp.Segment) (ActivityEvent, error) {
 }
 
 func ReadRootActivityEvent(msg *capnp.Message) (ActivityEvent, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ActivityEvent{root.Struct()}, err
 }
 
@@ -44,8 +44,7 @@ func (s ActivityEvent) Path() (string, error) {
 }
 
 func (s ActivityEvent) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ActivityEvent) PathBytes() ([]byte, error) {
@@ -63,8 +62,7 @@ func (s ActivityEvent) Thread() (ActivityEvent_ThreadInfo, error) {
 }
 
 func (s ActivityEvent) HasThread() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s ActivityEvent) SetThread(v ActivityEvent_ThreadInfo) error {
@@ -88,8 +86,7 @@ func (s ActivityEvent) Notification() (NotificationDisplayInfo, error) {
 }
 
 func (s ActivityEvent) HasNotification() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s ActivityEvent) SetNotification(v NotificationDisplayInfo) error {
@@ -121,8 +118,7 @@ func (s ActivityEvent) Users() (ActivityEvent_User_List, error) {
 }
 
 func (s ActivityEvent) HasUsers() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s ActivityEvent) SetUsers(v ActivityEvent_User_List) error {
@@ -158,20 +154,20 @@ func (s ActivityEvent_List) String() string {
 	return str
 }
 
-// ActivityEvent_Promise is a wrapper for a ActivityEvent promised by a client call.
-type ActivityEvent_Promise struct{ *capnp.Pipeline }
+// ActivityEvent_Future is a wrapper for a ActivityEvent promised by a client call.
+type ActivityEvent_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_Promise) Struct() (ActivityEvent, error) {
-	s, err := p.Pipeline.Struct()
+func (p ActivityEvent_Future) Struct() (ActivityEvent, error) {
+	s, err := p.Future.Struct()
 	return ActivityEvent{s}, err
 }
 
-func (p ActivityEvent_Promise) Thread() ActivityEvent_ThreadInfo_Promise {
-	return ActivityEvent_ThreadInfo_Promise{Pipeline: p.Pipeline.GetPipeline(3)}
+func (p ActivityEvent_Future) Thread() ActivityEvent_ThreadInfo_Future {
+	return ActivityEvent_ThreadInfo_Future{Future: p.Future.Field(3, nil)}
 }
 
-func (p ActivityEvent_Promise) Notification() NotificationDisplayInfo_Promise {
-	return NotificationDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p ActivityEvent_Future) Notification() NotificationDisplayInfo_Future {
+	return NotificationDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
 type ActivityEvent_ThreadInfo struct{ capnp.Struct }
@@ -190,7 +186,7 @@ func NewRootActivityEvent_ThreadInfo(s *capnp.Segment) (ActivityEvent_ThreadInfo
 }
 
 func ReadRootActivityEvent_ThreadInfo(msg *capnp.Message) (ActivityEvent_ThreadInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ActivityEvent_ThreadInfo{root.Struct()}, err
 }
 
@@ -205,8 +201,7 @@ func (s ActivityEvent_ThreadInfo) Path() (string, error) {
 }
 
 func (s ActivityEvent_ThreadInfo) HasPath() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ActivityEvent_ThreadInfo) PathBytes() ([]byte, error) {
@@ -224,8 +219,7 @@ func (s ActivityEvent_ThreadInfo) Title() (util.LocalizedText, error) {
 }
 
 func (s ActivityEvent_ThreadInfo) HasTitle() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s ActivityEvent_ThreadInfo) SetTitle(v util.LocalizedText) error {
@@ -265,16 +259,16 @@ func (s ActivityEvent_ThreadInfo_List) String() string {
 	return str
 }
 
-// ActivityEvent_ThreadInfo_Promise is a wrapper for a ActivityEvent_ThreadInfo promised by a client call.
-type ActivityEvent_ThreadInfo_Promise struct{ *capnp.Pipeline }
+// ActivityEvent_ThreadInfo_Future is a wrapper for a ActivityEvent_ThreadInfo promised by a client call.
+type ActivityEvent_ThreadInfo_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_ThreadInfo_Promise) Struct() (ActivityEvent_ThreadInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p ActivityEvent_ThreadInfo_Future) Struct() (ActivityEvent_ThreadInfo, error) {
+	s, err := p.Future.Struct()
 	return ActivityEvent_ThreadInfo{s}, err
 }
 
-func (p ActivityEvent_ThreadInfo_Promise) Title() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p ActivityEvent_ThreadInfo_Future) Title() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
 type ActivityEvent_User struct{ capnp.Struct }
@@ -293,7 +287,7 @@ func NewRootActivityEvent_User(s *capnp.Segment) (ActivityEvent_User, error) {
 }
 
 func ReadRootActivityEvent_User(msg *capnp.Message) (ActivityEvent_User, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ActivityEvent_User{root.Struct()}, err
 }
 
@@ -308,12 +302,11 @@ func (s ActivityEvent_User) Identity() identity.Identity {
 }
 
 func (s ActivityEvent_User) HasIdentity() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ActivityEvent_User) SetIdentity(v identity.Identity) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -367,16 +360,16 @@ func (s ActivityEvent_User_List) String() string {
 	return str
 }
 
-// ActivityEvent_User_Promise is a wrapper for a ActivityEvent_User promised by a client call.
-type ActivityEvent_User_Promise struct{ *capnp.Pipeline }
+// ActivityEvent_User_Future is a wrapper for a ActivityEvent_User promised by a client call.
+type ActivityEvent_User_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_User_Promise) Struct() (ActivityEvent_User, error) {
-	s, err := p.Pipeline.Struct()
+func (p ActivityEvent_User_Future) Struct() (ActivityEvent_User, error) {
+	s, err := p.Future.Struct()
 	return ActivityEvent_User{s}, err
 }
 
-func (p ActivityEvent_User_Promise) Identity() identity.Identity {
-	return identity.Identity{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p ActivityEvent_User_Future) Identity() identity.Identity {
+	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
 }
 
 type ActivityTypeDef struct{ capnp.Struct }
@@ -417,7 +410,7 @@ func NewRootActivityTypeDef(s *capnp.Segment) (ActivityTypeDef, error) {
 }
 
 func ReadRootActivityTypeDef(msg *capnp.Message) (ActivityTypeDef, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return ActivityTypeDef{root.Struct()}, err
 }
 
@@ -432,8 +425,7 @@ func (s ActivityTypeDef) Name() (string, error) {
 }
 
 func (s ActivityTypeDef) HasName() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s ActivityTypeDef) NameBytes() ([]byte, error) {
@@ -451,8 +443,7 @@ func (s ActivityTypeDef) VerbPhrase() (util.LocalizedText, error) {
 }
 
 func (s ActivityTypeDef) HasVerbPhrase() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s ActivityTypeDef) SetVerbPhrase(v util.LocalizedText) error {
@@ -476,8 +467,7 @@ func (s ActivityTypeDef) Description() (util.LocalizedText, error) {
 }
 
 func (s ActivityTypeDef) HasDescription() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(2)
 }
 
 func (s ActivityTypeDef) SetDescription(v util.LocalizedText) error {
@@ -584,31 +574,31 @@ func (s ActivityTypeDef_List) String() string {
 	return str
 }
 
-// ActivityTypeDef_Promise is a wrapper for a ActivityTypeDef promised by a client call.
-type ActivityTypeDef_Promise struct{ *capnp.Pipeline }
+// ActivityTypeDef_Future is a wrapper for a ActivityTypeDef promised by a client call.
+type ActivityTypeDef_Future struct{ *capnp.Future }
 
-func (p ActivityTypeDef_Promise) Struct() (ActivityTypeDef, error) {
-	s, err := p.Pipeline.Struct()
+func (p ActivityTypeDef_Future) Struct() (ActivityTypeDef, error) {
+	s, err := p.Future.Struct()
 	return ActivityTypeDef{s}, err
 }
 
-func (p ActivityTypeDef_Promise) VerbPhrase() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p ActivityTypeDef_Future) VerbPhrase() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p ActivityTypeDef_Promise) Description() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(2)}
+func (p ActivityTypeDef_Future) Description() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
 
-func (p ActivityTypeDef_Promise) RequiredPermission() ActivityTypeDef_requiredPermission_Promise {
-	return ActivityTypeDef_requiredPermission_Promise{p.Pipeline}
+func (p ActivityTypeDef_Future) RequiredPermission() ActivityTypeDef_requiredPermission_Future {
+	return ActivityTypeDef_requiredPermission_Future{p.Future}
 }
 
-// ActivityTypeDef_requiredPermission_Promise is a wrapper for a ActivityTypeDef_requiredPermission promised by a client call.
-type ActivityTypeDef_requiredPermission_Promise struct{ *capnp.Pipeline }
+// ActivityTypeDef_requiredPermission_Future is a wrapper for a ActivityTypeDef_requiredPermission promised by a client call.
+type ActivityTypeDef_requiredPermission_Future struct{ *capnp.Future }
 
-func (p ActivityTypeDef_requiredPermission_Promise) Struct() (ActivityTypeDef_requiredPermission, error) {
-	s, err := p.Pipeline.Struct()
+func (p ActivityTypeDef_requiredPermission_Future) Struct() (ActivityTypeDef_requiredPermission, error) {
+	s, err := p.Future.Struct()
 	return ActivityTypeDef_requiredPermission{s}, err
 }
 
@@ -628,7 +618,7 @@ func NewRootNotificationDisplayInfo(s *capnp.Segment) (NotificationDisplayInfo, 
 }
 
 func ReadRootNotificationDisplayInfo(msg *capnp.Message) (NotificationDisplayInfo, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return NotificationDisplayInfo{root.Struct()}, err
 }
 
@@ -643,8 +633,7 @@ func (s NotificationDisplayInfo) Caption() (util.LocalizedText, error) {
 }
 
 func (s NotificationDisplayInfo) HasCaption() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s NotificationDisplayInfo) SetCaption(v util.LocalizedText) error {
@@ -684,53 +673,59 @@ func (s NotificationDisplayInfo_List) String() string {
 	return str
 }
 
-// NotificationDisplayInfo_Promise is a wrapper for a NotificationDisplayInfo promised by a client call.
-type NotificationDisplayInfo_Promise struct{ *capnp.Pipeline }
+// NotificationDisplayInfo_Future is a wrapper for a NotificationDisplayInfo promised by a client call.
+type NotificationDisplayInfo_Future struct{ *capnp.Future }
 
-func (p NotificationDisplayInfo_Promise) Struct() (NotificationDisplayInfo, error) {
-	s, err := p.Pipeline.Struct()
+func (p NotificationDisplayInfo_Future) Struct() (NotificationDisplayInfo, error) {
+	s, err := p.Future.Struct()
 	return NotificationDisplayInfo{s}, err
 }
 
-func (p NotificationDisplayInfo_Promise) Caption() util.LocalizedText_Promise {
-	return util.LocalizedText_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p NotificationDisplayInfo_Future) Caption() util.LocalizedText_Future {
+	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-type NotificationTarget struct{ Client capnp.Client }
+type NotificationTarget struct{ Client *capnp.Client }
 
 // NotificationTarget_TypeID is the unique identifier for the type NotificationTarget.
 const NotificationTarget_TypeID = 0xf0f87337d73020f0
 
-func (c NotificationTarget) AddOngoing(ctx context.Context, params func(NotificationTarget_addOngoing_Params) error, opts ...capnp.CallOption) NotificationTarget_addOngoing_Results_Promise {
-	if c.Client == nil {
-		return NotificationTarget_addOngoing_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c NotificationTarget) AddOngoing(ctx context.Context, params func(NotificationTarget_addOngoing_Params) error) (NotificationTarget_addOngoing_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xf0f87337d73020f0,
 			MethodID:      0,
 			InterfaceName: "activity.capnp:NotificationTarget",
 			MethodName:    "addOngoing",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(NotificationTarget_addOngoing_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(NotificationTarget_addOngoing_Params{Struct: s}) }
 	}
-	return NotificationTarget_addOngoing_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return NotificationTarget_addOngoing_Results_Future{Future: ans.Future()}, release
 }
 
+// A NotificationTarget_Server is a NotificationTarget with a local implementation.
 type NotificationTarget_Server interface {
-	AddOngoing(NotificationTarget_addOngoing) error
+	AddOngoing(context.Context, NotificationTarget_addOngoing) error
 }
 
-func NotificationTarget_ServerToClient(s NotificationTarget_Server) NotificationTarget {
-	c, _ := s.(server.Closer)
-	return NotificationTarget{Client: server.New(NotificationTarget_Methods(nil, s), c)}
+// NotificationTarget_NewServer creates a new Server from an implementation of NotificationTarget_Server.
+func NotificationTarget_NewServer(s NotificationTarget_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(NotificationTarget_Methods(nil, s), s, c, policy)
 }
 
+// NotificationTarget_ServerToClient creates a new Client from an implementation of NotificationTarget_Server.
+// The caller is responsible for calling Release on the returned Client.
+func NotificationTarget_ServerToClient(s NotificationTarget_Server, policy *server.Policy) NotificationTarget {
+	return NotificationTarget{Client: capnp.NewClient(NotificationTarget_NewServer(s, policy))}
+}
+
+// NotificationTarget_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func NotificationTarget_Methods(methods []server.Method, s NotificationTarget_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -743,22 +738,29 @@ func NotificationTarget_Methods(methods []server.Method, s NotificationTarget_Se
 			InterfaceName: "activity.capnp:NotificationTarget",
 			MethodName:    "addOngoing",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := NotificationTarget_addOngoing{c, opts, NotificationTarget_addOngoing_Params{Struct: p}, NotificationTarget_addOngoing_Results{Struct: r}}
-			return s.AddOngoing(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.AddOngoing(ctx, NotificationTarget_addOngoing{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 1},
 	})
 
 	return methods
 }
 
-// NotificationTarget_addOngoing holds the arguments for a server call to NotificationTarget.addOngoing.
+// NotificationTarget_addOngoing holds the state for a server call to NotificationTarget.addOngoing.
+// See server.Call for documentation.
 type NotificationTarget_addOngoing struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  NotificationTarget_addOngoing_Params
-	Results NotificationTarget_addOngoing_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c NotificationTarget_addOngoing) Args() NotificationTarget_addOngoing_Params {
+	return NotificationTarget_addOngoing_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c NotificationTarget_addOngoing) AllocResults() (NotificationTarget_addOngoing_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return NotificationTarget_addOngoing_Results{Struct: r}, err
 }
 
 type NotificationTarget_addOngoing_Params struct{ capnp.Struct }
@@ -777,7 +779,7 @@ func NewRootNotificationTarget_addOngoing_Params(s *capnp.Segment) (Notification
 }
 
 func ReadRootNotificationTarget_addOngoing_Params(msg *capnp.Message) (NotificationTarget_addOngoing_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return NotificationTarget_addOngoing_Params{root.Struct()}, err
 }
 
@@ -792,8 +794,7 @@ func (s NotificationTarget_addOngoing_Params) DisplayInfo() (NotificationDisplay
 }
 
 func (s NotificationTarget_addOngoing_Params) HasDisplayInfo() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s NotificationTarget_addOngoing_Params) SetDisplayInfo(v NotificationDisplayInfo) error {
@@ -817,12 +818,11 @@ func (s NotificationTarget_addOngoing_Params) Notification() OngoingNotification
 }
 
 func (s NotificationTarget_addOngoing_Params) HasNotification() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s NotificationTarget_addOngoing_Params) SetNotification(v OngoingNotification) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -852,20 +852,20 @@ func (s NotificationTarget_addOngoing_Params_List) String() string {
 	return str
 }
 
-// NotificationTarget_addOngoing_Params_Promise is a wrapper for a NotificationTarget_addOngoing_Params promised by a client call.
-type NotificationTarget_addOngoing_Params_Promise struct{ *capnp.Pipeline }
+// NotificationTarget_addOngoing_Params_Future is a wrapper for a NotificationTarget_addOngoing_Params promised by a client call.
+type NotificationTarget_addOngoing_Params_Future struct{ *capnp.Future }
 
-func (p NotificationTarget_addOngoing_Params_Promise) Struct() (NotificationTarget_addOngoing_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p NotificationTarget_addOngoing_Params_Future) Struct() (NotificationTarget_addOngoing_Params, error) {
+	s, err := p.Future.Struct()
 	return NotificationTarget_addOngoing_Params{s}, err
 }
 
-func (p NotificationTarget_addOngoing_Params_Promise) DisplayInfo() NotificationDisplayInfo_Promise {
-	return NotificationDisplayInfo_Promise{Pipeline: p.Pipeline.GetPipeline(0)}
+func (p NotificationTarget_addOngoing_Params_Future) DisplayInfo() NotificationDisplayInfo_Future {
+	return NotificationDisplayInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-func (p NotificationTarget_addOngoing_Params_Promise) Notification() OngoingNotification {
-	return OngoingNotification{Client: p.Pipeline.GetPipeline(1).Client()}
+func (p NotificationTarget_addOngoing_Params_Future) Notification() OngoingNotification {
+	return OngoingNotification{Client: p.Future.Field(1, nil).Client()}
 }
 
 type NotificationTarget_addOngoing_Results struct{ capnp.Struct }
@@ -884,7 +884,7 @@ func NewRootNotificationTarget_addOngoing_Results(s *capnp.Segment) (Notificatio
 }
 
 func ReadRootNotificationTarget_addOngoing_Results(msg *capnp.Message) (NotificationTarget_addOngoing_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return NotificationTarget_addOngoing_Results{root.Struct()}, err
 }
 
@@ -899,12 +899,11 @@ func (s NotificationTarget_addOngoing_Results) Handle() util.Handle {
 }
 
 func (s NotificationTarget_addOngoing_Results) HasHandle() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s NotificationTarget_addOngoing_Results) SetHandle(v util.Handle) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -934,53 +933,59 @@ func (s NotificationTarget_addOngoing_Results_List) String() string {
 	return str
 }
 
-// NotificationTarget_addOngoing_Results_Promise is a wrapper for a NotificationTarget_addOngoing_Results promised by a client call.
-type NotificationTarget_addOngoing_Results_Promise struct{ *capnp.Pipeline }
+// NotificationTarget_addOngoing_Results_Future is a wrapper for a NotificationTarget_addOngoing_Results promised by a client call.
+type NotificationTarget_addOngoing_Results_Future struct{ *capnp.Future }
 
-func (p NotificationTarget_addOngoing_Results_Promise) Struct() (NotificationTarget_addOngoing_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p NotificationTarget_addOngoing_Results_Future) Struct() (NotificationTarget_addOngoing_Results, error) {
+	s, err := p.Future.Struct()
 	return NotificationTarget_addOngoing_Results{s}, err
 }
 
-func (p NotificationTarget_addOngoing_Results_Promise) Handle() util.Handle {
-	return util.Handle{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p NotificationTarget_addOngoing_Results_Future) Handle() util.Handle {
+	return util.Handle{Client: p.Future.Field(0, nil).Client()}
 }
 
-type OngoingNotification struct{ Client capnp.Client }
+type OngoingNotification struct{ Client *capnp.Client }
 
 // OngoingNotification_TypeID is the unique identifier for the type OngoingNotification.
 const OngoingNotification_TypeID = 0xfe851ddbb88940cd
 
-func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNotification_cancel_Params) error, opts ...capnp.CallOption) OngoingNotification_cancel_Results_Promise {
-	if c.Client == nil {
-		return OngoingNotification_cancel_Results_Promise{Pipeline: capnp.NewPipeline(capnp.ErrorAnswer(capnp.ErrNullClient))}
-	}
-	call := &capnp.Call{
-		Ctx: ctx,
+func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNotification_cancel_Params) error) (OngoingNotification_cancel_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xfe851ddbb88940cd,
 			MethodID:      0,
 			InterfaceName: "activity.capnp:OngoingNotification",
 			MethodName:    "cancel",
 		},
-		Options: capnp.NewCallOptions(opts),
 	}
 	if params != nil {
-		call.ParamsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		call.ParamsFunc = func(s capnp.Struct) error { return params(OngoingNotification_cancel_Params{Struct: s}) }
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(OngoingNotification_cancel_Params{Struct: s}) }
 	}
-	return OngoingNotification_cancel_Results_Promise{Pipeline: capnp.NewPipeline(c.Client.Call(call))}
+	ans, release := c.Client.SendCall(ctx, s)
+	return OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
 }
 
+// A OngoingNotification_Server is a OngoingNotification with a local implementation.
 type OngoingNotification_Server interface {
-	Cancel(OngoingNotification_cancel) error
+	Cancel(context.Context, OngoingNotification_cancel) error
 }
 
-func OngoingNotification_ServerToClient(s OngoingNotification_Server) OngoingNotification {
-	c, _ := s.(server.Closer)
-	return OngoingNotification{Client: server.New(OngoingNotification_Methods(nil, s), c)}
+// OngoingNotification_NewServer creates a new Server from an implementation of OngoingNotification_Server.
+func OngoingNotification_NewServer(s OngoingNotification_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(OngoingNotification_Methods(nil, s), s, c, policy)
 }
 
+// OngoingNotification_ServerToClient creates a new Client from an implementation of OngoingNotification_Server.
+// The caller is responsible for calling Release on the returned Client.
+func OngoingNotification_ServerToClient(s OngoingNotification_Server, policy *server.Policy) OngoingNotification {
+	return OngoingNotification{Client: capnp.NewClient(OngoingNotification_NewServer(s, policy))}
+}
+
+// OngoingNotification_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
 func OngoingNotification_Methods(methods []server.Method, s OngoingNotification_Server) []server.Method {
 	if cap(methods) == 0 {
 		methods = make([]server.Method, 0, 1)
@@ -993,22 +998,29 @@ func OngoingNotification_Methods(methods []server.Method, s OngoingNotification_
 			InterfaceName: "activity.capnp:OngoingNotification",
 			MethodName:    "cancel",
 		},
-		Impl: func(c context.Context, opts capnp.CallOptions, p, r capnp.Struct) error {
-			call := OngoingNotification_cancel{c, opts, OngoingNotification_cancel_Params{Struct: p}, OngoingNotification_cancel_Results{Struct: r}}
-			return s.Cancel(call)
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.Cancel(ctx, OngoingNotification_cancel{call})
 		},
-		ResultsSize: capnp.ObjectSize{DataSize: 0, PointerCount: 0},
 	})
 
 	return methods
 }
 
-// OngoingNotification_cancel holds the arguments for a server call to OngoingNotification.cancel.
+// OngoingNotification_cancel holds the state for a server call to OngoingNotification.cancel.
+// See server.Call for documentation.
 type OngoingNotification_cancel struct {
-	Ctx     context.Context
-	Options capnp.CallOptions
-	Params  OngoingNotification_cancel_Params
-	Results OngoingNotification_cancel_Results
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c OngoingNotification_cancel) Args() OngoingNotification_cancel_Params {
+	return OngoingNotification_cancel_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c OngoingNotification_cancel) AllocResults() (OngoingNotification_cancel_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return OngoingNotification_cancel_Results{Struct: r}, err
 }
 
 type OngoingNotification_cancel_Params struct{ capnp.Struct }
@@ -1027,7 +1039,7 @@ func NewRootOngoingNotification_cancel_Params(s *capnp.Segment) (OngoingNotifica
 }
 
 func ReadRootOngoingNotification_cancel_Params(msg *capnp.Message) (OngoingNotification_cancel_Params, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return OngoingNotification_cancel_Params{root.Struct()}, err
 }
 
@@ -1058,11 +1070,11 @@ func (s OngoingNotification_cancel_Params_List) String() string {
 	return str
 }
 
-// OngoingNotification_cancel_Params_Promise is a wrapper for a OngoingNotification_cancel_Params promised by a client call.
-type OngoingNotification_cancel_Params_Promise struct{ *capnp.Pipeline }
+// OngoingNotification_cancel_Params_Future is a wrapper for a OngoingNotification_cancel_Params promised by a client call.
+type OngoingNotification_cancel_Params_Future struct{ *capnp.Future }
 
-func (p OngoingNotification_cancel_Params_Promise) Struct() (OngoingNotification_cancel_Params, error) {
-	s, err := p.Pipeline.Struct()
+func (p OngoingNotification_cancel_Params_Future) Struct() (OngoingNotification_cancel_Params, error) {
+	s, err := p.Future.Struct()
 	return OngoingNotification_cancel_Params{s}, err
 }
 
@@ -1082,7 +1094,7 @@ func NewRootOngoingNotification_cancel_Results(s *capnp.Segment) (OngoingNotific
 }
 
 func ReadRootOngoingNotification_cancel_Results(msg *capnp.Message) (OngoingNotification_cancel_Results, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return OngoingNotification_cancel_Results{root.Struct()}, err
 }
 
@@ -1113,11 +1125,11 @@ func (s OngoingNotification_cancel_Results_List) String() string {
 	return str
 }
 
-// OngoingNotification_cancel_Results_Promise is a wrapper for a OngoingNotification_cancel_Results promised by a client call.
-type OngoingNotification_cancel_Results_Promise struct{ *capnp.Pipeline }
+// OngoingNotification_cancel_Results_Future is a wrapper for a OngoingNotification_cancel_Results promised by a client call.
+type OngoingNotification_cancel_Results_Future struct{ *capnp.Future }
 
-func (p OngoingNotification_cancel_Results_Promise) Struct() (OngoingNotification_cancel_Results, error) {
-	s, err := p.Pipeline.Struct()
+func (p OngoingNotification_cancel_Results_Future) Struct() (OngoingNotification_cancel_Results, error) {
+	s, err := p.Future.Struct()
 	return OngoingNotification_cancel_Results{s}, err
 }
 
