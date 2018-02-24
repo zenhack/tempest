@@ -376,25 +376,24 @@ func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming)
 	if err != nil {
 		panic("Error allocating response: " + err.Error())
 	}
+	// It's not clear to me(zenhack) what context we should use here;
+	// we can't use p.Ctx because that will be canceled when
+	// postStreaming returns.
+	basicW, req, err := h.initRequest(context.TODO(), p.Params)
+	if err != nil {
+		return err
+	}
+
+	req.Method = "POST"
+	// TODO: copy mimeType & encoding.
+
+	basicW.response = response
+	w := &streamingResponseWriter{
+		basic:        basicW,
+		responseChan: reqStream.responseChan,
+	}
+	req.Body = reqR
 	go func() {
-		// It's not clear to me(zenhack) what context we should use here;
-		// we can't use p.Ctx because that will be canceled when
-		// postStreaming returns.
-		basicW, req, err := h.initRequest(context.TODO(), p.Params)
-		if err != nil {
-			reqStream.errChan <- err
-			return
-		}
-
-		req.Method = "POST"
-		// TODO: copy mimeType & encoding.
-
-		basicW.response = response
-		w := &streamingResponseWriter{
-			basic:        basicW,
-			responseChan: reqStream.responseChan,
-		}
-		req.Body = reqR
 		h.handler.ServeHTTP(w, req)
 		if w.basic.statusCode == 0 {
 			w.WriteHeader(200)
