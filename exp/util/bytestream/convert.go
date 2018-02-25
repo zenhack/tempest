@@ -7,15 +7,15 @@ import (
 	"io"
 
 	"zenhack.net/go/sandstorm/capnp/util"
+
+	"zombiezen.com/go/capnproto2/server"
 )
 
 // Convert an io.WriteCloser to a util.ByteStream. WriteCloser's Write and
 // Close methods correspond to write and done, respectively. expectSize is
 // a no-op.
-func FromWriteCloser(wc io.WriteCloser) util.ByteStream {
-	return util.ByteStream_ServerToClient(&wcByteStream{
-		wc: wc,
-	})
+func FromWriteCloser(wc io.WriteCloser, policy *server.Policy) util.ByteStream {
+	return util.ByteStream_ServerToClient(&wcByteStream{wc: wc}, policy)
 }
 
 // Implementation of util.ByteStream that wraps an io.WriteCloser; returned by
@@ -24,8 +24,8 @@ type wcByteStream struct {
 	wc io.WriteCloser
 }
 
-func (wc *wcByteStream) Write(p util.ByteStream_write) error {
-	data, err := p.Params.Data()
+func (wc *wcByteStream) Write(ctx context.Context, p util.ByteStream_write) error {
+	data, err := p.Args().Data()
 	if err != nil {
 		return err
 	}
@@ -33,11 +33,11 @@ func (wc *wcByteStream) Write(p util.ByteStream_write) error {
 	return err
 }
 
-func (wc *wcByteStream) Done(util.ByteStream_done) error {
+func (wc *wcByteStream) Done(context.Context, util.ByteStream_done) error {
 	return wc.wc.Close()
 }
 
-func (*wcByteStream) ExpectSize(util.ByteStream_expectSize) error {
+func (*wcByteStream) ExpectSize(context.Context, util.ByteStream_expectSize) error {
 	// no-op; just here to satisfy the interface.
 	return nil
 }

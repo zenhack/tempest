@@ -1,9 +1,12 @@
 package bytestream
 
 import (
+	"context"
 	"io"
 
 	"zenhack.net/go/sandstorm/capnp/util"
+
+	"zombiezen.com/go/capnproto2/server"
 )
 
 // Pipe() is like io.Pipe(), except that the write end is a ByteStream.
@@ -14,9 +17,9 @@ import (
 //
 // If all references to the ByteStream are dropped before Done is called,
 // further reads will return io.ErrUnexpectedEOF.
-func Pipe() (r *io.PipeReader, w util.ByteStream) {
+func Pipe(policy *server.Policy) (r *io.PipeReader, w util.ByteStream) {
 	r, wServer := PipeServer()
-	return r, util.ByteStream_ServerToClient(wServer)
+	return r, util.ByteStream_ServerToClient(wServer, policy)
 }
 
 // PipeServer() is like Pipe(), except that it returns a (ByteStream) server,
@@ -35,7 +38,7 @@ type pipeWriter struct {
 	isClosed bool
 }
 
-func (w *pipeWriter) ExpectSize(util.ByteStream_expectSize) error {
+func (w *pipeWriter) ExpectSize(context.Context, util.ByteStream_expectSize) error {
 	// expectSize is a no-op, but we check if the pipe is already closed and
 	// report an error accordingly.
 	if w.isClosed {
@@ -44,11 +47,11 @@ func (w *pipeWriter) ExpectSize(util.ByteStream_expectSize) error {
 	return nil
 }
 
-func (w *pipeWriter) Write(p util.ByteStream_write) error {
+func (w *pipeWriter) Write(ctx context.Context, p util.ByteStream_write) error {
 	if w.isClosed {
 		return io.ErrClosedPipe
 	}
-	data, err := p.Params.Data()
+	data, err := p.Args().Data()
 	if err != nil {
 		w.w.CloseWithError(err)
 		w.isClosed = true
@@ -58,7 +61,7 @@ func (w *pipeWriter) Write(p util.ByteStream_write) error {
 	return err
 }
 
-func (w *pipeWriter) Done(p util.ByteStream_done) error {
+func (w *pipeWriter) Done(context.Context, util.ByteStream_done) error {
 	if w.isClosed {
 		return io.ErrClosedPipe
 	}

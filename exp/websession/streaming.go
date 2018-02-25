@@ -1,9 +1,8 @@
 package websession
 
 import (
+	"context"
 	"net/http"
-
-	"zombiezen.com/go/capnproto2/server"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -43,12 +42,15 @@ func (w *streamingResponseWriter) Header() http.Header {
 	return w.basic.Header()
 }
 
-func (rs *requestStream) GetResponse(p websession.WebSession_RequestStream_getResponse) error {
-	server.Ack(p.Options)
+func (rs *requestStream) GetResponse(ctx context.Context, p websession.WebSession_RequestStream_getResponse) error {
 	select {
-	case p.Results = <-rs.responseChan:
-		return nil
-	case <-p.Ctx.Done():
-		return p.Ctx.Err()
+	case fromResults := <-rs.responseChan:
+		toResults, err := p.AllocResults()
+		if err != nil {
+			return err
+		}
+		return toResults.Struct.CopyFrom(fromResults.Struct)
+	case <-ctx.Done():
+		return ctx.Err()
 	}
 }

@@ -1,12 +1,15 @@
 package websession
 
 import (
+	"context"
 	"net/http"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/sandstorm/capnp/identity"
 	"zenhack.net/go/sandstorm/capnp/websession"
+
 	"zombiezen.com/go/capnproto2"
+	"zombiezen.com/go/capnproto2/server"
 )
 
 // A HandlerUiView implements the new*Session methods of the grain.UiView_Server
@@ -22,50 +25,62 @@ type HandlerUiView struct {
 	Handler http.Handler
 }
 
-func (v *HandlerUiView) NewSession(p grain.UiView_newSession) error {
-	sessionData, err := sessionDataCommon(p.Params)
+func (v *HandlerUiView) NewSession(ctx context.Context, p grain.UiView_newSession) error {
+	sessionData, err := sessionDataCommon(p.Args())
 	if err != nil {
 		return err
 	}
 	sessionData.SetNormal()
-	p.Results.SetSession(v.makeUiSession(sessionData))
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
 
-func (v *HandlerUiView) NewRequestSession(p grain.UiView_newRequestSession) error {
-	sessionData, err := sessionDataCommon(p.Params)
+func (v *HandlerUiView) NewRequestSession(ctx context.Context, p grain.UiView_newRequestSession) error {
+	sessionData, err := sessionDataCommon(p.Args())
 	if err != nil {
 		return err
 	}
 	sessionData.SetRequest()
-	sessionData.SetSessionType(p.Params.SessionType())
-	requestInfo, err := p.Params.RequestInfo()
+	sessionData.SetSessionType(p.Args().SessionType())
+	requestInfo, err := p.Args().RequestInfo()
 	if err != nil {
 		return err
 	}
 	sessionData.Request().SetRequestInfo(requestInfo)
-	p.Results.SetSession(v.makeUiSession(sessionData))
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
 
-func (v *HandlerUiView) NewOfferSession(p grain.UiView_newOfferSession) error {
-	sessionData, err := sessionDataCommon(p.Params)
+func (v *HandlerUiView) NewOfferSession(ctx context.Context, p grain.UiView_newOfferSession) error {
+	sessionData, err := sessionDataCommon(p.Args())
 	if err != nil {
 		return err
 	}
 	sessionData.SetOffer()
-	sessionData.SetSessionType(p.Params.SessionType())
-	offer, err := p.Params.Offer()
+	sessionData.SetSessionType(p.Args().SessionType())
+	offer, err := p.Args().Offer()
 	if err != nil {
 		return err
 	}
 	sessionData.Offer().SetOffer(offer)
-	descriptor, err := p.Params.Descriptor()
+	descriptor, err := p.Args().Descriptor()
 	if err != nil {
 		return err
 	}
 	sessionData.Offer().SetDescriptor(descriptor)
-	p.Results.SetSession(v.makeUiSession(sessionData))
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
 
@@ -74,7 +89,7 @@ func (v *HandlerUiView) makeUiSession(data SessionData) grain.UiSession {
 	client := websession.WebSession_ServerToClient(&handlerWebSession{
 		sessionData: data,
 		handler:     v.Handler,
-	})
+	}, &server.Policy{})
 	return grain.UiSession{Client: client.Client}
 }
 
@@ -114,7 +129,7 @@ func sessionDataCommon(args sessionArgs) (data SessionData, err error) {
 type sessionArgs interface {
 	Context() grain.SessionContext
 	UserInfo() (identity.UserInfo, error)
-	SessionParams() (capnp.Pointer, error)
+	SessionParams() (capnp.Ptr, error)
 	TabId() ([]byte, error)
 
 	// Params always has this, and it's a convenient place to allocate the

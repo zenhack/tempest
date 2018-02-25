@@ -51,7 +51,7 @@ func NewRootSessionData(s *capnp.Segment) (SessionData, error) {
 }
 
 func ReadRootSessionData(msg *capnp.Message) (SessionData, error) {
-	root, err := msg.RootPtr()
+	root, err := msg.Root()
 	return SessionData{root.Struct()}, err
 }
 
@@ -69,12 +69,11 @@ func (s SessionData) Context() grain.SessionContext {
 }
 
 func (s SessionData) HasContext() bool {
-	p, err := s.Struct.Ptr(0)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(0)
 }
 
 func (s SessionData) SetContext(v grain.SessionContext) error {
-	if v.Client == nil {
+	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
@@ -88,8 +87,7 @@ func (s SessionData) UserInfo() (identity.UserInfo, error) {
 }
 
 func (s SessionData) HasUserInfo() bool {
-	p, err := s.Struct.Ptr(1)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(1)
 }
 
 func (s SessionData) SetUserInfo(v identity.UserInfo) error {
@@ -107,24 +105,15 @@ func (s SessionData) NewUserInfo() (identity.UserInfo, error) {
 	return ss, err
 }
 
-func (s SessionData) SessionParams() (capnp.Pointer, error) {
-	return s.Struct.Pointer(2)
-}
-
-func (s SessionData) HasSessionParams() bool {
-	p, err := s.Struct.Ptr(2)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionData) SessionParamsPtr() (capnp.Ptr, error) {
+func (s SessionData) SessionParams() (capnp.Ptr, error) {
 	return s.Struct.Ptr(2)
 }
 
-func (s SessionData) SetSessionParams(v capnp.Pointer) error {
-	return s.Struct.SetPointer(2, v)
+func (s SessionData) HasSessionParams() bool {
+	return s.Struct.HasPtr(2)
 }
 
-func (s SessionData) SetSessionParamsPtr(v capnp.Ptr) error {
+func (s SessionData) SetSessionParams(v capnp.Ptr) error {
 	return s.Struct.SetPtr(2, v)
 }
 
@@ -134,8 +123,7 @@ func (s SessionData) TabId() ([]byte, error) {
 }
 
 func (s SessionData) HasTabId() bool {
-	p, err := s.Struct.Ptr(3)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(3)
 }
 
 func (s SessionData) SetTabId(v []byte) error {
@@ -159,8 +147,7 @@ func (s SessionData_request) RequestInfo() (powerbox.PowerboxDescriptor_List, er
 }
 
 func (s SessionData_request) HasRequestInfo() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(4)
 }
 
 func (s SessionData_request) SetRequestInfo(v powerbox.PowerboxDescriptor_List) error {
@@ -184,24 +171,15 @@ func (s SessionData) SetOffer() {
 	s.Struct.SetUint16(0, 2)
 }
 
-func (s SessionData_offer) Offer() (capnp.Pointer, error) {
-	return s.Struct.Pointer(4)
-}
-
-func (s SessionData_offer) HasOffer() bool {
-	p, err := s.Struct.Ptr(4)
-	return p.IsValid() || err != nil
-}
-
-func (s SessionData_offer) OfferPtr() (capnp.Ptr, error) {
+func (s SessionData_offer) Offer() (capnp.Ptr, error) {
 	return s.Struct.Ptr(4)
 }
 
-func (s SessionData_offer) SetOffer(v capnp.Pointer) error {
-	return s.Struct.SetPointer(4, v)
+func (s SessionData_offer) HasOffer() bool {
+	return s.Struct.HasPtr(4)
 }
 
-func (s SessionData_offer) SetOfferPtr(v capnp.Ptr) error {
+func (s SessionData_offer) SetOffer(v capnp.Ptr) error {
 	return s.Struct.SetPtr(4, v)
 }
 
@@ -211,8 +189,7 @@ func (s SessionData_offer) Descriptor() (powerbox.PowerboxDescriptor, error) {
 }
 
 func (s SessionData_offer) HasDescriptor() bool {
-	p, err := s.Struct.Ptr(5)
-	return p.IsValid() || err != nil
+	return s.Struct.HasPtr(5)
 }
 
 func (s SessionData_offer) SetDescriptor(v powerbox.PowerboxDescriptor) error {
@@ -256,56 +233,56 @@ func (s SessionData_List) String() string {
 	return str
 }
 
-// SessionData_Promise is a wrapper for a SessionData promised by a client call.
-type SessionData_Promise struct{ *capnp.Pipeline }
+// SessionData_Future is a wrapper for a SessionData promised by a client call.
+type SessionData_Future struct{ *capnp.Future }
 
-func (p SessionData_Promise) Struct() (SessionData, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionData_Future) Struct() (SessionData, error) {
+	s, err := p.Future.Struct()
 	return SessionData{s}, err
 }
 
-func (p SessionData_Promise) Context() grain.SessionContext {
-	return grain.SessionContext{Client: p.Pipeline.GetPipeline(0).Client()}
+func (p SessionData_Future) Context() grain.SessionContext {
+	return grain.SessionContext{Client: p.Future.Field(0, nil).Client()}
 }
 
-func (p SessionData_Promise) UserInfo() identity.UserInfo_Promise {
-	return identity.UserInfo_Promise{Pipeline: p.Pipeline.GetPipeline(1)}
+func (p SessionData_Future) UserInfo() identity.UserInfo_Future {
+	return identity.UserInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
-func (p SessionData_Promise) SessionParams() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(2)
+func (p SessionData_Future) SessionParams() *capnp.Future {
+	return p.Future.Field(2, nil)
 }
 
-func (p SessionData_Promise) Request() SessionData_request_Promise {
-	return SessionData_request_Promise{p.Pipeline}
+func (p SessionData_Future) Request() SessionData_request_Future {
+	return SessionData_request_Future{p.Future}
 }
 
-// SessionData_request_Promise is a wrapper for a SessionData_request promised by a client call.
-type SessionData_request_Promise struct{ *capnp.Pipeline }
+// SessionData_request_Future is a wrapper for a SessionData_request promised by a client call.
+type SessionData_request_Future struct{ *capnp.Future }
 
-func (p SessionData_request_Promise) Struct() (SessionData_request, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionData_request_Future) Struct() (SessionData_request, error) {
+	s, err := p.Future.Struct()
 	return SessionData_request{s}, err
 }
 
-func (p SessionData_Promise) Offer() SessionData_offer_Promise {
-	return SessionData_offer_Promise{p.Pipeline}
+func (p SessionData_Future) Offer() SessionData_offer_Future {
+	return SessionData_offer_Future{p.Future}
 }
 
-// SessionData_offer_Promise is a wrapper for a SessionData_offer promised by a client call.
-type SessionData_offer_Promise struct{ *capnp.Pipeline }
+// SessionData_offer_Future is a wrapper for a SessionData_offer promised by a client call.
+type SessionData_offer_Future struct{ *capnp.Future }
 
-func (p SessionData_offer_Promise) Struct() (SessionData_offer, error) {
-	s, err := p.Pipeline.Struct()
+func (p SessionData_offer_Future) Struct() (SessionData_offer, error) {
+	s, err := p.Future.Struct()
 	return SessionData_offer{s}, err
 }
 
-func (p SessionData_offer_Promise) Offer() *capnp.Pipeline {
-	return p.Pipeline.GetPipeline(4)
+func (p SessionData_offer_Future) Offer() *capnp.Future {
+	return p.Future.Field(4, nil)
 }
 
-func (p SessionData_offer_Promise) Descriptor() powerbox.PowerboxDescriptor_Promise {
-	return powerbox.PowerboxDescriptor_Promise{Pipeline: p.Pipeline.GetPipeline(5)}
+func (p SessionData_offer_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(5, nil)}
 }
 
 const schema_9cd7bc7194780111 = "x\xda\x84R\xcfK\x14Q\x1c\xff|\xde\x9b\x9dQh" +

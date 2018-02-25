@@ -14,7 +14,9 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/sandstorm/exp/util/handle"
-	"zenhack.net/go/sandstorm/internal/errors"
+
+	"zombiezen.com/go/capnproto2"
+	"zombiezen.com/go/capnproto2/server"
 )
 
 var specialRequestHeaders = map[string]struct{}{
@@ -323,9 +325,13 @@ func (h *handlerWebSession) handlePContent(
 
 //// Actual WebSession methods ////
 
-func (h *handlerWebSession) Get(p websession.WebSession_get) error {
-	return h.handleCommon(p.Ctx, p.Params, p.Results, func(req *http.Request) error {
-		if p.Params.IgnoreBody() {
+func (h *handlerWebSession) Get(ctx context.Context, p websession.WebSession_get) error {
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	return h.handleCommon(ctx, p.Args(), results, func(req *http.Request) error {
+		if p.Args().IgnoreBody() {
 			req.Method = "HEAD"
 		} else {
 			req.Method = "GET"
@@ -334,52 +340,83 @@ func (h *handlerWebSession) Get(p websession.WebSession_get) error {
 	})
 }
 
-func (h *handlerWebSession) Post(p websession.WebSession_post) error {
-	content, err := p.Params.Content()
+func (h *handlerWebSession) Post(ctx context.Context, p websession.WebSession_post) error {
+	content, err := p.Args().Content()
 	if err != nil {
 		return err
 	}
-	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "POST")
-}
-
-func (h *handlerWebSession) Put(p websession.WebSession_put) error {
-	content, err := p.Params.Content()
+	results, err := p.AllocResults()
 	if err != nil {
 		return err
 	}
-	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PUT")
+	return h.handlePContent(ctx, p.Args(), results, content, "POST")
 }
 
-func (h *handlerWebSession) Delete(p websession.WebSession_delete) error {
-	return h.handleCommon(p.Ctx, p.Params, p.Results, func(req *http.Request) error {
+func (h *handlerWebSession) Put(ctx context.Context, p websession.WebSession_put) error {
+	content, err := p.Args().Content()
+	if err != nil {
+		return err
+	}
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	return h.handlePContent(ctx, p.Args(), results, content, "PUT")
+}
+
+func (h *handlerWebSession) Delete(ctx context.Context, p websession.WebSession_delete) error {
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	return h.handleCommon(ctx, p.Args(), results, func(req *http.Request) error {
 		req.Method = "DELETE"
 		return nil
 	})
 }
 
-func (h *handlerWebSession) Patch(p websession.WebSession_patch) error {
-	content, err := p.Params.Content()
+func (h *handlerWebSession) Patch(ctx context.Context, p websession.WebSession_patch) error {
+	content, err := p.Args().Content()
 	if err != nil {
 		return err
 	}
-	return h.handlePContent(p.Ctx, p.Params, p.Results, content, "PATCH")
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	return h.handlePContent(ctx, p.Args(), results, content, "PATCH")
 }
-func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming) error {
+func (h *handlerWebSession) PostStreaming(ctx context.Context, p websession.WebSession_postStreaming) error {
 	reqR, reqW := bytestream.PipeServer()
 	reqStream := &requestStream{
 		ByteStream_Server: reqW,
 		responseChan:      make(chan websession.WebSession_Response, 1),
 		errChan:           make(chan error, 1),
 	}
-	p.Results.SetStream(websession.WebSession_RequestStream_ServerToClient(reqStream))
-	response, err := websession.NewWebSession_Response(p.Params.Segment())
+	results, err := p.AllocResults()
+	if err != nil {
+		panic("Error allocating results: " + err.Error())
+	}
+	reqStreamClient := websession.WebSession_RequestStream_ServerToClient(
+		reqStream,
+		&server.Policy{
+			// These numbers are somewhat arbitrary, but it is critical
+			// that MaxConcurrentCalls > 1, since getResponse is called
+			// before pushing the bytes for the request body, and we
+			// can't actually respond until ServeHTTP returns.
+			MaxConcurrentCalls: 10,
+			AnswerQueueSize:    10,
+		},
+	)
+	results.SetStream(reqStreamClient)
+	response, err := websession.NewWebSession_Response(p.Args().Segment())
 	if err != nil {
 		panic("Error allocating response: " + err.Error())
 	}
 	// It's not clear to me(zenhack) what context we should use here;
-	// we can't use p.Ctx because that will be canceled when
+	// we can't use ctx because that will be canceled when
 	// postStreaming returns.
-	basicW, req, err := h.initRequest(context.TODO(), p.Params)
+	basicW, req, err := h.initRequest(context.TODO(), p.Args())
 	if err != nil {
 		return err
 	}
@@ -405,50 +442,50 @@ func (h *handlerWebSession) PostStreaming(p websession.WebSession_postStreaming)
 
 //// Stubs for unimplemented WebSession methods ////
 
-func (*handlerWebSession) PutStreaming(p websession.WebSession_putStreaming) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) PutStreaming(context.Context, websession.WebSession_putStreaming) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) OpenWebSocket(p websession.WebSession_openWebSocket) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) OpenWebSocket(context.Context, websession.WebSession_openWebSocket) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Propfind(p websession.WebSession_propfind) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Propfind(context.Context, websession.WebSession_propfind) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Proppatch(p websession.WebSession_proppatch) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Proppatch(context.Context, websession.WebSession_proppatch) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Mkcol(p websession.WebSession_mkcol) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Mkcol(context.Context, websession.WebSession_mkcol) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Copy(p websession.WebSession_copy) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Copy(context.Context, websession.WebSession_copy) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Move(p websession.WebSession_move) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Move(context.Context, websession.WebSession_move) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Lock(p websession.WebSession_lock) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Lock(context.Context, websession.WebSession_lock) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Unlock(p websession.WebSession_unlock) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Unlock(context.Context, websession.WebSession_unlock) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Acl(p websession.WebSession_acl) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Acl(context.Context, websession.WebSession_acl) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (*handlerWebSession) Report(p websession.WebSession_report) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (*handlerWebSession) Report(context.Context, websession.WebSession_report) error {
+	return capnp.Unimplemented("TODO")
 }
 
-func (h *handlerWebSession) Options(p websession.WebSession_options) error {
-	return errors.UnImplementedExn(p.Results.Segment())
+func (h *handlerWebSession) Options(context.Context, websession.WebSession_options) error {
+	return capnp.Unimplemented("TODO")
 }

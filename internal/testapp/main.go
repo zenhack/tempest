@@ -18,13 +18,14 @@ import (
 	"zenhack.net/go/sandstorm/exp/websession"
 
 	"zombiezen.com/go/capnproto2/rpc"
+	"zombiezen.com/go/capnproto2/server"
 )
 
 type UiView struct {
 	*websession.HandlerUiView
 }
 
-func (*UiView) GetViewInfo(grain.UiView_getViewInfo) error { return nil }
+func (*UiView) GetViewInfo(context.Context, grain.UiView_getViewInfo) error { return nil }
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
@@ -158,11 +159,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	transport := rpc.StreamTransport(conn)
-	rpc.NewConn(transport, rpc.MainInterface(grain.UiView_ServerToClient(&UiView{
-		HandlerUiView: &websession.HandlerUiView{
-			Handler: http.DefaultServeMux,
-		},
-	}).Client))
+	transport := rpc.NewStreamTransport(conn)
+	rpc.NewConn(
+		transport,
+		&rpc.Options{
+			BootstrapClient: grain.UiView_ServerToClient(
+				&UiView{
+					HandlerUiView: &websession.HandlerUiView{
+						Handler: http.DefaultServeMux,
+					},
+				},
+				&server.Policy{},
+			).Client,
+		})
 	<-context.Background().Done()
 }
