@@ -63,7 +63,7 @@ func cleanC() error {
 }
 
 func cleanElm() error {
-	return runInDir("elm", "rm", "-rf", "elm-stuff", "../static/index.html")
+	return runInDir(".", "rm", "-f", "./static/index.html")
 }
 
 func cleanGo() error {
@@ -72,6 +72,10 @@ func cleanGo() error {
 
 func nukeC() error {
 	return runInDir(".", "rm", "-f", "c/config.h")
+}
+
+func nukeElm() error {
+	return runInDir("elm", "rm", "-rf", "elm-stuff")
 }
 
 func nukeGo() error {
@@ -118,7 +122,7 @@ func run(args ...string) {
 		runJobs(cleanC, cleanElm, cleanGo)
 	case "nuke":
 		run("clean")
-		runJobs(nukeC, nukeGo)
+		runJobs(nukeC, nukeElm, nukeGo)
 	case "configure":
 		configureFlags.Parse(args[1:])
 		if *libexecdir == "" {
