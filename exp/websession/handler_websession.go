@@ -323,6 +323,22 @@ func (h *handlerWebSession) handlePContent(
 	})
 }
 
+func (h *handlerWebSession) Shutdown() {
+	// Release caps from sessionData
+	wsCtx := h.sessionData.Context()
+	wsCtx.Client.Release()
+	switch h.sessionData.Which() {
+	case SessionData_Which_offer:
+		capability, err := h.sessionData.Offer().Offer()
+		if err == nil {
+			client := capability.Interface().Client()
+			if client != nil {
+				client.Release()
+			}
+		}
+	}
+}
+
 //// Actual WebSession methods ////
 
 func (h *handlerWebSession) Get(ctx context.Context, p websession.WebSession_get) error {

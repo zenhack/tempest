@@ -19,6 +19,10 @@ import (
 // corresponding to the UiView method's arguments. The SessionData may be extracted
 // with GetSessionData.
 //
+// The capabilities in the session data will be live until the sessions' Shutdown()
+// methods are called. If they are needed afterwards, the user must add references
+// to the clients.
+//
 // A user of this package should embed one of these inside of another struct which
 // implements GetViewInfo.
 type HandlerUiView struct {
@@ -70,6 +74,12 @@ func (v *HandlerUiView) NewOfferSession(ctx context.Context, p grain.UiView_newO
 	if err != nil {
 		return err
 	}
+
+	client := offer.Interface().Client()
+	if client != nil {
+		client.AddRef()
+	}
+
 	sessionData.Offer().SetOffer(offer)
 	descriptor, err := p.Args().Descriptor()
 	if err != nil {
@@ -97,6 +107,9 @@ func (v *HandlerUiView) makeUiSession(data SessionData) grain.UiSession {
 // a SessionData. The caller will want to fill in the remaining fields for their
 // specific method.
 //
+// This also adds a reference to interface objects common to all variants, so
+// that they are actually usable in requests.
+//
 // Returns any error encountered in the process.
 func sessionDataCommon(args sessionArgs) (data SessionData, err error) {
 	data, err = NewSessionData(args.Segment())
@@ -105,7 +118,9 @@ func sessionDataCommon(args sessionArgs) (data SessionData, err error) {
 		return
 	}
 
-	data.SetContext(args.Context())
+	wsCtx := args.Context()
+	wsCtx.Client.AddRef()
+	data.SetContext(wsCtx)
 	userInfo, err := args.UserInfo()
 	if err != nil {
 		return
