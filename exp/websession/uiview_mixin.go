@@ -75,10 +75,7 @@ func (v *HandlerUiView) NewOfferSession(ctx context.Context, p grain.UiView_newO
 		return err
 	}
 
-	client := offer.Interface().Client()
-	if client != nil {
-		client.AddRef()
-	}
+	offer.Interface().Client().AddRef()
 
 	sessionData.Offer().SetOffer(offer)
 	descriptor, err := p.Args().Descriptor()

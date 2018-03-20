@@ -331,10 +331,7 @@ func (h *handlerWebSession) Shutdown() {
 	case SessionData_Which_offer:
 		capability, err := h.sessionData.Offer().Offer()
 		if err == nil {
-			client := capability.Interface().Client()
-			if client != nil {
-				client.Release()
-			}
+			capability.Interface().Client().Release()
 		}
 	}
 }
