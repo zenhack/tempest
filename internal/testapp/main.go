@@ -155,6 +155,11 @@ func main() {
 		log.Printf("io.Copy: wrote %d bytes.", n)
 	})
 
+	if os.Getenv("SANDSTORM") != "1" {
+		log.Print("not running in sandstorm; listening on :8434")
+		panic(http.ListenAndServe(":8434", nil))
+	}
+
 	file := os.NewFile(3, "<sandstorm rpc socket @ fd #3>")
 	conn, err := net.FileConn(file)
 	if err != nil {
