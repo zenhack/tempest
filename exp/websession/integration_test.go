@@ -16,9 +16,16 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 var baseUrl string
+
+// http.Client for use in the tests; we set a timeout because hanging is a
+// common failure mode.
+var httpClient = &http.Client{
+	Timeout: 10 * time.Second,
+}
 
 func init() {
 	// Get the base URL for the test app from the environment. if
@@ -57,13 +64,13 @@ func TestBasicGetHead(t *testing.T) {
 		chkfatal(t, err)
 		expectStatus(t, 200, resp.StatusCode)
 	}
-	successfulResponse(http.Get(baseUrl + "echo-request/hello"))
-	successfulResponse(http.Head(baseUrl + "echo-request/hello"))
+	successfulResponse(httpClient.Get(baseUrl + "echo-request/hello"))
+	successfulResponse(httpClient.Head(baseUrl + "echo-request/hello"))
 }
 
 func TestGetCorrectInfo(t *testing.T) {
 
-	resp, err := http.Get(baseUrl + "echo-request/hello")
+	resp, err := httpClient.Get(baseUrl + "echo-request/hello")
 	chkfatal(t, err)
 	defer func() {
 		if t.Failed() {
@@ -88,7 +95,7 @@ func testHeader(t *testing.T, name, sendVal, wantRecvVal string) {
 	chkfatal(t, err)
 	req.Header.Set(name, sendVal)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	chkfatal(t, err)
 	defer func() {
 		if t.Failed() {
@@ -140,7 +147,7 @@ func TestETagPrecondition(t *testing.T) {
 }
 
 func TestAdditionalResponseHeaders(t *testing.T) {
-	resp, err := http.Post(baseUrl+"return-headers", "application/json", strings.NewReader(`
+	resp, err := httpClient.Post(baseUrl+"return-headers", "application/json", strings.NewReader(`
 		{
 			"X-Sandstorm-App-Foo": "bar",
 			"X-Sandstorm-App-Baz": "quux",
@@ -164,7 +171,7 @@ func TestAdditionalResponseHeaders(t *testing.T) {
 }
 
 func TestResponseContentType(t *testing.T) {
-	resp, err := http.Get(baseUrl + "echo-request/content-type")
+	resp, err := httpClient.Get(baseUrl + "echo-request/content-type")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 	contentType := resp.Header.Get("Content-Type")
@@ -174,7 +181,7 @@ func TestResponseContentType(t *testing.T) {
 }
 
 func TestResponseContentEncoding(t *testing.T) {
-	resp, err := http.Get(baseUrl + "echo-request/content-encoding")
+	resp, err := httpClient.Get(baseUrl + "echo-request/content-encoding")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 
@@ -185,7 +192,7 @@ func TestResponseContentEncoding(t *testing.T) {
 }
 
 func TestResponseContentLength(t *testing.T) {
-	resp, err := http.Get(baseUrl + "content-length")
+	resp, err := httpClient.Get(baseUrl + "content-length")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 
@@ -222,7 +229,7 @@ func TestWantStatus(t *testing.T) {
 		for _, method := range []string{"GET", "HEAD", "DELETE"} {
 			req, err := http.NewRequest(method, url, nil)
 			chkfatal(t, err)
-			resp, err := http.DefaultClient.Do(req)
+			resp, err := httpClient.Do(req)
 			chkfatal(t, err)
 			expectStatus(t, wantStatus, resp.StatusCode)
 		}
@@ -232,7 +239,7 @@ func TestWantStatus(t *testing.T) {
 // The server should translate any unrecognized 4xx statuses to 400.
 func TestBadClientStatus(t *testing.T) {
 	for _, wantStatus := range []int{401, 433, 407, 402} {
-		resp, err := http.Get(fmt.Sprintf(
+		resp, err := httpClient.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
 		))
 		chkfatal(t, err)
@@ -244,7 +251,7 @@ func TestBadClientStatus(t *testing.T) {
 func TestBadOtherStatus(t *testing.T) {
 	statusCodes := []int{0, 42, 124, 243, 339, 343, 501, 503, 555, 623}
 	for _, wantStatus := range statusCodes {
-		resp, err := http.Get(fmt.Sprintf(
+		resp, err := httpClient.Get(fmt.Sprintf(
 			"%secho-request/status?want-status=%d", baseUrl, wantStatus,
 		))
 		chkfatal(t, err)
@@ -254,7 +261,7 @@ func TestBadOtherStatus(t *testing.T) {
 
 func TestWantLanguage(t *testing.T) {
 	for _, wantLang := range []string{"en-US", "de-DE"} {
-		resp, err := http.Get(
+		resp, err := httpClient.Get(
 			baseUrl + "echo-request/lang?want-lang=" + wantLang,
 		)
 		chkfatal(t, err)
@@ -268,13 +275,13 @@ func TestWantLanguage(t *testing.T) {
 }
 
 func TestNoOpHandler(t *testing.T) {
-	resp, err := http.Get(baseUrl + "no-op-handler")
+	resp, err := httpClient.Get(baseUrl + "no-op-handler")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 }
 
 func TestETag(t *testing.T) {
-	resp, err := http.Get(baseUrl + "etag")
+	resp, err := httpClient.Get(baseUrl + "etag")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 	etag := resp.Header.Get("ETag")
@@ -283,7 +290,7 @@ func TestETag(t *testing.T) {
 		t.Errorf(`Expected ETag value "sometag", but got %q`, etag)
 	}
 
-	resp, err = http.Get(baseUrl + "etag?weak=true")
+	resp, err = httpClient.Get(baseUrl + "etag?weak=true")
 	chkfatal(t, err)
 	expectStatus(t, 200, resp.StatusCode)
 	etag = resp.Header.Get("ETag")
@@ -294,7 +301,7 @@ func TestETag(t *testing.T) {
 }
 
 func TestNoContentBodies(t *testing.T) {
-	resp, err := http.Get(baseUrl + "echo-request/status?want-status=205")
+	resp, err := httpClient.Get(baseUrl + "echo-request/status?want-status=205")
 	chkfatal(t, err)
 	expectStatus(t, 205, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)
@@ -309,7 +316,7 @@ func TestNotModified(t *testing.T) {
 	req, err := http.NewRequest("GET", baseUrl+"etag", nil)
 	chkfatal(t, err)
 	req.Header.Set("If-None-Match", sentETag)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	chkfatal(t, err)
 	expectStatus(t, 304, resp.StatusCode)
 	receivedETag := resp.Header.Get("ETag")
@@ -363,7 +370,7 @@ func TestPRequest(t *testing.T) {
 		}
 		req.Header.Set("Content-Type", "text/plain")
 		req.Header.Set("Content-Encoding", "identity")
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := httpClient.Do(req)
 		chkfatal(t, err)
 
 		body := &echoBody{}
@@ -412,7 +419,7 @@ func TestStreaming(t *testing.T) {
 		io.MultiReader(strings.NewReader("FirstLine\n"), r))
 
 	chkfatal(t, err)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	chkfatal(t, err)
 	body := bufio.NewReader(resp.Body)
 
