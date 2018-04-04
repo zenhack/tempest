@@ -147,6 +147,7 @@ func main() {
 	})
 
 	http.HandleFunc("/echo-body", func(w http.ResponseWriter, req *http.Request) {
+		log.Print("Got echo body request")
 		n, err := io.Copy(io.MultiWriter(os.Stderr, w), req.Body)
 		if err != nil {
 			log.Printf("Error in io.Copy: %q", err)
