@@ -27,6 +27,31 @@ type UiView struct {
 
 func (*UiView) GetViewInfo(context.Context, grain.UiView_getViewInfo) error { return nil }
 
+func copyStreaming(dest io.Writer, src io.Reader) (int64, error) {
+	var (
+		buf          [4096]byte
+		totalWritten int64
+	)
+	for {
+		countR, errR := src.Read(buf[:])
+		countW, errW := dest.Write(buf[:countR])
+		totalWritten += int64(countW)
+		if flusher, ok := dest.(http.Flusher); ok {
+			flusher.Flush()
+		}
+		switch errR {
+		case io.EOF:
+			return totalWritten, nil
+		case nil:
+			if errW != nil {
+				return totalWritten, errW
+			}
+		default:
+			return totalWritten, errR
+		}
+	}
+}
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(`<a href="/static/">main</a>`))
@@ -148,11 +173,12 @@ func main() {
 
 	http.HandleFunc("/echo-body", func(w http.ResponseWriter, req *http.Request) {
 		log.Print("Got echo body request")
-		n, err := io.Copy(io.MultiWriter(os.Stderr, w), req.Body)
+		w.WriteHeader(200)
+		n, err := copyStreaming(w, req.Body)
 		if err != nil {
-			log.Printf("Error in io.Copy: %q", err)
+			log.Printf("Error in copyStreaming: %q", err)
 		}
-		log.Printf("io.Copy: wrote %d bytes.", n)
+		log.Printf("copyStreaming: wrote %d bytes.", n)
 	})
 
 	if os.Getenv("SANDSTORM") != "1" {
