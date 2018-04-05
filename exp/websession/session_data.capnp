@@ -10,7 +10,7 @@ using Powerbox = import "/powerbox.capnp";
 using Util = import "/util.capnp";
 
 struct SessionData {
-  # SessionData contains all of the information that is passed to grain.UiView's
+  # SessionData contains all of the information that is passed to Grain.UiView's
   # new*Session methods, but which does not map to part of an HTTP request. We
   # package up the data in one struct, and make it available via the
   # GetSessionData Go function defined in this package.
