@@ -7,7 +7,6 @@ $Go.import("zenhack.net/go/sandstorm/exp/websession");
 using Grain = import "/grain.capnp";
 using Identity = import "/identity.capnp";
 using Powerbox = import "/powerbox.capnp";
-using Util = import "/util.capnp";
 
 struct SessionData {
   # SessionData contains all of the information that is passed to Grain.UiView's
