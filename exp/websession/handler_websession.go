@@ -86,6 +86,7 @@ func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams
 		cancel:         cancel,
 		responseStream: wsCtx.ResponseStream(),
 	}
+	w.responseStream.Client.AddRef()
 	w.bodyWriter = bytestream.ToWriteCloser(req.Context(), w.responseStream)
 
 	return w, req, nil

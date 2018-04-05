@@ -58,8 +58,8 @@ type basicResponseWriter struct {
 	cancel util.Handle
 
 	// The responseStream field in the websession request. This should only
-	// be used for the expectSize() method; use bodyWriter for actually
-	// writing data.
+	// be used for the expectSize() and done() methods; use bodyWriter for
+	// actually writing data.
 	responseStream util.ByteStream
 
 	// The underlying buffer used by some responses for bodyWriter; if this
@@ -76,11 +76,11 @@ func (w *basicResponseWriter) Header() http.Header {
 }
 
 func (w *basicResponseWriter) finishResponse(ctx context.Context) error {
-	if w.bodyBuffer == nil {
-		w.responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
-			return nil
-		})
-	} else {
+	w.responseStream.Done(ctx, func(util.ByteStream_done_Params) error {
+		return nil
+	})
+	w.responseStream.Client.Release()
+	if w.bodyBuffer != nil {
 		var errBody websession.WebSession_Response_ErrorBody
 		var err error
 		if w.statusCode == 500 {
@@ -268,6 +268,7 @@ func (w *basicResponseWriter) WriteHeader(statusCode int) {
 	case 400, 403, 404, 405, 406, 409, 410, 413, 414, 415, 418, 422:
 		w.clientError()
 	case 500:
+		log.Print("handler returned 500 status code.")
 		w.response.SetServerError()
 		w.setErrorBody(w.response.ServerError().NewNonHtmlBody)
 	default:
