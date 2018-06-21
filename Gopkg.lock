@@ -40,11 +40,11 @@
     "std/capnp/persistent",
     "std/capnp/rpc"
   ]
-  revision = "88fcc4af3c541b3cf4e67f146acf3dfbebbfa95a"
+  revision = "e89f9b7f0213f1edba4cb93ccb98cff018d2a5b1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e5d0559e1da455c0ea9ea6533f604322a25e535b20f0d85dde4fbe1b998bf8bd"
+  inputs-digest = "4731b7ef92849f486ecd95e7ab05a3c5b61a66e5bcd90c341e273ca1d39aa947"
   solver-name = "gps-cdcl"
   solver-version = 1
