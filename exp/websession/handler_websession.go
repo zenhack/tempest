@@ -16,7 +16,7 @@ import (
 	"zenhack.net/go/sandstorm/exp/util/handle"
 
 	"zombiezen.com/go/capnproto2"
-	"zombiezen.com/go/capnproto2/server"
+	//"zombiezen.com/go/capnproto2/server"
 )
 
 var specialRequestHeaders = map[string]struct{}{
@@ -401,57 +401,60 @@ func (h *handlerWebSession) Patch(ctx context.Context, p websession.WebSession_p
 	return h.handlePContent(ctx, p.Args(), results, content, "PATCH")
 }
 func (h *handlerWebSession) PostStreaming(ctx context.Context, p websession.WebSession_postStreaming) error {
-	reqR, reqW := bytestream.PipeServer()
-	reqStream := &requestStream{
-		ByteStream_Server: reqW,
-		responseChan:      make(chan websession.WebSession_Response, 1),
-		errChan:           make(chan error, 1),
-	}
-	results, err := p.AllocResults()
-	if err != nil {
-		panic("Error allocating results: " + err.Error())
-	}
-	reqStreamClient := websession.WebSession_RequestStream_ServerToClient(
-		reqStream,
-		&server.Policy{
-			// These numbers are somewhat arbitrary, but it is critical
-			// that MaxConcurrentCalls > 1, since getResponse is called
-			// before pushing the bytes for the request body, and we
-			// can't actually respond until ServeHTTP returns.
-			MaxConcurrentCalls: 10,
-			AnswerQueueSize:    10,
-		},
-	)
-	results.SetStream(reqStreamClient)
-	response, err := websession.NewWebSession_Response(p.Args().Segment())
-	if err != nil {
-		panic("Error allocating response: " + err.Error())
-	}
-	// It's not clear to me(zenhack) what context we should use here;
-	// we can't use ctx because that will be canceled when
-	// postStreaming returns.
-	basicW, req, err := h.initRequest(context.TODO(), p.Args())
-	if err != nil {
-		return err
-	}
-
-	req.Method = "POST"
-	// TODO: copy mimeType & encoding.
-
-	basicW.response = response
-	w := &streamingResponseWriter{
-		basic:        basicW,
-		responseChan: reqStream.responseChan,
-	}
-	req.Body = reqR
-	go func() {
-		h.handler.ServeHTTP(w, req)
-		if w.basic.statusCode == 0 {
-			w.WriteHeader(200)
+	return capnp.Unimplemented("TODO")
+	/*
+		reqR, reqW := bytestream.PipeServer()
+		reqStream := &requestStream{
+			ByteStream_Server: reqW,
+			responseChan:      make(chan websession.WebSession_Response, 1),
+			errChan:           make(chan error, 1),
 		}
-		w.basic.finishResponse(req.Context())
-	}()
-	return nil
+		results, err := p.AllocResults()
+		if err != nil {
+			panic("Error allocating results: " + err.Error())
+		}
+		reqStreamClient := websession.WebSession_RequestStream_ServerToClient(
+			reqStream,
+			&server.Policy{
+				// These numbers are somewhat arbitrary, but it is critical
+				// that MaxConcurrentCalls > 1, since getResponse is called
+				// before pushing the bytes for the request body, and we
+				// can't actually respond until ServeHTTP returns.
+				MaxConcurrentCalls: 10,
+				AnswerQueueSize:    10,
+			},
+		)
+		results.SetStream(reqStreamClient)
+		response, err := websession.NewWebSession_Response(p.Args().Segment())
+		if err != nil {
+			panic("Error allocating response: " + err.Error())
+		}
+		// It's not clear to me(zenhack) what context we should use here;
+		// we can't use ctx because that will be canceled when
+		// postStreaming returns.
+		basicW, req, err := h.initRequest(context.TODO(), p.Args())
+		if err != nil {
+			return err
+		}
+
+		req.Method = "POST"
+		// TODO: copy mimeType & encoding.
+
+		basicW.response = response
+		w := &streamingResponseWriter{
+			basic:        basicW,
+			responseChan: reqStream.responseChan,
+		}
+		req.Body = reqR
+		go func() {
+			h.handler.ServeHTTP(w, req)
+			if w.basic.statusCode == 0 {
+				w.WriteHeader(200)
+			}
+			w.basic.finishResponse(req.Context())
+		}()
+		return nil
+	*/
 }
 
 //// Stubs for unimplemented WebSession methods ////
