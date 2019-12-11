@@ -58,7 +58,7 @@ func (h *handlerWebSession) initRequest(ctx context.Context, params commonParams
 		return nil, nil, err
 	}
 
-	// Sandstorm gives us a path no leading slash, but Go's http library
+	// Sandstorm gives us a path with no leading slash, but Go's http library
 	// expects one:
 	parsedUrl, err := url.ParseRequestURI("/" + path)
 	if err != nil {
