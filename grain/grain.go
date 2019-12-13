@@ -21,9 +21,23 @@ import (
 	"golang.org/x/net/context"
 	"net"
 	"os"
-	capnp "zenhack.net/go/sandstorm/capnp/grain"
+
+	graincp "zenhack.net/go/sandstorm/capnp/grain"
+
+	"zombiezen.com/go/capnproto2"
 	"zombiezen.com/go/capnproto2/rpc"
 )
+
+var api *graincp.SandstormApi
+
+func GetAPI() (graincp.SandstormApi, error) {
+	if api == nil {
+		return graincp.SandstormApi{}, capnp.Disconnected(
+			"Sandstorm API not yet connected; call ConnectAPI first.",
+		)
+	}
+	return *api, nil
+}
 
 // Connect to the sandstorm API, give it a capability to uiview and return the api object.
 //
@@ -31,13 +45,16 @@ import (
 // will be the case if the program was launched directly as a sandstorm app.
 //
 // TODO: explain error cases.
-func ConnectAPI(ctx context.Context, uiview capnp.UiView) (capnp.SandstormApi, error) {
+func ConnectAPI(ctx context.Context, uiview graincp.UiView) (graincp.SandstormApi, error) {
 	file := os.NewFile(3, "<sandstorm-api-socket>")
 	conn, err := net.FileConn(file)
 	if err != nil {
-		return capnp.SandstormApi{}, err
+		return graincp.SandstormApi{}, err
 	}
-	transport := rpc.StreamTransport(conn)
-	client := rpc.NewConn(transport, rpc.MainInterface(uiview.Client)).Bootstrap(ctx)
-	return capnp.SandstormApi{Client: client}, nil
+	transport := rpc.NewStreamTransport(conn)
+	client := rpc.NewConn(transport, &rpc.Options{
+		BootstrapClient: uiview.Client,
+	}).Bootstrap(ctx)
+	api = &graincp.SandstormApi{Client: client}
+	return *api, nil
 }
