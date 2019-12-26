@@ -26,25 +26,29 @@ import (
 // A user of this package should embed one of these inside of another struct which
 // implements GetViewInfo.
 type HandlerUiView struct {
-	Handler http.Handler
+	http.Handler
 }
 
 func (v *HandlerUiView) NewSession(ctx context.Context, p grain.UiView_newSession) error {
-	sessionData, err := sessionDataCommon(p.Args())
-	if err != nil {
-		return err
-	}
-	sessionData.SetNormal()
 	results, err := p.AllocResults()
 	if err != nil {
 		return err
 	}
+	sessionData, err := sessionDataCommon(results.Segment(), p.Args())
+	if err != nil {
+		return err
+	}
+	sessionData.SetNormal()
 	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
 
 func (v *HandlerUiView) NewRequestSession(ctx context.Context, p grain.UiView_newRequestSession) error {
-	sessionData, err := sessionDataCommon(p.Args())
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	sessionData, err := sessionDataCommon(results.Segment(), p.Args())
 	if err != nil {
 		return err
 	}
@@ -55,16 +59,16 @@ func (v *HandlerUiView) NewRequestSession(ctx context.Context, p grain.UiView_ne
 		return err
 	}
 	sessionData.Request().SetRequestInfo(requestInfo)
-	results, err := p.AllocResults()
-	if err != nil {
-		return err
-	}
 	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
 
 func (v *HandlerUiView) NewOfferSession(ctx context.Context, p grain.UiView_newOfferSession) error {
-	sessionData, err := sessionDataCommon(p.Args())
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	sessionData, err := sessionDataCommon(results.Segment(), p.Args())
 	if err != nil {
 		return err
 	}
@@ -83,10 +87,6 @@ func (v *HandlerUiView) NewOfferSession(ctx context.Context, p grain.UiView_newO
 		return err
 	}
 	sessionData.Offer().SetDescriptor(descriptor)
-	results, err := p.AllocResults()
-	if err != nil {
-		return err
-	}
 	results.SetSession(v.makeUiSession(sessionData))
 	return nil
 }
@@ -101,22 +101,20 @@ func (v *HandlerUiView) makeUiSession(data SessionData) grain.UiSession {
 }
 
 // Extract the data common to all new*Session methods from args, and return it as
-// a SessionData. The caller will want to fill in the remaining fields for their
-// specific method.
+// a SessionData, allocated in seg. The caller will want to fill in the remaining
+// fields for their specific method.
 //
 // This also adds a reference to interface objects common to all variants, so
 // that they are actually usable in requests.
 //
 // Returns any error encountered in the process.
-func sessionDataCommon(args sessionArgs) (data SessionData, err error) {
-	data, err = NewSessionData(args.Segment())
-
+func sessionDataCommon(seg *capnp.Segment, args sessionArgs) (data SessionData, err error) {
+	data, err = NewSessionData(seg)
 	if err != nil {
 		return
 	}
-
 	wsCtx := args.Context()
-	wsCtx.Client.AddRef()
+	wsCtx.Client = wsCtx.Client.AddRef()
 	data.SetContext(wsCtx)
 	userInfo, err := args.UserInfo()
 	if err != nil {
@@ -133,7 +131,6 @@ func sessionDataCommon(args sessionArgs) (data SessionData, err error) {
 		return
 	}
 	data.SetTabId(tabId)
-
 	return
 }
 
@@ -143,8 +140,4 @@ type sessionArgs interface {
 	UserInfo() (identity.UserInfo, error)
 	SessionParams() (capnp.Ptr, error)
 	TabId() ([]byte, error)
-
-	// Params always has this, and it's a convenient place to allocate the
-	// SessionData:
-	Segment() *capnp.Segment
 }

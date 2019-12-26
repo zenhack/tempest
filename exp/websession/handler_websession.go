@@ -16,7 +16,6 @@ import (
 	"zenhack.net/go/sandstorm/exp/util/handle"
 
 	"zombiezen.com/go/capnproto2"
-	//"zombiezen.com/go/capnproto2/server"
 )
 
 var specialRequestHeaders = map[string]struct{}{
@@ -340,6 +339,7 @@ func (h *handlerWebSession) Shutdown() {
 //// Actual WebSession methods ////
 
 func (h *handlerWebSession) Get(ctx context.Context, p websession.WebSession_get) error {
+	p.Ack()
 	results, err := p.AllocResults()
 	if err != nil {
 		return err
@@ -355,6 +355,7 @@ func (h *handlerWebSession) Get(ctx context.Context, p websession.WebSession_get
 }
 
 func (h *handlerWebSession) Post(ctx context.Context, p websession.WebSession_post) error {
+	p.Ack()
 	content, err := p.Args().Content()
 	if err != nil {
 		return err
@@ -367,6 +368,7 @@ func (h *handlerWebSession) Post(ctx context.Context, p websession.WebSession_po
 }
 
 func (h *handlerWebSession) Put(ctx context.Context, p websession.WebSession_put) error {
+	p.Ack()
 	content, err := p.Args().Content()
 	if err != nil {
 		return err
@@ -379,6 +381,7 @@ func (h *handlerWebSession) Put(ctx context.Context, p websession.WebSession_put
 }
 
 func (h *handlerWebSession) Delete(ctx context.Context, p websession.WebSession_delete) error {
+	p.Ack()
 	results, err := p.AllocResults()
 	if err != nil {
 		return err
@@ -390,6 +393,7 @@ func (h *handlerWebSession) Delete(ctx context.Context, p websession.WebSession_
 }
 
 func (h *handlerWebSession) Patch(ctx context.Context, p websession.WebSession_patch) error {
+	p.Ack()
 	content, err := p.Args().Content()
 	if err != nil {
 		return err
