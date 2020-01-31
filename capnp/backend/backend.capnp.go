@@ -3704,7 +3704,7 @@ func (c GatewayRouter) OpenApiSession(ctx context.Context, params func(GatewayRo
 		},
 	}
 	if params != nil {
-		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
 		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_openApiSession_Params{Struct: s}) }
 	}
 	ans, release := c.Client.SendCall(ctx, s)
@@ -3774,6 +3774,54 @@ func (c GatewayRouter) SubscribeTlsKeys(ctx context.Context, params func(Gateway
 	ans, release := c.Client.SendCall(ctx, s)
 	return GatewayRouter_subscribeTlsKeys_Results_Future{Future: ans.Future()}, release
 }
+func (c GatewayRouter) GetApiHostOptions(ctx context.Context, params func(GatewayRouter_getApiHostOptions_Params) error) (GatewayRouter_getApiHostOptions_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      6,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "getApiHostOptions",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_getApiHostOptions_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_getApiHostOptions_Results_Future{Future: ans.Future()}, release
+}
+func (c GatewayRouter) GetApiHostResource(ctx context.Context, params func(GatewayRouter_getApiHostResource_Params) error) (GatewayRouter_getApiHostResource_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      7,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "getApiHostResource",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_getApiHostResource_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_getApiHostResource_Results_Future{Future: ans.Future()}, release
+}
+func (c GatewayRouter) KeepaliveApiToken(ctx context.Context, params func(GatewayRouter_keepaliveApiToken_Params) error) (GatewayRouter_keepaliveApiToken_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      8,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "keepaliveApiToken",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(GatewayRouter_keepaliveApiToken_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return GatewayRouter_keepaliveApiToken_Results_Future{Future: ans.Future()}, release
+}
 
 // A GatewayRouter_Server is a GatewayRouter with a local implementation.
 type GatewayRouter_Server interface {
@@ -3788,6 +3836,12 @@ type GatewayRouter_Server interface {
 	RouteForeignHostname(context.Context, GatewayRouter_routeForeignHostname) error
 
 	SubscribeTlsKeys(context.Context, GatewayRouter_subscribeTlsKeys) error
+
+	GetApiHostOptions(context.Context, GatewayRouter_getApiHostOptions) error
+
+	GetApiHostResource(context.Context, GatewayRouter_getApiHostResource) error
+
+	KeepaliveApiToken(context.Context, GatewayRouter_keepaliveApiToken) error
 }
 
 // GatewayRouter_NewServer creates a new Server from an implementation of GatewayRouter_Server.
@@ -3806,7 +3860,7 @@ func GatewayRouter_ServerToClient(s GatewayRouter_Server, policy *server.Policy)
 // This can be used to create a more complicated Server.
 func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 6)
+		methods = make([]server.Method, 0, 9)
 	}
 
 	methods = append(methods, server.Method{
@@ -3881,6 +3935,42 @@ func GatewayRouter_Methods(methods []server.Method, s GatewayRouter_Server) []se
 		},
 	})
 
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      6,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "getApiHostOptions",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetApiHostOptions(ctx, GatewayRouter_getApiHostOptions{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      7,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "getApiHostResource",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetApiHostResource(ctx, GatewayRouter_getApiHostResource{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xc3a9d72077d3a1da,
+			MethodID:      8,
+			InterfaceName: "backend.capnp:GatewayRouter",
+			MethodName:    "keepaliveApiToken",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.KeepaliveApiToken(ctx, GatewayRouter_keepaliveApiToken{call})
+		},
+	})
+
 	return methods
 }
 
@@ -3897,7 +3987,7 @@ func (c GatewayRouter_openUiSession) Args() GatewayRouter_openUiSession_Params {
 
 // AllocResults allocates the results struct.
 func (c GatewayRouter_openUiSession) AllocResults() (GatewayRouter_openUiSession_Results, error) {
-	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
 	return GatewayRouter_openUiSession_Results{Struct: r}, err
 }
 
@@ -3984,6 +4074,179 @@ func (c GatewayRouter_subscribeTlsKeys) Args() GatewayRouter_subscribeTlsKeys_Pa
 func (c GatewayRouter_subscribeTlsKeys) AllocResults() (GatewayRouter_subscribeTlsKeys_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return GatewayRouter_subscribeTlsKeys_Results{Struct: r}, err
+}
+
+// GatewayRouter_getApiHostOptions holds the state for a server call to GatewayRouter.getApiHostOptions.
+// See server.Call for documentation.
+type GatewayRouter_getApiHostOptions struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c GatewayRouter_getApiHostOptions) Args() GatewayRouter_getApiHostOptions_Params {
+	return GatewayRouter_getApiHostOptions_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_getApiHostOptions) AllocResults() (GatewayRouter_getApiHostOptions_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostOptions_Results{Struct: r}, err
+}
+
+// GatewayRouter_getApiHostResource holds the state for a server call to GatewayRouter.getApiHostResource.
+// See server.Call for documentation.
+type GatewayRouter_getApiHostResource struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c GatewayRouter_getApiHostResource) Args() GatewayRouter_getApiHostResource_Params {
+	return GatewayRouter_getApiHostResource_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_getApiHostResource) AllocResults() (GatewayRouter_getApiHostResource_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostResource_Results{Struct: r}, err
+}
+
+// GatewayRouter_keepaliveApiToken holds the state for a server call to GatewayRouter.keepaliveApiToken.
+// See server.Call for documentation.
+type GatewayRouter_keepaliveApiToken struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c GatewayRouter_keepaliveApiToken) Args() GatewayRouter_keepaliveApiToken_Params {
+	return GatewayRouter_keepaliveApiToken_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c GatewayRouter_keepaliveApiToken) AllocResults() (GatewayRouter_keepaliveApiToken_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return GatewayRouter_keepaliveApiToken_Results{Struct: r}, err
+}
+
+type GatewayRouter_StaticResource struct{ capnp.Struct }
+
+// GatewayRouter_StaticResource_TypeID is the unique identifier for the type GatewayRouter_StaticResource.
+const GatewayRouter_StaticResource_TypeID = 0xb78d8adc5c13b1b9
+
+func NewGatewayRouter_StaticResource(s *capnp.Segment) (GatewayRouter_StaticResource, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
+	return GatewayRouter_StaticResource{st}, err
+}
+
+func NewRootGatewayRouter_StaticResource(s *capnp.Segment) (GatewayRouter_StaticResource, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
+	return GatewayRouter_StaticResource{st}, err
+}
+
+func ReadRootGatewayRouter_StaticResource(msg *capnp.Message) (GatewayRouter_StaticResource, error) {
+	root, err := msg.Root()
+	return GatewayRouter_StaticResource{root.Struct()}, err
+}
+
+func (s GatewayRouter_StaticResource) String() string {
+	str, _ := text.Marshal(0xb78d8adc5c13b1b9, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_StaticResource) Type() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_StaticResource) HasType() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_StaticResource) TypeBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_StaticResource) SetType(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+func (s GatewayRouter_StaticResource) Language() (string, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_StaticResource) HasLanguage() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s GatewayRouter_StaticResource) LanguageBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_StaticResource) SetLanguage(v string) error {
+	return s.Struct.SetText(1, v)
+}
+
+func (s GatewayRouter_StaticResource) Encoding() (string, error) {
+	p, err := s.Struct.Ptr(2)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_StaticResource) HasEncoding() bool {
+	return s.Struct.HasPtr(2)
+}
+
+func (s GatewayRouter_StaticResource) EncodingBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_StaticResource) SetEncoding(v string) error {
+	return s.Struct.SetText(2, v)
+}
+
+func (s GatewayRouter_StaticResource) Body() ([]byte, error) {
+	p, err := s.Struct.Ptr(3)
+	return []byte(p.Data()), err
+}
+
+func (s GatewayRouter_StaticResource) HasBody() bool {
+	return s.Struct.HasPtr(3)
+}
+
+func (s GatewayRouter_StaticResource) SetBody(v []byte) error {
+	return s.Struct.SetData(3, v)
+}
+
+// GatewayRouter_StaticResource_List is a list of GatewayRouter_StaticResource.
+type GatewayRouter_StaticResource_List struct{ capnp.List }
+
+// NewGatewayRouter_StaticResource creates a new list of GatewayRouter_StaticResource.
+func NewGatewayRouter_StaticResource_List(s *capnp.Segment, sz int32) (GatewayRouter_StaticResource_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
+	return GatewayRouter_StaticResource_List{l}, err
+}
+
+func (s GatewayRouter_StaticResource_List) At(i int) GatewayRouter_StaticResource {
+	return GatewayRouter_StaticResource{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_StaticResource_List) Set(i int, v GatewayRouter_StaticResource) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_StaticResource_List) String() string {
+	str, _ := text.MarshalList(0xb78d8adc5c13b1b9, s.List)
+	return str
+}
+
+// GatewayRouter_StaticResource_Future is a wrapper for a GatewayRouter_StaticResource promised by a client call.
+type GatewayRouter_StaticResource_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_StaticResource_Future) Struct() (GatewayRouter_StaticResource, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_StaticResource{s}, err
 }
 
 type GatewayRouter_ForeignHostnameInfo struct{ capnp.Struct }
@@ -4439,12 +4702,12 @@ type GatewayRouter_openUiSession_Results struct{ capnp.Struct }
 const GatewayRouter_openUiSession_Results_TypeID = 0xbd05d1a434a60c2a
 
 func NewGatewayRouter_openUiSession_Results(s *capnp.Segment) (GatewayRouter_openUiSession_Results, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
 	return GatewayRouter_openUiSession_Results{st}, err
 }
 
 func NewRootGatewayRouter_openUiSession_Results(s *capnp.Segment) (GatewayRouter_openUiSession_Results, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
 	return GatewayRouter_openUiSession_Results{st}, err
 }
 
@@ -4494,12 +4757,30 @@ func (s GatewayRouter_openUiSession_Results) SetLoadingIndicator(v util.Handle) 
 	return s.Struct.SetPtr(1, in.ToPtr())
 }
 
+func (s GatewayRouter_openUiSession_Results) ParentOrigin() (string, error) {
+	p, err := s.Struct.Ptr(2)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_openUiSession_Results) HasParentOrigin() bool {
+	return s.Struct.HasPtr(2)
+}
+
+func (s GatewayRouter_openUiSession_Results) ParentOriginBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(2)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_openUiSession_Results) SetParentOrigin(v string) error {
+	return s.Struct.SetText(2, v)
+}
+
 // GatewayRouter_openUiSession_Results_List is a list of GatewayRouter_openUiSession_Results.
 type GatewayRouter_openUiSession_Results_List struct{ capnp.List }
 
 // NewGatewayRouter_openUiSession_Results creates a new list of GatewayRouter_openUiSession_Results.
 func NewGatewayRouter_openUiSession_Results_List(s *capnp.Segment, sz int32) (GatewayRouter_openUiSession_Results_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
 	return GatewayRouter_openUiSession_Results_List{l}, err
 }
 
@@ -4538,12 +4819,12 @@ type GatewayRouter_openApiSession_Params struct{ capnp.Struct }
 const GatewayRouter_openApiSession_Params_TypeID = 0x9a5778b8e7e9745a
 
 func NewGatewayRouter_openApiSession_Params(s *capnp.Segment) (GatewayRouter_openApiSession_Params, error) {
-	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
 	return GatewayRouter_openApiSession_Params{st}, err
 }
 
 func NewRootGatewayRouter_openApiSession_Params(s *capnp.Segment) (GatewayRouter_openApiSession_Params, error) {
-	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
 	return GatewayRouter_openApiSession_Params{st}, err
 }
 
@@ -4575,12 +4856,36 @@ func (s GatewayRouter_openApiSession_Params) SetApiToken(v string) error {
 	return s.Struct.SetText(0, v)
 }
 
+func (s GatewayRouter_openApiSession_Params) Params() (apisession.ApiSession_Params, error) {
+	p, err := s.Struct.Ptr(1)
+	return apisession.ApiSession_Params{Struct: p.Struct()}, err
+}
+
+func (s GatewayRouter_openApiSession_Params) HasParams() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s GatewayRouter_openApiSession_Params) SetParams(v apisession.ApiSession_Params) error {
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+}
+
+// NewParams sets the params field to a newly
+// allocated apisession.ApiSession_Params struct, preferring placement in s's segment.
+func (s GatewayRouter_openApiSession_Params) NewParams() (apisession.ApiSession_Params, error) {
+	ss, err := apisession.NewApiSession_Params(s.Struct.Segment())
+	if err != nil {
+		return apisession.ApiSession_Params{}, err
+	}
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	return ss, err
+}
+
 // GatewayRouter_openApiSession_Params_List is a list of GatewayRouter_openApiSession_Params.
 type GatewayRouter_openApiSession_Params_List struct{ capnp.List }
 
 // NewGatewayRouter_openApiSession_Params creates a new list of GatewayRouter_openApiSession_Params.
 func NewGatewayRouter_openApiSession_Params_List(s *capnp.Segment, sz int32) (GatewayRouter_openApiSession_Params_List, error) {
-	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
 	return GatewayRouter_openApiSession_Params_List{l}, err
 }
 
@@ -4603,6 +4908,10 @@ type GatewayRouter_openApiSession_Params_Future struct{ *capnp.Future }
 func (p GatewayRouter_openApiSession_Params_Future) Struct() (GatewayRouter_openApiSession_Params, error) {
 	s, err := p.Future.Struct()
 	return GatewayRouter_openApiSession_Params{s}, err
+}
+
+func (p GatewayRouter_openApiSession_Params_Future) Params() apisession.ApiSession_Params_Future {
+	return apisession.ApiSession_Params_Future{Future: p.Future.Field(1, nil)}
 }
 
 type GatewayRouter_openApiSession_Results struct{ capnp.Struct }
@@ -5297,6 +5606,468 @@ func (p GatewayRouter_subscribeTlsKeys_Results_Future) Struct() (GatewayRouter_s
 	return GatewayRouter_subscribeTlsKeys_Results{s}, err
 }
 
+type GatewayRouter_getApiHostOptions_Params struct{ capnp.Struct }
+
+// GatewayRouter_getApiHostOptions_Params_TypeID is the unique identifier for the type GatewayRouter_getApiHostOptions_Params.
+const GatewayRouter_getApiHostOptions_Params_TypeID = 0xe29212b1cf072afc
+
+func NewGatewayRouter_getApiHostOptions_Params(s *capnp.Segment) (GatewayRouter_getApiHostOptions_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostOptions_Params{st}, err
+}
+
+func NewRootGatewayRouter_getApiHostOptions_Params(s *capnp.Segment) (GatewayRouter_getApiHostOptions_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostOptions_Params{st}, err
+}
+
+func ReadRootGatewayRouter_getApiHostOptions_Params(msg *capnp.Message) (GatewayRouter_getApiHostOptions_Params, error) {
+	root, err := msg.Root()
+	return GatewayRouter_getApiHostOptions_Params{root.Struct()}, err
+}
+
+func (s GatewayRouter_getApiHostOptions_Params) String() string {
+	str, _ := text.Marshal(0xe29212b1cf072afc, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_getApiHostOptions_Params) HostId() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_getApiHostOptions_Params) HasHostId() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_getApiHostOptions_Params) HostIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_getApiHostOptions_Params) SetHostId(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+// GatewayRouter_getApiHostOptions_Params_List is a list of GatewayRouter_getApiHostOptions_Params.
+type GatewayRouter_getApiHostOptions_Params_List struct{ capnp.List }
+
+// NewGatewayRouter_getApiHostOptions_Params creates a new list of GatewayRouter_getApiHostOptions_Params.
+func NewGatewayRouter_getApiHostOptions_Params_List(s *capnp.Segment, sz int32) (GatewayRouter_getApiHostOptions_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return GatewayRouter_getApiHostOptions_Params_List{l}, err
+}
+
+func (s GatewayRouter_getApiHostOptions_Params_List) At(i int) GatewayRouter_getApiHostOptions_Params {
+	return GatewayRouter_getApiHostOptions_Params{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_getApiHostOptions_Params_List) Set(i int, v GatewayRouter_getApiHostOptions_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_getApiHostOptions_Params_List) String() string {
+	str, _ := text.MarshalList(0xe29212b1cf072afc, s.List)
+	return str
+}
+
+// GatewayRouter_getApiHostOptions_Params_Future is a wrapper for a GatewayRouter_getApiHostOptions_Params promised by a client call.
+type GatewayRouter_getApiHostOptions_Params_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_getApiHostOptions_Params_Future) Struct() (GatewayRouter_getApiHostOptions_Params, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_getApiHostOptions_Params{s}, err
+}
+
+type GatewayRouter_getApiHostOptions_Results struct{ capnp.Struct }
+
+// GatewayRouter_getApiHostOptions_Results_TypeID is the unique identifier for the type GatewayRouter_getApiHostOptions_Results.
+const GatewayRouter_getApiHostOptions_Results_TypeID = 0xc537e92b2708501c
+
+func NewGatewayRouter_getApiHostOptions_Results(s *capnp.Segment) (GatewayRouter_getApiHostOptions_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostOptions_Results{st}, err
+}
+
+func NewRootGatewayRouter_getApiHostOptions_Results(s *capnp.Segment) (GatewayRouter_getApiHostOptions_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostOptions_Results{st}, err
+}
+
+func ReadRootGatewayRouter_getApiHostOptions_Results(msg *capnp.Message) (GatewayRouter_getApiHostOptions_Results, error) {
+	root, err := msg.Root()
+	return GatewayRouter_getApiHostOptions_Results{root.Struct()}, err
+}
+
+func (s GatewayRouter_getApiHostOptions_Results) String() string {
+	str, _ := text.Marshal(0xc537e92b2708501c, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_getApiHostOptions_Results) Dav() (capnp.TextList, error) {
+	p, err := s.Struct.Ptr(0)
+	return capnp.TextList{List: p.List()}, err
+}
+
+func (s GatewayRouter_getApiHostOptions_Results) HasDav() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_getApiHostOptions_Results) SetDav(v capnp.TextList) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
+
+// NewDav sets the dav field to a newly
+// allocated capnp.TextList, preferring placement in s's segment.
+func (s GatewayRouter_getApiHostOptions_Results) NewDav(n int32) (capnp.TextList, error) {
+	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	if err != nil {
+		return capnp.TextList{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
+}
+
+// GatewayRouter_getApiHostOptions_Results_List is a list of GatewayRouter_getApiHostOptions_Results.
+type GatewayRouter_getApiHostOptions_Results_List struct{ capnp.List }
+
+// NewGatewayRouter_getApiHostOptions_Results creates a new list of GatewayRouter_getApiHostOptions_Results.
+func NewGatewayRouter_getApiHostOptions_Results_List(s *capnp.Segment, sz int32) (GatewayRouter_getApiHostOptions_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return GatewayRouter_getApiHostOptions_Results_List{l}, err
+}
+
+func (s GatewayRouter_getApiHostOptions_Results_List) At(i int) GatewayRouter_getApiHostOptions_Results {
+	return GatewayRouter_getApiHostOptions_Results{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_getApiHostOptions_Results_List) Set(i int, v GatewayRouter_getApiHostOptions_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_getApiHostOptions_Results_List) String() string {
+	str, _ := text.MarshalList(0xc537e92b2708501c, s.List)
+	return str
+}
+
+// GatewayRouter_getApiHostOptions_Results_Future is a wrapper for a GatewayRouter_getApiHostOptions_Results promised by a client call.
+type GatewayRouter_getApiHostOptions_Results_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_getApiHostOptions_Results_Future) Struct() (GatewayRouter_getApiHostOptions_Results, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_getApiHostOptions_Results{s}, err
+}
+
+type GatewayRouter_getApiHostResource_Params struct{ capnp.Struct }
+
+// GatewayRouter_getApiHostResource_Params_TypeID is the unique identifier for the type GatewayRouter_getApiHostResource_Params.
+const GatewayRouter_getApiHostResource_Params_TypeID = 0x88751049aa34129f
+
+func NewGatewayRouter_getApiHostResource_Params(s *capnp.Segment) (GatewayRouter_getApiHostResource_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return GatewayRouter_getApiHostResource_Params{st}, err
+}
+
+func NewRootGatewayRouter_getApiHostResource_Params(s *capnp.Segment) (GatewayRouter_getApiHostResource_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return GatewayRouter_getApiHostResource_Params{st}, err
+}
+
+func ReadRootGatewayRouter_getApiHostResource_Params(msg *capnp.Message) (GatewayRouter_getApiHostResource_Params, error) {
+	root, err := msg.Root()
+	return GatewayRouter_getApiHostResource_Params{root.Struct()}, err
+}
+
+func (s GatewayRouter_getApiHostResource_Params) String() string {
+	str, _ := text.Marshal(0x88751049aa34129f, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_getApiHostResource_Params) HostId() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_getApiHostResource_Params) HasHostId() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_getApiHostResource_Params) HostIdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_getApiHostResource_Params) SetHostId(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+func (s GatewayRouter_getApiHostResource_Params) Path() (string, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_getApiHostResource_Params) HasPath() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s GatewayRouter_getApiHostResource_Params) PathBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_getApiHostResource_Params) SetPath(v string) error {
+	return s.Struct.SetText(1, v)
+}
+
+// GatewayRouter_getApiHostResource_Params_List is a list of GatewayRouter_getApiHostResource_Params.
+type GatewayRouter_getApiHostResource_Params_List struct{ capnp.List }
+
+// NewGatewayRouter_getApiHostResource_Params creates a new list of GatewayRouter_getApiHostResource_Params.
+func NewGatewayRouter_getApiHostResource_Params_List(s *capnp.Segment, sz int32) (GatewayRouter_getApiHostResource_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	return GatewayRouter_getApiHostResource_Params_List{l}, err
+}
+
+func (s GatewayRouter_getApiHostResource_Params_List) At(i int) GatewayRouter_getApiHostResource_Params {
+	return GatewayRouter_getApiHostResource_Params{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_getApiHostResource_Params_List) Set(i int, v GatewayRouter_getApiHostResource_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_getApiHostResource_Params_List) String() string {
+	str, _ := text.MarshalList(0x88751049aa34129f, s.List)
+	return str
+}
+
+// GatewayRouter_getApiHostResource_Params_Future is a wrapper for a GatewayRouter_getApiHostResource_Params promised by a client call.
+type GatewayRouter_getApiHostResource_Params_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_getApiHostResource_Params_Future) Struct() (GatewayRouter_getApiHostResource_Params, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_getApiHostResource_Params{s}, err
+}
+
+type GatewayRouter_getApiHostResource_Results struct{ capnp.Struct }
+
+// GatewayRouter_getApiHostResource_Results_TypeID is the unique identifier for the type GatewayRouter_getApiHostResource_Results.
+const GatewayRouter_getApiHostResource_Results_TypeID = 0xca94bf70a6be91b7
+
+func NewGatewayRouter_getApiHostResource_Results(s *capnp.Segment) (GatewayRouter_getApiHostResource_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostResource_Results{st}, err
+}
+
+func NewRootGatewayRouter_getApiHostResource_Results(s *capnp.Segment) (GatewayRouter_getApiHostResource_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return GatewayRouter_getApiHostResource_Results{st}, err
+}
+
+func ReadRootGatewayRouter_getApiHostResource_Results(msg *capnp.Message) (GatewayRouter_getApiHostResource_Results, error) {
+	root, err := msg.Root()
+	return GatewayRouter_getApiHostResource_Results{root.Struct()}, err
+}
+
+func (s GatewayRouter_getApiHostResource_Results) String() string {
+	str, _ := text.Marshal(0xca94bf70a6be91b7, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_getApiHostResource_Results) Resource() (GatewayRouter_StaticResource, error) {
+	p, err := s.Struct.Ptr(0)
+	return GatewayRouter_StaticResource{Struct: p.Struct()}, err
+}
+
+func (s GatewayRouter_getApiHostResource_Results) HasResource() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_getApiHostResource_Results) SetResource(v GatewayRouter_StaticResource) error {
+	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+}
+
+// NewResource sets the resource field to a newly
+// allocated GatewayRouter_StaticResource struct, preferring placement in s's segment.
+func (s GatewayRouter_getApiHostResource_Results) NewResource() (GatewayRouter_StaticResource, error) {
+	ss, err := NewGatewayRouter_StaticResource(s.Struct.Segment())
+	if err != nil {
+		return GatewayRouter_StaticResource{}, err
+	}
+	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	return ss, err
+}
+
+// GatewayRouter_getApiHostResource_Results_List is a list of GatewayRouter_getApiHostResource_Results.
+type GatewayRouter_getApiHostResource_Results_List struct{ capnp.List }
+
+// NewGatewayRouter_getApiHostResource_Results creates a new list of GatewayRouter_getApiHostResource_Results.
+func NewGatewayRouter_getApiHostResource_Results_List(s *capnp.Segment, sz int32) (GatewayRouter_getApiHostResource_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return GatewayRouter_getApiHostResource_Results_List{l}, err
+}
+
+func (s GatewayRouter_getApiHostResource_Results_List) At(i int) GatewayRouter_getApiHostResource_Results {
+	return GatewayRouter_getApiHostResource_Results{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_getApiHostResource_Results_List) Set(i int, v GatewayRouter_getApiHostResource_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_getApiHostResource_Results_List) String() string {
+	str, _ := text.MarshalList(0xca94bf70a6be91b7, s.List)
+	return str
+}
+
+// GatewayRouter_getApiHostResource_Results_Future is a wrapper for a GatewayRouter_getApiHostResource_Results promised by a client call.
+type GatewayRouter_getApiHostResource_Results_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_getApiHostResource_Results_Future) Struct() (GatewayRouter_getApiHostResource_Results, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_getApiHostResource_Results{s}, err
+}
+
+func (p GatewayRouter_getApiHostResource_Results_Future) Resource() GatewayRouter_StaticResource_Future {
+	return GatewayRouter_StaticResource_Future{Future: p.Future.Field(0, nil)}
+}
+
+type GatewayRouter_keepaliveApiToken_Params struct{ capnp.Struct }
+
+// GatewayRouter_keepaliveApiToken_Params_TypeID is the unique identifier for the type GatewayRouter_keepaliveApiToken_Params.
+const GatewayRouter_keepaliveApiToken_Params_TypeID = 0xf716a4e3f32b4130
+
+func NewGatewayRouter_keepaliveApiToken_Params(s *capnp.Segment) (GatewayRouter_keepaliveApiToken_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return GatewayRouter_keepaliveApiToken_Params{st}, err
+}
+
+func NewRootGatewayRouter_keepaliveApiToken_Params(s *capnp.Segment) (GatewayRouter_keepaliveApiToken_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
+	return GatewayRouter_keepaliveApiToken_Params{st}, err
+}
+
+func ReadRootGatewayRouter_keepaliveApiToken_Params(msg *capnp.Message) (GatewayRouter_keepaliveApiToken_Params, error) {
+	root, err := msg.Root()
+	return GatewayRouter_keepaliveApiToken_Params{root.Struct()}, err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) String() string {
+	str, _ := text.Marshal(0xf716a4e3f32b4130, s.Struct)
+	return str
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) ApiToken() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) HasApiToken() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) ApiTokenBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) SetApiToken(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) DurationMs() uint32 {
+	return s.Struct.Uint32(0)
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params) SetDurationMs(v uint32) {
+	s.Struct.SetUint32(0, v)
+}
+
+// GatewayRouter_keepaliveApiToken_Params_List is a list of GatewayRouter_keepaliveApiToken_Params.
+type GatewayRouter_keepaliveApiToken_Params_List struct{ capnp.List }
+
+// NewGatewayRouter_keepaliveApiToken_Params creates a new list of GatewayRouter_keepaliveApiToken_Params.
+func NewGatewayRouter_keepaliveApiToken_Params_List(s *capnp.Segment, sz int32) (GatewayRouter_keepaliveApiToken_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
+	return GatewayRouter_keepaliveApiToken_Params_List{l}, err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params_List) At(i int) GatewayRouter_keepaliveApiToken_Params {
+	return GatewayRouter_keepaliveApiToken_Params{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params_List) Set(i int, v GatewayRouter_keepaliveApiToken_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_keepaliveApiToken_Params_List) String() string {
+	str, _ := text.MarshalList(0xf716a4e3f32b4130, s.List)
+	return str
+}
+
+// GatewayRouter_keepaliveApiToken_Params_Future is a wrapper for a GatewayRouter_keepaliveApiToken_Params promised by a client call.
+type GatewayRouter_keepaliveApiToken_Params_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_keepaliveApiToken_Params_Future) Struct() (GatewayRouter_keepaliveApiToken_Params, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_keepaliveApiToken_Params{s}, err
+}
+
+type GatewayRouter_keepaliveApiToken_Results struct{ capnp.Struct }
+
+// GatewayRouter_keepaliveApiToken_Results_TypeID is the unique identifier for the type GatewayRouter_keepaliveApiToken_Results.
+const GatewayRouter_keepaliveApiToken_Results_TypeID = 0xd285f754a2dafae2
+
+func NewGatewayRouter_keepaliveApiToken_Results(s *capnp.Segment) (GatewayRouter_keepaliveApiToken_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return GatewayRouter_keepaliveApiToken_Results{st}, err
+}
+
+func NewRootGatewayRouter_keepaliveApiToken_Results(s *capnp.Segment) (GatewayRouter_keepaliveApiToken_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return GatewayRouter_keepaliveApiToken_Results{st}, err
+}
+
+func ReadRootGatewayRouter_keepaliveApiToken_Results(msg *capnp.Message) (GatewayRouter_keepaliveApiToken_Results, error) {
+	root, err := msg.Root()
+	return GatewayRouter_keepaliveApiToken_Results{root.Struct()}, err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Results) String() string {
+	str, _ := text.Marshal(0xd285f754a2dafae2, s.Struct)
+	return str
+}
+
+// GatewayRouter_keepaliveApiToken_Results_List is a list of GatewayRouter_keepaliveApiToken_Results.
+type GatewayRouter_keepaliveApiToken_Results_List struct{ capnp.List }
+
+// NewGatewayRouter_keepaliveApiToken_Results creates a new list of GatewayRouter_keepaliveApiToken_Results.
+func NewGatewayRouter_keepaliveApiToken_Results_List(s *capnp.Segment, sz int32) (GatewayRouter_keepaliveApiToken_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return GatewayRouter_keepaliveApiToken_Results_List{l}, err
+}
+
+func (s GatewayRouter_keepaliveApiToken_Results_List) At(i int) GatewayRouter_keepaliveApiToken_Results {
+	return GatewayRouter_keepaliveApiToken_Results{s.List.Struct(i)}
+}
+
+func (s GatewayRouter_keepaliveApiToken_Results_List) Set(i int, v GatewayRouter_keepaliveApiToken_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s GatewayRouter_keepaliveApiToken_Results_List) String() string {
+	str, _ := text.MarshalList(0xd285f754a2dafae2, s.List)
+	return str
+}
+
+// GatewayRouter_keepaliveApiToken_Results_Future is a wrapper for a GatewayRouter_keepaliveApiToken_Results promised by a client call.
+type GatewayRouter_keepaliveApiToken_Results_Future struct{ *capnp.Future }
+
+func (p GatewayRouter_keepaliveApiToken_Results_Future) Struct() (GatewayRouter_keepaliveApiToken_Results, error) {
+	s, err := p.Future.Struct()
+	return GatewayRouter_keepaliveApiToken_Results{s}, err
+}
+
 type SandstormCoreFactory struct{ Client *capnp.Client }
 
 // SandstormCoreFactory_TypeID is the unique identifier for the type SandstormCoreFactory.
@@ -5704,227 +6475,256 @@ func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Router() GatewayRo
 	return GatewayRouter{Client: p.Future.Field(0, nil).Client()}
 }
 
-const schema_dcbc0d702b1b47a5 = "x\xda\xccY}t\x14U\x96\xbf\xb7\xaa;E\x1cb" +
-	"R[\xf1\x1b6\xc2\xc0QP>\x92NHd\x09\xdd" +
-	"i\x06c\xa2h*\x91e\xcd\x0e+\x95N\x91\x14\xe9" +
-	"\xae\xeaTU\x9b\xc4Y\x16\x11A\x06g\x8e\xcb\xee\xa8" +
-	"+\xbb\x8e\xca\xaak\x1cY\xa2g\xf0\xcc\xac\xb8\xc7\xf8" +
-	"1\x82\x1a\x01\x11\x19\xdd\xe1,~O<;\xa3\xe1\xe8" +
-	"\xee\xb2\xae\xd6\x9e\xf7\xba_\xf5K\xd2M\x12f\xf6\x9c" +
-	"9\xfe!yu\xdf}\xf7\xdd\xf7\xbb_\xbf^\xbcY" +
-	"\x89\x08\xe5A)\x06\xd0r[ X\xe0m|\xf1\xa5" +
-	"\x95\x89\xda\x07n\x03\xf5|D\x80\x80\x04\x102\xcaw" +
-	"!\xa0\xd2W\x1e\x06\xf4f\xd5\xdd\xber\xb1\xf6\xdd-" +
-	" \x9f\x1f\xf0n\xd83\xb8\xb4{x`\x10\x00C\xf7" +
-	"\x97\x9f\x83J\x7f\xb9\x04\xd0\xf2H\xb9\x88-\x03\xe5\x02" +
-	"\x02x\xf5\x8f\xff\xf0\xd0M/x[@\x9e\x81\x00A" +
-	"\x81(|\xaa|\x07Q8X\xde\x03\xe8\xdd7\xef\xa5" +
-	"/\x8d+\x97l\x03\xf9|v\xe0\xac\x8a6\x84\x80w" +
-	"\xc5\x82\xe3\xf7\x1d\xbd\xe0\xd5m \xcf'[\x91|*" +
-	"\xaax\x81l\x9dYAm9q\xfd9]\xfd\x8f\xdd" +
-	"\x99\xde\x1a\xa4{\xeb*\x1a\x89\xc0\xaa\x8aO\x00\xbd\x91" +
-	"\xb9[\x12\x9f<=o{F\x80j\x98\x1b\xda@\x04" +
-	"\xcaCD\x83\xf7O\xcb/\x92\xa4\xbe\xbbx\x015\xd4" +
-	"J\x04\xd6R\x81wVlY\xfc\xe9++wr\xd6" +
-	"m\x0c5\x12\xeb\xaaJ\xee\x8b\x8cT$2_\xd2\x17" +
-	"3Bmdk*D.\xf6\xdb\x96\xad\x8d\xff\xfd=" +
-	"\xefG\x99\x9bS\xdd\xc7B\xd4\xfc\x8f\xa8\xee-\x8b\xde" +
-	"\xb9\xfc\xcf_|\xef\xde\xb4\x00\xd5]X\xf9\x04\xd1\xdd" +
-	"\xea\x0e\x7f\xf2\xb3\xde5\xbb\xf8\xad\xa7C\x7fC\xb6\x16" +
-	"VR\xbb5\xf9\xc4\xb4\x1f\xf7\xef\xe2\xccZP\xd9L" +
-	"\xb6>\xfb\xd6\x85\xe2\x83\xa7\xb6?\x901K$\x9f." +
-	"\"\x9fP\x99[\xb9\x17\xd0\xdb\xf8\xb3\x7f\xb9\xe3\x8e\x86" +
-	"\xbf\xfe1\xb7u\xb0r\x03\xd9\xba\xf6\xd75\x8d\x1f\xff" +
-	"\xdbE\x0fe\xfcM\xb7\xee\xa9|\x95>\x15\xddz\xed" +
-	"Oj\xf6\xdf\x11z\xe5a\x1e\x1cz\x155+UE" +
-	"\xcc\xba\xfb\xe5/\x1ezV\xb7\xff\x11\xe4\x19\xa2\xf7\xee" +
-	"\xc3G{.=\xde\xff\"\x01\xc7=U\xad\xa8\xf4W" +
-	"I\x00\xca\xa3U\xf5\xca\x10\xf9\xd7\xbf\xcf\x7f\xa2a\xce" +
-	"\xcc\x95\x8f\xcb\xdf\xf6\xef\xb8\xaf\xea}\xa2\xec U\xd6" +
-	"\xf5f\xed;\x0b\x0e\xdf\xdd\xcf\x19:\\E\x81\xb1v" +
-	"\xdb%\x8b\x7fP\xf6\xd9\x13\xfc\xab\x1d\xab\xa2\x98\xfa\x88" +
-	"n=\xd4{\xc3\xb2\xcdk\xeey\x92\x17\x08.\xa1\xc0" +
-	"\x90\x97\x10\x81]3\x9e?}\xee\xe9\xaf\xf6dn\x92" +
-	"\x86N\xd5\x92(\x02\x86j\x97\xdc\x8d\x80\x9f\x15\x0d\xe0" +
-	"\x81=\xdb\xf7f\x0f\x1f\xaan%\x87/\xeb\xde]\xb4" +
-	"\xf6\xe8\xe6\x9f\x82|\xbe8*\x00~^\xdd\x8c\xcaP" +
-	"5\xb9\xe3\xc1\xeaze\xa4\xfa\x02\x00\xef\x86\xfb_u" +
-	"\xb7\x0d\x96=\xc3[\xf2^5\x05\xd8o\xaa\x89%\x8f" +
-	"\x85\xffv\xf6e\x97\x86\x9e\x05\xf9\x0a\x1fFr\xcd\x9b" +
-	"\xf4\xbdj\x08\x8c\x0e\xdd\xdd\xbam\xff\xdb\xea~^\xc3" +
-	"\xd6\x1a\xaaag\x0d\xd10\x7f\xfac\x95\x8f\x1c\x09>" +
-	"7*\xc2j\xe8\xab\x0cR\x0d\xbe\x91\xf2\xb9\xa2\xf7h" +
-	"\xfd%W$\x8b\xf6\xff\x0a\xc8\x01W=\xad,\xb8\xea" +
-	"2\x80\xd0\xaa\xab\xa4\x80\"/\x93\x00\xb2\xcf6V\xfa" +
-	"\xf4\x9f\xbc\xaf\x04\x97\x11\xe9\xb9\xcb\xeeD\xe5\xaaZ\"" +
-	"\xfdKe\xcek\x1f-l|\x89G\xea\xac\xda\xdd4" +
-	"\xc2j\x89uw\x9d\xf8\xfc\x92\x8a;\x83\xaf\x80:\x03" +
-	"1\xab|%J\"@hu\xed\xed\xa8\x18D\x93\xa2" +
-	"\xd7~\x02\xf8\xcd\x85\xe5G\xbe\xf3\xc5\x9f\xbe\x96\xf5z" +
-	"\xc3\xf2?\"^\xdf\xfe\xa5\xa1?u\xe9\x8e\xd7\xf9s" +
-	"\xca\x97\xd3\xbcT\xb7\x9c\x9c\xb3\xf9hp\xddo\xcf\xf9" +
-	"\xf0u\x1e\xf7\xdar\xea\xa6\xc4r\x02\xde\xcbzc7" +
-	"\xff\xe4\xc1\x7f\x18\xe2\xe0T\x18\xa6!\xf3f\xc9\xac\xca" +
-	"\xb7j7\xbc\xc1\xeb\xfer9\xc5}a\x98\xe8\x0e\x1d" +
-	"\xfb\xe3kR\xf7\xae?\xcc\x87\xfa\xbc0\x85SU\x98" +
-	"x\xb8\xed\xdc\xe3\x7f\xb1\xe17o\x1f\xe6\xdfhg\x98" +
-	"\x06\xdd\x03T\xc3\xc8\xd0y\x8d\xdf\x9eq\xef\xd1\xf4+" +
-	"\xa7\x83.\xfc.9\xbc\xb7|\xf8\xad\x93\x1fZ'y" +
-	"\xdd\xfb\xc2\xf4\xf5^\xa6\xbaK?~\xe6\xed\xffj\x1b" +
-	"99\xca\xc3\x11\x1a'U\x11\xa2{\xdd\xc6\x0b\x86\x9f" +
-	"{\xa3\xff\x03\xeeb7E.&\xba\xffu[\xfd\xa9" +
-	"]\xdf?\xfc!\xbf\xb5.Bu\xabt\xeb\xa1\x8b\xbf" +
-	"9\xb8w\xef\xd1\x0f\xf9\xc3\xbb#\x154\xdbG\xc8\xe1" +
-	"\x95\xb6\xbbN\xff\xc1\x93\xbf\x06.H\x8fE\xde%\x02" +
-	"\xc3T\xc3\xf0?7\x7f\xb5\xe4\xf2o}\xca\xdf\xbc\xb0" +
-	"n)\x8d\xb4:\x8a\xce\xc1\x8f?\xb8t \xf5)\xaf" +
-	"\xa1\xaa\x8e\x9a\xdf@\x05\x8e?#\xff\xd5C\xb7?\xf8" +
-	")g\xbeQG\xc3\xfc\xd0\xe2\xdb\x82o\x97\xcd\xf9\x8c" +
-	"\x7f\xd2\xd5u4\xc3ju\xe4I\xafH\xcc]\x1f\xbe" +
-	"r\xcb\xe7c\xa1\x1a\x0aF/F\xe5\xbc(\x81\x95\x1c" +
-	"\xbdS\xe9&\xff\xf2\xb6\x8e\xc4\x8f4\xad\x19\xf8<m" +
-	"I\xdaOQ\xfa\x06\xdf\x9b\xdd\x8b\xde\x7f\xbc~\x8a\xbf" +
-	"\xc4\xaa(}\xbe\x9b\xa2\xc4\xc6\xea\xd9E\xd3\x96]\xbf" +
-	"\xe84\xef\xc8\x8dQ\xea\x86\x9dT\xa0\xf4\xa6\xca\xfe\x93" +
-	"5\xf6\xff\xf0\x1a\xf6EI:Q\x9e\xa3\x02\xd7\x95D" +
-	"\xad\x9d\xef\\\xf7\x15/p\"J\xe19L\x05\x9e\xbe" +
-	"Kym\xdf\xfb\xb3\xbf\xce\x1cA/[\xb4\x82\x02|" +
-	"\xe6\x8a\xbd\xe0\x8d\xfb\xef\x97^\x9b\x16\xeb\xd2\xcd\xf6\x85" +
-	"\xc1\x98\x964\x93K\xa3\x99?;t\xb7\xde\xd6\x0c\xb3" +
-	"\xc5\xb5l\xadC_\xedh\x1d\xfa\x9cf\xddI\xc5E" +
-	"\xd7Q\x03b\x00 \x80\x00r\xd1|\x00u\x9a\x88j" +
-	"\xa9\x80\xc5\x8eq\xab\x8e\x85 `!\x81sF\x938" +
-	"Z\xb1c\xc5\xbat\xb7Is;\x01\x9a\x10q:\x08" +
-	"8\x1d@\xc6S\xde\xa2[4{\x91\xa3\x99B\xbb\xe3" +
-	"ZvbQZtQ\x9bVF\xb7\x8e5\xb5^s" +
-	"\xf5\x1e\xad\xaf\xd9J\xb9\xba\xbd\xd0J\xea\xe6j\xa3E" +
-	"w\x1c\xc32\xe74i\xb6\x96p\xa8i\xcc\xd2y6" +
-	"\x80z\xb9\x88j\xa5\x802b)I\xd9r\xf9R\x00" +
-	"\xf5J\x11\xd5\x1a\x01='\xbdy\x05\x94YV\x97\xa1" +
-	"gL\xc3p\x92*\xc3\x12\xef\xde\x81\xff\\s\xdf%" +
-	"\xc1\xe3\x00\x88%\xdc\x15\x03\xa3\xaf\xe8\xda\x9a\xe9\xac\xd7" +
-	"m\xea@\xea4)\xee:\xbet\xc1h\xe9&-\xd6" +
-	"E<\x9c\x8c[Z{\x8bk\xebZb\xa1\xa3\xdd\xa2" +
-	"\xd79\xec\x16\xbc\xbb\x9b\x01\xd4\xe9\"\xaa\x17\x0a\xe8%" +
-	"\xd3;\x1b\x00\xdb\x99\xad\xf9L\"\xcb\xa9d\xda \xdf" +
-	"7%\xbeZ\xad\x11@]'\xa2\x1a\xe7|cD\x01" +
-	"\xd4v\x11\xd5\xa4\x80\xb2 \x94\xa2\x00 '\xc8b\xa7" +
-	"\x88\xaa+\xa0,\x8a\xa5(\x02\xc8\xdd\x04\x04q\x11\xd5" +
-	"^!mA*\xd9\xd0\x0e\x00\xcc\xaaMV\x8f\xa9\xdb" +
-	"\x0d\xbe\x95\x9b:\x88!\xd9\xbf\x8b\x0ds\xbd\x85%^" +
-	"\xe7\xcc\x8e\x96\xf7\x9e\xff\xdf}\x13\xf8\xd70\x1dW\x8b" +
-	"\xc73\x8e#\x0e.N\xc5G\xa3ri\x16\x95a\x87" +
-	"\xfa\x14\xe5l\xd1\x05D9\xbfz['\xf0\xd3\xb3\xaf" +
-	"w&\xc8O\xcd\xf2v=\xae\xbb\xfajG\xb7\xd3\x8a" +
-	"]\x07 \xaf\xac\xd5c\x12HD\xa9?\xc9\xabIZ" +
-	"\xc2\xe1\x01\xdd8\x11\xa0s<E\xd6\x1b7\x7fph" +
-	"^O\xcd\x9a\xa1\xb1\xde(\xc8\x15]6\xf9\xdf\xd5\x96" +
-	"\xad\x1b\x1d\xe65\x96\xe3\x9aZB\xcf\x05\xcfF\x0e\x9e" +
-	"\x9d\x199\xee\xf43\x87\xb0\x93jsb\xb6\xd1\xa6\xdf" +
-	"\x18w\xae\xd5\xfb\x1c\xffe'\x8e\xfc\xba\xe4\xe8\xd0G" +
-	"'\x9fUZ\xd2\xb8\xd1\xea\xd2\xcd\\V\xe5|-\x0e" +
-	"\x07.:\x93\x02\x0d3a\xbao\xc2Jb\xc2wD" +
-	"T\x9b\xb8\xb7ZEb\xe9\x1a\x11\xd5\x1b\xb9\x00S\xc9" +
-	"\xe2u\"\xaa\x7fvv\xb14I8\x8ds\xed\xe4\xb3" +
-	"\x92\x8f\\\xfe~\x15\x00jDD\xf5:\xee~\x0d\x8d" +
-	"\xb9\xee\xf7\x02\x80z\xa3\x88\xea:\x01\xcb\xb4d\x92\xb3" +
-	"<\xa1\x99\xc6z\xddq\xc9mK\xbcW\xdf\xfb\xd8\xd8" +
-	"0\xef\xe6\xad,\xa4\xb4\x94\xdbi\xd9M\x1dB\xf2Z" +
-	"\xbd\xefj\xc3\xec\xd0\xed\xa4m\x98n^pq\xa5\x8c" +
-	"D\xdc\xf8J\xe6\xe2\xd4*Y \x17\xfa\xd2X]\xa1" +
-	"\xc5\xe3m\x9a\x18\xebjBT\x03b\x10\xc0\xef\xc9\x91" +
-	"\xb5m\xb2\x1c\x05A\x0eJ\x9b\x1c\xdd%\xf0\x8e`\x13" +
-	"\x8e\x0b\xbb\x16\xcdLW\xbf\x15\x96\xad_\xad\xc5\\\xcb" +
-	"\xee\xa3\xc5\x98?\xd4\xaf)\xf9R\x1e\x0dW\x1be~" +
-	"|:S\xca\x1b\x93Q3\xb9f*\x0e\xf5\x8bJ\x1e" +
-	"\x8bR\x0e\x0f\xda|v8\xaef\xbb|\xc0\x8d\xd1\xd8" +
-	"\xca\x05\xb2\x93J\xea\xf6-\x86\x03\xa2En\xbaxu" +
-	"Ml\xd6\xa0z\xff\x047\xe5N`\xe9k\x86\xaf\x7f" +
-	"\x1f\x89\xbd\x01\x11\xd5\xfd\x1c\x8a\x7fN\x16\x7f*\xa2\xfa" +
-	"<\x87\xe2\xe7H\x1d\xde/\xa2z\x80+\x83/\x13\xc9" +
-	"\xe7ET_\x17\x10\x03\xa5\x18\x00\x90\x0f\x92\xc0xI" +
-	"D\xf5\xb0\x80r\x10K1\x88(\x0f\x11\xc1\x03\"\xaa" +
-	"o\x09(\x17\x08\xa5X\x80(\x1f!*\x0f\x8b\xa8\xfe" +
-	"J\x988\xc8s\x94\xfeM1+\x91\xd0\xccv,\xf1" +
-	"\x0em\xbb\xfc\xa1\xa7\xd5\x86_dB\xa7\xccp\xae\xd7" +
-	"{\x10A@\x04\xdc\xd4\xae\xdf\xb2\xcaj\xd7\xd9\xdf^" +
-	"\xc2J\x99n\x93m\x01\xc6\xfc\xb53f\xc4l\x0a\xa1" +
-	"\xa51\x9f\xf0\xf8\x14\x82\x89lx0^\x06\x19a " +
-	"\xcbKix\x84\xd3i&\x82j\x00\x91\xabRpf" +
-	"\xa38\xecjb\xc29\x9b\x9e\xa9`\xa2\xf8\x8eu-" +
-	"\xcc\xc4\xae\x9f\xe2\xb9r<\x1b@\x9d#\xa2\xba\x98\x03" +
-	"\xcf\x82\xe6l9\x96\xba\xf4>\xff\xcc\x98n\xbb+:" +
-	"5\x03\xd0\x9c((R\xc9\xd1y{\\?\x92\xb3\xd9" +
-	"\xc9W\xde'\xd1<\xfb\xc9\x91\xbb\\4\xd7\xe5v\x00" +
-	"\xa8\x8bET\x97\x09\xb8)\xd3<\xa3\xec\xbd\xf1x\xd5" +
-	"\xaa\x87e\xe9Qv2\xb1\xde0;\x1a\xd0l7b" +
-	"\x9ak\xd9\x00({'\xa3\xeb\xd6=9\xe7\x8b\xbf\x1b" +
-	"k\x1f\xb2\xcb\xa7\x9b~u\x1a\xf2taa+G\x9d" +
-	"\x14\xee\xf6\xd84\x01\xa2\xdb\xe91\xc0!C\x9c\xa4k" +
-	"\x095\"\x061\xcb\xd5 cu\x94\x11l\x05A\x19" +
-	"F\x09\x05\x7f\x84E6\x89*'\xb0\x11\x04\xe5\x18J" +
-	"(\xfa\x93;2\xc2L9\x88m (\x83(a\x81" +
-	"\xcf0!\xe3\x09\x95}x+\x08\xca\x1e\x94P\xf2G" +
-	"6ds\xa8\xf20\xda (\xf7\xa3\x84\xd3|b\x07" +
-	"\xd9\xfc\xaa\xfc\x90~\xdd\x8a\x12\x16\xfa\xcc$2\xd6A" +
-	"\xe9\xa3\xe7v\xa3\x84\xe7\xf8\x1c\x1d2\xfaQ\xd1q\x03" +
-	"\x08\xcaZ\x94\xf0[\xfe4\x8a\x8c\xf9QT\xfa\xb5\x01" +
-	"%\x9c\xee\xd3\x8e\xc8x<\xa5\x96\xda\\\x85\x12\x16\xf9" +
-	"D\x04\x16\x0d\xe0\x01\xd8\xb3}\xaf2\x8f\xee\x9d\x85\x12" +
-	"\x9e\xeb\xf3f\xc8\x88<\xe5<\xdc\x0d\x82\"\xa3\x84\x01" +
-	"\x9fAA\xc6\xc8*Ar#\xf9k\x09\x83\xfe\x80\x8b" +
-	"\x8c\x10\x95GZA\x90\x87%\x00\xc6\xd9pD\xc4\x89" +
-	"\xf9 \xc8G$,\xf6\xe9\x0dd\xc4\xb2\xfc\xf2\x13 " +
-	"\xc8\x83\x92\xc7\xd29\x88\x86\x19A\x8fM\xad\x00\x10A" +
-	"\x8f\xf5o i\xf4+\xabr\x10N\x03%\x82\x9ek" +
-	"\xf7\xd5S\xfc\x94\xb1\x15\x96M\xb2+lvbjX" +
-	"\xab\x07\xc5vz\x81\x05(\x14\x13A\xa2#\xd3kA" +
-	"8\x1d\xb5\xbeZN\x86\x15QdUTb\x16\xa5\x87" +
-	"G(\xab\xcf\xa8gC\x03\x88\xba\x1d\xc1\xe2\xa4av" +
-	"pWEV\x86\x8b\x1d\xaa\x80\xef)\x84\xb1\xb1.\xb9" +
-	"\xbaM#\xca'\xd4H\x10e\x09\xd7\xa2[=\xd6\xe4" +
-	"c\xa6{o\x90\xcc\xf5\x96\xc7\xb2 \x84\xd3yP\xbd" +
-	"\x90&q\xc6\xcb#\xa3\x0f\xe5\xa7\xc8c\xf7K\x88>" +
-	"\xfd\x8c\x8cu\x93\x1f\xb8\x15\x04\xf9\x1e\x12o\x8cSB" +
-	"FX\xc8\xdf'\xdf6\x93hc4\x092\xceJN" +
-	"\xbd\x00\x82\xdcM\xd0\xc5\xd8pdl\x9b\xac\x13 h" +
-	"\x04\\\x8cDD\xc6\x88\xcb\xabw\x80 \xab\x92\xc7\xb2" +
-	"\x1b\x94\xd1\x14\x15A\x8f\x8d\x0c\x10\xd6\xd9R\x87\xee\xb6" +
-	"\xb8\x9ak@8V\xe78\xba\xcb-\x09\xb1\xa6T[" +
-	"\xdcp:\x0d\xb3\x83\x0c?\x04[l B6\x11\x15" +
-	"\x13gEH[\x92\x1eb\x90M1\x04\x8a\xfc\xa3L" +
-	"n\xf4a\xe3^\x9e)&\x96\xa9G@s\xa9\xff\x80" +
-	"\x93\xc9\xf5c\xa6\xb8\x06s\xbd\x05\xa4,\x97\x88\x81\xe9" +
-	"\x9e\x97\xa6\x03H\xb6\xff\xae\x88j\xa7\x80E\xf8\x8d\x97" +
-	"N\xf7\xfa\x8e\xec\xe8_$|\xed\xa5;\xa1n\xd2\x93" +
-	"%ET\xff\x92tB\x98\xee\x84\xfa\xc8b\xaf\x88\xea" +
-	"\x1d\x02nJ\x99]\xa6\xd5cB\x01\x89V\xd7\x885" +
-	"\xa5\x90y\x93\x9b\xc1\x1cW3\xdb\xb5\xb8\x05\xa2\xa9C" +
-	"\x81\xe7\xba\xf1\x16=f\x99 \xb6;8\x0d\x04\x9c\x96" +
-	"\x9fR\"\x11\xc1\x0a\xf2\x94F\xc5\\\xc54\x9a-\xa6" +
-	"\\M{eh\xee/\xfa>\xe8;0Aw9\x9a" +
-	"\xf9a\xad\x087&Es\x8dIQn6d\x0d\xe6" +
-	"\xaa\xd6\xec\x188a7h\xea=7\x10\x11\x10\x1b\xa6" +
-	"\xc4\x04\x8d\x1bj'?\xfb\xe7l\xcfs\x10#~\xa2" +
-	"\x99\x0c12\x86\x9f\x9a\xa8\xfd\x88f\xf9\x8f\xb3\x9e\x8a" +
-	"\xf9\x86v\x02\xe6 \xc70~V\xad\xe3\xb8\xbey2" +
-	"\xd4k\x8e~\xf3\xf7\xe6\x93\x9c\xc6\xb3\xe47&\xf7\xe5" +
-	"\x1c=\xcfb,\xcb\x15\xc2\xf9\x1c\x93\xc70\x9a\xa6s" +
-	"=\xda\xc5Y\x18\x8a\xc6\xf8\xeb\x8a\xb9\xdd=\xa7\xa9\x8c" +
-	"\x02\xef\xff\xd3\xc5\xf9\xa6\xfbQ\xeb\xb9F\x18>+\xe5" +
-	";#\xdf\xbd\x9a\xc3\xe9X\xfd\x1d_lJW\xc8\x85" +
-	"\x12>;\xc4,[G\xd9\x9b\xfe\xcc\x8fv\xf7\xaey" +
-	"\xe4\xef'H\xab\xa3'\xbcq\x84\xfa\xb8$\x9c\xee\xe9" +
-	"FK\xff\xa1\x92Ub>\xb7\x8av\x1f)\xcb\xd3h" +
-	"\xa3\xc5~BC\xf6K\x98\\N\x9a\x9b\x05\xa4\xd1b" +
-	"?I!\xfd)\x1cV>.\xcf\"\xdffJ\x1e{" +
-	"\x16d\x8ai[\xcc\xd8$d!5\xb6C\x99\x12\x15" +
-	"\x95\x01\xeb\xa4\x86\xd7\xdfw\x82\xcd\x97\xa3r\x04\x10\x7f" +
-	"N\x92H\xc7r\x9f\x93\x9f\xb0\xcf\xc1vO\x9d\xe0\x1a" +
-	"\x8d\xcd\xdf\x81\xab\x98Lj\xf4\xdb\x9b\x89\x1a\x90\xf9\xb9" +
-	"\x1a\x90F\xae\x01\x89Y\xa6\xab\x9b.\x16\x81\x80E\x80" +
-	"\xc5n_\xd2\xffy\xcc\xd3\xcd\x98\xd5N\x9b9\xdf\x9d" +
-	"\xff\x17\x00\x00\xff\xffncP\x16"
+const schema_dcbc0d702b1b47a5 = "x\xda\xccZ}t\x15ez\x7f\x9e\x99\\&\xb8\x84" +
+	"d\x1c\xf0\x13\x1ba\xe3Q@\xbe\x84\x0b!M\xcc\x17" +
+	"\xf9\xb8\x11$C\xa0\xd4T*\x93\x9b!\x19\x92\xcc\\" +
+	"f\xe6\x02akYD\x90\xe2r\xacV\xa5\xd2\xba\x0a" +
+	"UkX)\xc8Y\xdce\xc5\xad\xa8\xac\x88\" (" +
+	"\xc5\xca)\x1f~\xc5SVc\xa5\x96uqz\xdew" +
+	"\xee;\xf7\xbd\xc9\x0dI\xd8\xed9=\xfc\xc1\xb9\xef<" +
+	"\xef\xf3>\xef\xf3\xfd\xfc\xdeL|tx\x890)T" +
+	"\xbc\x18\xa0\xeeXFh\x90w\xef\xeboT\xb4\x15=" +
+	"\xf9cP\xafB\x04\xc8\x90\x00&\x87\xc2\x9b\x10P\x19" +
+	"\x1e.\x06\xf4F\x96\xdeW1Q\xbb{5\xc8We" +
+	"x\xb3\xb7\xed-X\xd2\xb9c/\x00N\x0e\x87\xaf@" +
+	"\xa5\",\x01\xd4\x95\x84E\xac\x9b\x19\x16\x10\xc0\xabz" +
+	"~\xc3\xa1\xbb^\xf3V\x83<\x02\x01B\x02a8+" +
+	"\xbc\x9e0\\\x10^\x06\xe8m\x1c\xfd\xc6y\xe3\xd6\xa9" +
+	"kA\xbe\x8a\x1d\xf8J\xb8\x01!\xc3\x1b;\xee\xf8\xc6" +
+	"\xa3W\x1fX\x0b\xf2\x18\xb2\x15\xc9\xa7\x8e\xf0kd\xeb" +
+	"n_\x96\x93w^\xd1\xd2\xf1\xdc\x03\xfe\xd6\x10\xdd{" +
+	"2\\C\x08:\xc3\x9f\x01z]7\xadn\xfbl\xe7" +
+	"\xe8u\x09\x02\xcaa\xef\xd4\xc5\x84\xe0\xe0T\xc2\xe1\xa9" +
+	"+\xa7l\x8d\xe4\xc4\xd7\xf1\xd2\x9d\x9b\xba\x93\x10\\\x9c" +
+	"J\xa4\xf3\xfe\xf9\xf6k%\xa9\xfdA\x9e\xc3]\xd3\xea" +
+	"\x09\x81>\x8dp8Q\xbez\xe2\x17oV<\xcc\x89" +
+	"\xbffZ\x0d\x11?\x9c\xb3\xb1\xa4\xeb\xb6\xb6\xc4\x17\x9f" +
+	"\xf7\x92i\x0dd\xeb\xbd\xd3\x08\xef\xdf\xd6\xad\xa9\xf9\x9f" +
+	"\x1fy\x8f&\x0e\xa7\xbcON\xa3\xf7;Gy\xaf\x9e" +
+	"p\xe2\x96\xbfx\xfd\xf4\xe3>\x01\xe5-\xe7o%\xbc" +
+	"\xeb\xdd\xce\xcf~\xb9|\xfe&^n\xcc\x7f\x84l\x95" +
+	"\xf3\xa9\xdc\x9a|2\xf3\xa7\x1d\x9b8\xb1\x96\xe4\xcf!" +
+	"[_>v\x8d\xf8\xd4\xd7\xeb\x9eL\x88%\x92O\x0b" +
+	"\xc8'T\x8c\xfc\xed\x80\xde\xbd\xbf\xfc\xd5\xfd\xf7G\xfe" +
+	"\xf6\xa7\xdc\xd6\xd0\xf4\xc5d\xeb\x82\xcf\xf3k>\xfd\xf7" +
+	"k\x9fN\x18\x84n\xed\xca?@\xb6\x86\xa6\x93\xadw" +
+	"\xfc,\x7f\xcf\xfd\x93\xdf\xdc\xcc{O\xc7t*\xd6\xee" +
+	"\xe9\xe4F\x0f\xed\xfb\xe6\xe9\x97u\xfb\x9f@\x1e!z" +
+	"\x1fn>\xba\xec\xc6\xe3\x1d\xaf\x13\xef91\xbd\x1e\x95" +
+	"s\xd3%\x00\xa5sz\x95\"\x17H\x00\xff1fk" +
+	"$\xef\x86\x8a\xe7\xe5\x1f\x06\xea\xb90\xfd\x0ca\x96U" +
+	"@\x98\xb5\xbcWtb\xdc\xe1\x87:8A\xc7\x15P" +
+	"\xcfY\xb0\xf6\xfa\x89?\xc9\xfdr+o\xb5k\x0b\xa8" +
+	"\xd3\x8d\xa6[\x0f-\x9f]\xb8j\xfec/\xf0\x04\x91" +
+	"\x02\xea9\xf3(\xc1\xa6\x11\xaf^\x18z\xe1\xbbm\x89" +
+	"\x9b\xf8\xbe\xd5^P\x86\x80\x93W\x15<\x84\x80_f" +
+	"\xed\xc0\xfd\xdb\xd6mO\x1e.\x17\xd6\x93\xc3\x0b\x97l" +
+	"\xc9Zpt\xd5\xcfA\xbeJL\x89\x90\x8b\x7f:\x07" +
+	"\x15\xb9\x90\xdc1\xab\xb0J\x09\x17^\x0d\xe0\xcd~\xe2" +
+	"\x80\xbbvo\xeeK\xbc$7\x15R\x07\x9bTH$" +
+	"\xd9\xfd\xa2r\xf7G\xeb7\xfc\x82\x98:\xa92_\xa0" +
+	"y\x85\xf5\xa8\x18\x94\xa3^H\x1c\xfe\xb9\xe2\xbf\x1bu" +
+	"\xf3\x8d\x93_\x06yl\xe0\x17\xa5E\xef\xd1{\x15\x11" +
+	"\xbf8\xf4P\xfd\xda=\x1f\xa8{\xf8\xe3v\x15\xd1\xe3" +
+	"\xf6\x16\x91\xe3\xc6\x0cyn\xca3GB\xaf$<\x8b" +
+	"\xda\xf8t\x115aW\x11\xb1qp#y\xa8\xe8=" +
+	"[u\xfd\xd8X\xd6\x9e\x8f\x00Py\xec\xf6\x9d\xca\x93" +
+	"\xb7\xdfL\xe2\xf7v)CYU*\x01$\x05\xeeN" +
+	"m\x94\x9eQ\xe2\xa5\xd3\x00&?[Z%(\x91r" +
+	"B\xfdoJ\xde\xdb\x9f\x8c\xafy\x83\x8f\x88I\xe5[" +
+	"\xc8\xe1\xa5\xe5D\xba\x11\xb5\x997\x8f\xed\x9c\xb6\x8f'" +
+	"\xd0\xcbi\xbc\xc6)\xc1\x83'\xbf\xba\xfe\xb6\x07Bo" +
+	"\x82:\x029uU\xa0$\x92\xa3\xca\xefCe79" +
+	"J\xd9UN\xf4\xf5\x8b\x87\x7f\xfd\\\xec_\x1f=\xc0" +
+	"\xf3{b\xc6\xaf\x08\xbf\x8e\x19\xc5\x80\xdf_3\xe9\xc8" +
+	"\x8co\xfe\xec\xed\xa4\x91\x0f\xce\xb8\x92\x18y\xddyC" +
+	"\x7f\xf1\xc6\xf5\xef\xf0\x1bw\xcd\xa0yr\x1f\xd9\xe8\xad" +
+	":\x1aZ\xf8\xdb+>~\x87\x0f\xb3OfPEw" +
+	"\xcd z\xbcyy\xf4\x9e\x9f=\xf5\x8f\x079\xef\xdd" +
+	"PA#\xf4\xbd\x9c\x91S\x8e\x15-~\x97\xe7\xdd^" +
+	"A\xc3lC\x05\xe1=\xf9\xfd?\xa9\x8e?\xbe\xe80" +
+	"\x9fY\xb6UP\xef\xdd]A\xac\xdc0\xf4\xf8_." +
+	">\xf7\xc1a\xde\xca\xc3+i\x8c\x8f\xac$\x1c\xce\xfc" +
+	"\xee\xc3-s\xbf]\xf3\x1e\x97Y**w\x92\xc3\xbb" +
+	"\x0e\x0e\xaf\xf9\xe1\x88\xc7\x8f\xfa\x1eD\xbf\x84+?$" +
+	"_\x96O\xea<v\xeac\xeb\x14\x7f\xea\xe8J\xea\x19" +
+	"\xd3+\xc9\xa9\xc3>}\xe9\x83o\x1b\xbaN\xf1r?" +
+	"VI\x03\xb6\x83\x9e\xfa\xfb1\xd2\xa1\x17\xaf|\xe4\x0c" +
+	"Op\xb0r+!8I\x09\x16\xde{u\xe7+\xef" +
+	"v\x9c\xe5tr\xb1\xf2:r\xf8\xaf\xd7V}\xbd\xe9" +
+	"o\x0e\x7f\xcco\xfd\xc4?\xfc<\xddz\xe8\xba\xef\xdf" +
+	"\xda\xbe\xfd\xe8\xc7\xbct\xc3\xabn#\x047T\x11\xe9" +
+	"\xa6\xd8\xeeB\xfd'/|\x0e\\:i\xaf\xfa\x90j" +
+	"\xb5\x8ap\xe8\xfc\x979\xdfM\xbd\xe5\x07_\xf0J\xdb" +
+	"VU@\x08vQ\x821{?={\xe3\x8e\xf8\x17" +
+	"<\x87\x13U\xf4~\xe7(\xc1\xf1\x97\xe4\xbf~\xfa\xbe" +
+	"\xa7\xbe\xe0\xc4\xcf\xaa\xa6\x09\xe9\xd0\xc4\x1f\x87>\xc8\xcd" +
+	"\xfb\x92\xf7\x86\x0bU\xb4\x16\x84\xaa\x897\x8cm\xbbi" +
+	"Q\xf1\xad\xab\xbf\xea\x1e'\x93;\xaa\xafCew5" +
+	"u\xd9\xea\x07\x94\xe1\x11\x12'k\xbaZ\x8f\xd4\xce\xdf" +
+	"\xf1\x95/\x89\xaf\xa7jj\xa4\x1f\x8dZ\x8e\xde\x7f\xbe" +
+	"\xf35\x7f\x89\xaejj\xf9\x8b\xd5D\xc6\x89\xa5c\xff" +
+	"\xeb\xec3W}K\x03\x84Q\x8c\x8cP#L\x8a\x10" +
+	"EM\x1b\x95\x95Yx\xe7\x84\x0b)f\x8cPEu" +
+	"D\x08\x8bawM\xe98\x95o\xff\x8e?\xe3`\x84" +
+	"\xa4F\xe5}J03\xa7\xccz\xf8\xc4\xcc\xefx\x82" +
+	"\xf3\x11\xea\xfbXC\x08v>\xa8\xbc\xbd\xeb\xcc\xa8\x8b" +
+	"|\x92\xb9\xa9\x86FO\xb8f;xi\xfe\xd9^\x83" +
+	"\x16m\xd1\xcd\xc6\xf1\xa1\xa8\x163c\x05e\x89\x9fM" +
+	"\xba[ek\x86Y\xe7Z\xb6\xd6\xa4\xcfs\xb4&=" +
+	"o\x8e\xee\xc4[E\xd7Q3\xc4\x0c\x80\x0c\x04\x90\xb3" +
+	"\xc6\x00\xa8\x99\"\xaa\xc3\x04\xccv\x8c\x15:\x0e\x06\x01" +
+	"\x07\x93hIp\x12S\x19;V\xb4Ewk5\xb7" +
+	"\x19\xa0\x16\x11\x87\x80\x80C\x00d\xfc\xda\x9b\xb0T\xb3" +
+	"'8\x9a)4:\xaee\xb7M\xf0I'4h\xb9" +
+	"tkwQ\xab4W_\xa6\xb5\xcf\xb1\xe2\xaen\x8f" +
+	"\xb7b\xba9\xcf\xa8\xd3\x1d\xc7\xb0\xcc\xbcZ\xcd\xd6\xda" +
+	"\x1c*\x1a\x93t\xb4\x0d\xa0\xde\"\xa2:E@\x19q" +
+	"\x18\xb1\x93<\xa9\x00@\xbdUD5_@\xcf\xf17" +
+	"\x97C\xaee\xb5\x18zB4,\x8eQf\x98\xe3=" +
+	"\xbe\xe3\xbf\xe7o\xbc>t\x1c\x001\x87\xbbbF\xea" +
+	"\x15][3\x9dE\xbaM\x15H\x95&\xb5\xbaN@" +
+	"=(\x95\xbaV\x8b\xb6\x10\x0d\xc7Z-\xad\xb1\xce\xb5" +
+	"u\xadm\xbc\xa3-\xd5K\x1dv\x0b^\xdds\x00\xd4" +
+	"!\"\xaa\xd7\x08\xe8\xc5\xfc\x9d\x11\xc0F&ko\"" +
+	"\x91\xe5x\xcc\x17(\xd0MN\xc0V\xab\x01P\x17\x8a" +
+	"\xa8\xb6r\xba1\xca\x00\xd4F\x11\xd5\x98\x80\xb2 \x0c" +
+	"C\x01@n#\x8b\xcd\"\xaa\xae\x80\xb2(\x0eC\x11" +
+	"@^B\x9c\xa0UDu\xb9\xe0K\x10\x8fE\x1a\x01" +
+	"\x80I\xb5\xd2Zf\xeav$\x90re\x13\x11$\xf9" +
+	";\xdb0\x17Y\x98\xe35\xdf\xd0Tw\xfa\xd5\xdf\xef" +
+	"\xeaC\xbf\x86\xe9\xb8ZkkBqD\xc1\xd9\xf1\xd6" +
+	"T\xaf,Hze\xb1Cu\x8ar\xb2\x85\x00D\x99" +
+	"c\x9f\xd6\x9f\x9at\xb74fT[\x8e;Gw\xac" +
+	"\xb8\x1d\xd5\xf3js\xa9\xe6x\x9f\"\xe7\xe4\x89\xa8N" +
+	"\xe4\xf46nL\xd2\xd1\x8a\x9b-\xc7\xe5.\x1a\xd3\xdc" +
+	"\xe6\xbele\xeb\xc4\xfd\xf5\xa4\xf7\\*\xe4\x06\xa6\xb9" +
+	"F\xbdUw\xf5y\x8en\xfb\x8c]\x07\xa0WZk" +
+	"\x99I\\\xb2\x8c\xda\x93x\x8d\xd4\xed\xf25}\x05T" +
+	"\x1aWHZ\xe3\x9e\xb3\x87F/\xcb\x9f\x7f\xb0\xbb5" +
+	"\x06\xa5\xb3\x86M\xfe\xab\xb4l\xddh2\x89ML\xad" +
+	"MO\x17\x1e5\\x4'\xe8\xb8\xd3/mr'" +
+	"\xde\xe0Dm\xa3A\x9f\xdb\xea\xdc\xa1\xb7;\x81g\xf5" +
+	"\x9dyJc\xa9\xa9\x07\x07\xa6(-f\xcc\xb5Zt" +
+	"\x93WT\x90u6\x9e\x9f=s\xc3\xb8\xcf\xbf\xef\x97" +
+	"m9\xafq\xd1\xe9\x97\x8b1\x81\x87\x04\x02W\x10\x81" +
+	"g\x88\xa8\xd6r\x02\xcf\"\x91_-\xa2:\x97K\x07" +
+	"*Y\x9c)\xa2\xfa\xe7\x97\x17\xf9\xfdt\xbe\x1e\x86\xe8" +
+	"\x7f\x0e\x0d\xfc\x9c\xbf\xdfm\x00j\x89\x88\xeaL\xee~" +
+	"\x91\x9at\xf7{\x0d@\x9d+\xa2\xbaP\xc0\\-\x16" +
+	"\xe3$o\xd3Lc\x91\xee\xb8\xe4\xb69\xde\x81\xd3\x9f" +
+	"\x1a\x8bG\xdf\xb3\x86\x19I\x8b\xbb\xcd\x96]\xdb$\xc4" +
+	"\xee\xd0\xdb+\x0d\xb3I\xb7c\xb6a\xba\xbd\xba\"W" +
+	"xI|\xf6\xac\xbb.\x0e\xac\xeef\xa4\xf3U\xdf\xb3" +
+	"\xcb\xb5\xd6\xd6\x06M\x8c\xb6\xd4\"\xaa\x19b\x08 \x18" +
+	"q\x90u\xaa\xb2\\\x06\x82\x1c\x92V:\xbaK\x82\xa1" +
+	"\x04k\xb1G\x90\xd6i\xa6_\xab\xcb-[\xaf\xd4\xa2" +
+	"\xaee\xb7\xd3\xd6\x81?4\xa8\x80\xbd%h\x1a\xdc6" +
+	"\xca\xfc\xe8\x9a\x92\x12.\x9d\xff\x13\x99i \x0a\x0dJ" +
+	"`/\x12\xc5\x1d\xdei{\x93\xc3q5\xdb\xe5\x03\xae" +
+	"\x1b\xc7z.\x199\xf1\x98n/5\x1c\x10-r\xd3" +
+	"\x89\xf3\xf2\xa3#\xf7\xaaO\xf4qS\xee\x04\x96\xecF" +
+	"\x04\xfcw\x91\xd8\xdb!\xa2\xba\x87\xf3\xe2\xddd\xf1\xe7" +
+	"\"\xaa\xafr^\xfc\x0a\xe9\x1a\xf6\x88\xa8\xee\xe7\x8a\xf6" +
+	">B\xf9\xaa\x88\xea;\x02b\xc60\xcc\x00\x90\xdf\"" +
+	"\x81\xf1\x86\x88\xeaa\x01\xe5\x10\x0e\xc3\x10\xa2|\x90\x10" +
+	"\xee\x17Q=&\xa0<H\x18\x86\x83\x10\xe5#\x84\xe5" +
+	"a\x11\xd5\x8f\x84\xbe\x83<M\xa3\xb22j\xb5\xb5i" +
+	"f#\xe6x\x87\xd6\xde\xf2\xf4N5\xf2\x9bD\xe8\xe4" +
+	"\x1a\xce\x9d\xfa2D\x10\x10\x01W6\xeaKgY\x8d" +
+	":\xfb\xed\xb5Yq\xd3\xad\xb5-\xc0h\xb0v\xc9\x8c" +
+	"\x98L!\xb4\x90\xf6F\xdc3\x85`[2<\x18h" +
+	"\x86\x0c\xac\x91\xe5\x02\x1a\x1e\xc5~\x9a)A5\x03\x91" +
+	"\xabipi\xa18\xdf\xd5\xc46\xe7\x0f\xe8\xf0R\xe3" +
+	"\xbb\xce\xd5\\#\xeaw,bT'\x17\xe0\xba<\x92" +
+	"3\xee\x16Qm\xe6\x1cF\xafI\xd7\xe5\xd5$\x1b\xba" +
+	"\xc0a\xe2d{LD\xf5\xaf\x04\xccv\xdbcA\x83" +
+	"\xec\xb5jfS\\kJ\xa9\xb4\xba\x19\xb5\x1a\x0d\xb3" +
+	"\x89[\xcbn\xb0\x1a\xdb1\x0b\x04\xcc\xea\xab\xde\xf3y" +
+	"*\xda2>\x91\x83\xd2\xd5\xd6Q\xe9:\xb09\xc9\xda" +
+	"*\xb5\xe8\xed\x81PQ\xddv\xcb\x9b5\x03\xd0\xec+" +
+	"\xb8\xe3\xb1\xd4\xfa\xd3\xa3\x0bK\xdbb\xf6\xd6\xd4\xf4c" +
+	"d\x09\x92<W\xa7\xca\xd2\xd5\xa9\xf5\xc9\x92\x1b\x18l" +
+	"\xde\xe2d\x9dZ\x99\x98cP\xf6\xde}><k\xb3" +
+	",=\xcb\xc4!W2\xcc\xa6\x08\x9a\x8dFTs-" +
+	"\x1b\x00e\xefT\xd9\xc2\x85/\xe4}\xf3\xf7\x8c*\xa6" +
+	"\xd9\xba\xe9\xce\xb6!\xdbh2z*\x0a\x99\xa2\xfc\xb1" +
+	"L\xcdD\x1e\xbf\x1e\\\xcfAu\x83\xb7xl\xde\x03" +
+	"\xd1m\xf6X\x90!\x8b2I\xd7\xda\xd4\x121\x84I" +
+	"l\x10\x19\x8a\xa8ta=\x08J'J(\x04@\x04" +
+	"2<A9\x895 (\xef\xa3\x84b\x00\xdd \x03" +
+	"h\x95\xb7\xb0\x01\x04e/J8(@4\x91\x01\xd7" +
+	"\xca.\\\x01\x82\xb2\x0d%\x94\x82\xb1\x1a\x19\x9a\xa0l" +
+	"F\x1b\x04\xe5\x09\x9403\x00\x12\x91\xa1\x10\xca\x06\xfa" +
+	"u\x0dJ88\x80\xca\x91\xc1NJ;=w\x09J" +
+	"xE\x80\x09#\x83\xbb\x15\x1d\x17\x83\xa0,@\x09\x7f" +
+	"\x10`\x0a\xc8\xc0CE\xa5_#(\xe1\x90\x00\xe6F" +
+	"\x86\x1b+ET\xe60J\x98\x15 Q\x98\xb5\x03\xf7" +
+	"\xc3\xb6u\xdb\x95\xd1t\xefH\x94ph\x80\xd3\"\x03" +
+	"\x8e\x95\xe1\xb8\x05\x04EF\x093\x02\x08\x0d\xd9\x13\x81" +
+	"\x12\"7\x92/J\x18\x0a@\x08d\x00\xbc\xdcU\x0f" +
+	"\x82\xdc)\x010\xd0\x8e\x83\x93N\x8e\x01A>\"a" +
+	"v\x80b!{\xe9\x90\xf7m\x05A\xde+y\xac\x84" +
+	"\x81h\x98%\xe81\\\x01\x00J\xd0c=+H\x1a" +
+	"\xfd\xca*;\x14\xfb\x8eR\x82\x9ek\xb7WQ\xff\xc9" +
+	"e+,\x83&W\xd8t\xcb\xd8\xb0\xf6\x16\xb2m\x7f" +
+	"\x81\x053d\x13B\xc2#\xd1_B\xb1\x1f\xe1\x01[" +
+	"\x8e\x865\x0e\xc8:\x07\x89I\xe4\x8f\xf7\x90[\x95`" +
+	"\xcf\xc6*\x10u\xbb\x04\xb3c\x86\xd9\xc4]\x15Y\xeb" +
+	"\x91\xedP\x06|\x1f%t\xcf\x0b\x92\xab\xdb\xea\x10\xe4" +
+	"\x01jyE\x12\x7f\x95\xe5-\x1c\xda?|\x85\xc7\x12" +
+	">\x14\xfbC\xaa\xc7\x86$LL?\x11\xc9\\dy" +
+	",\x9fB\xb1\x9fQ\xd5<Z\xd6\xd83\x122|Z" +
+	"\x91\xa9w\x0fF\x091x\x0eA\x06\xcb\xca\x17W\x80" +
+	" \x9f'\x8e\xc2\x90Cd\xa0\x93\xdcI\xbe\x9d&\xf1" +
+	"\xc6\xa0.d\xd0\xa5\xfc\xfek\xbe\xa3H\xc1\xeb\x0c2" +
+	"8\x969\x0af\x0685\xb2\x17\x1ay\xd7z\x10\xe4" +
+	"\x17\x89\xd72\x90\x13\x19V-?\xfb\x08\x08\xf2f\x12" +
+	"\xfd\xec\xb9\x09\x19\xee,?\xb6\x09\x04\xf9a\x927\x18" +
+	"0\x87\x0c\x9b\x95\xd7\x90}\xab$\x8fe_\xc8\xa5\xd9" +
+	"\xb2\x04=6\xc8A\xb1\xce\x96\x9at\x97j\x18\x8a\xa3" +
+	"\xa5\x8e\xa3\xbb\xdc\x92\x10\xad\x8d7\xb4\x1aN\xb3a6" +
+	"\x91\x91\x94\xf83\x1bS\x91\xcd\xa9\xd9\xc4\x04%\xa4\xfd" +
+	"\xf3GKd\xb3%u\x7f\x861\xa0\xe3\xce\x8e\xb9$" +
+	"e;\xa9\xabA!/A\xafE\xd7cZ\xab\xb1\x14" +
+	"\xf5R\x7fZD3\xd5\x97\xfa7\xd3\xb29\xbe\x97\xa1" +
+	"9\x9a(\xb9@+C\xe0j\x03CL\xfc\xcb\x90\xd9" +
+	"+\xd7\xe9\x8e\xcc\x8cJ\x94\xcd<\x01\xa5Fm)\x0e" +
+	"\x05\xac\x15}\x18ph_'t\x03\x00\"\xe6\"\x0b" +
+	"\x12-\xce\x10\xcf\xf3{\x9c\xb2d\x8f\x93\x85\xdf{\x89" +
+	"&g}\x12\xb5\xca\x12.z~\xd1\\R\x9flh" +
+	"d\x11\xfd.\xa7\x9d,.\x17Q\xbd_\xc0\x95q\xb3" +
+	"\xc5\xb4\x96\x990\x88\xa41\xd7\x88\xd6\xc6\x91\x99\x9ck" +
+	"u\x1cW3\x1b\xb5V\x0bDS\x87A\x9e\xeb\xb6\xd6" +
+	"\xe9Q\xcb\x04\xb1\xd1\xc1L\x100\xf32\xb0\xa69\xc5" +
+	"z\x0f\xd5\xf1v\xb2\x13\x84\xfe\xf4\x19$\x8bn\x10A" +
+	"7\xec\x95$&\xd6C\x0d\x08\xd3H\xd7\xff\x94%\xfb" +
+	"\x1f\xae\xe3x\xf3\xe0M\xbfi?\xdb\xbe\xbf\x8f\xc1&" +
+	"\x15\"e]p_\x9dO\x19\x07K\xb0\xcegV}" +
+	"\xb2\x1d\xeas\x101\xf5e\xb3\x09\x09\x88\x91\x01A\xa6" +
+	"=\xf0\x94\xfe\x83Ti'\xc34\x08^\x90\xe2\xfb\x8f" +
+	"\xf2\xa4\x03\xb9\xcb\xd2\xb5\xc3eI\xfc\xe9\xb2\x01\x19~" +
+	"\x96bmx/\xbe\x99\x06\x07\xba\xb4\xb7\xb1\xd4\xc62" +
+	"\x9b\x19d\x8e\xcb\x9a\x12z\x8cz\xfdy\xdbH3Z" +
+	"\xfc\xd1t9\xa8\x97\xa0\xafK$\x15\xbe\x8c\xa4EK" +
+	".\x03I\xe8g\x8a\xae\xd5\xb2\xedn\xe5\x80\x1flR" +
+	"\xe1\xebK\xe6\x95\xde\xb4\xde\xcb\xadi9M\xe7I\xd7" +
+	"%\x8f\x17\x8d>\x8ff\xb6L\x07\xce\xff\xb1\xed\xd7\x1b" +
+	"\xda\x95\xb2\x9en\xa4\xe7Seog\xf4v\xaft\x85" +
+	"\xe02\xdca@WH\xe7\x82|\xca\x8aZ\xb6\x8e\xb2" +
+	"7\xe4\xa5G\xb7,\x9f\xff\xcc?\xf4\x91\xebS\x11\x8f" +
+	"\x1e\xcfa=*\x83\xdf\xef\xa7R\xff\x7f\x05o\xc5\xde" +
+	"\xd4*\xda\xed\xa43\xc9\xa4m6{$G\xf6\xd6-" +
+	"O\"\x8d\xed8\xd2d\xb3Gg\xa4\x7f\x96\x03\x15\xcf" +
+	"\xcb#\xc9\xb7\x1b$\x8f\x99\x05\x19c\xd63\xd2\x88B" +
+	"\x16Rd\xf5\xb2\xa1\xd9\x84\xb3\xf6\x0b\x04\xf9\xbf\xcf\xfa" +
+	",\x19\xa5\x7f:\x09^N\x88\xfbO\x14Q-L\xff" +
+	"r\xe25\xc6m\x8dd7\x10g\xf5l\xc0\x06\x94\x8b" +
+	"\xd3\xc42\x7f\xe5\x18\xa1\x8e\xa6\xbfr\xef/oi\x9e" +
+	"\xad\x06\x8e=\xa7\x86\xc9\x1f\x00#\xf6'K\x07\xed_" +
+	"_\x0d\xda\x98t\x0dZ\x0d\xd7\xa0E-\xd3\xd5M\x97" +
+	"\x81\x80\xa90b\x1a\xc8\xf0\x7f\x03\x00\x00\xff\xff\xc7\x8c" +
+	"\xcd\xa4"
 
 func init() {
 	schemas.Register(schema_dcbc0d702b1b47a5,
@@ -5935,6 +6735,7 @@ func init() {
 		0x86ca17d397d72d2b,
 		0x87a6a96b0a4edd21,
 		0x8829b2e76d8325f1,
+		0x88751049aa34129f,
 		0x8b790707193ea7ff,
 		0x9145c7ea308343d9,
 		0x916d32f140971035,
@@ -5955,13 +6756,16 @@ func init() {
 		0xaf88ad00c801b00d,
 		0xb481d35d0da2713c,
 		0xb61fc18674ca994f,
+		0xb78d8adc5c13b1b9,
 		0xbb33202722933fa6,
 		0xbc51d6bc865a8fcf,
 		0xbd05d1a434a60c2a,
 		0xc1b0e9713ac1ad4f,
 		0xc3a9d72077d3a1da,
 		0xc44a2ee5cb2413d8,
+		0xc537e92b2708501c,
 		0xc70587321bf0dd8b,
+		0xca94bf70a6be91b7,
 		0xcb56f444d1311800,
 		0xcc8a20b16569f588,
 		0xcce40aee6005d381,
@@ -5969,9 +6773,11 @@ func init() {
 		0xce6a3dd4342110d2,
 		0xd0669675481ed533,
 		0xd0d6ed6a5ed70e62,
+		0xd285f754a2dafae2,
 		0xd3961c234a15cdf1,
 		0xe06fe4e0d4e93178,
 		0xe0f162f7d6b6e614,
+		0xe29212b1cf072afc,
 		0xe3a9cebde9177d60,
 		0xe4d0899af24786be,
 		0xe4d3afafc9fe1acf,
@@ -5983,6 +6789,7 @@ func init() {
 		0xf0832c3f66256d2b,
 		0xf0b05750d16cf185,
 		0xf2ccecff0178227b,
+		0xf716a4e3f32b4130,
 		0xf92f4e3c080d2237,
 		0xfa7238e0a9345914,
 		0xfb4cd9916f42104c,
