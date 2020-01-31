@@ -23,7 +23,11 @@ type cancelHandle struct {
 	cancel context.CancelFunc
 }
 
-func (h *cancelHandle) Close() error {
+func (h *cancelHandle) Ping(context.Context, util.Handle_ping) error {
+	return nil
+}
+
+func (h *cancelHandle) Shutdown() error {
 	h.cancel()
 	return nil
 }
