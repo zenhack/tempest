@@ -6,6 +6,7 @@ import (
 	context "context"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
+	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
 	capnp "zombiezen.com/go/capnproto2"
 	text "zombiezen.com/go/capnproto2/encoding/text"
 	schemas "zombiezen.com/go/capnproto2/schemas"
@@ -81,6 +82,38 @@ func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(Sands
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormHttpBridge_saveIdentity_Results_Future{Future: ans.Future()}, release
 }
+func (c SandstormHttpBridge) GetSessionRequest(ctx context.Context, params func(SandstormHttpBridge_getSessionRequest_Params) error) (SandstormHttpBridge_getSessionRequest_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      4,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "getSessionRequest",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionRequest_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_getSessionRequest_Results_Future{Future: ans.Future()}, release
+}
+func (c SandstormHttpBridge) GetSessionOffer(ctx context.Context, params func(SandstormHttpBridge_getSessionOffer_Params) error) (SandstormHttpBridge_getSessionOffer_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      5,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "getSessionOffer",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionOffer_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormHttpBridge_getSessionOffer_Results_Future{Future: ans.Future()}, release
+}
 
 // A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
 type SandstormHttpBridge_Server interface {
@@ -91,6 +124,10 @@ type SandstormHttpBridge_Server interface {
 	GetSavedIdentity(context.Context, SandstormHttpBridge_getSavedIdentity) error
 
 	SaveIdentity(context.Context, SandstormHttpBridge_saveIdentity) error
+
+	GetSessionRequest(context.Context, SandstormHttpBridge_getSessionRequest) error
+
+	GetSessionOffer(context.Context, SandstormHttpBridge_getSessionOffer) error
 }
 
 // SandstormHttpBridge_NewServer creates a new Server from an implementation of SandstormHttpBridge_Server.
@@ -109,7 +146,7 @@ func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server, policy *se
 // This can be used to create a more complicated Server.
 func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 4)
+		methods = make([]server.Method, 0, 6)
 	}
 
 	methods = append(methods, server.Method{
@@ -157,6 +194,30 @@ func SandstormHttpBridge_Methods(methods []server.Method, s SandstormHttpBridge_
 		},
 		Impl: func(ctx context.Context, call *server.Call) error {
 			return s.SaveIdentity(ctx, SandstormHttpBridge_saveIdentity{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      4,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "getSessionRequest",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSessionRequest(ctx, SandstormHttpBridge_getSessionRequest{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xad678f0d09bdd98a,
+			MethodID:      5,
+			InterfaceName: "sandstorm-http-bridge.capnp:SandstormHttpBridge",
+			MethodName:    "getSessionOffer",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetSessionOffer(ctx, SandstormHttpBridge_getSessionOffer{call})
 		},
 	})
 
@@ -229,6 +290,40 @@ func (c SandstormHttpBridge_saveIdentity) Args() SandstormHttpBridge_saveIdentit
 func (c SandstormHttpBridge_saveIdentity) AllocResults() (SandstormHttpBridge_saveIdentity_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
 	return SandstormHttpBridge_saveIdentity_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_getSessionRequest holds the state for a server call to SandstormHttpBridge.getSessionRequest.
+// See server.Call for documentation.
+type SandstormHttpBridge_getSessionRequest struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_getSessionRequest) Args() SandstormHttpBridge_getSessionRequest_Params {
+	return SandstormHttpBridge_getSessionRequest_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_getSessionRequest) AllocResults() (SandstormHttpBridge_getSessionRequest_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionRequest_Results{Struct: r}, err
+}
+
+// SandstormHttpBridge_getSessionOffer holds the state for a server call to SandstormHttpBridge.getSessionOffer.
+// See server.Call for documentation.
+type SandstormHttpBridge_getSessionOffer struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormHttpBridge_getSessionOffer) Args() SandstormHttpBridge_getSessionOffer_Params {
+	return SandstormHttpBridge_getSessionOffer_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormHttpBridge_getSessionOffer) AllocResults() (SandstormHttpBridge_getSessionOffer_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SandstormHttpBridge_getSessionOffer_Results{Struct: r}, err
 }
 
 type SandstormHttpBridge_getSandstormApi_Params struct{ capnp.Struct }
@@ -795,6 +890,330 @@ func (p SandstormHttpBridge_saveIdentity_Results_Future) Struct() (SandstormHttp
 	return SandstormHttpBridge_saveIdentity_Results{s}, err
 }
 
+type SandstormHttpBridge_getSessionRequest_Params struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSessionRequest_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionRequest_Params.
+const SandstormHttpBridge_getSessionRequest_Params_TypeID = 0xee4b3bf929955f83
+
+func NewSandstormHttpBridge_getSessionRequest_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionRequest_Params{st}, err
+}
+
+func NewRootSandstormHttpBridge_getSessionRequest_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionRequest_Params{st}, err
+}
+
+func ReadRootSandstormHttpBridge_getSessionRequest_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionRequest_Params, error) {
+	root, err := msg.Root()
+	return SandstormHttpBridge_getSessionRequest_Params{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) String() string {
+	str, _ := text.Marshal(0xee4b3bf929955f83, s.Struct)
+	return str
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) Id() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) HasId() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) IdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) SetId(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+// SandstormHttpBridge_getSessionRequest_Params_List is a list of SandstormHttpBridge_getSessionRequest_Params.
+type SandstormHttpBridge_getSessionRequest_Params_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_getSessionRequest_Params creates a new list of SandstormHttpBridge_getSessionRequest_Params.
+func NewSandstormHttpBridge_getSessionRequest_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionRequest_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormHttpBridge_getSessionRequest_Params_List{l}, err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params_List) At(i int) SandstormHttpBridge_getSessionRequest_Params {
+	return SandstormHttpBridge_getSessionRequest_Params{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params_List) Set(i int, v SandstormHttpBridge_getSessionRequest_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params_List) String() string {
+	str, _ := text.MarshalList(0xee4b3bf929955f83, s.List)
+	return str
+}
+
+// SandstormHttpBridge_getSessionRequest_Params_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Params promised by a client call.
+type SandstormHttpBridge_getSessionRequest_Params_Future struct{ *capnp.Future }
+
+func (p SandstormHttpBridge_getSessionRequest_Params_Future) Struct() (SandstormHttpBridge_getSessionRequest_Params, error) {
+	s, err := p.Future.Struct()
+	return SandstormHttpBridge_getSessionRequest_Params{s}, err
+}
+
+type SandstormHttpBridge_getSessionRequest_Results struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSessionRequest_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionRequest_Results.
+const SandstormHttpBridge_getSessionRequest_Results_TypeID = 0xb2e5439feb5f31ce
+
+func NewSandstormHttpBridge_getSessionRequest_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionRequest_Results{st}, err
+}
+
+func NewRootSandstormHttpBridge_getSessionRequest_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionRequest_Results{st}, err
+}
+
+func ReadRootSandstormHttpBridge_getSessionRequest_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionRequest_Results, error) {
+	root, err := msg.Root()
+	return SandstormHttpBridge_getSessionRequest_Results{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) String() string {
+	str, _ := text.Marshal(0xb2e5439feb5f31ce, s.Struct)
+	return str
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) RequestInfo() (powerbox.PowerboxDescriptor_List, error) {
+	p, err := s.Struct.Ptr(0)
+	return powerbox.PowerboxDescriptor_List{List: p.List()}, err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) HasRequestInfo() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) SetRequestInfo(v powerbox.PowerboxDescriptor_List) error {
+	return s.Struct.SetPtr(0, v.List.ToPtr())
+}
+
+// NewRequestInfo sets the requestInfo field to a newly
+// allocated powerbox.PowerboxDescriptor_List, preferring placement in s's segment.
+func (s SandstormHttpBridge_getSessionRequest_Results) NewRequestInfo(n int32) (powerbox.PowerboxDescriptor_List, error) {
+	l, err := powerbox.NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	if err != nil {
+		return powerbox.PowerboxDescriptor_List{}, err
+	}
+	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	return l, err
+}
+
+// SandstormHttpBridge_getSessionRequest_Results_List is a list of SandstormHttpBridge_getSessionRequest_Results.
+type SandstormHttpBridge_getSessionRequest_Results_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_getSessionRequest_Results creates a new list of SandstormHttpBridge_getSessionRequest_Results.
+func NewSandstormHttpBridge_getSessionRequest_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionRequest_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormHttpBridge_getSessionRequest_Results_List{l}, err
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results_List) At(i int) SandstormHttpBridge_getSessionRequest_Results {
+	return SandstormHttpBridge_getSessionRequest_Results{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results_List) Set(i int, v SandstormHttpBridge_getSessionRequest_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results_List) String() string {
+	str, _ := text.MarshalList(0xb2e5439feb5f31ce, s.List)
+	return str
+}
+
+// SandstormHttpBridge_getSessionRequest_Results_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Results promised by a client call.
+type SandstormHttpBridge_getSessionRequest_Results_Future struct{ *capnp.Future }
+
+func (p SandstormHttpBridge_getSessionRequest_Results_Future) Struct() (SandstormHttpBridge_getSessionRequest_Results, error) {
+	s, err := p.Future.Struct()
+	return SandstormHttpBridge_getSessionRequest_Results{s}, err
+}
+
+type SandstormHttpBridge_getSessionOffer_Params struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSessionOffer_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionOffer_Params.
+const SandstormHttpBridge_getSessionOffer_Params_TypeID = 0xd7dfe01ad496e65c
+
+func NewSandstormHttpBridge_getSessionOffer_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionOffer_Params{st}, err
+}
+
+func NewRootSandstormHttpBridge_getSessionOffer_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormHttpBridge_getSessionOffer_Params{st}, err
+}
+
+func ReadRootSandstormHttpBridge_getSessionOffer_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionOffer_Params, error) {
+	root, err := msg.Root()
+	return SandstormHttpBridge_getSessionOffer_Params{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) String() string {
+	str, _ := text.Marshal(0xd7dfe01ad496e65c, s.Struct)
+	return str
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) Id() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) HasId() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) IdBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) SetId(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+// SandstormHttpBridge_getSessionOffer_Params_List is a list of SandstormHttpBridge_getSessionOffer_Params.
+type SandstormHttpBridge_getSessionOffer_Params_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_getSessionOffer_Params creates a new list of SandstormHttpBridge_getSessionOffer_Params.
+func NewSandstormHttpBridge_getSessionOffer_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionOffer_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormHttpBridge_getSessionOffer_Params_List{l}, err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params_List) At(i int) SandstormHttpBridge_getSessionOffer_Params {
+	return SandstormHttpBridge_getSessionOffer_Params{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params_List) Set(i int, v SandstormHttpBridge_getSessionOffer_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params_List) String() string {
+	str, _ := text.MarshalList(0xd7dfe01ad496e65c, s.List)
+	return str
+}
+
+// SandstormHttpBridge_getSessionOffer_Params_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Params promised by a client call.
+type SandstormHttpBridge_getSessionOffer_Params_Future struct{ *capnp.Future }
+
+func (p SandstormHttpBridge_getSessionOffer_Params_Future) Struct() (SandstormHttpBridge_getSessionOffer_Params, error) {
+	s, err := p.Future.Struct()
+	return SandstormHttpBridge_getSessionOffer_Params{s}, err
+}
+
+type SandstormHttpBridge_getSessionOffer_Results struct{ capnp.Struct }
+
+// SandstormHttpBridge_getSessionOffer_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionOffer_Results.
+const SandstormHttpBridge_getSessionOffer_Results_TypeID = 0xf38a4e91679a53d1
+
+func NewSandstormHttpBridge_getSessionOffer_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SandstormHttpBridge_getSessionOffer_Results{st}, err
+}
+
+func NewRootSandstormHttpBridge_getSessionOffer_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return SandstormHttpBridge_getSessionOffer_Results{st}, err
+}
+
+func ReadRootSandstormHttpBridge_getSessionOffer_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionOffer_Results, error) {
+	root, err := msg.Root()
+	return SandstormHttpBridge_getSessionOffer_Results{root.Struct()}, err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) String() string {
+	str, _ := text.Marshal(0xf38a4e91679a53d1, s.Struct)
+	return str
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) Offer() (capnp.Ptr, error) {
+	return s.Struct.Ptr(0)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) HasOffer() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) SetOffer(v capnp.Ptr) error {
+	return s.Struct.SetPtr(0, v)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) Descriptor() (powerbox.PowerboxDescriptor, error) {
+	p, err := s.Struct.Ptr(1)
+	return powerbox.PowerboxDescriptor{Struct: p.Struct()}, err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) HasDescriptor() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) SetDescriptor(v powerbox.PowerboxDescriptor) error {
+	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+}
+
+// NewDescriptor sets the descriptor field to a newly
+// allocated powerbox.PowerboxDescriptor struct, preferring placement in s's segment.
+func (s SandstormHttpBridge_getSessionOffer_Results) NewDescriptor() (powerbox.PowerboxDescriptor, error) {
+	ss, err := powerbox.NewPowerboxDescriptor(s.Struct.Segment())
+	if err != nil {
+		return powerbox.PowerboxDescriptor{}, err
+	}
+	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	return ss, err
+}
+
+// SandstormHttpBridge_getSessionOffer_Results_List is a list of SandstormHttpBridge_getSessionOffer_Results.
+type SandstormHttpBridge_getSessionOffer_Results_List struct{ capnp.List }
+
+// NewSandstormHttpBridge_getSessionOffer_Results creates a new list of SandstormHttpBridge_getSessionOffer_Results.
+func NewSandstormHttpBridge_getSessionOffer_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionOffer_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	return SandstormHttpBridge_getSessionOffer_Results_List{l}, err
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results_List) At(i int) SandstormHttpBridge_getSessionOffer_Results {
+	return SandstormHttpBridge_getSessionOffer_Results{s.List.Struct(i)}
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results_List) Set(i int, v SandstormHttpBridge_getSessionOffer_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results_List) String() string {
+	str, _ := text.MarshalList(0xf38a4e91679a53d1, s.List)
+	return str
+}
+
+// SandstormHttpBridge_getSessionOffer_Results_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Results promised by a client call.
+type SandstormHttpBridge_getSessionOffer_Results_Future struct{ *capnp.Future }
+
+func (p SandstormHttpBridge_getSessionOffer_Results_Future) Struct() (SandstormHttpBridge_getSessionOffer_Results, error) {
+	s, err := p.Future.Struct()
+	return SandstormHttpBridge_getSessionOffer_Results{s}, err
+}
+
+func (p SandstormHttpBridge_getSessionOffer_Results_Future) Offer() *capnp.Future {
+	return p.Future.Field(0, nil)
+}
+
+func (p SandstormHttpBridge_getSessionOffer_Results_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
+	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
+}
+
 type AppHooks struct{ Client *capnp.Client }
 
 // AppHooks_TypeID is the unique identifier for the type AppHooks.
@@ -1290,68 +1709,82 @@ func (p AppHooks_drop_Results_Future) Struct() (AppHooks_drop_Results, error) {
 	return AppHooks_drop_Results{s}, err
 }
 
-const schema_ac137d236832bb1e = "x\xda\xa4U]h\x1cU\x14>gf\xd6\x1b!a" +
-	"sw\x0a\xbb;\x98\xaa1\xfe4\x90\x1a]*\xb6\xa2" +
-	"\xc9\xc4\x07\xbbA\xc9N\x8aBK+Lv\xa6\xe9\xc4" +
-	"\xec\xce\xb8s\xd3\xfa\x17[V)\x18\x08\xc6\xda\x82\x8a" +
-	"R\xa2\"6\xd4\x87\xf8 R[k#\xc1\x87*J" +
-	"1\xd6>\xf8 \xb6>\x89\x88\x0aB\xa0\x8e\xdc\xd9\xbd" +
-	"\x93IIb\x93\xb0O{\xef\xf9\xf9\xeew\xbe\xefL" +
-	"\xa7G\xba\xa5{\x12\x07\xee\x06\xd8q\x97\x94\xb8!\xb0" +
-	"f\xad\xe3\xb3\x13\xdf\x1f\x06\xda\x89\x00\x0a\x01\xc8M\xa6" +
-	"\xb7I\xa0\x04g\x0f\xbfp\x14\xabM\xaf\xd7n\x12\xc8" +
-	"\xaf\xdeL\xf7H\x80\xeat\xba\x0b0HM\\\xde\xd8" +
-	"\xf2\xf8\xd6\xa3@o\x0fS\x9b17\x97>\x82\xa0\x04" +
-	"c\x97\xce\xdc\xd8\xf4\xea\xe0G@o\x92\x83\x8d\x9f\xdd" +
-	"\xbb\xef\xb6Q\xf5$\x00\xe6f\xd3UT/\xa5y\xa9" +
-	"\xb94Au<C\x00\x82\x89[\x87\xde\xbe\xa3\xf9\x93" +
-	"\xe9\x18\x86\x91L;\xc7pf\xfcrkn\xbe\xef\xd3" +
-	"8\x86R\xa6\x9fcx%\xc31\x9c\xcc\xff\xf0\xc0\x9d" +
-	"\xff\xb2s\xf1\x80\x13\x99\x10\xe4\xb90`\xfe\xbd\xe2\xfd" +
-	"\xf3\x87\xde\x9f\x89\x07\xfc\x9c\xe9\xe5\x01W\xc3\x80\xaf;" +
-	"\xab\xc7?\x98\x9a\x9a\xa9\xbd\"\x81\xfc\x19-\xd91\x04" +
-	"T;\xb2<\xc0\xf9\xe5\xe3\xb7^\x1c:\xb5\xa8\x82\x91" +
-	"\x0d+\x94\xc2\x80\xe4?\x9b6$\xb7\xa6\xce_\xf3Z" +
-	"h\xc6\xdck\xd9vT'\xb3\x04@}'\xfb\x95:" +
-	"\xaa\x11uTK\x06\xdf\x91MW\x7f\xfc\x8d]\x88\x97" +
-	"\x1c\xd1Zy\xc9q\x8d\x97<FR\xdf<\x7f\xac\xe9" +
-	"b\x8c\xdaim\x86S\xfb\xe5\xce\xea\xa1?^:u" +
-	"1\x0ewR{\x97\xc3\x9d\x0eSO\xff\xf9\xfb\xec-" +
-	"W>\xff;\x1e0\xa7M\xf1\x80+Z\x17\x04\xd1\xaf" +
-	"7\xf0\xcd\xb2\xe53\xb7BJ\x1d\xfb\x18\xf3:\x06*" +
-	"\x8e5ho.\x9a^\xd9\xdb\xb6\xa3~Y\xda\xce\x98" +
-	"\xd7S\xbb\x19\xb4Yt\xac{N[W\xc1\xac\x98%" +
-	"?*\xd4\xb0\xaaB\xfbm+o\xd9e\xe6\xb0g\xdb" +
-	"j\x85\xc0Pd\x05@A\x00\xda\xb4\x0b\xc0h\x94\xd1" +
-	"\xc8H\x188\xf58\x90\xf3\x166\x82\x84\x8d\x80Q\xd7" +
-	"\xc4R]u\xcf\xdb\xee\xbaO\xf9\x9b\xad\x8a\xeb\xb5\xf5" +
-	"\xdb\xfe\xc80C\x7f\xe5\x9c%\x90B\x01\xd1h\x96\x13" +
-	"\x00\x91SPh\x8e>]\x05\x89:\x04\x17T\x86B" +
-	"\xb0t\xcf\x11\x90\xe8N\x82R\xe4#\x14B\xa2\x8f\x8d" +
-	"\x81D\xf3\x04\xe5H\x08(,@\x1f\x1c\x02\x89n!" +
-	"\x81\xa0\x1a\xeb\\C7\x86g\xb6\xef;\xe8\x96\x1fv" +
-	"\xcb\xcc~\x06Y\xfd\x94s\x89\x82L\xe0\xb1\xbe\xb9\xdf" +
-	"\xe6\x07\x90\xe4G\xddX@\\\xfd\xbcE\x91pD\xfd" +
-	"\xb6\x9f\x1c\x19fk\x9c6\xc7-`\xb3h\x1e\xf1y" +
-	"\xf7\x00\x18\x0d2\x1a\x1b$<X\xac\xc5!\x0d\xee\xfb" +
-	"\xab\xb8\xab\xa5\xfb\xa1\xb3\x00\x8846\xf4\x86\xb5j\xb6" +
-	"\xd6z\xb1\xd4Z\x17Z\x13\xd3s\x90\x06\xe7%\xaf\xfd" +
-	"\xdb>\xfb\xc2\xba\xda.~s]\xe2\x8b\x1ak\x0b\x8d" +
-	"egM\xca^\xaajo\xcc9\xee\xc0\x90]dy" +
-	"\x0b\x000\x85\xb1e\xc5\xff\xaf\x99\xcf\xb8u\x05\xa1\xcb" +
-	"B\x88\xcc\x0b\x804\xc8\xfcd\x9cx\xee\x8d\x97\xbf\xb8" +
-	"\x96Yy\xb9\xb7&\xf9c\xb9\x0d\x1bC\x1b\x8a\xd5\x88" +
-	"\xf6\xaf\x1f\xea\x8fly\xf245\x06\x00\xf4\x02o\xbb" +
-	"\x87{QlH\x14\x9b\x90\x1a=\x00\xfa\xa3\xa8\xefF" +
-	"Z\xe2\x8e\x14+\x1f\xc5\x17\x8c\x9a\xed\x00\xfan\xd4\x87" +
-	"\x91\x8e\x86\xde{\xc2\xb1\x0f\xe4\x81\x94\xf7\xba\x14o6" +
-	"\x14)F\x1c\"7\xd8\xc1\x8a\xcdQ\xdbK^/\x93" +
-	"\x93\xe4\x13[MB\x01QW\x90\xe2@\xa0{^\x1f" +
-	"\x9f$\x10\x96\xb7\xd6i\xe4\x82Y!f\xc9_\xdf\xb8" +
-	"\x1aW\x94\xa6`\xb0\xbc\xd7\x15\x0a\x15\x89+\xe6\xd5I" +
-	"\xfd?\x88\xd7+\xea\xc4u5\x13\x8bm\xb9\x8dP4" +
-	"=L)2 \xaf\xfd_\x00\x00\x00\xff\xff4q\xd1" +
-	"\x90"
+const schema_ac137d236832bb1e = "x\xda\xa4V_L\x1c\xd5\x17>gf\xf77\xfc\x12" +
+	"\xd6\xe5\xb2}X\x96\xddV\x11\xff@\x84@\x89\x86\xd2" +
+	"(,}\xb0\x8bFv \x1ai\xd0f\xd9\x19\xe8 " +
+	"\xec\x8c;C+*\xb6R\xa9\x81\xa4\x11k1\xb6\xd1" +
+	"\x90X5\x96\xb4\x0f\xed\x831\xb5\x88bH\xd3T\xad" +
+	"m\x1a\x91\x07\xa3\x89\xa5\x89\xd16\xc6\x9a\x98\x92\xe0\x98" +
+	";\xb3w\x18\x08`Y\xb2O{\xefw\xce\xf9\xce\xbf" +
+	"\xefNEyN\x1dW\xe9\x9d\xae\x00h\xae\xe6\xbc\xff" +
+	"3\xa5)itj\xf8\xca\x01 \x15\x08\xe0\x11\x00\xaa" +
+	"\xc4`\x0d\x07\x1es\xe2\xc0\xcb\x87\xb1\xdf\xf7\x96}\xe3" +
+	"Ez\x15\x0b\xd6s\x80\x81D\xb0\x16\xd0\xcc\x1f\xbe\xba" +
+	"1\xf2\xe4\x96\xc3@\xee\xb1L\xf3\xb0j x\x08\xc1" +
+	"c\x0e\xcd\x8c\xff\xdf\xf7F\xc7I a\xde\xdc\xf8\xd9" +
+	"\xe6]w\xf7\x05N\x00`UO\xb0\x1f\x03\x83A\xea" +
+	"j \xf8:\x06\x8e\x14\x08\x00\xe6\xf0]\x9d\xef\xde\x9b" +
+	"\xf7\xc9)\x17\x87W\x0bJ)\x87o+w\xfe6\xba" +
+	"m\xf6\xb4\x9bCoA\x13\xe50R@9\x8c\x1f\xbc" +
+	"ZT5\xd7\xf8\xa9\x1bp\xde\x06\xccZ\x80\x13\xb1\xef" +
+	"\xb7\xde\xf7\x8f\xf1\xa5\x1b\xe0\x0dYYDB\x140w" +
+	",Y=\xb7\xef\x83I7\xe0\xe1P\x03\x05\xb4X\x80" +
+	"\xaf+\xfaG?\x1a\x1b\x9b\xb4\xd3\xf4\"\xcd\xb374" +
+	"\x84\x80\x81A\x0b\xa0\xfcr\xfa\xe8+\x9dg\x16y8" +
+	"i{8o\x01\xfc\x7f\x97l\xf0o\xc9\xbf\xb0\xa4\x1c" +
+	"\x90\x87U\xd7C\xa5\x18\x98\x0f\x09\x00\x81[\xa1s\x81" +
+	"\x99B!0S\xe87\xbf\x13J\xe6\x7f\xf8\xdd\xb8\xec" +
+	"vy\xa9\xb0\x88\xba\xfc\xb5\x90\xba\x1c\x11\xf2\xbfyi" +
+	"\xc47\xed\xaa\xbd/<Ik\xffUK\xff\xbe?\xf6" +
+	"\x9f\x99v\xd3\x9d/|\x9f\xd2\xf5\x85\xa9i\xeb\xb5\xb7" +
+	"\xaf\x84~\xfei\xda\xed\xbb2\\C}\xc7,\xc0\xfe" +
+	"\x9d#%\xb7\xb6>v\xc3\x0dP\xc2V>\x03\x16\xe0" +
+	"R\xf3\xd1\x8e7\x9f\x18\xba\x99\x01p\x14\xf0a\xd8\xaa" +
+	"\xe9xx\x0f\xa0y\xf6\xcf\x1bSw\xce~\xfe\x97\x9b" +
+	"C$2F9\x94Ej\xc1t~\x0d\xa6\x9eHI" +
+	"\xba\xa1\xa6\x85\xee\xb2]\x86\xa1\x95\xb5\xa5\x15\xa9C." +
+	"O&\xb4\x94V\xd3\x9c\xb9\xec\xden\x18Z\xbd}\xd3" +
+	"!\x1b\xceqTS\x8ak\xe3\x89t\xa2[w\x1c\xe5" +
+	"\xac\xc9\xd1nY\x8aIr\xcaP\x8c\xdeb\xdb\x11\x88" +
+	"\x1e\xde\x03\xe0A\x00\xe2\xdb\x01 \xe6\xf2(\x0694" +
+	"\x95\x0c\x0e\xf8\x98\x84\xb9\xc0a.\xa0\x13\xd5\xbb\\\xd4" +
+	"\xa8\xa6mW\xd5\xe7\xf4r)\xadj\xc5M\xb2\xde\xd3" +
+	"e\xa0\xbe\xba\xcd2L!\x8e(\x06y/\x80\xb3\xad" +
+	"\xc8\xc6\x9a\x9c\xea\x07\x8e\x1c\x17pa\x90\x91\xed\x04y" +
+	"\xef\x10p\xe4\x88\x80\x0b\xbb\x8clV\xc9\xc1!\xe0\xc8" +
+	"\xa0\x80^g\xd6\x90\xad!\xe9\xeb\x04\x8e\xf4\x08\xc89" +
+	"\xa3\x80l\x11\x89B}\xca\x02\xf2\xce\x1c!\x1b\x07\xd2" +
+	"B\xb9\x88\x82\xc9Z\x84\x99\x1eA\x1dZg\xb2\xae+" +
+	"\xa8\xa6\xb6\xa9)C~\x01\x8d\xcc)\xed\x01\xb2&\x00" +
+	"\xc5\xea\x89\xdd2=\x00?=Zl\xdc$?\xdf#" +
+	"\xeb\x8eq\xe6\xb4\xb1\xbd]NC\x1d\xc6\x11\xd7>Q" +
+	",\x9c5\x04M\xb2\xee\xef\xe92\xb2\x9c'J\x87q" +
+	"4\x9c\x8e\xbb'\xaa-3Q\xf7sh\xa6m\\\x0c" +
+	"\x84T\xbb\x8aw\x00\xc6y\xc4<\xf3\xe9\xf0\xb9\x89c" +
+	"\xfe\x8b\xd7\x01\x90\x1e\xae\x87\x89]\xea\xe5\x99\xd4\x03\x88" +
+	"9<\x8a\x1b8\xdc\x9b\xb4qH\xcc\x87n&wD" +
+	"\xea\x1e\x99\xa0\xc1I\xb6\xc1\xdd\xfbi\x87^\xbcVE" +
+	"\x0b\xa1\x85\x84\xa6 1/pZ\xe9\xc5F\xf9\xf2\xba" +
+	"\xc2.\xce9\xb3\xce\x8b\x02\x87\x16\x02\xf3JV[\xbc" +
+	"\x9c\xd7\x06\x97J\xa8m\x9dr\xd2\x88I\x00\x80\xf9\xe8" +
+	"\xd2~\xfa?\xebz\xbae\x8a\x15tE\x0a\x8eP\x01" +
+	" 1\x83?\x8a\xc7_|\xe7\xb5/\x96V\x96_)" +
+	"W?M\x96JN\xae%9\xec\xa5A\xf9\xda\xc7\xd1" +
+	"G\x1f|\xf6,\x11\xdb\x00\xa2q\x1a\xf6\x19\xaa;\xec" +
+	"\xc1A\xa6\xfaD\xac\x07\x88>\x8e\xd1V$\xddTE" +
+	"\xd8\x0b\x8a\xec\x8b\x81$J\x01\xa2\xad\x18\xedB\xd2g" +
+	"\xe9\xc5S\x8a\xbc\xc7\xde\x03\x82\x9bD\x0f\xe7*\x1c\"" +
+	"\x15\x85\xbdi\x99\xb2\x96\x97\xbd^\xc1\xc6O;\xb6\x16" +
+	"\x838b\xd4\x83\x04\xdb\xcc\xa8\xa65\xd2N\x82`\xc4" +
+	"\xa4uJJ<\x91\x16\x12\xdd\xfa\xfa\xda\x95\xbb\xeah" +
+	"\xb2\x0a\xa6\xdaU6\xa1\xccpU\xbbLQ\xff\x8b\xe2" +
+	"\xed\x0e\xb5\xb0\xf6m\xb5\x94\x9b=\xe2kX\xd5u\xc8" +
+	"r\x16\xc2\x90\x93mb\x8e\xfa\xe58\xb1J6\x03\x88" +
+	"\xc5<\x8a\x15\x1c\x12\xc4\x0d\xd6<\x96\xd1/\x8d\x07x" +
+	"\x14\xab9\xdc\xa4RS\xcc\xf7\xf0\x80Vy%YO" +
+	"\xa6\x15\xcd\x00^M/y\x1f\xf2n[\xbdX\xab\xd9" +
+	"\x03\xb7\x92\x1e'\x13\xdaB\xe8\x7f\x03\x00\x00\xff\xff/" +
+	"\xbf\xb0\xbb"
 
 func init() {
 	schemas.Register(schema_ac137d236832bb1e,
@@ -1360,6 +1793,7 @@ func init() {
 		0x9439551d1ee49012,
 		0xad678f0d09bdd98a,
 		0xb1b610269c6a2190,
+		0xb2e5439feb5f31ce,
 		0xb84ffa3322e48dbd,
 		0xc174fe273bd649ac,
 		0xc2a480fa3863a3fa,
@@ -1369,5 +1803,8 @@ func init() {
 		0xd274ecd8fd2907d0,
 		0xd70d957bcd120795,
 		0xd7ba83f0808259c3,
+		0xd7dfe01ad496e65c,
+		0xee4b3bf929955f83,
+		0xf38a4e91679a53d1,
 		0xf4bee520c5eef2bc)
 }
