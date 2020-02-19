@@ -3,8 +3,6 @@ package sandstormhttpbridge
 import (
 	"net/http"
 
-	"log"
-
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/sandstorm/capnp/powerbox"
 	"zenhack.net/go/sandstorm/capnp/sandstormhttpbridge"
@@ -16,7 +14,6 @@ type hasId interface {
 
 func setId(p hasId, req *http.Request) {
 	val := req.Header.Get("X-Sandstorm-Session-Id")
-	log.Printf("session ID header value: %q", val)
 	p.SetId(val)
 }
 
