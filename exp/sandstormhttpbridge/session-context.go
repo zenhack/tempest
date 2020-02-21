@@ -34,13 +34,12 @@ func GetSessionRequest(
 	bridge sandstormhttpbridge.SandstormHttpBridge,
 	req *http.Request,
 ) powerbox.PowerboxDescriptor_List {
-	resFuture, release := bridge.GetSessionRequest(
+	resFuture, _ := bridge.GetSessionRequest(
 		req.Context(),
 		func(p sandstormhttpbridge.SandstormHttpBridge_getSessionRequest_Params) error {
 			setId(p, req)
 			return nil
 		})
-	defer release()
 	res, err := resFuture.Struct()
 	if err != nil {
 		panic(err)
