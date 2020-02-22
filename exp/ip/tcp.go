@@ -1,5 +1,6 @@
 package ip
 
+/*
 import (
 	"context"
 	"io"
@@ -44,3 +45,4 @@ func (port tcpPort) Close() error {
 	port.release()
 	port.closed = true
 }
+*/

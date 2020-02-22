@@ -3,27 +3,42 @@
 
 Go Wrappers for Sandstorm's API
 
-Right now this contains:
-
-* `capnp`, generated packages for the sandstorm API capnproto schema.
-  The packages are currently generated from the schema in sandstorm
-  v0.202
-* `grain`, which provides a helper to connect to the sandstorm API.
-* `websession`, a *very* WIP set of helpers around WebSession, most
-  notably code to glue it to `net/http`.
-
-Since the schema names are not all legal package names, the following
-changes have been made:
+The `capnp/`, subtree contains generated packages for the sandstorm API
+capnproto schema. Since the schema names are not all legal package
+names, the following changes have been made:
 
 * Schema with dashes in their names have had the dashes removed.
 * The schema `package` has been mapped to the package `spk` (since
   `package` is a go reserved word).
 
+Note that these schema use the `v3` branch of the go-capnproto2 library,
+rather than the stable branch, as its rpc support is more robust.
+
+I try to keep the up to date but unfortunately the way the go capnproto
+code generator works, that means that new methods on an
+interface are breaking changes at the source level, even though
+they are compatible at the protocol level. If you upgrade and get
+an error about some type not implementing a capnproto `_Server`
+interface that it used to, a quick fix is to return an
+"unimplemented," error, which will satisfy the type checker and
+have the same behavior as before:
+
+```go
+func (t *MyType) NewMethod(context.Context, pkg.Interface_newMethod) error {
+    return capnp.Unimplemented("TODO: implement")
+}
+```
+
+...of course, you may alternatively want to implement the new functionality.
+
+The `exp/` subtree contains experimental helper packages; no promises of API
+stability are made for these.
+
 Note: we use import path checking; you'll need to import things as e.g:
 
-    import "zenhack.net/go/sandstorm/grain"
+    import "zenhack.net/go/sandstorm/capnp/grain"
 
-rather than directly via the URL for this repository.
+...rather than directly via the URL for this repository.
 
 # Licensing
 
