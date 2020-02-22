@@ -36,18 +36,22 @@ func checkMd5(t *testing.T, data []byte) bool {
 
 	ctx := context.Background()
 
-	bsClient := FromWriteCloser(writeNoopCloser{hash})
-	_, err := bsClient.Write(ctx, func(p util.ByteStream_write_Params) error {
+	bsClient := FromWriteCloser(writeNoopCloser{hash}, nil)
+	writeRes, release := bsClient.Write(ctx, func(p util.ByteStream_write_Params) error {
 		p.SetData(data)
 		return nil
-	}).Struct()
+	})
+	defer release()
+	_, err := writeRes.Struct()
 	if err != nil {
 		t.Logf("Error: %v", err)
 		return false
 	}
-	_, err = bsClient.Done(ctx, func(p util.ByteStream_done_Params) error {
+	doneRes, release := bsClient.Done(ctx, func(p util.ByteStream_done_Params) error {
 		return nil
-	}).Struct()
+	})
+	defer release()
+	_, err = doneRes.Struct()
 	if err != nil {
 		t.Logf("Error: %v", err)
 		return false
