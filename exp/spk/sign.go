@@ -1,4 +1,4 @@
-package keyring
+package spk
 
 import (
 	"bytes"
@@ -74,7 +74,7 @@ func (k Keyring) GetKey(targetPubKey []byte) (Key, error) {
 }
 
 // Load the sandstorm keyring from a named file.
-func Load(filename string) (Keyring, error) {
+func LoadKeyring(filename string) (Keyring, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return Keyring{}, err
