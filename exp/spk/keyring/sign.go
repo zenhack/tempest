@@ -39,7 +39,7 @@ func GenerateKey(r io.Reader) (Key, error) {
 	if err != nil {
 		return Key{}, err
 	}
-	_, firstSeg, err := capnp.NewMessage(capnp.SingleSegment([]byte{}))
+	_, firstSeg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
 		return Key{}, err
 	}
