@@ -14,8 +14,8 @@ names, the following changes have been made:
 Note that these schema use the `v3` branch of the go-capnproto2 library,
 rather than the stable branch, as its rpc support is more robust.
 
-I try to keep the up to date but unfortunately the way the go capnproto
-code generator works, that means that new methods on an
+I try to keep the schema up to date but unfortunately the way the go
+capnproto code generator works, that means that new methods on an
 interface are breaking changes at the source level, even though
 they are compatible at the protocol level. If you upgrade and get
 an error about some type not implementing a capnproto `_Server`
