@@ -77,3 +77,7 @@ func (w *pipeWriter) Close() error {
 	w.isClosed = true
 	return nil
 }
+
+func (w *pipeWriter) Shutdown() error {
+	return w.Close()
+}
