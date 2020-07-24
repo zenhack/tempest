@@ -28,6 +28,27 @@ type Keyring struct {
 // A package signing key
 type Key spk.KeyFile
 
+func (k Key) AppId() (AppId, error) {
+	var ret AppId
+	pubKey, err := spk.KeyFile(k).PublicKey()
+	if err != nil {
+		return ret, err
+	}
+	err = (&ret).UnmarshalBinary(pubKey)
+	return ret, err
+}
+
+// Add the key to the keyring in the file at `path`, which is created if it does
+// not already exist.
+func (k Key) AddToFile(path string) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return capnp.NewEncoder(f).Encode(k.Struct.Message())
+}
+
 // Generate a new signing key. It will be the root object of its own message.
 // The argument is a cryptographic random number generator. Defaults to
 // crypto/rand.Reader if nil.
@@ -55,9 +76,8 @@ func GenerateKey(r io.Reader) (Key, error) {
 	return Key(key), err
 }
 
-// Get a key from the keyring. The argument is the public part of the desired key
-// (which is also the appId, after base32 decoding).
-func (k Keyring) GetKey(targetPubKey []byte) (Key, error) {
+// Get the key for the given app id from the keyring.
+func (k Keyring) GetKey(appId AppId) (Key, error) {
 	// simple linear search.
 	for _, keyFile := range k.keys {
 		pubKey, err := keyFile.PublicKey()
@@ -66,7 +86,7 @@ func (k Keyring) GetKey(targetPubKey []byte) (Key, error) {
 			// something that wraps the underlying error.
 			return Key{}, ErrMalformedKey
 		}
-		if bytes.Compare(targetPubKey, pubKey) == 0 {
+		if bytes.Compare(appId[:], pubKey) == 0 {
 			return Key(keyFile), nil
 		}
 	}

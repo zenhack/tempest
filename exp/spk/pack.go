@@ -11,7 +11,7 @@ import (
 
 // Write an .spk into `dest`, using `archive` as the contents and `key` for
 // signing. The archive must already contain the manifest.
-func packInto(dest io.Writer, key Key, archive spk.Archive) error {
+func PackInto(dest io.Writer, key Key, archive spk.Archive) error {
 	sig, err := key.signArchive(archive)
 	if err != nil {
 		return err
