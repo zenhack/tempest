@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	ErrKeyNotFound = errors.New("Key not found in keyring")
+	ErrKeyNotFound  = errors.New("Key not found in keyring")
+	ErrMalformedKey = errors.New("Key is malformed")
 )
 
 // The contents of a sandstorm keyring, typically stored at ~/.sandstorm-keyring
@@ -56,18 +57,20 @@ func GenerateKey(r io.Reader) (Key, error) {
 
 // Get a key from the keyring. The argument is the public part of the desired key
 // (which is also the appId, after base32 decoding).
-func (k Keyring) GetKey(targetPubKey []byte) (spk.KeyFile, error) {
+func (k Keyring) GetKey(targetPubKey []byte) (Key, error) {
 	// simple linear search.
 	for _, keyFile := range k.keys {
 		pubKey, err := keyFile.PublicKey()
 		if err != nil {
-			return spk.KeyFile{}, err
+			// TODO: Don't lose err here; change ErrMalformedKey into
+			// something that wraps the underlying error.
+			return Key{}, ErrMalformedKey
 		}
 		if bytes.Compare(targetPubKey, pubKey) == 0 {
-			return keyFile, nil
+			return Key(keyFile), nil
 		}
 	}
-	return spk.KeyFile{}, ErrKeyNotFound
+	return Key{}, ErrKeyNotFound
 }
 
 // Load the sandstorm keyring from a named file.
@@ -98,41 +101,58 @@ func Load(filename string) (Keyring, error) {
 	}
 }
 
-// Compute the signature of a package, given the raw bytes of the archive
-// message. Returns the raw bytes of the signature message.
-func signatureMessage(key spk.KeyFile, archiveBytes []byte) ([]byte, error) {
-	pubKey, err := key.PublicKey()
+func (key Key) getPrivateKey() ([64]byte, error) {
+	keyFile := spk.KeyFile(key)
+
+	var ret [64]byte
+
+	privKey, err := keyFile.PrivateKey()
 	if err != nil {
-		return nil, err
+		return ret, err
+	}
+	if len(privKey) != len(ret) {
+		return ret, ErrMalformedKey
+	}
+	copy(ret[:], privKey)
+	return ret, nil
+}
+
+// Sign an archive, which must be the root of its message.
+func (key Key) signArchive(archive spk.Archive) (spk.Signature, error) {
+	// Return this on errors:
+	empty := spk.Signature{}
+
+	keyFile := spk.KeyFile(key)
+	pubKey, err := keyFile.PublicKey()
+	if err != nil {
+		return empty, err
+	}
+	privKey, err := key.getPrivateKey()
+	if err != nil {
+		return empty, err
 	}
 
-	privKey, err := key.PrivateKey()
+	hash := sha512.New()
+	err = capnp.NewEncoder(hash).Encode(archive.Segment().Message())
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
+	digest := hash.Sum(nil)
+	sigbytes := sign.Sign(nil, digest, &privKey)
 
-	// the go nacl library expects an array, not a slice:
-	var naclPrivKey [64]byte
-	copy(naclPrivKey[:], privKey)
-
-	sigMsg, sigSeg, err := capnp.NewMessage(capnp.SingleSegment([]byte{}))
+	_, sigSeg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
 	sig, err := spk.NewRootSignature(sigSeg)
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
-
-	hash := sha512.Sum512(archiveBytes)
-	sigbytes := sign.Sign([]byte{}, hash[:], &naclPrivKey)
-
 	if err = sig.SetPublicKey(pubKey); err != nil {
-		return nil, err
+		return empty, err
 	}
 	if err = sig.SetSignature(sigbytes); err != nil {
-		return nil, err
+		return empty, err
 	}
-
-	return sigMsg.Marshal()
+	return sig, nil
 }
