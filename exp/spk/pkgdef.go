@@ -1,6 +1,7 @@
 package spk
 
 import (
+	"os"
 	"os/exec"
 
 	"zenhack.net/go/sandstorm/capnp/spk"
@@ -34,6 +35,7 @@ func ReadPackageDefinition(file, variable string, extraPaths []string) (spk.Pack
 	}
 	args = append(args, file, variable)
 	cmd := exec.Command("capnp", args...)
+	cmd.Stderr = os.Stderr
 	pkgDefBytes, err := cmd.Output()
 	if err != nil {
 		return empty, err
