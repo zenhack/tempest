@@ -3,14 +3,14 @@
 package activity
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	strconv "strconv"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type ActivityEvent struct{ capnp.Struct }
@@ -707,6 +707,16 @@ func (c NotificationTarget) AddOngoing(ctx context.Context, params func(Notifica
 	return NotificationTarget_addOngoing_Results_Future{Future: ans.Future()}, release
 }
 
+func (c NotificationTarget) AddRef() NotificationTarget {
+	return NotificationTarget{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c NotificationTarget) Release() {
+	c.Client.Release()
+}
+
 // A NotificationTarget_Server is a NotificationTarget with a local implementation.
 type NotificationTarget_Server interface {
 	AddOngoing(context.Context, NotificationTarget_addOngoing) error
@@ -965,6 +975,16 @@ func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNoti
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
+}
+
+func (c OngoingNotification) AddRef() OngoingNotification {
+	return OngoingNotification{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c OngoingNotification) Release() {
+	c.Client.Release()
 }
 
 // A OngoingNotification_Server is a OngoingNotification with a local implementation.

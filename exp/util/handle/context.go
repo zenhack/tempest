@@ -6,7 +6,7 @@ import (
 
 	"zenhack.net/go/sandstorm/capnp/util"
 
-	"zombiezen.com/go/capnproto2/server"
+	"capnproto.org/go/capnp/v3/server"
 )
 
 // WithCancel is like context.WithCancel, except that it returns a Handle

@@ -3,12 +3,12 @@
 package identity
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type Identity struct{ Client *capnp.Client }
@@ -31,6 +31,16 @@ func (c Identity) GetProfile(ctx context.Context, params func(Identity_getProfil
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Identity_getProfile_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Identity) AddRef() Identity {
+	return Identity{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Identity) Release() {
+	c.Client.Release()
 }
 
 // A Identity_Server is a Identity with a local implementation.

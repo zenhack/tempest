@@ -3,17 +3,17 @@
 package supervisor
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	strconv "strconv"
 	activity "zenhack.net/go/sandstorm/capnp/activity"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type Supervisor struct{ Client *capnp.Client }
@@ -182,6 +182,16 @@ func (c Supervisor) GetWwwFileHack(ctx context.Context, params func(Supervisor_g
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Supervisor_getWwwFileHack_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Supervisor) AddRef() Supervisor {
+	return Supervisor{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Supervisor) Release() {
+	c.Client.Release()
 }
 
 // A Supervisor_Server is a Supervisor with a local implementation.
@@ -2136,6 +2146,16 @@ func (c SandstormCore) Schedule(ctx context.Context, params func(grain.Scheduled
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormCore_schedule_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SandstormCore) AddRef() SandstormCore {
+	return SandstormCore{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SandstormCore) Release() {
+	c.Client.Release()
 }
 
 // A SandstormCore_Server is a SandstormCore with a local implementation.
@@ -4343,6 +4363,16 @@ func (c SystemPersistent) Save(ctx context.Context, params func(persistent.Persi
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+func (c SystemPersistent) AddRef() SystemPersistent {
+	return SystemPersistent{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SystemPersistent) Release() {
+	c.Client.Release()
+}
+
 // A SystemPersistent_Server is a SystemPersistent with a local implementation.
 type SystemPersistent_Server interface {
 	AddRequirements(context.Context, SystemPersistent_addRequirements) error
@@ -4435,6 +4465,16 @@ func (c SystemPersistent_RevocationObserver) DropWhenRevoked(ctx context.Context
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SystemPersistent_RevocationObserver) AddRef() SystemPersistent_RevocationObserver {
+	return SystemPersistent_RevocationObserver{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SystemPersistent_RevocationObserver) Release() {
+	c.Client.Release()
 }
 
 // A SystemPersistent_RevocationObserver_Server is a SystemPersistent_RevocationObserver with a local implementation.
@@ -4857,6 +4897,16 @@ func (c PersistentHandle) Ping(ctx context.Context, params func(util.Handle_ping
 	return util.Handle_ping_Results_Future{Future: ans.Future()}, release
 }
 
+func (c PersistentHandle) AddRef() PersistentHandle {
+	return PersistentHandle{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentHandle) Release() {
+	c.Client.Release()
+}
+
 // A PersistentHandle_Server is a PersistentHandle with a local implementation.
 type PersistentHandle_Server interface {
 	AddRequirements(context.Context, SystemPersistent_addRequirements) error
@@ -4976,6 +5026,16 @@ func (c PersistentOngoingNotification) Cancel(ctx context.Context, params func(a
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return activity.OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentOngoingNotification) AddRef() PersistentOngoingNotification {
+	return PersistentOngoingNotification{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentOngoingNotification) Release() {
+	c.Client.Release()
 }
 
 // A PersistentOngoingNotification_Server is a PersistentOngoingNotification with a local implementation.

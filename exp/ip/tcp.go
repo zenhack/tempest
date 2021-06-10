@@ -8,8 +8,8 @@ import (
 	"zenhack.net/go/sandstorm/capnp/ip"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 
-	"zombiezen.com/go/capnproto2"
-	"zombiezen.com/go/capnproto2/server"
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/server"
 )
 
 func ConnectTCP(ctx context.Context, policy *server.Policy, port ip.TcpPort) io.ReadWriteCloser {

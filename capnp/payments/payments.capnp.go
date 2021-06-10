@@ -3,15 +3,15 @@
 package payments
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	strconv "strconv"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type PaymentSource struct{ Client *capnp.Client }
@@ -34,6 +34,16 @@ func (c PaymentSource) GetTitle(ctx context.Context, params func(PaymentSource_g
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return PaymentSource_getTitle_Results_Future{Future: ans.Future()}, release
+}
+
+func (c PaymentSource) AddRef() PaymentSource {
+	return PaymentSource{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PaymentSource) Release() {
+	c.Client.Release()
 }
 
 // A PaymentSource_Server is a PaymentSource with a local implementation.
@@ -250,6 +260,16 @@ func (c PaymentAcceptor) CreatePayment(ctx context.Context, params func(PaymentA
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return PaymentAcceptor_CreatePaymentResults_Future{Future: ans.Future()}, release
+}
+
+func (c PaymentAcceptor) AddRef() PaymentAcceptor {
+	return PaymentAcceptor{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PaymentAcceptor) Release() {
+	c.Client.Release()
 }
 
 // A PaymentAcceptor_Server is a PaymentAcceptor with a local implementation.
@@ -773,6 +793,16 @@ func (c Payment) Commit(ctx context.Context, params func(Payment_commit_Params) 
 	return Payment_commit_Results_Future{Future: ans.Future()}, release
 }
 
+func (c Payment) AddRef() Payment {
+	return Payment{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Payment) Release() {
+	c.Client.Release()
+}
+
 // A Payment_Server is a Payment with a local implementation.
 type Payment_Server interface {
 	Commit(context.Context, Payment_commit) error
@@ -995,6 +1025,16 @@ func (c PersistentPaymentSource) Save(ctx context.Context, params func(persisten
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+func (c PersistentPaymentSource) AddRef() PersistentPaymentSource {
+	return PersistentPaymentSource{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentPaymentSource) Release() {
+	c.Client.Release()
+}
+
 // A PersistentPaymentSource_Server is a PersistentPaymentSource with a local implementation.
 type PersistentPaymentSource_Server interface {
 	GetTitle(context.Context, PaymentSource_getTitle) error
@@ -1118,6 +1158,16 @@ func (c PersistentPaymentAcceptor) Save(ctx context.Context, params func(persist
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+func (c PersistentPaymentAcceptor) AddRef() PersistentPaymentAcceptor {
+	return PersistentPaymentAcceptor{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentPaymentAcceptor) Release() {
+	c.Client.Release()
+}
+
 // A PersistentPaymentAcceptor_Server is a PersistentPaymentAcceptor with a local implementation.
 type PersistentPaymentAcceptor_Server interface {
 	CreatePayment(context.Context, PaymentAcceptor_createPayment) error
@@ -1239,6 +1289,16 @@ func (c PersistentPayment) Save(ctx context.Context, params func(persistent.Pers
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentPayment) AddRef() PersistentPayment {
+	return PersistentPayment{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentPayment) Release() {
+	c.Client.Release()
 }
 
 // A PersistentPayment_Server is a PersistentPayment with a local implementation.

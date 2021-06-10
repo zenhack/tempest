@@ -3,11 +3,11 @@
 package util
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type KeyValue struct{ capnp.Struct }
@@ -303,6 +303,16 @@ func (c Handle) Ping(ctx context.Context, params func(Handle_ping_Params) error)
 	return Handle_ping_Results_Future{Future: ans.Future()}, release
 }
 
+func (c Handle) AddRef() Handle {
+	return Handle{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Handle) Release() {
+	c.Client.Release()
+}
+
 // A Handle_Server is a Handle with a local implementation.
 type Handle_Server interface {
 	Ping(context.Context, Handle_ping) error
@@ -521,6 +531,16 @@ func (c ByteStream) ExpectSize(ctx context.Context, params func(ByteStream_expec
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
+}
+
+func (c ByteStream) AddRef() ByteStream {
+	return ByteStream{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c ByteStream) Release() {
+	c.Client.Release()
 }
 
 // A ByteStream_Server is a ByteStream with a local implementation.
@@ -1044,6 +1064,16 @@ func (c Blob) GetSlice(ctx context.Context, params func(Blob_getSlice_Params) er
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Blob_getSlice_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Blob) AddRef() Blob {
+	return Blob{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Blob) Release() {
+	c.Client.Release()
 }
 
 // A Blob_Server is a Blob with a local implementation.
@@ -1637,6 +1667,16 @@ func (c Assignable) AsSetter(ctx context.Context, params func(Assignable_asSette
 	return Assignable_asSetter_Results_Future{Future: ans.Future()}, release
 }
 
+func (c Assignable) AddRef() Assignable {
+	return Assignable{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Assignable) Release() {
+	c.Client.Release()
+}
+
 // A Assignable_Server is a Assignable with a local implementation.
 type Assignable_Server interface {
 	Get(context.Context, Assignable_get) error
@@ -1791,6 +1831,16 @@ func (c Assignable_Getter) Subscribe(ctx context.Context, params func(Assignable
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Assignable_Getter_subscribe_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Assignable_Getter) AddRef() Assignable_Getter {
+	return Assignable_Getter{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Assignable_Getter) Release() {
+	c.Client.Release()
 }
 
 // A Assignable_Getter_Server is a Assignable_Getter with a local implementation.
@@ -2180,6 +2230,16 @@ func (c Assignable_Setter) Set(ctx context.Context, params func(Assignable_Sette
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Assignable_Setter_set_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Assignable_Setter) AddRef() Assignable_Setter {
+	return Assignable_Setter{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Assignable_Setter) Release() {
+	c.Client.Release()
 }
 
 // A Assignable_Setter_Server is a Assignable_Setter with a local implementation.
@@ -2796,6 +2856,16 @@ func (c StaticAsset) GetUrl(ctx context.Context, params func(StaticAsset_getUrl_
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return StaticAsset_getUrl_Results_Future{Future: ans.Future()}, release
+}
+
+func (c StaticAsset) AddRef() StaticAsset {
+	return StaticAsset{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c StaticAsset) Release() {
+	c.Client.Release()
 }
 
 // A StaticAsset_Server is a StaticAsset with a local implementation.

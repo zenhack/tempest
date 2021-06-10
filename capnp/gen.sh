@@ -33,11 +33,12 @@ gen_go_src() {
 	# Generate go source code from the schema file $1. Create the package
 	# directory if necessary.
 	file="$1"
+	go_capnp_src_path="$2"
 	package_name="$(infer_package_name $file)"
 	[ -d $package_name ] || mkdir $package_name
 	GOPATH=${GOPATH:-$HOME/go}
 	capnp compile \
-		-I"$GOPATH/src/zombiezen.com/go/capnproto2/std" \
+		-I"$go_capnp_src_path/std" \
 		-ogo:$package_name $file
 }
 
@@ -46,7 +47,7 @@ usage() {
 	echo ""
 	echo "    $0 import <path/to/schema/files>"
 	echo "    $0 patch      # Patch schema"
-	echo "    $0 compile    # Generate go source files"
+	echo "    $0 compile <path/to/go/capnp-source> # Generate go source files"
 	echo "    $0 clean-gen  # Remove generated files"
 	echo "    $0 clean-all  # Remove generated and imported files"
 }
@@ -68,7 +69,7 @@ do_patch() {
 
 do_compile() {
 	for file in *.capnp; do
-		gen_go_src "$file"
+		gen_go_src "$file" "$1"
 	done
 }
 
@@ -94,7 +95,7 @@ eq_or_usage() {
 case "$1" in
 	import)    eq_or_usage $# 2; do_import "$2" ;;
 	patch)     eq_or_usage $# 1; do_patch ;;
-	compile)   eq_or_usage $# 1; do_compile ;;
+	compile)   eq_or_usage $# 2; do_compile "$2" ;;
 	clean-gen)  eq_or_usage $# 1; do_clean_gen ;;
 	clean-all) eq_or_usage $# 1; do_clean_all ;;
 	*) usage; exit 1 ;;

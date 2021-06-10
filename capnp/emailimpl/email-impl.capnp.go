@@ -3,13 +3,13 @@
 package emailimpl
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	email "zenhack.net/go/sandstorm/capnp/email"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
-	capnp "zombiezen.com/go/capnproto2"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type PersistentEmailVerifier struct{ Client *capnp.Client }
@@ -82,6 +82,16 @@ func (c PersistentEmailVerifier) Save(ctx context.Context, params func(persisten
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentEmailVerifier) AddRef() PersistentEmailVerifier {
+	return PersistentEmailVerifier{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentEmailVerifier) Release() {
+	c.Client.Release()
 }
 
 // A PersistentEmailVerifier_Server is a PersistentEmailVerifier with a local implementation.
@@ -203,6 +213,16 @@ func (c PersistentVerifiedEmail) Save(ctx context.Context, params func(persisten
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentVerifiedEmail) AddRef() PersistentVerifiedEmail {
+	return PersistentVerifiedEmail{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentVerifiedEmail) Release() {
+	c.Client.Release()
 }
 
 // A PersistentVerifiedEmail_Server is a PersistentVerifiedEmail with a local implementation.

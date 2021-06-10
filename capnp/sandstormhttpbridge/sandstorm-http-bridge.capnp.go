@@ -3,14 +3,14 @@
 package sandstormhttpbridge
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type SandstormHttpBridge struct{ Client *capnp.Client }
@@ -113,6 +113,16 @@ func (c SandstormHttpBridge) GetSessionOffer(ctx context.Context, params func(Sa
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormHttpBridge_getSessionOffer_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SandstormHttpBridge) AddRef() SandstormHttpBridge {
+	return SandstormHttpBridge{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SandstormHttpBridge) Release() {
+	c.Client.Release()
 }
 
 // A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
@@ -1266,6 +1276,16 @@ func (c AppHooks) Drop(ctx context.Context, params func(AppHooks_drop_Params) er
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return AppHooks_drop_Results_Future{Future: ans.Future()}, release
+}
+
+func (c AppHooks) AddRef() AppHooks {
+	return AppHooks{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c AppHooks) Release() {
+	c.Client.Release()
 }
 
 // A AppHooks_Server is a AppHooks with a local implementation.

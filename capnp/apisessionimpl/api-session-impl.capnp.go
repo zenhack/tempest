@@ -3,13 +3,13 @@
 package apisessionimpl
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
-	capnp "zombiezen.com/go/capnproto2"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type PersistentApiSession struct{ Client *capnp.Client }
@@ -338,6 +338,16 @@ func (c PersistentApiSession) Save(ctx context.Context, params func(persistent.P
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentApiSession) AddRef() PersistentApiSession {
+	return PersistentApiSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentApiSession) Release() {
+	c.Client.Release()
 }
 
 // A PersistentApiSession_Server is a PersistentApiSession with a local implementation.

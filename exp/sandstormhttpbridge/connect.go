@@ -9,8 +9,8 @@ import (
 
 	bridge "zenhack.net/go/sandstorm/capnp/sandstormhttpbridge"
 
-	"zombiezen.com/go/capnproto2"
-	"zombiezen.com/go/capnproto2/rpc"
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/rpc"
 )
 
 // Connect to the API socket, using exponential backoff to wait for the bridge to

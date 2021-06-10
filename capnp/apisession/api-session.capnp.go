@@ -3,13 +3,13 @@
 package apisession
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	ip "zenhack.net/go/sandstorm/capnp/ip"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type ApiSession struct{ Client *capnp.Client }
@@ -304,6 +304,16 @@ func (c ApiSession) Patch(ctx context.Context, params func(websession.WebSession
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
+}
+
+func (c ApiSession) AddRef() ApiSession {
+	return ApiSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c ApiSession) Release() {
+	c.Client.Release()
 }
 
 // A ApiSession_Server is a ApiSession with a local implementation.

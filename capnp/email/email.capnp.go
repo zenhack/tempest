@@ -3,12 +3,12 @@
 package email
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type EmailAddress struct{ capnp.Struct }
@@ -587,6 +587,16 @@ func (c EmailSendPort) HintAddress(ctx context.Context, params func(EmailSendPor
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+func (c EmailSendPort) AddRef() EmailSendPort {
+	return EmailSendPort{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c EmailSendPort) Release() {
+	c.Client.Release()
+}
+
 // A EmailSendPort_Server is a EmailSendPort with a local implementation.
 type EmailSendPort_Server interface {
 	Send(context.Context, EmailSendPort_send) error
@@ -1056,6 +1066,16 @@ type VerifiedEmail struct{ Client *capnp.Client }
 // VerifiedEmail_TypeID is the unique identifier for the type VerifiedEmail.
 const VerifiedEmail_TypeID = 0xf88bf102464dfa5a
 
+func (c VerifiedEmail) AddRef() VerifiedEmail {
+	return VerifiedEmail{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c VerifiedEmail) Release() {
+	c.Client.Release()
+}
+
 // A VerifiedEmail_Server is a VerifiedEmail with a local implementation.
 type VerifiedEmail_Server interface {
 }
@@ -1222,6 +1242,16 @@ func (c VerifiedEmailSendPort) HintAddress(ctx context.Context, params func(Emai
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
+}
+
+func (c VerifiedEmailSendPort) AddRef() VerifiedEmailSendPort {
+	return VerifiedEmailSendPort{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c VerifiedEmailSendPort) Release() {
+	c.Client.Release()
 }
 
 // A VerifiedEmailSendPort_Server is a VerifiedEmailSendPort with a local implementation.
@@ -1424,6 +1454,16 @@ func (c EmailVerifier) VerifyEmail(ctx context.Context, params func(EmailVerifie
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return EmailVerifier_verifyEmail_Results_Future{Future: ans.Future()}, release
+}
+
+func (c EmailVerifier) AddRef() EmailVerifier {
+	return EmailVerifier{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c EmailVerifier) Release() {
+	c.Client.Release()
 }
 
 // A EmailVerifier_Server is a EmailVerifier with a local implementation.
@@ -1835,6 +1875,16 @@ func (c EmailAgent) AddReceiver(ctx context.Context, params func(EmailAgent_addR
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return EmailAgent_addReceiver_Results_Future{Future: ans.Future()}, release
+}
+
+func (c EmailAgent) AddRef() EmailAgent {
+	return EmailAgent{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c EmailAgent) Release() {
+	c.Client.Release()
 }
 
 // A EmailAgent_Server is a EmailAgent with a local implementation.

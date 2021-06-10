@@ -3,13 +3,13 @@
 package persistentuiview
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
-	capnp "zombiezen.com/go/capnproto2"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type PersistentUiView struct{ Client *capnp.Client }
@@ -114,6 +114,16 @@ func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persi
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentUiView) AddRef() PersistentUiView {
+	return PersistentUiView{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentUiView) Release() {
+	c.Client.Release()
 }
 
 // A PersistentUiView_Server is a PersistentUiView with a local implementation.

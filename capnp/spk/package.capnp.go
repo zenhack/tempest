@@ -3,14 +3,14 @@
 package spk
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
 	strconv "strconv"
 	apisession "zenhack.net/go/sandstorm/capnp/apisession"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
 )
 
 const OsiInfo = uint64(0x9476412d0315d869)

@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/nacl/sign"
 
 	"zenhack.net/go/sandstorm/capnp/spk"
-	"zombiezen.com/go/capnproto2"
+	"capnproto.org/go/capnp/v3"
 )
 
 var (

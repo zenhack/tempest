@@ -3,6 +3,10 @@
 package backend
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	strconv "strconv"
 	apisession "zenhack.net/go/sandstorm/capnp/apisession"
@@ -11,10 +15,6 @@ import (
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 // Constants defined in backend.capnp.
@@ -282,6 +282,16 @@ func (c Backend) GetGrainStorageUsage(ctx context.Context, params func(Backend_g
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return Backend_getGrainStorageUsage_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Backend) AddRef() Backend {
+	return Backend{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Backend) Release() {
+	c.Client.Release()
 }
 
 // A Backend_Server is a Backend with a local implementation.
@@ -873,6 +883,16 @@ func (c Backend_PackageUploadStream) ExpectSize(ctx context.Context, params func
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
+}
+
+func (c Backend_PackageUploadStream) AddRef() Backend_PackageUploadStream {
+	return Backend_PackageUploadStream{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c Backend_PackageUploadStream) Release() {
+	c.Client.Release()
 }
 
 // A Backend_PackageUploadStream_Server is a Backend_PackageUploadStream with a local implementation.
@@ -3823,6 +3843,16 @@ func (c GatewayRouter) KeepaliveApiToken(ctx context.Context, params func(Gatewa
 	return GatewayRouter_keepaliveApiToken_Results_Future{Future: ans.Future()}, release
 }
 
+func (c GatewayRouter) AddRef() GatewayRouter {
+	return GatewayRouter{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c GatewayRouter) Release() {
+	c.Client.Release()
+}
+
 // A GatewayRouter_Server is a GatewayRouter with a local implementation.
 type GatewayRouter_Server interface {
 	OpenUiSession(context.Context, GatewayRouter_openUiSession) error
@@ -4391,6 +4421,16 @@ func (c GatewayRouter_TlsKeyCallback) SetKeys(ctx context.Context, params func(G
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return GatewayRouter_TlsKeyCallback_setKeys_Results_Future{Future: ans.Future()}, release
+}
+
+func (c GatewayRouter_TlsKeyCallback) AddRef() GatewayRouter_TlsKeyCallback {
+	return GatewayRouter_TlsKeyCallback{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c GatewayRouter_TlsKeyCallback) Release() {
+	c.Client.Release()
 }
 
 // A GatewayRouter_TlsKeyCallback_Server is a GatewayRouter_TlsKeyCallback with a local implementation.
@@ -6104,6 +6144,16 @@ func (c SandstormCoreFactory) GetGatewayRouter(ctx context.Context, params func(
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormCoreFactory_getGatewayRouter_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SandstormCoreFactory) AddRef() SandstormCoreFactory {
+	return SandstormCoreFactory{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SandstormCoreFactory) Release() {
+	c.Client.Release()
 }
 
 // A SandstormCoreFactory_Server is a SandstormCoreFactory with a local implementation.

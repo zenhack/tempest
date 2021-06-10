@@ -3,13 +3,13 @@
 package identityimpl
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
-	capnp "zombiezen.com/go/capnproto2"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type PersistentIdentity struct{ Client *capnp.Client }
@@ -66,6 +66,16 @@ func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Per
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentIdentity) AddRef() PersistentIdentity {
+	return PersistentIdentity{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentIdentity) Release() {
+	c.Client.Release()
 }
 
 // A PersistentIdentity_Server is a PersistentIdentity with a local implementation.

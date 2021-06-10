@@ -3,16 +3,16 @@
 package grain
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	strconv "strconv"
 	activity "zenhack.net/go/sandstorm/capnp/activity"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 // Constants defined in grain.capnp.
@@ -216,6 +216,16 @@ func (c SandstormApi) Schedule(ctx context.Context, params func(ScheduledJob) er
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormApi_schedule_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SandstormApi) AddRef() SandstormApi {
+	return SandstormApi{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SandstormApi) Release() {
+	c.Client.Release()
 }
 
 // A SandstormApi_Server is a SandstormApi with a local implementation.
@@ -2486,6 +2496,16 @@ func (c ScheduledJob_Callback) Run(ctx context.Context, params func(ScheduledJob
 	return ScheduledJob_Callback_run_Results_Future{Future: ans.Future()}, release
 }
 
+func (c ScheduledJob_Callback) AddRef() ScheduledJob_Callback {
+	return ScheduledJob_Callback{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c ScheduledJob_Callback) Release() {
+	c.Client.Release()
+}
+
 // A ScheduledJob_Callback_Server is a ScheduledJob_Callback with a local implementation.
 type ScheduledJob_Callback_Server interface {
 	Run(context.Context, ScheduledJob_Callback_run) error
@@ -2798,6 +2818,16 @@ func (c UiView) NewOfferSession(ctx context.Context, params func(UiView_newOffer
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
+}
+
+func (c UiView) AddRef() UiView {
+	return UiView{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c UiView) Release() {
+	c.Client.Release()
 }
 
 // A UiView_Server is a UiView with a local implementation.
@@ -4054,6 +4084,16 @@ type UiSession struct{ Client *capnp.Client }
 // UiSession_TypeID is the unique identifier for the type UiSession.
 const UiSession_TypeID = 0xf63241ee58b5166f
 
+func (c UiSession) AddRef() UiSession {
+	return UiSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c UiSession) Release() {
+	c.Client.Release()
+}
+
 // A UiSession_Server is a UiSession with a local implementation.
 type UiSession_Server interface {
 }
@@ -4228,6 +4268,16 @@ func (c SessionContext) Activity(ctx context.Context, params func(SessionContext
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SessionContext_activity_Results_Future{Future: ans.Future()}, release
+}
+
+func (c SessionContext) AddRef() SessionContext {
+	return SessionContext{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SessionContext) Release() {
+	c.Client.Release()
 }
 
 // A SessionContext_Server is a SessionContext with a local implementation.
@@ -6378,6 +6428,16 @@ func (c SharingLink) GetPetname(ctx context.Context, params func(SharingLink_get
 	return SharingLink_getPetname_Results_Future{Future: ans.Future()}, release
 }
 
+func (c SharingLink) AddRef() SharingLink {
+	return SharingLink{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c SharingLink) Release() {
+	c.Client.Release()
+}
+
 // A SharingLink_Server is a SharingLink with a local implementation.
 type SharingLink_Server interface {
 	GetPetname(context.Context, SharingLink_getPetname) error
@@ -6602,6 +6662,16 @@ func (c ViewSharingLink) GetPetname(ctx context.Context, params func(SharingLink
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return SharingLink_getPetname_Results_Future{Future: ans.Future()}, release
+}
+
+func (c ViewSharingLink) AddRef() ViewSharingLink {
+	return ViewSharingLink{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c ViewSharingLink) Release() {
+	c.Client.Release()
 }
 
 // A ViewSharingLink_Server is a ViewSharingLink with a local implementation.
@@ -7253,6 +7323,16 @@ func (c AppPersistent) Save(ctx context.Context, params func(AppPersistent_save_
 	return AppPersistent_save_Results_Future{Future: ans.Future()}, release
 }
 
+func (c AppPersistent) AddRef() AppPersistent {
+	return AppPersistent{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c AppPersistent) Release() {
+	c.Client.Release()
+}
+
 // A AppPersistent_Server is a AppPersistent with a local implementation.
 type AppPersistent_Server interface {
 	Save(context.Context, AppPersistent_save) error
@@ -7563,6 +7643,16 @@ func (c MainView) NewOfferSession(ctx context.Context, params func(UiView_newOff
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
+}
+
+func (c MainView) AddRef() MainView {
+	return MainView{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c MainView) Release() {
+	c.Client.Release()
 }
 
 // A MainView_Server is a MainView with a local implementation.

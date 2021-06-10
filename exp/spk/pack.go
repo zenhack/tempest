@@ -6,7 +6,7 @@ import (
 	"zenhack.net/go/sandstorm/capnp/spk"
 
 	"github.com/ulikunitz/xz"
-	"zombiezen.com/go/capnproto2"
+	"capnproto.org/go/capnp/v3"
 )
 
 // Write an .spk into `dest`, using `archive` as the contents and `key` for

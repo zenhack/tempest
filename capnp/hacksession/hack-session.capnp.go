@@ -3,15 +3,15 @@
 package hacksession
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	email "zenhack.net/go/sandstorm/capnp/email"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	ip "zenhack.net/go/sandstorm/capnp/ip"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 type HackSessionContext struct{ Client *capnp.Client }
@@ -340,6 +340,16 @@ func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.E
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
+}
+
+func (c HackSessionContext) AddRef() HackSessionContext {
+	return HackSessionContext{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c HackSessionContext) Release() {
+	c.Client.Release()
 }
 
 // A HackSessionContext_Server is a HackSessionContext with a local implementation.
@@ -2235,6 +2245,16 @@ func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.Ema
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
+}
+
+func (c HackEmailSession) AddRef() HackEmailSession {
+	return HackEmailSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c HackEmailSession) Release() {
+	c.Client.Release()
 }
 
 // A HackEmailSession_Server is a HackEmailSession with a local implementation.

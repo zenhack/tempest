@@ -8,7 +8,7 @@ import (
 
 	"zenhack.net/go/sandstorm/capnp/util"
 
-	"zombiezen.com/go/capnproto2/server"
+	"capnproto.org/go/capnp/v3/server"
 )
 
 // Convert an io.WriteCloser to a util.ByteStream. WriteCloser's Write and

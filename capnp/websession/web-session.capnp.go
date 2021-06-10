@@ -3,14 +3,14 @@
 package websession
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	math "math"
 	strconv "strconv"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 const HttpStatus = uint64(0xaf480a0c6cab8887)
@@ -399,6 +399,16 @@ func (c WebSession) Patch(ctx context.Context, params func(WebSession_patch_Para
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
+}
+
+func (c WebSession) AddRef() WebSession {
+	return WebSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c WebSession) Release() {
+	c.Client.Release()
 }
 
 // A WebSession_Server is a WebSession with a local implementation.
@@ -3331,6 +3341,16 @@ func (c WebSession_RequestStream) ExpectSize(ctx context.Context, params func(ut
 	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
+func (c WebSession_RequestStream) AddRef() WebSession_RequestStream {
+	return WebSession_RequestStream{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c WebSession_RequestStream) Release() {
+	c.Client.Release()
+}
+
 // A WebSession_RequestStream_Server is a WebSession_RequestStream with a local implementation.
 type WebSession_RequestStream_Server interface {
 	GetResponse(context.Context, WebSession_RequestStream_getResponse) error
@@ -3504,6 +3524,16 @@ func (c WebSession_WebSocketStream) SendBytes(ctx context.Context, params func(W
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return WebSession_WebSocketStream_sendBytes_Results_Future{Future: ans.Future()}, release
+}
+
+func (c WebSession_WebSocketStream) AddRef() WebSession_WebSocketStream {
+	return WebSession_WebSocketStream{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c WebSession_WebSocketStream) Release() {
+	c.Client.Release()
 }
 
 // A WebSession_WebSocketStream_Server is a WebSession_WebSocketStream with a local implementation.

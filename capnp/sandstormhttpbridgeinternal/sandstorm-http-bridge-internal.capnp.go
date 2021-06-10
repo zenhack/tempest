@@ -3,14 +3,14 @@
 package sandstormhttpbridgeinternal
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
 	context "context"
 	strconv "strconv"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
 )
 
 // Constants defined in sandstorm-http-bridge-internal.capnp.
@@ -585,6 +585,16 @@ func (c BridgeHttpSession) Save(ctx context.Context, params func(grain.AppPersis
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return grain.AppPersistent_save_Results_Future{Future: ans.Future()}, release
+}
+
+func (c BridgeHttpSession) AddRef() BridgeHttpSession {
+	return BridgeHttpSession{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c BridgeHttpSession) Release() {
+	c.Client.Release()
 }
 
 // A BridgeHttpSession_Server is a BridgeHttpSession with a local implementation.

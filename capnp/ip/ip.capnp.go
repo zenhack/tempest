@@ -3,15 +3,15 @@
 package ip
 
 import (
+	capnp "capnproto.org/go/capnp/v3"
+	text "capnproto.org/go/capnp/v3/encoding/text"
+	schemas "capnproto.org/go/capnp/v3/schemas"
+	server "capnproto.org/go/capnp/v3/server"
+	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
 	strconv "strconv"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
-	capnp "zombiezen.com/go/capnproto2"
-	text "zombiezen.com/go/capnproto2/encoding/text"
-	schemas "zombiezen.com/go/capnproto2/schemas"
-	server "zombiezen.com/go/capnproto2/server"
-	persistent "zombiezen.com/go/capnproto2/std/capnp/persistent"
 )
 
 type IpNetwork struct{ Client *capnp.Client }
@@ -50,6 +50,16 @@ func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwor
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return IpNetwork_getRemoteHostByName_Results_Future{Future: ans.Future()}, release
+}
+
+func (c IpNetwork) AddRef() IpNetwork {
+	return IpNetwork{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c IpNetwork) Release() {
+	c.Client.Release()
 }
 
 // A IpNetwork_Server is a IpNetwork with a local implementation.
@@ -723,6 +733,16 @@ func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_list
 	return IpInterface_listenUdp_Results_Future{Future: ans.Future()}, release
 }
 
+func (c IpInterface) AddRef() IpInterface {
+	return IpInterface{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c IpInterface) Release() {
+	c.Client.Release()
+}
+
 // A IpInterface_Server is a IpInterface with a local implementation.
 type IpInterface_Server interface {
 	ListenTcp(context.Context, IpInterface_listenTcp) error
@@ -1172,6 +1192,16 @@ func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_g
 	return IpRemoteHost_getUdpPort_Results_Future{Future: ans.Future()}, release
 }
 
+func (c IpRemoteHost) AddRef() IpRemoteHost {
+	return IpRemoteHost{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c IpRemoteHost) Release() {
+	c.Client.Release()
+}
+
 // A IpRemoteHost_Server is a IpRemoteHost with a local implementation.
 type IpRemoteHost_Server interface {
 	GetTcpPort(context.Context, IpRemoteHost_getTcpPort) error
@@ -1561,6 +1591,16 @@ func (c TcpPort) Connect(ctx context.Context, params func(TcpPort_connect_Params
 	return TcpPort_connect_Results_Future{Future: ans.Future()}, release
 }
 
+func (c TcpPort) AddRef() TcpPort {
+	return TcpPort{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c TcpPort) Release() {
+	c.Client.Release()
+}
+
 // A TcpPort_Server is a TcpPort with a local implementation.
 type TcpPort_Server interface {
 	Connect(context.Context, TcpPort_connect) error
@@ -1791,6 +1831,16 @@ func (c UdpPort) Send(ctx context.Context, params func(UdpPort_send_Params) erro
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return UdpPort_send_Results_Future{Future: ans.Future()}, release
+}
+
+func (c UdpPort) AddRef() UdpPort {
+	return UdpPort{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c UdpPort) Release() {
+	c.Client.Release()
 }
 
 // A UdpPort_Server is a UdpPort with a local implementation.
@@ -2147,6 +2197,16 @@ func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Pe
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+func (c PersistentIpNetwork) AddRef() PersistentIpNetwork {
+	return PersistentIpNetwork{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentIpNetwork) Release() {
+	c.Client.Release()
+}
+
 // A PersistentIpNetwork_Server is a PersistentIpNetwork with a local implementation.
 type PersistentIpNetwork_Server interface {
 	GetRemoteHost(context.Context, IpNetwork_getRemoteHost) error
@@ -2298,6 +2358,16 @@ func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.
 	}
 	ans, release := c.Client.SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
+}
+
+func (c PersistentIpInterface) AddRef() PersistentIpInterface {
+	return PersistentIpInterface{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c PersistentIpInterface) Release() {
+	c.Client.Release()
 }
 
 // A PersistentIpInterface_Server is a PersistentIpInterface with a local implementation.

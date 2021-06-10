@@ -5,7 +5,7 @@ import (
 	"os/exec"
 
 	"zenhack.net/go/sandstorm/capnp/spk"
-	"zombiezen.com/go/capnproto2"
+	"capnproto.org/go/capnp/v3"
 )
 
 const (
