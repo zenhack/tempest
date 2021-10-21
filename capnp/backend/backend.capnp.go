@@ -7,6 +7,7 @@ import (
 	text "capnproto.org/go/capnp/v3/encoding/text"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
+	stream "capnproto.org/go/capnp/v3/std/capnp/stream"
 	context "context"
 	strconv "strconv"
 	apisession "zenhack.net/go/sandstorm/capnp/apisession"
@@ -15,11 +16,6 @@ import (
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
-)
-
-// Constants defined in backend.capnp.
-const (
-	Backend_socketPath = "/var/sandstorm/socket/backend"
 )
 
 type Backend struct{ Client *capnp.Client }
@@ -836,7 +832,7 @@ func (c Backend_PackageUploadStream) SaveAs(ctx context.Context, params func(Bac
 	ans, release := c.Client.SendCall(ctx, s)
 	return Backend_PackageUploadStream_saveAs_Results_Future{Future: ans.Future()}, release
 }
-func (c Backend_PackageUploadStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error) (util.ByteStream_write_Results_Future, capnp.ReleaseFunc) {
+func (c Backend_PackageUploadStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error) (stream.StreamResult_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xcd57387729cfe35f,
@@ -850,7 +846,7 @@ func (c Backend_PackageUploadStream) Write(ctx context.Context, params func(util
 		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
 	}
 	ans, release := c.Client.SendCall(ctx, s)
-	return util.ByteStream_write_Results_Future{Future: ans.Future()}, release
+	return stream.StreamResult_Future{Future: ans.Future()}, release
 }
 func (c Backend_PackageUploadStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error) (util.ByteStream_done_Results_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
@@ -6108,6 +6104,598 @@ func (p GatewayRouter_keepaliveApiToken_Results_Future) Struct() (GatewayRouter_
 	return GatewayRouter_keepaliveApiToken_Results{s}, err
 }
 
+type ShellCli struct{ Client *capnp.Client }
+
+// ShellCli_TypeID is the unique identifier for the type ShellCli.
+const ShellCli_TypeID = 0xdd2b1e18de9ed1b8
+
+func (c ShellCli) CreateAcmeAccount(ctx context.Context, params func(ShellCli_createAcmeAccount_Params) error) (ShellCli_createAcmeAccount_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      0,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "createAcmeAccount",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ShellCli_createAcmeAccount_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ShellCli_createAcmeAccount_Results_Future{Future: ans.Future()}, release
+}
+func (c ShellCli) SetAcmeChallenge(ctx context.Context, params func(ShellCli_setAcmeChallenge_Params) error) (ShellCli_setAcmeChallenge_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      1,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "setAcmeChallenge",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ShellCli_setAcmeChallenge_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ShellCli_setAcmeChallenge_Results_Future{Future: ans.Future()}, release
+}
+func (c ShellCli) RenewCertificateNow(ctx context.Context, params func(ShellCli_renewCertificateNow_Params) error) (ShellCli_renewCertificateNow_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      2,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "renewCertificateNow",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(ShellCli_renewCertificateNow_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return ShellCli_renewCertificateNow_Results_Future{Future: ans.Future()}, release
+}
+
+func (c ShellCli) AddRef() ShellCli {
+	return ShellCli{
+		Client: c.Client.AddRef(),
+	}
+}
+
+func (c ShellCli) Release() {
+	c.Client.Release()
+}
+
+// A ShellCli_Server is a ShellCli with a local implementation.
+type ShellCli_Server interface {
+	CreateAcmeAccount(context.Context, ShellCli_createAcmeAccount) error
+
+	SetAcmeChallenge(context.Context, ShellCli_setAcmeChallenge) error
+
+	RenewCertificateNow(context.Context, ShellCli_renewCertificateNow) error
+}
+
+// ShellCli_NewServer creates a new Server from an implementation of ShellCli_Server.
+func ShellCli_NewServer(s ShellCli_Server, policy *server.Policy) *server.Server {
+	c, _ := s.(server.Shutdowner)
+	return server.New(ShellCli_Methods(nil, s), s, c, policy)
+}
+
+// ShellCli_ServerToClient creates a new Client from an implementation of ShellCli_Server.
+// The caller is responsible for calling Release on the returned Client.
+func ShellCli_ServerToClient(s ShellCli_Server, policy *server.Policy) ShellCli {
+	return ShellCli{Client: capnp.NewClient(ShellCli_NewServer(s, policy))}
+}
+
+// ShellCli_Methods appends Methods to a slice that invoke the methods on s.
+// This can be used to create a more complicated Server.
+func ShellCli_Methods(methods []server.Method, s ShellCli_Server) []server.Method {
+	if cap(methods) == 0 {
+		methods = make([]server.Method, 0, 3)
+	}
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      0,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "createAcmeAccount",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.CreateAcmeAccount(ctx, ShellCli_createAcmeAccount{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      1,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "setAcmeChallenge",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.SetAcmeChallenge(ctx, ShellCli_setAcmeChallenge{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xdd2b1e18de9ed1b8,
+			MethodID:      2,
+			InterfaceName: "backend.capnp:ShellCli",
+			MethodName:    "renewCertificateNow",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.RenewCertificateNow(ctx, ShellCli_renewCertificateNow{call})
+		},
+	})
+
+	return methods
+}
+
+// ShellCli_createAcmeAccount holds the state for a server call to ShellCli.createAcmeAccount.
+// See server.Call for documentation.
+type ShellCli_createAcmeAccount struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c ShellCli_createAcmeAccount) Args() ShellCli_createAcmeAccount_Params {
+	return ShellCli_createAcmeAccount_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ShellCli_createAcmeAccount) AllocResults() (ShellCli_createAcmeAccount_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_createAcmeAccount_Results{Struct: r}, err
+}
+
+// ShellCli_setAcmeChallenge holds the state for a server call to ShellCli.setAcmeChallenge.
+// See server.Call for documentation.
+type ShellCli_setAcmeChallenge struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c ShellCli_setAcmeChallenge) Args() ShellCli_setAcmeChallenge_Params {
+	return ShellCli_setAcmeChallenge_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ShellCli_setAcmeChallenge) AllocResults() (ShellCli_setAcmeChallenge_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_setAcmeChallenge_Results{Struct: r}, err
+}
+
+// ShellCli_renewCertificateNow holds the state for a server call to ShellCli.renewCertificateNow.
+// See server.Call for documentation.
+type ShellCli_renewCertificateNow struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c ShellCli_renewCertificateNow) Args() ShellCli_renewCertificateNow_Params {
+	return ShellCli_renewCertificateNow_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c ShellCli_renewCertificateNow) AllocResults() (ShellCli_renewCertificateNow_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_renewCertificateNow_Results{Struct: r}, err
+}
+
+type ShellCli_createAcmeAccount_Params struct{ capnp.Struct }
+
+// ShellCli_createAcmeAccount_Params_TypeID is the unique identifier for the type ShellCli_createAcmeAccount_Params.
+const ShellCli_createAcmeAccount_Params_TypeID = 0x8ca64856a439e754
+
+func NewShellCli_createAcmeAccount_Params(s *capnp.Segment) (ShellCli_createAcmeAccount_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
+	return ShellCli_createAcmeAccount_Params{st}, err
+}
+
+func NewRootShellCli_createAcmeAccount_Params(s *capnp.Segment) (ShellCli_createAcmeAccount_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
+	return ShellCli_createAcmeAccount_Params{st}, err
+}
+
+func ReadRootShellCli_createAcmeAccount_Params(msg *capnp.Message) (ShellCli_createAcmeAccount_Params, error) {
+	root, err := msg.Root()
+	return ShellCli_createAcmeAccount_Params{root.Struct()}, err
+}
+
+func (s ShellCli_createAcmeAccount_Params) String() string {
+	str, _ := text.Marshal(0x8ca64856a439e754, s.Struct)
+	return str
+}
+
+func (s ShellCli_createAcmeAccount_Params) Directory() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s ShellCli_createAcmeAccount_Params) HasDirectory() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s ShellCli_createAcmeAccount_Params) DirectoryBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s ShellCli_createAcmeAccount_Params) SetDirectory(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+func (s ShellCli_createAcmeAccount_Params) Email() (string, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.Text(), err
+}
+
+func (s ShellCli_createAcmeAccount_Params) HasEmail() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s ShellCli_createAcmeAccount_Params) EmailBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s ShellCli_createAcmeAccount_Params) SetEmail(v string) error {
+	return s.Struct.SetText(1, v)
+}
+
+func (s ShellCli_createAcmeAccount_Params) AgreeToTerms() bool {
+	return s.Struct.Bit(0)
+}
+
+func (s ShellCli_createAcmeAccount_Params) SetAgreeToTerms(v bool) {
+	s.Struct.SetBit(0, v)
+}
+
+// ShellCli_createAcmeAccount_Params_List is a list of ShellCli_createAcmeAccount_Params.
+type ShellCli_createAcmeAccount_Params_List struct{ capnp.List }
+
+// NewShellCli_createAcmeAccount_Params creates a new list of ShellCli_createAcmeAccount_Params.
+func NewShellCli_createAcmeAccount_Params_List(s *capnp.Segment, sz int32) (ShellCli_createAcmeAccount_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
+	return ShellCli_createAcmeAccount_Params_List{l}, err
+}
+
+func (s ShellCli_createAcmeAccount_Params_List) At(i int) ShellCli_createAcmeAccount_Params {
+	return ShellCli_createAcmeAccount_Params{s.List.Struct(i)}
+}
+
+func (s ShellCli_createAcmeAccount_Params_List) Set(i int, v ShellCli_createAcmeAccount_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_createAcmeAccount_Params_List) String() string {
+	str, _ := text.MarshalList(0x8ca64856a439e754, s.List)
+	return str
+}
+
+// ShellCli_createAcmeAccount_Params_Future is a wrapper for a ShellCli_createAcmeAccount_Params promised by a client call.
+type ShellCli_createAcmeAccount_Params_Future struct{ *capnp.Future }
+
+func (p ShellCli_createAcmeAccount_Params_Future) Struct() (ShellCli_createAcmeAccount_Params, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_createAcmeAccount_Params{s}, err
+}
+
+type ShellCli_createAcmeAccount_Results struct{ capnp.Struct }
+
+// ShellCli_createAcmeAccount_Results_TypeID is the unique identifier for the type ShellCli_createAcmeAccount_Results.
+const ShellCli_createAcmeAccount_Results_TypeID = 0xf153e1cffe8f580a
+
+func NewShellCli_createAcmeAccount_Results(s *capnp.Segment) (ShellCli_createAcmeAccount_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_createAcmeAccount_Results{st}, err
+}
+
+func NewRootShellCli_createAcmeAccount_Results(s *capnp.Segment) (ShellCli_createAcmeAccount_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_createAcmeAccount_Results{st}, err
+}
+
+func ReadRootShellCli_createAcmeAccount_Results(msg *capnp.Message) (ShellCli_createAcmeAccount_Results, error) {
+	root, err := msg.Root()
+	return ShellCli_createAcmeAccount_Results{root.Struct()}, err
+}
+
+func (s ShellCli_createAcmeAccount_Results) String() string {
+	str, _ := text.Marshal(0xf153e1cffe8f580a, s.Struct)
+	return str
+}
+
+// ShellCli_createAcmeAccount_Results_List is a list of ShellCli_createAcmeAccount_Results.
+type ShellCli_createAcmeAccount_Results_List struct{ capnp.List }
+
+// NewShellCli_createAcmeAccount_Results creates a new list of ShellCli_createAcmeAccount_Results.
+func NewShellCli_createAcmeAccount_Results_List(s *capnp.Segment, sz int32) (ShellCli_createAcmeAccount_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return ShellCli_createAcmeAccount_Results_List{l}, err
+}
+
+func (s ShellCli_createAcmeAccount_Results_List) At(i int) ShellCli_createAcmeAccount_Results {
+	return ShellCli_createAcmeAccount_Results{s.List.Struct(i)}
+}
+
+func (s ShellCli_createAcmeAccount_Results_List) Set(i int, v ShellCli_createAcmeAccount_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_createAcmeAccount_Results_List) String() string {
+	str, _ := text.MarshalList(0xf153e1cffe8f580a, s.List)
+	return str
+}
+
+// ShellCli_createAcmeAccount_Results_Future is a wrapper for a ShellCli_createAcmeAccount_Results promised by a client call.
+type ShellCli_createAcmeAccount_Results_Future struct{ *capnp.Future }
+
+func (p ShellCli_createAcmeAccount_Results_Future) Struct() (ShellCli_createAcmeAccount_Results, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_createAcmeAccount_Results{s}, err
+}
+
+type ShellCli_setAcmeChallenge_Params struct{ capnp.Struct }
+
+// ShellCli_setAcmeChallenge_Params_TypeID is the unique identifier for the type ShellCli_setAcmeChallenge_Params.
+const ShellCli_setAcmeChallenge_Params_TypeID = 0xbf2816cab7a3b8d9
+
+func NewShellCli_setAcmeChallenge_Params(s *capnp.Segment) (ShellCli_setAcmeChallenge_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return ShellCli_setAcmeChallenge_Params{st}, err
+}
+
+func NewRootShellCli_setAcmeChallenge_Params(s *capnp.Segment) (ShellCli_setAcmeChallenge_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
+	return ShellCli_setAcmeChallenge_Params{st}, err
+}
+
+func ReadRootShellCli_setAcmeChallenge_Params(msg *capnp.Message) (ShellCli_setAcmeChallenge_Params, error) {
+	root, err := msg.Root()
+	return ShellCli_setAcmeChallenge_Params{root.Struct()}, err
+}
+
+func (s ShellCli_setAcmeChallenge_Params) String() string {
+	str, _ := text.Marshal(0xbf2816cab7a3b8d9, s.Struct)
+	return str
+}
+
+func (s ShellCli_setAcmeChallenge_Params) Module() (string, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.Text(), err
+}
+
+func (s ShellCli_setAcmeChallenge_Params) HasModule() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s ShellCli_setAcmeChallenge_Params) ModuleBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(0)
+	return p.TextBytes(), err
+}
+
+func (s ShellCli_setAcmeChallenge_Params) SetModule(v string) error {
+	return s.Struct.SetText(0, v)
+}
+
+func (s ShellCli_setAcmeChallenge_Params) Options() (string, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.Text(), err
+}
+
+func (s ShellCli_setAcmeChallenge_Params) HasOptions() bool {
+	return s.Struct.HasPtr(1)
+}
+
+func (s ShellCli_setAcmeChallenge_Params) OptionsBytes() ([]byte, error) {
+	p, err := s.Struct.Ptr(1)
+	return p.TextBytes(), err
+}
+
+func (s ShellCli_setAcmeChallenge_Params) SetOptions(v string) error {
+	return s.Struct.SetText(1, v)
+}
+
+// ShellCli_setAcmeChallenge_Params_List is a list of ShellCli_setAcmeChallenge_Params.
+type ShellCli_setAcmeChallenge_Params_List struct{ capnp.List }
+
+// NewShellCli_setAcmeChallenge_Params creates a new list of ShellCli_setAcmeChallenge_Params.
+func NewShellCli_setAcmeChallenge_Params_List(s *capnp.Segment, sz int32) (ShellCli_setAcmeChallenge_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
+	return ShellCli_setAcmeChallenge_Params_List{l}, err
+}
+
+func (s ShellCli_setAcmeChallenge_Params_List) At(i int) ShellCli_setAcmeChallenge_Params {
+	return ShellCli_setAcmeChallenge_Params{s.List.Struct(i)}
+}
+
+func (s ShellCli_setAcmeChallenge_Params_List) Set(i int, v ShellCli_setAcmeChallenge_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_setAcmeChallenge_Params_List) String() string {
+	str, _ := text.MarshalList(0xbf2816cab7a3b8d9, s.List)
+	return str
+}
+
+// ShellCli_setAcmeChallenge_Params_Future is a wrapper for a ShellCli_setAcmeChallenge_Params promised by a client call.
+type ShellCli_setAcmeChallenge_Params_Future struct{ *capnp.Future }
+
+func (p ShellCli_setAcmeChallenge_Params_Future) Struct() (ShellCli_setAcmeChallenge_Params, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_setAcmeChallenge_Params{s}, err
+}
+
+type ShellCli_setAcmeChallenge_Results struct{ capnp.Struct }
+
+// ShellCli_setAcmeChallenge_Results_TypeID is the unique identifier for the type ShellCli_setAcmeChallenge_Results.
+const ShellCli_setAcmeChallenge_Results_TypeID = 0xe60c482f4f0d4d90
+
+func NewShellCli_setAcmeChallenge_Results(s *capnp.Segment) (ShellCli_setAcmeChallenge_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_setAcmeChallenge_Results{st}, err
+}
+
+func NewRootShellCli_setAcmeChallenge_Results(s *capnp.Segment) (ShellCli_setAcmeChallenge_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_setAcmeChallenge_Results{st}, err
+}
+
+func ReadRootShellCli_setAcmeChallenge_Results(msg *capnp.Message) (ShellCli_setAcmeChallenge_Results, error) {
+	root, err := msg.Root()
+	return ShellCli_setAcmeChallenge_Results{root.Struct()}, err
+}
+
+func (s ShellCli_setAcmeChallenge_Results) String() string {
+	str, _ := text.Marshal(0xe60c482f4f0d4d90, s.Struct)
+	return str
+}
+
+// ShellCli_setAcmeChallenge_Results_List is a list of ShellCli_setAcmeChallenge_Results.
+type ShellCli_setAcmeChallenge_Results_List struct{ capnp.List }
+
+// NewShellCli_setAcmeChallenge_Results creates a new list of ShellCli_setAcmeChallenge_Results.
+func NewShellCli_setAcmeChallenge_Results_List(s *capnp.Segment, sz int32) (ShellCli_setAcmeChallenge_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return ShellCli_setAcmeChallenge_Results_List{l}, err
+}
+
+func (s ShellCli_setAcmeChallenge_Results_List) At(i int) ShellCli_setAcmeChallenge_Results {
+	return ShellCli_setAcmeChallenge_Results{s.List.Struct(i)}
+}
+
+func (s ShellCli_setAcmeChallenge_Results_List) Set(i int, v ShellCli_setAcmeChallenge_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_setAcmeChallenge_Results_List) String() string {
+	str, _ := text.MarshalList(0xe60c482f4f0d4d90, s.List)
+	return str
+}
+
+// ShellCli_setAcmeChallenge_Results_Future is a wrapper for a ShellCli_setAcmeChallenge_Results promised by a client call.
+type ShellCli_setAcmeChallenge_Results_Future struct{ *capnp.Future }
+
+func (p ShellCli_setAcmeChallenge_Results_Future) Struct() (ShellCli_setAcmeChallenge_Results, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_setAcmeChallenge_Results{s}, err
+}
+
+type ShellCli_renewCertificateNow_Params struct{ capnp.Struct }
+
+// ShellCli_renewCertificateNow_Params_TypeID is the unique identifier for the type ShellCli_renewCertificateNow_Params.
+const ShellCli_renewCertificateNow_Params_TypeID = 0xad91bb3785f964f9
+
+func NewShellCli_renewCertificateNow_Params(s *capnp.Segment) (ShellCli_renewCertificateNow_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_renewCertificateNow_Params{st}, err
+}
+
+func NewRootShellCli_renewCertificateNow_Params(s *capnp.Segment) (ShellCli_renewCertificateNow_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_renewCertificateNow_Params{st}, err
+}
+
+func ReadRootShellCli_renewCertificateNow_Params(msg *capnp.Message) (ShellCli_renewCertificateNow_Params, error) {
+	root, err := msg.Root()
+	return ShellCli_renewCertificateNow_Params{root.Struct()}, err
+}
+
+func (s ShellCli_renewCertificateNow_Params) String() string {
+	str, _ := text.Marshal(0xad91bb3785f964f9, s.Struct)
+	return str
+}
+
+// ShellCli_renewCertificateNow_Params_List is a list of ShellCli_renewCertificateNow_Params.
+type ShellCli_renewCertificateNow_Params_List struct{ capnp.List }
+
+// NewShellCli_renewCertificateNow_Params creates a new list of ShellCli_renewCertificateNow_Params.
+func NewShellCli_renewCertificateNow_Params_List(s *capnp.Segment, sz int32) (ShellCli_renewCertificateNow_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return ShellCli_renewCertificateNow_Params_List{l}, err
+}
+
+func (s ShellCli_renewCertificateNow_Params_List) At(i int) ShellCli_renewCertificateNow_Params {
+	return ShellCli_renewCertificateNow_Params{s.List.Struct(i)}
+}
+
+func (s ShellCli_renewCertificateNow_Params_List) Set(i int, v ShellCli_renewCertificateNow_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_renewCertificateNow_Params_List) String() string {
+	str, _ := text.MarshalList(0xad91bb3785f964f9, s.List)
+	return str
+}
+
+// ShellCli_renewCertificateNow_Params_Future is a wrapper for a ShellCli_renewCertificateNow_Params promised by a client call.
+type ShellCli_renewCertificateNow_Params_Future struct{ *capnp.Future }
+
+func (p ShellCli_renewCertificateNow_Params_Future) Struct() (ShellCli_renewCertificateNow_Params, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_renewCertificateNow_Params{s}, err
+}
+
+type ShellCli_renewCertificateNow_Results struct{ capnp.Struct }
+
+// ShellCli_renewCertificateNow_Results_TypeID is the unique identifier for the type ShellCli_renewCertificateNow_Results.
+const ShellCli_renewCertificateNow_Results_TypeID = 0xf3e0d28b0ad162be
+
+func NewShellCli_renewCertificateNow_Results(s *capnp.Segment) (ShellCli_renewCertificateNow_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_renewCertificateNow_Results{st}, err
+}
+
+func NewRootShellCli_renewCertificateNow_Results(s *capnp.Segment) (ShellCli_renewCertificateNow_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ShellCli_renewCertificateNow_Results{st}, err
+}
+
+func ReadRootShellCli_renewCertificateNow_Results(msg *capnp.Message) (ShellCli_renewCertificateNow_Results, error) {
+	root, err := msg.Root()
+	return ShellCli_renewCertificateNow_Results{root.Struct()}, err
+}
+
+func (s ShellCli_renewCertificateNow_Results) String() string {
+	str, _ := text.Marshal(0xf3e0d28b0ad162be, s.Struct)
+	return str
+}
+
+// ShellCli_renewCertificateNow_Results_List is a list of ShellCli_renewCertificateNow_Results.
+type ShellCli_renewCertificateNow_Results_List struct{ capnp.List }
+
+// NewShellCli_renewCertificateNow_Results creates a new list of ShellCli_renewCertificateNow_Results.
+func NewShellCli_renewCertificateNow_Results_List(s *capnp.Segment, sz int32) (ShellCli_renewCertificateNow_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return ShellCli_renewCertificateNow_Results_List{l}, err
+}
+
+func (s ShellCli_renewCertificateNow_Results_List) At(i int) ShellCli_renewCertificateNow_Results {
+	return ShellCli_renewCertificateNow_Results{s.List.Struct(i)}
+}
+
+func (s ShellCli_renewCertificateNow_Results_List) Set(i int, v ShellCli_renewCertificateNow_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s ShellCli_renewCertificateNow_Results_List) String() string {
+	str, _ := text.MarshalList(0xf3e0d28b0ad162be, s.List)
+	return str
+}
+
+// ShellCli_renewCertificateNow_Results_Future is a wrapper for a ShellCli_renewCertificateNow_Results promised by a client call.
+type ShellCli_renewCertificateNow_Results_Future struct{ *capnp.Future }
+
+func (p ShellCli_renewCertificateNow_Results_Future) Struct() (ShellCli_renewCertificateNow_Results, error) {
+	s, err := p.Future.Struct()
+	return ShellCli_renewCertificateNow_Results{s}, err
+}
+
 type SandstormCoreFactory struct{ Client *capnp.Client }
 
 // SandstormCoreFactory_TypeID is the unique identifier for the type SandstormCoreFactory.
@@ -6145,6 +6733,22 @@ func (c SandstormCoreFactory) GetGatewayRouter(ctx context.Context, params func(
 	ans, release := c.Client.SendCall(ctx, s)
 	return SandstormCoreFactory_getGatewayRouter_Results_Future{Future: ans.Future()}, release
 }
+func (c SandstormCoreFactory) GetShellCli(ctx context.Context, params func(SandstormCoreFactory_getShellCli_Params) error) (SandstormCoreFactory_getShellCli_Results_Future, capnp.ReleaseFunc) {
+	s := capnp.Send{
+		Method: capnp.Method{
+			InterfaceID:   0xf0832c3f66256d2b,
+			MethodID:      2,
+			InterfaceName: "backend.capnp:SandstormCoreFactory",
+			MethodName:    "getShellCli",
+		},
+	}
+	if params != nil {
+		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCoreFactory_getShellCli_Params{Struct: s}) }
+	}
+	ans, release := c.Client.SendCall(ctx, s)
+	return SandstormCoreFactory_getShellCli_Results_Future{Future: ans.Future()}, release
+}
 
 func (c SandstormCoreFactory) AddRef() SandstormCoreFactory {
 	return SandstormCoreFactory{
@@ -6161,6 +6765,8 @@ type SandstormCoreFactory_Server interface {
 	GetSandstormCore(context.Context, SandstormCoreFactory_getSandstormCore) error
 
 	GetGatewayRouter(context.Context, SandstormCoreFactory_getGatewayRouter) error
+
+	GetShellCli(context.Context, SandstormCoreFactory_getShellCli) error
 }
 
 // SandstormCoreFactory_NewServer creates a new Server from an implementation of SandstormCoreFactory_Server.
@@ -6179,7 +6785,7 @@ func SandstormCoreFactory_ServerToClient(s SandstormCoreFactory_Server, policy *
 // This can be used to create a more complicated Server.
 func SandstormCoreFactory_Methods(methods []server.Method, s SandstormCoreFactory_Server) []server.Method {
 	if cap(methods) == 0 {
-		methods = make([]server.Method, 0, 2)
+		methods = make([]server.Method, 0, 3)
 	}
 
 	methods = append(methods, server.Method{
@@ -6203,6 +6809,18 @@ func SandstormCoreFactory_Methods(methods []server.Method, s SandstormCoreFactor
 		},
 		Impl: func(ctx context.Context, call *server.Call) error {
 			return s.GetGatewayRouter(ctx, SandstormCoreFactory_getGatewayRouter{call})
+		},
+	})
+
+	methods = append(methods, server.Method{
+		Method: capnp.Method{
+			InterfaceID:   0xf0832c3f66256d2b,
+			MethodID:      2,
+			InterfaceName: "backend.capnp:SandstormCoreFactory",
+			MethodName:    "getShellCli",
+		},
+		Impl: func(ctx context.Context, call *server.Call) error {
+			return s.GetShellCli(ctx, SandstormCoreFactory_getShellCli{call})
 		},
 	})
 
@@ -6241,6 +6859,23 @@ func (c SandstormCoreFactory_getGatewayRouter) Args() SandstormCoreFactory_getGa
 func (c SandstormCoreFactory_getGatewayRouter) AllocResults() (SandstormCoreFactory_getGatewayRouter_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
 	return SandstormCoreFactory_getGatewayRouter_Results{Struct: r}, err
+}
+
+// SandstormCoreFactory_getShellCli holds the state for a server call to SandstormCoreFactory.getShellCli.
+// See server.Call for documentation.
+type SandstormCoreFactory_getShellCli struct {
+	*server.Call
+}
+
+// Args returns the call's arguments.
+func (c SandstormCoreFactory_getShellCli) Args() SandstormCoreFactory_getShellCli_Params {
+	return SandstormCoreFactory_getShellCli_Params{Struct: c.Call.Args()}
+}
+
+// AllocResults allocates the results struct.
+func (c SandstormCoreFactory_getShellCli) AllocResults() (SandstormCoreFactory_getShellCli_Results, error) {
+	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCoreFactory_getShellCli_Results{Struct: r}, err
 }
 
 type SandstormCoreFactory_getSandstormCore_Params struct{ capnp.Struct }
@@ -6525,261 +7160,415 @@ func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Router() GatewayRo
 	return GatewayRouter{Client: p.Future.Field(0, nil).Client()}
 }
 
-const schema_dcbc0d702b1b47a5 = "x\xda\xccZ}t\x15ez\x7f\x9e\x99\\&\xb8\x84" +
-	"d\x1c\xf0\x13\x1ba\xe3Q@\xbe\x84\x0b!M\xcc\x17" +
-	"\xf9\xb8\x11$C\xa0\xd4T*\x93\x9b!\x19\x92\xcc\\" +
-	"f\xe6\x02akYD\x90\xe2r\xacV\xa5\xd2\xba\x0a" +
-	"UkX)\xc8Y\xdce\xc5\xad\xa8\xac\x88\" (" +
-	"\xc5\xca)\x1f~\xc5SVc\xa5\x96uqz\xdew" +
-	"\xee;\xf7\xbd\xc9\x0dI\xd8\xed9=\xfc\xc1\xb9\xef<" +
-	"\xef\xf3>\xef\xf3\xfd\xfc\xdeL|tx\x890)T" +
-	"\xbc\x18\xa0\xeeXFh\x90w\xef\xeboT\xb4\x15=" +
-	"\xf9cP\xafB\x04\xc8\x90\x00&\x87\xc2\x9b\x10P\x19" +
-	"\x1e.\x06\xf4F\x96\xdeW1Q\xbb{5\xc8We" +
-	"x\xb3\xb7\xed-X\xd2\xb9c/\x00N\x0e\x87\xaf@" +
-	"\xa5\",\x01\xd4\x95\x84E\xac\x9b\x19\x16\x10\xc0\xabz" +
-	"~\xc3\xa1\xbb^\xf3V\x83<\x02\x01B\x02a8+" +
-	"\xbc\x9e0\\\x10^\x06\xe8m\x1c\xfd\xc6y\xe3\xd6\xa9" +
-	"kA\xbe\x8a\x1d\xf8J\xb8\x01!\xc3\x1b;\xee\xf8\xc6" +
-	"\xa3W\x1fX\x0b\xf2\x18\xb2\x15\xc9\xa7\x8e\xf0kd\xeb" +
-	"n_\x96\x93w^\xd1\xd2\xf1\xdc\x03\xfe\xd6\x10\xdd{" +
-	"2\\C\x08:\xc3\x9f\x01z]7\xadn\xfbl\xe7" +
-	"\xe8u\x09\x02\xcaa\xef\xd4\xc5\x84\xe0\xe0T\xc2\xe1\xa9" +
-	"+\xa7l\x8d\xe4\xc4\xd7\xf1\xd2\x9d\x9b\xba\x93\x10\\\x9c" +
-	"J\xa4\xf3\xfe\xf9\xf6k%\xa9\xfdA\x9e\xc3]\xd3\xea" +
-	"\x09\x81>\x8dp8Q\xbez\xe2\x17oV<\xcc\x89" +
-	"\xbffZ\x0d\x11?\x9c\xb3\xb1\xa4\xeb\xb6\xb6\xc4\x17\x9f" +
-	"\xf7\x92i\x0dd\xeb\xbd\xd3\x08\xef\xdf\xd6\xad\xa9\xf9\x9f" +
-	"\x1fy\x8f&\x0e\xa7\xbcON\xa3\xf7;Gy\xaf\x9e" +
-	"p\xe2\x96\xbfx\xfd\xf4\xe3>\x01\xe5-\xe7o%\xbc" +
-	"\xeb\xdd\xce\xcf~\xb9|\xfe&^n\xcc\x7f\x84l\x95" +
-	"\xf3\xa9\xdc\x9a|2\xf3\xa7\x1d\x9b8\xb1\x96\xe4\xcf!" +
-	"[_>v\x8d\xf8\xd4\xd7\xeb\x9eL\x88%\x92O\x0b" +
-	"\xc8'T\x8c\xfc\xed\x80\xde\xbd\xbf\xfc\xd5\xfd\xf7G\xfe" +
-	"\xf6\xa7\xdc\xd6\xd0\xf4\xc5d\xeb\x82\xcf\xf3k>\xfd\xf7" +
-	"k\x9fN\x18\x84n\xed\xca?@\xb6\x86\xa6\x93\xadw" +
-	"\xfc,\x7f\xcf\xfd\x93\xdf\xdc\xcc{O\xc7t*\xd6\xee" +
-	"\xe9\xe4F\x0f\xed\xfb\xe6\xe9\x97u\xfb\x9f@\x1e!z" +
-	"\x1fn>\xba\xec\xc6\xe3\x1d\xaf\x13\xef91\xbd\x1e\x95" +
-	"s\xd3%\x00\xa5sz\x95\"\x17H\x00\xff1fk" +
-	"$\xef\x86\x8a\xe7\xe5\x1f\x06\xea\xb90\xfd\x0ca\x96U" +
-	"@\x98\xb5\xbcWtb\xdc\xe1\x87:8A\xc7\x15P" +
-	"\xcfY\xb0\xf6\xfa\x89?\xc9\xfdr+o\xb5k\x0b\xa8" +
-	"\xd3\x8d\xa6[\x0f-\x9f]\xb8j\xfec/\xf0\x04\x91" +
-	"\x02\xea9\xf3(\xc1\xa6\x11\xaf^\x18z\xe1\xbbm\x89" +
-	"\x9b\xf8\xbe\xd5^P\x86\x80\x93W\x15<\x84\x80_f" +
-	"\xed\xc0\xfd\xdb\xd6mO\x1e.\x17\xd6\x93\xc3\x0b\x97l" +
-	"\xc9Zpt\xd5\xcfA\xbeJL\x89\x90\x8b\x7f:\x07" +
-	"\x15\xb9\x90\xdc1\xab\xb0J\x09\x17^\x0d\xe0\xcd~\xe2" +
-	"\x80\xbbvo\xeeK\xbc$7\x15R\x07\x9bTH$" +
-	"\xd9\xfd\xa2r\xf7G\xeb7\xfc\x82\x98:\xa92_\xa0" +
-	"y\x85\xf5\xa8\x18\x94\xa3^H\x1c\xfe\xb9\xe2\xbf\x1bu" +
-	"\xf3\x8d\x93_\x06yl\xe0\x17\xa5E\xef\xd1{\x15\x11" +
-	"\xbf8\xf4P\xfd\xda=\x1f\xa8{\xf8\xe3v\x15\xd1\xe3" +
-	"\xf6\x16\x91\xe3\xc6\x0cyn\xca3GB\xaf$<\x8b" +
-	"\xda\xf8t\x115aW\x11\xb1qp#y\xa8\xe8=" +
-	"[u\xfd\xd8X\xd6\x9e\x8f\x00Py\xec\xf6\x9d\xca\x93" +
-	"\xb7\xdfL\xe2\xf7v)CYU*\x01$\x05\xeeN" +
-	"m\x94\x9eQ\xe2\xa5\xd3\x00&?[Z%(\x91r" +
-	"B\xfdoJ\xde\xdb\x9f\x8c\xafy\x83\x8f\x88I\xe5[" +
-	"\xc8\xe1\xa5\xe5D\xba\x11\xb5\x997\x8f\xed\x9c\xb6\x8f'" +
-	"\xd0\xcbi\xbc\xc6)\xc1\x83'\xbf\xba\xfe\xb6\x07Bo" +
-	"\x82:\x029uU\xa0$\x92\xa3\xca\xefCe79" +
-	"J\xd9UN\xf4\xf5\x8b\x87\x7f\xfd\\\xec_\x1f=\xc0" +
-	"\xf3{b\xc6\xaf\x08\xbf\x8e\x19\xc5\x80\xdf_3\xe9\xc8" +
-	"\x8co\xfe\xec\xed\xa4\x91\x0f\xce\xb8\x92\x18y\xddyC" +
-	"\x7f\xf1\xc6\xf5\xef\xf0\x1bw\xcd\xa0yr\x1f\xd9\xe8\xad" +
-	":\x1aZ\xf8\xdb+>~\x87\x0f\xb3OfPEw" +
-	"\xcd z\xbcyy\xf4\x9e\x9f=\xf5\x8f\x079\xef\xdd" +
-	"PA#\xf4\xbd\x9c\x91S\x8e\x15-~\x97\xe7\xdd^" +
-	"A\xc3lC\x05\xe1=\xf9\xfd?\xa9\x8e?\xbe\xe80" +
-	"\x9fY\xb6UP\xef\xdd]A\xac\xdc0\xf4\xf8_." +
-	">\xf7\xc1a\xde\xca\xc3+i\x8c\x8f\xac$\x1c\xce\xfc" +
-	"\xee\xc3-s\xbf]\xf3\x1e\x97Y**w\x92\xc3\xbb" +
-	"\x0e\x0e\xaf\xf9\xe1\x88\xc7\x8f\xfa\x1eD\xbf\x84+?$" +
-	"_\x96O\xea<v\xeac\xeb\x14\x7f\xea\xe8J\xea\x19" +
-	"\xd3+\xc9\xa9\xc3>}\xe9\x83o\x1b\xbaN\xf1r?" +
-	"VI\x03\xb6\x83\x9e\xfa\xfb1\xd2\xa1\x17\xaf|\xe4\x0c" +
-	"Op\xb0r+!8I\x09\x16\xde{u\xe7+\xef" +
-	"v\x9c\xe5tr\xb1\xf2:r\xf8\xaf\xd7V}\xbd\xe9" +
-	"o\x0e\x7f\xcco\xfd\xc4?\xfc<\xddz\xe8\xba\xef\xdf" +
-	"\xda\xbe\xfd\xe8\xc7\xbct\xc3\xabn#\x047T\x11\xe9" +
-	"\xa6\xd8\xeeB\xfd'/|\x0e\\:i\xaf\xfa\x90j" +
-	"\xb5\x8ap\xe8\xfc\x979\xdfM\xbd\xe5\x07_\xf0J\xdb" +
-	"VU@\x08vQ\x821{?={\xe3\x8e\xf8\x17" +
-	"<\x87\x13U\xf4~\xe7(\xc1\xf1\x97\xe4\xbf~\xfa\xbe" +
-	"\xa7\xbe\xe0\xc4\xcf\xaa\xa6\x09\xe9\xd0\xc4\x1f\x87>\xc8\xcd" +
-	"\xfb\x92\xf7\x86\x0bU\xb4\x16\x84\xaa\x897\x8cm\xbbi" +
-	"Q\xf1\xad\xab\xbf\xea\x1e'\x93;\xaa\xafCew5" +
-	"u\xd9\xea\x07\x94\xe1\x11\x12'k\xbaZ\x8f\xd4\xce\xdf" +
-	"\xf1\x95/\x89\xaf\xa7jj\xa4\x1f\x8dZ\x8e\xde\x7f\xbe" +
-	"\xf35\x7f\x89\xaejj\xf9\x8b\xd5D\xc6\x89\xa5c\xff" +
-	"\xeb\xec3W}K\x03\x84Q\x8c\x8cP#L\x8a\x10" +
-	"EM\x1b\x95\x95Yx\xe7\x84\x0b)f\x8cPEu" +
-	"D\x08\x8bawM\xe98\x95o\xff\x8e?\xe3`\x84" +
-	"\xa4F\xe5}J03\xa7\xccz\xf8\xc4\xcc\xefx\x82" +
-	"\xf3\x11\xea\xfbXC\x08v>\xa8\xbc\xbd\xeb\xcc\xa8\x8b" +
-	"|\x92\xb9\xa9\x86FO\xb8f;xi\xfe\xd9^\x83" +
-	"\x16m\xd1\xcd\xc6\xf1\xa1\xa8\x163c\x05e\x89\x9fM" +
-	"\xba[ek\x86Y\xe7Z\xb6\xd6\xa4\xcfs\xb4&=" +
-	"o\x8e\xee\xc4[E\xd7Q3\xc4\x0c\x80\x0c\x04\x90\xb3" +
-	"\xc6\x00\xa8\x99\"\xaa\xc3\x04\xccv\x8c\x15:\x0e\x06\x01" +
-	"\x07\x93hIp\x12S\x19;V\xb4Ewk5\xb7" +
-	"\x19\xa0\x16\x11\x87\x80\x80C\x00d\xfc\xda\x9b\xb0T\xb3" +
-	"'8\x9a)4:\xaee\xb7M\xf0I'4h\xb9" +
-	"tkwQ\xab4W_\xa6\xb5\xcf\xb1\xe2\xaen\x8f" +
-	"\xb7b\xba9\xcf\xa8\xd3\x1d\xc7\xb0\xcc\xbcZ\xcd\xd6\xda" +
-	"\x1c*\x1a\x93t\xb4\x0d\xa0\xde\"\xa2:E@\x19q" +
-	"\x18\xb1\x93<\xa9\x00@\xbdUD5_@\xcf\xf17" +
-	"\x97C\xaee\xb5\x18zB4,\x8eQf\x98\xe3=" +
-	"\xbe\xe3\xbf\xe7o\xbc>t\x1c\x001\x87\xbbbF\xea" +
-	"\x15][3\x9dE\xbaM\x15H\x95&\xb5\xbaN@" +
-	"=(\x95\xbaV\x8b\xb6\x10\x0d\xc7Z-\xad\xb1\xce\xb5" +
-	"u\xadm\xbc\xa3-\xd5K\x1dv\x0b^\xdds\x00\xd4" +
-	"!\"\xaa\xd7\x08\xe8\xc5\xfc\x9d\x11\xc0F&ko\"" +
-	"\x91\xe5x\xcc\x17(\xd0MN\xc0V\xab\x01P\x17\x8a" +
-	"\xa8\xb6r\xba1\xca\x00\xd4F\x11\xd5\x98\x80\xb2 \x0c" +
-	"C\x01@n#\x8b\xcd\"\xaa\xae\x80\xb2(\x0eC\x11" +
-	"@^B\x9c\xa0UDu\xb9\xe0K\x10\x8fE\x1a\x01" +
-	"\x80I\xb5\xd2Zf\xeav$\x90re\x13\x11$\xf9" +
-	";\xdb0\x17Y\x98\xe35\xdf\xd0Tw\xfa\xd5\xdf\xef" +
-	"\xeaC\xbf\x86\xe9\xb8ZkkBqD\xc1\xd9\xf1\xd6" +
-	"T\xaf,Hze\xb1Cu\x8ar\xb2\x85\x00D\x99" +
-	"c\x9f\xd6\x9f\x9at\xb74fT[\x8e;Gw\xac" +
-	"\xb8\x1d\xd5\xf3js\xa9\xe6x\x9f\"\xe7\xe4\x89\xa8N" +
-	"\xe4\xf46nL\xd2\xd1\x8a\x9b-\xc7\xe5.\x1a\xd3\xdc" +
-	"\xe6\xbele\xeb\xc4\xfd\xf5\xa4\xf7\\*\xe4\x06\xa6\xb9" +
-	"F\xbdUw\xf5y\x8en\xfb\x8c]\x07\xa0WZk" +
-	"\x99I\\\xb2\x8c\xda\x93x\x8d\xd4\xed\xf25}\x05T" +
-	"\x1aWHZ\xe3\x9e\xb3\x87F/\xcb\x9f\x7f\xb0\xbb5" +
-	"\x06\xa5\xb3\x86M\xfe\xab\xb4l\xddh2\x89ML\xad" +
-	"MO\x17\x1e5\\x4'\xe8\xb8\xd3/mr'" +
-	"\xde\xe0Dm\xa3A\x9f\xdb\xea\xdc\xa1\xb7;\x81g\xf5" +
-	"\x9dyJc\xa9\xa9\x07\x07\xa6(-f\xcc\xb5Zt" +
-	"\x93WT\x90u6\x9e\x9f=s\xc3\xb8\xcf\xbf\xef\x97" +
-	"m9\xafq\xd1\xe9\x97\x8b1\x81\x87\x04\x02W\x10\x81" +
-	"g\x88\xa8\xd6r\x02\xcf\"\x91_-\xa2:\x97K\x07" +
-	"*Y\x9c)\xa2\xfa\xe7\x97\x17\xf9\xfdt\xbe\x1e\x86\xe8" +
-	"\x7f\x0e\x0d\xfc\x9c\xbf\xdfm\x00j\x89\x88\xeaL\xee~" +
-	"\x91\x9at\xf7{\x0d@\x9d+\xa2\xbaP\xc0\\-\x16" +
-	"\xe3$o\xd3Lc\x91\xee\xb8\xe4\xb69\xde\x81\xd3\x9f" +
-	"\x1a\x8bG\xdf\xb3\x86\x19I\x8b\xbb\xcd\x96]\xdb$\xc4" +
-	"\xee\xd0\xdb+\x0d\xb3I\xb7c\xb6a\xba\xbd\xba\"W" +
-	"xI|\xf6\xac\xbb.\x0e\xac\xeef\xa4\xf3U\xdf\xb3" +
-	"\xcb\xb5\xd6\xd6\x06M\x8c\xb6\xd4\"\xaa\x19b\x08 \x18" +
-	"q\x90u\xaa\xb2\\\x06\x82\x1c\x92V:\xbaK\x82\xa1" +
-	"\x04k\xb1G\x90\xd6i\xa6_\xab\xcb-[\xaf\xd4\xa2" +
-	"\xaee\xb7\xd3\xd6\x81?4\xa8\x80\xbd%h\x1a\xdc6" +
-	"\xca\xfc\xe8\x9a\x92\x12.\x9d\xff\x13\x99i \x0a\x0dJ" +
-	"`/\x12\xc5\x1d\xdei{\x93\xc3q5\xdb\xe5\x03\xae" +
-	"\x1b\xc7z.\x199\xf1\x98n/5\x1c\x10-r\xd3" +
-	"\x89\xf3\xf2\xa3#\xf7\xaaO\xf4qS\xee\x04\x96\xecF" +
-	"\x04\xfcw\x91\xd8\xdb!\xa2\xba\x87\xf3\xe2\xddd\xf1\xe7" +
-	"\"\xaa\xafr^\xfc\x0a\xe9\x1a\xf6\x88\xa8\xee\xe7\x8a\xf6" +
-	">B\xf9\xaa\x88\xea;\x02b\xc60\xcc\x00\x90\xdf\"" +
-	"\x81\xf1\x86\x88\xeaa\x01\xe5\x10\x0e\xc3\x10\xa2|\x90\x10" +
-	"\xee\x17Q=&\xa0<H\x18\x86\x83\x10\xe5#\x84\xe5" +
-	"a\x11\xd5\x8f\x84\xbe\x83<M\xa3\xb22j\xb5\xb5i" +
-	"f#\xe6x\x87\xd6\xde\xf2\xf4N5\xf2\x9bD\xe8\xe4" +
-	"\x1a\xce\x9d\xfa2D\x10\x10\x01W6\xeaKgY\x8d" +
-	":\xfb\xed\xb5Yq\xd3\xad\xb5-\xc0h\xb0v\xc9\x8c" +
-	"\x98L!\xb4\x90\xf6F\xdc3\x85`[2<\x18h" +
-	"\x86\x0c\xac\x91\xe5\x02\x1a\x1e\xc5~\x9a)A5\x03\x91" +
-	"\xabipi\xa18\xdf\xd5\xc46\xe7\x0f\xe8\xf0R\xe3" +
-	"\xbb\xce\xd5\\#\xeaw,bT'\x17\xe0\xba<\x92" +
-	"3\xee\x16Qm\xe6\x1cF\xafI\xd7\xe5\xd5$\x1b\xba" +
-	"\xc0a\xe2d{LD\xf5\xaf\x04\xccv\xdbcA\x83" +
-	"\xec\xb5jfS\\kJ\xa9\xb4\xba\x19\xb5\x1a\x0d\xb3" +
-	"\x89[\xcbn\xb0\x1a\xdb1\x0b\x04\xcc\xea\xab\xde\xf3y" +
-	"*\xda2>\x91\x83\xd2\xd5\xd6Q\xe9:\xb09\xc9\xda" +
-	"*\xb5\xe8\xed\x81PQ\xddv\xcb\x9b5\x03\xd0\xec+" +
-	"\xb8\xe3\xb1\xd4\xfa\xd3\xa3\x0bK\xdbb\xf6\xd6\xd4\xf4c" +
-	"d\x09\x92<W\xa7\xca\xd2\xd5\xa9\xf5\xc9\x92\x1b\x18l" +
-	"\xde\xe2d\x9dZ\x99\x98cP\xf6\xde}><k\xb3" +
-	",=\xcb\xc4!W2\xcc\xa6\x08\x9a\x8dFTs-" +
-	"\x1b\x00e\xefT\xd9\xc2\x85/\xe4}\xf3\xf7\x8c*\xa6" +
-	"\xd9\xba\xe9\xce\xb6!\xdbh2z*\x0a\x99\xa2\xfc\xb1" +
-	"L\xcdD\x1e\xbf\x1e\\\xcfAu\x83\xb7xl\xde\x03" +
-	"\xd1m\xf6X\x90!\x8b2I\xd7\xda\xd4\x121\x84I" +
-	"l\x10\x19\x8a\xa8ta=\x08J'J(\x04@\x04" +
-	"2<A9\x895 (\xef\xa3\x84b\x00\xdd \x03" +
-	"h\x95\xb7\xb0\x01\x04e/J8(@4\x91\x01\xd7" +
-	"\xca.\\\x01\x82\xb2\x0d%\x94\x82\xb1\x1a\x19\x9a\xa0l" +
-	"F\x1b\x04\xe5\x09\x9403\x00\x12\x91\xa1\x10\xca\x06\xfa" +
-	"u\x0dJ88\x80\xca\x91\xc1NJ;=w\x09J" +
-	"xE\x80\x09#\x83\xbb\x15\x1d\x17\x83\xa0,@\x09\x7f" +
-	"\x10`\x0a\xc8\xc0CE\xa5_#(\xe1\x90\x00\xe6F" +
-	"\x86\x1b+ET\xe60J\x98\x15 Q\x98\xb5\x03\xf7" +
-	"\xc3\xb6u\xdb\x95\xd1t\xefH\x94ph\x80\xd3\"\x03" +
-	"\x8e\x95\xe1\xb8\x05\x04EF\x093\x02\x08\x0d\xd9\x13\x81" +
-	"\x12\"7\x92/J\x18\x0a@\x08d\x00\xbc\xdcU\x0f" +
-	"\x82\xdc)\x010\xd0\x8e\x83\x93N\x8e\x01A>\"a" +
-	"v\x80b!{\xe9\x90\xf7m\x05A\xde+y\xac\x84" +
-	"\x81h\x98%\xe81\\\x01\x00J\xd0c=+H\x1a" +
-	"\xfd\xca*;\x14\xfb\x8eR\x82\x9ek\xb7WQ\xff\xc9" +
-	"e+,\x83&W\xd8t\xcb\xd8\xb0\xf6\x16\xb2m\x7f" +
-	"\x81\x053d\x13B\xc2#\xd1_B\xb1\x1f\xe1\x01[" +
-	"\x8e\x865\x0e\xc8:\x07\x89I\xe4\x8f\xf7\x90[\x95`" +
-	"\xcf\xc6*\x10u\xbb\x04\xb3c\x86\xd9\xc4]\x15Y\xeb" +
-	"\x91\xedP\x06|\x1f%t\xcf\x0b\x92\xab\xdb\xea\x10\xe4" +
-	"\x01jyE\x12\x7f\x95\xe5-\x1c\xda?|\x85\xc7\x12" +
-	">\x14\xfbC\xaa\xc7\x86$LL?\x11\xc9\\dy" +
-	",\x9fB\xb1\x9fQ\xd5<Z\xd6\xd83\x122|Z" +
-	"\x91\xa9w\x0fF\x091x\x0eA\x06\xcb\xca\x17W\x80" +
-	" \x9f'\x8e\xc2\x90Cd\xa0\x93\xdcI\xbe\x9d&\xf1" +
-	"\xc6\xa0.d\xd0\xa5\xfc\xfek\xbe\xa3H\xc1\xeb\x0c2" +
-	"8\x969\x0af\x0685\xb2\x17\x1ay\xd7z\x10\xe4" +
-	"\x17\x89\xd72\x90\x13\x19V-?\xfb\x08\x08\xf2f\x12" +
-	"\xfd\xec\xb9\x09\x19\xee,?\xb6\x09\x04\xf9a\x927\x18" +
-	"0\x87\x0c\x9b\x95\xd7\x90}\xab$\x8fe_\xc8\xa5\xd9" +
-	"\xb2\x04=6\xc8A\xb1\xce\x96\x9at\x97j\x18\x8a\xa3" +
-	"\xa5\x8e\xa3\xbb\xdc\x92\x10\xad\x8d7\xb4\x1aN\xb3a6" +
-	"\x91\x91\x94\xf83\x1bS\x91\xcd\xa9\xd9\xc4\x04%\xa4\xfd" +
-	"\xf3GKd\xb3%u\x7f\x861\xa0\xe3\xce\x8e\xb9$" +
-	"e;\xa9\xabA!/A\xafE\xd7cZ\xab\xb1\x14" +
-	"\xf5R\x7fZD3\xd5\x97\xfa7\xd3\xb29\xbe\x97\xa1" +
-	"9\x9a(\xb9@+C\xe0j\x03CL\xfc\xcb\x90\xd9" +
-	"+\xd7\xe9\x8e\xcc\x8cJ\x94\xcd<\x01\xa5Fm)\x0e" +
-	"\x05\xac\x15}\x18ph_'t\x03\x00\"\xe6\"\x0b" +
-	"\x12-\xce\x10\xcf\xf3{\x9c\xb2d\x8f\x93\x85\xdf{\x89" +
-	"&g}\x12\xb5\xca\x12.z~\xd1\\R\x9flh" +
-	"d\x11\xfd.\xa7\x9d,.\x17Q\xbd_\xc0\x95q\xb3" +
-	"\xc5\xb4\x96\x990\x88\xa41\xd7\x88\xd6\xc6\x91\x99\x9ck" +
-	"u\x1cW3\x1b\xb5V\x0bDS\x87A\x9e\xeb\xb6\xd6" +
-	"\xe9Q\xcb\x04\xb1\xd1\xc1L\x100\xf32\xb0\xa69\xc5" +
-	"z\x0f\xd5\xf1v\xb2\x13\x84\xfe\xf4\x19$\x8bn\x10A" +
-	"7\xec\x95$&\xd6C\x0d\x08\xd3H\xd7\xff\x94%\xfb" +
-	"\x1f\xae\xe3x\xf3\xe0M\xbfi?\xdb\xbe\xbf\x8f\xc1&" +
-	"\x15\"e]p_\x9dO\x19\x07K\xb0\xcegV}" +
-	"\xb2\x1d\xeas\x101\xf5e\xb3\x09\x09\x88\x91\x01A\xa6" +
-	"=\xf0\x94\xfe\x83Ti'\xc34\x08^\x90\xe2\xfb\x8f" +
-	"\xf2\xa4\x03\xb9\xcb\xd2\xb5\xc3eI\xfc\xe9\xb2\x01\x19~" +
-	"\x96bmx/\xbe\x99\x06\x07\xba\xb4\xb7\xb1\xd4\xc62" +
-	"\x9b\x19d\x8e\xcb\x9a\x12z\x8cz\xfdy\xdbH3Z" +
-	"\xfc\xd1t9\xa8\x97\xa0\xafK$\x15\xbe\x8c\xa4EK" +
-	".\x03I\xe8g\x8a\xae\xd5\xb2\xedn\xe5\x80\x1flR" +
-	"\xe1\xebK\xe6\x95\xde\xb4\xde\xcb\xadi9M\xe7I\xd7" +
-	"%\x8f\x17\x8d>\x8ff\xb6L\x07\xce\xff\xb1\xed\xd7\x1b" +
-	"\xda\x95\xb2\x9en\xa4\xe7Seog\xf4v\xaft\x85" +
-	"\xe02\xdca@WH\xe7\x82|\xca\x8aZ\xb6\x8e\xb2" +
-	"7\xe4\xa5G\xb7,\x9f\xff\xcc?\xf4\x91\xebS\x11\x8f" +
-	"\x1e\xcfa=*\x83\xdf\xef\xa7R\xff\x7f\x05o\xc5\xde" +
-	"\xd4*\xda\xed\xa43\xc9\xa4m6{$G\xf6\xd6-" +
-	"O\"\x8d\xed8\xd2d\xb3Gg\xa4\x7f\x96\x03\x15\xcf" +
-	"\xcb#\xc9\xb7\x1b$\x8f\x99\x05\x19c\xd63\xd2\x88B" +
-	"\x16Rd\xf5\xb2\xa1\xd9\x84\xb3\xf6\x0b\x04\xf9\xbf\xcf\xfa" +
-	",\x19\xa5\x7f:\x09^N\x88\xfbO\x14Q-L\xff" +
-	"r\xe25\xc6m\x8dd7\x10g\xf5l\xc0\x06\x94\x8b" +
-	"\xd3\xc42\x7f\xe5\x18\xa1\x8e\xa6\xbfr\xef/oi\x9e" +
-	"\xad\x06\x8e=\xa7\x86\xc9\x1f\x00#\xf6'K\x07\xed_" +
-	"_\x0d\xda\x98t\x0dZ\x0d\xd7\xa0E-\xd3\xd5M\x97" +
-	"\x81\x80\xa90b\x1a\xc8\xf0\x7f\x03\x00\x00\xff\xff\xc7\x8c" +
-	"\xcd\xa4"
+type SandstormCoreFactory_getShellCli_Params struct{ capnp.Struct }
+
+// SandstormCoreFactory_getShellCli_Params_TypeID is the unique identifier for the type SandstormCoreFactory_getShellCli_Params.
+const SandstormCoreFactory_getShellCli_Params_TypeID = 0xc8fe0af361f6297a
+
+func NewSandstormCoreFactory_getShellCli_Params(s *capnp.Segment) (SandstormCoreFactory_getShellCli_Params, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormCoreFactory_getShellCli_Params{st}, err
+}
+
+func NewRootSandstormCoreFactory_getShellCli_Params(s *capnp.Segment) (SandstormCoreFactory_getShellCli_Params, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return SandstormCoreFactory_getShellCli_Params{st}, err
+}
+
+func ReadRootSandstormCoreFactory_getShellCli_Params(msg *capnp.Message) (SandstormCoreFactory_getShellCli_Params, error) {
+	root, err := msg.Root()
+	return SandstormCoreFactory_getShellCli_Params{root.Struct()}, err
+}
+
+func (s SandstormCoreFactory_getShellCli_Params) String() string {
+	str, _ := text.Marshal(0xc8fe0af361f6297a, s.Struct)
+	return str
+}
+
+// SandstormCoreFactory_getShellCli_Params_List is a list of SandstormCoreFactory_getShellCli_Params.
+type SandstormCoreFactory_getShellCli_Params_List struct{ capnp.List }
+
+// NewSandstormCoreFactory_getShellCli_Params creates a new list of SandstormCoreFactory_getShellCli_Params.
+func NewSandstormCoreFactory_getShellCli_Params_List(s *capnp.Segment, sz int32) (SandstormCoreFactory_getShellCli_Params_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return SandstormCoreFactory_getShellCli_Params_List{l}, err
+}
+
+func (s SandstormCoreFactory_getShellCli_Params_List) At(i int) SandstormCoreFactory_getShellCli_Params {
+	return SandstormCoreFactory_getShellCli_Params{s.List.Struct(i)}
+}
+
+func (s SandstormCoreFactory_getShellCli_Params_List) Set(i int, v SandstormCoreFactory_getShellCli_Params) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormCoreFactory_getShellCli_Params_List) String() string {
+	str, _ := text.MarshalList(0xc8fe0af361f6297a, s.List)
+	return str
+}
+
+// SandstormCoreFactory_getShellCli_Params_Future is a wrapper for a SandstormCoreFactory_getShellCli_Params promised by a client call.
+type SandstormCoreFactory_getShellCli_Params_Future struct{ *capnp.Future }
+
+func (p SandstormCoreFactory_getShellCli_Params_Future) Struct() (SandstormCoreFactory_getShellCli_Params, error) {
+	s, err := p.Future.Struct()
+	return SandstormCoreFactory_getShellCli_Params{s}, err
+}
+
+type SandstormCoreFactory_getShellCli_Results struct{ capnp.Struct }
+
+// SandstormCoreFactory_getShellCli_Results_TypeID is the unique identifier for the type SandstormCoreFactory_getShellCli_Results.
+const SandstormCoreFactory_getShellCli_Results_TypeID = 0xc701240ec8cce7ff
+
+func NewSandstormCoreFactory_getShellCli_Results(s *capnp.Segment) (SandstormCoreFactory_getShellCli_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCoreFactory_getShellCli_Results{st}, err
+}
+
+func NewRootSandstormCoreFactory_getShellCli_Results(s *capnp.Segment) (SandstormCoreFactory_getShellCli_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
+	return SandstormCoreFactory_getShellCli_Results{st}, err
+}
+
+func ReadRootSandstormCoreFactory_getShellCli_Results(msg *capnp.Message) (SandstormCoreFactory_getShellCli_Results, error) {
+	root, err := msg.Root()
+	return SandstormCoreFactory_getShellCli_Results{root.Struct()}, err
+}
+
+func (s SandstormCoreFactory_getShellCli_Results) String() string {
+	str, _ := text.Marshal(0xc701240ec8cce7ff, s.Struct)
+	return str
+}
+
+func (s SandstormCoreFactory_getShellCli_Results) ShellCli() ShellCli {
+	p, _ := s.Struct.Ptr(0)
+	return ShellCli{Client: p.Interface().Client()}
+}
+
+func (s SandstormCoreFactory_getShellCli_Results) HasShellCli() bool {
+	return s.Struct.HasPtr(0)
+}
+
+func (s SandstormCoreFactory_getShellCli_Results) SetShellCli(v ShellCli) error {
+	if !v.Client.IsValid() {
+		return s.Struct.SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
+	return s.Struct.SetPtr(0, in.ToPtr())
+}
+
+// SandstormCoreFactory_getShellCli_Results_List is a list of SandstormCoreFactory_getShellCli_Results.
+type SandstormCoreFactory_getShellCli_Results_List struct{ capnp.List }
+
+// NewSandstormCoreFactory_getShellCli_Results creates a new list of SandstormCoreFactory_getShellCli_Results.
+func NewSandstormCoreFactory_getShellCli_Results_List(s *capnp.Segment, sz int32) (SandstormCoreFactory_getShellCli_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
+	return SandstormCoreFactory_getShellCli_Results_List{l}, err
+}
+
+func (s SandstormCoreFactory_getShellCli_Results_List) At(i int) SandstormCoreFactory_getShellCli_Results {
+	return SandstormCoreFactory_getShellCli_Results{s.List.Struct(i)}
+}
+
+func (s SandstormCoreFactory_getShellCli_Results_List) Set(i int, v SandstormCoreFactory_getShellCli_Results) error {
+	return s.List.SetStruct(i, v.Struct)
+}
+
+func (s SandstormCoreFactory_getShellCli_Results_List) String() string {
+	str, _ := text.MarshalList(0xc701240ec8cce7ff, s.List)
+	return str
+}
+
+// SandstormCoreFactory_getShellCli_Results_Future is a wrapper for a SandstormCoreFactory_getShellCli_Results promised by a client call.
+type SandstormCoreFactory_getShellCli_Results_Future struct{ *capnp.Future }
+
+func (p SandstormCoreFactory_getShellCli_Results_Future) Struct() (SandstormCoreFactory_getShellCli_Results, error) {
+	s, err := p.Future.Struct()
+	return SandstormCoreFactory_getShellCli_Results{s}, err
+}
+
+func (p SandstormCoreFactory_getShellCli_Results_Future) ShellCli() ShellCli {
+	return ShellCli{Client: p.Future.Field(0, nil).Client()}
+}
+
+const schema_dcbc0d702b1b47a5 = "x\xda\xccZ{x\x14U\x96\xbf\xa7*M\x01\x93\x10" +
+	"j\x8a\x87\x0f\x9c(\x13>\x05\x04A\x10B\x08t\x1e" +
+	"\x13\x92\xee\x04I\x11\x18f\xb2\xb2R\xe9\xbe$E\xba" +
+	"\xab\x9a\xaajC\x98e\x19\xd40\x0c\xea\xe7\xe0\xfaX" +
+	"\xd9\xf5\x01#\xae0\xb2<\xbe\xc1':\xe2c@\x14" +
+	"\x01\x11]\\\xd9%\xbe0~\xebhT\xc6e\x1c\xa9" +
+	"\xfd\xee\xed\xbe\xd5\xb7\x93\x0e\x9d\xe0\xfc\xb1\x1f\x7f\xf0\xa5" +
+	"\xea\xdc[\xe7\x9c\xfb;\x8f\xfb;=i\xd3\x88Ra" +
+	"\xb2\xcf\x8d T\xffu\x8eo\x80\xbb\xea\xa5\x97+\xa3" +
+	"\xb3\x1e\xf8%RG\x00 \x94#!4\x05O\xdb\x08" +
+	"\x08\x94\xf84?\x02\xb7\xea\xb1;\x0e\xff\xfcE\xf7\x16" +
+	"$\x8f\x02\x84|\x02\x11\xb8g\xdaz\"\xb0eZ+" +
+	"\x02\xf7\xbe\xb1/\x9f\xd1\xaf\x9e\xb6\x16\xc9#\xd8\x06\xbe" +
+	"\xe9\x8d\x80r\xdc\xf1\x13\xde\xb9\xef\xd8\xc8\x83k\x91<" +
+	"\x8e,\x05\xf2\xaak\xda\x8bd)L'{_q\xf2" +
+	"\xfa\xc1-[\x1f\xfdUb\xa9\x8f\xae\x1d3=H\x04" +
+	"&O?\x8d\xc0\xed\x1asK\xf4\xf4\xee\xb1\xeb\x92\x02" +
+	"t\x87AE\xcb\x88\xc0\xf0\"\xb2\xc3C?\x9c\xba-" +
+	"04\xbe\x8e\xd7\xee\xba\xa2\xddD\xa0\xb2\x88h\xe7\xfe" +
+	"\xdb\xec\x8b%\xa9\xed6~\x87ME\x0dD`;\xdd" +
+	"a\xc1\xe9\x19\x8f\xfc\xb4\xfa\xd1\xdb\x91:\x12\xbc-\x0e" +
+	"\x15\xddL$N\x14\xed@\xe0\x9e\xa8\xb8e\xd2\xa7\xfb" +
+	"+7p\x06\xb6\xcd\x08\x12\x03\xaf\x1bz_i\xd7\xb5" +
+	"\xd1\xe4\x9b\xc4R<\xa3\x91,]>\x83|\xfdO\xf5" +
+	"\xed\xc1\xff\xfd\x85{wR=\xfa\xf5\xa33\xa8\x07:" +
+	"f\x90\xaf\xdfr\xcd\x89\xab\xfe\xee\xa5\x8e{\x13\x02\x09" +
+	"\xe7\x15o#{78\x9d\xa7\x9fZ\xb1h#o\xd9" +
+	"\x99\x19w\x91\xa5\xbebj\x99&\x9f\x1c\xf8\xe0\xd6\x8d" +
+	"\x9cZ\xb8x>Y\xfa\xec[\x17\x89\x0f}\xb9\xee\x81" +
+	"\xa4Z\"y\xa5\x92W\xa0,.&\x16\xadz\xea\x99" +
+	"[o\x0d\xfc\xe6An\xe9\xd9\xe2ed\xe9\xe2O\x8a" +
+	"\x82\x1f\xff\xe7\xc5\x0f'\x8f\x8c.\xfd\xa8\xf8 Yz" +
+	"\x96.\xad\xf9]\xd1\xde[\xa7\xec\xdf\xc4\xe3\xe5\x81\x99" +
+	"T\xad\xed3\x89Ew\xbe\xf2\xf5\xc3\xcfb\xeb\xb7H" +
+	"\x1e%\xba\xefn:\xd6z\xf9;[_B\x08\xa6\x1c" +
+	"\x9a\xd9\x00J\xc7L\x09!\xe5\xe4\xcc*\xc5W\"!" +
+	"\xf4\xdf\xe3\xb6\x05\x0a/\xab|L\xfe\xb1\xe7\x9e\xcff" +
+	"\xbeO\x01RB6kys\xd6\x89\x09G\xee\xdc\xca" +
+	")zE\x09\xc5\xd6\xe2\xb5\x97N\xba\xbd\xe0\xf3m\xfc" +
+	"\xb9\xe6\x95PX^F\x97\x1e^1\xafd\xcd\xa2{" +
+	"\x1e\xe7\x05f\x95Pl\x05\xa8\xc0\xd9\xf0\xd9\xf6\xe9\xcf" +
+	"n\xd8\x8e\xe4\x91l\xefh\xc9]d\xef\x8d\xa3^8" +
+	";\xe4\xec\xb7\xdb\x936&p\xb9\xb8\xa4\x1c\x10L\xc1" +
+	"%w\x02\x82\xcf\xf3v\xc2\x81\xed\xebv\xa4\xd4:3" +
+	"\xab\x81,-Y\xbe9o\xf1\xb15\xbfG\xf2\x08\xd1" +
+	"\x9d\xb7}_\xf1\xf2\xce\x9d\xfb\x88\xf5\x1d\xb3\xe6\x83r" +
+	"f\x16\xb1\xbekV\x95r\xf1\xec\x91\x08\xb9\xf3\xee?" +
+	"\xe8\xac\xddW\xf0D\x1a\xbcgSp\x0e\x9fMt|" +
+	"z\x97r\xc3{\xeb\xefx\x92\x80 \xe5\xcc\x84B3" +
+	"f7\x802w6\xd910\x9b\x04\xcb\xa3\xfe\x7f\x1a" +
+	"}\xe5\xe5S\x9eE\xf2x\x0f1c\xfco\x92\xddf" +
+	"\xf8\x09b\x0e\xdf\xd9\xb0v\xef\xdb\xea^\xfes\xf7\xfb" +
+	"\xe9\xe7\xb6\xf8\xc9\xe7\xc6\xe5>:\xf5\x91\xa3\xbe\xe7\x92" +
+	"\x98\xa3\xa7\xff\x8a\x9f\x1e\xeeq?\x0d\x85\xa7~\xfb\xe4" +
+	"\xc1\x11W\xfd!\xe1\xb3\xc4'\xdaJW\x12\x81\xf6R" +
+	"\xf2\x09\xcfdy\x88\xe8n\xa9\xbat|,o\xef{" +
+	"\x88\xc0\xbdt\xb7\xd2Y:\x92 \xadT\xcaQ\x9e\xab" +
+	"\x90\x10JY\xd4]zK\xc5\xfb\xca\xae\x8a\xe9\x08M" +
+	"\xe9\xa8\xa8\x12\x94\xf6J\"\xfd\x1fJ\xe1k\x1fM\x0c" +
+	"\xbe\xcc\x07S\xb4r3\xf9\xf8\xaaJ\xa2\xfe\xa8\xba\x81" +
+	"W\x8e\xef\x9c\xfe\x0a/\xb0\xa9\x92&\x83]T\xc0=" +
+	"\xfd\xfa\x81!\x85\xb0\x1fqx\xeb\xa8|\x86\x08tQ" +
+	"\x81\xdbN~q\xe9\xb5\xbf\xf2\xedG\xea(\xe0\x1c^" +
+	"\x09\x92\x88\xd0\x94\xe1sn\x06e\xec\x1c\xe2\xf11s" +
+	"\x88\xc7W\x8e\xfd\xb3\xf6\xd5\xe0s\x07\x12\xfb\xd1S\x19" +
+	"T\xb5\x9b\xe0\xe0\xc9\x0d\xcf?\x1a\xfb\xc3\xdd\x07yU" +
+	"\xce\xce\xa1_\x1aT\xe5Gp\xee\xa2\xc9G\x7f\xf2\xf5" +
+	"O_K\x01hB\xd5\x0f\xc9\xc2ugt\xbc\xeb\xf2" +
+	"\xf5\xaf\xf3\x0b\x87W\xd1|<\x86,t\xd7\x1c\xf3-" +
+	"\xf9\xd3\xe0\x0f_\xe7\x83\xbb\xb2\x8a\x1e\xa2ZE\xce\xe8" +
+	"\xca\x15\xa1\x1b\x7f\xf7\xd0\xbf\x1e\xe2b\xe6\xb3*\x9a\x17" +
+	"\xde\x1cz\xc5\xd4\xb7f-{\x83\xdf\xfbD\x15\x0d\xee" +
+	"\xcf\xe8\xdeS\x8e\xff\xa8:~\xef\xd2#|>\xcb\xab" +
+	"\xa61sq59\xde\xc6!\xef\xfc\xfd\xb2\xcf\xde>" +
+	"\xc2#(^M3\xcb\x9aj\xb2\xc3\xfb\x7fyw\xf3" +
+	"\x82o\xda\xdf\xe4\xf2\xd9\x96j\xea\x91\xaeC\xc3\x83?" +
+	"\x1eu\xef\xb1\x04:\xe9\x9b{\xaa\xdf%o\x9e:\xfa" +
+	"\xe0\x7f]\xf4\xa3\xf1'{\xa0\xe0\xd7\xd5\xcf(\x1b\xaa" +
+	"\x89\xbb\xef\xa8\xde\xaf\\\x16  X1\xb9\xf3\xadS" +
+	"\x1f\x9a\xa7x\x15}\x01\x0a\xd1\xe1\x01\xa2\xe2\xb0\x8f\x9f" +
+	"x\xfb\x9b\xc6\xaeS\xbc\x91\xcb\x034\xa7\xb4\x07\x88\x8a" +
+	"\x7f\x1d'\x1d\xde\xf5\xc3\xbb\xde\xe7\x05\xb6\x06\xb6\x11\x81" +
+	"\xa7\xa9\xc0\x92U#;\x9f{c\xeb\x07\x9c\x03O\x04" +
+	".!\x9a>\xbf\xb6\xea\xcb\x8d\xbf>\xf2!\xbft_" +
+	"\xe2\xe3G\xe9\xd2\xc3\x97\x9c{u\xc7\x8ec\x1f\xf2\xda" +
+	"u\x05\xae\xa5\xe9\x93j\xf7\x9b\xb9y\xf3\xae\xa9\xce\xfd" +
+	"\x98K:\x0b\x837\x93\xbd\xa7Z\xce\x12|\xfb\xe3\x9f" +
+	"\xf0\xd8,\x0b\xbeK\x96.\x0c\x92\xbd;\xff}\xfe\xb7" +
+	"\xd3\xae\xfa\xc1\xa7i\xbe\x0f\x16S\xf8S\x81q\xfb>" +
+	"\xfe\xe0\xf2\x9d\xf1O\xf9\x1d6\x05\xa9\xe5{\xa8\xc0;" +
+	"O\xc8\xff\xf8\xf0\xcd\x0f}\xca\x19v<H\xb3\xe9\xe1" +
+	"I\xbf\xf4\xbd]P\xf89\x0f\xaa}AZ\xc8\x0e\x05" +
+	"\x09\xa8\xc6G\xc7,\xf5_}\xcb\x17\xdd\xcfh\xca\xf2" +
+	"\x9aK@YSC\x0eiU\xcd~eP-9\xa4" +
+	"\xf6\xae\xc8\xd1\xbaE;\xbf\xe0\xe2\xa2\xab\x86\x9e\xf5\xe0" +
+	"\x9f\xddy\xeepG}\x17g\xffG5\xeb\xc9\x9b_" +
+	"\x8c^\x01\xee\xff\xbc\xfe%o\xde\xf1\x1a\x0a\xad\x8e\x1a" +
+	"\xa2\xfd\xf3\x8dG\x07\xdf\xf6\xe6\xa9\xaf\xb8\xa5\xbe\xda\x8d" +
+	"d\xe9\xa4\xb2\xf1_}\xf0\xc8\x88oh\xd4\xb2\xb5g" +
+	"j\xe8\x91\xfaj\x89\xdb\xa7\x8f\xce\x1bXr\xfd5g" +
+	"\xf9\x83\xd3k\xa9sW\xd5\x92\xcd\x87\xfd|\xea\xd6S" +
+	"E\xd6_\xd2\xda\x84Z\x92\xf1\x95\xadT\xa0vh\xb9" +
+	"\xb9\xe1D\xed\xb7\xbc\xc0\xab\xb54\xec\x8eS\x81\xdd\xb7" +
+	")\xaf\xedy\x7f\xf4w|\xee<[K\x03w\xd0\xdc" +
+	"\x1d\xc8\xcd\xf0\xcfr\x1b\xb5P\x0b6\xc2\x13}!-" +
+	"f\xc4\x8a\xcb\x93\x7f6a\xa7\xca\xd2t\xa3\xde1-" +
+	"\xad\x09/\xb4\xb5&\\8\x1f\xdb\xf1\x88\xe8\xd8j\x8e" +
+	"\x98\x83P\x0e $\xe7\x8dCH\x1d(\x82:L\x80" +
+	"|[_\x89a\x10\x12`\x10\x09\xd4\xf4\x8d\xab4\x07" +
+	"\xb7jm\xf3\xcd\xb8\x83\xad\x89f\x0c\x1b\x0b\xf5zl" +
+	"\xdb\xbai\x14\xd6i\x96\x16\xb5\xe9Fl\xdf\xb1\x16B" +
+	"\xeaU\"\xa8S\x05\x90\x01\x86\x11\xaf\xca\x93\x8b\x11R" +
+	"\xaf\x16A-\x12\xc0\xb5\x13\x8b+P\x81i\xb6\xe8\x18" +
+	"r\x91\x00\xb9\x08\xfc1\xba\x19\x0cu\xef\xdd\xf9\xe7E" +
+	"\xf7]\xea{\x07!\x80\xa1\x9cB9\xe9\x96:\x96f" +
+	"\xd8K\xb1E\xcd\xa5&J\x11\xc7\xf6\xa4\x07\xa4K\xd7" +
+	"i\xa1\x16\xe2\x8fX\xc4\xd4\xc2\xf5\x8e\x85\xb5\xe8D[" +
+	"\xbb\x09\x97\xd9\xcc\x0a\xde9\xf3\x11RsEP/\x12" +
+	"\xc0\x8d%V\x06\x10\x84\x99\xae\xbd\xa9D\x1e\xc7c\x09" +
+	"\x85<\xdf\x0c\xf5\xb6\xd5\x82\x08\xa9KDP#\x9co" +
+	"\xf4r\x84\xd4\xb0\x08jL\x00Y\x10\x86\x81\x80\x90\x1c" +
+	"%\x0f\x9bEP\x1d\x01dQ\x1c\x06\"B\xf2rr" +
+	"d\x11\x11\xd4\x15BB\x83x,\x10F\x081\xadV" +
+	"\x9b\xad\x06\xb6\x02\x9e\x96\xab\x9b\x88\"\xa9\xbf\xf3uc" +
+	"\xa9\x09C\xdd\xe6\xcb\x9a\xea;^\xf8\xeb\x9e,\xfe\xd5" +
+	"\x0d\xdb\xd1\"\x91\xa4\xe3\x88\x83\xf3\xe3\x91t\x0c\x15\xa7" +
+	"0\xe4\xb7\xa9OAN\xf51\x08@\xce\x86\xa7&\xec" +
+	"\x94\xc5\xf4j\xd3v\xe6c\xdb\x8c[!\\XW@" +
+	"=\xc7c\x8a|\xa7P\x04u\x12\xe7\xb7\x09\xe3R@" +
+	"\xf37\x9b\xb6\xc3\x19\x1a\xd3\x9c\xe6lgea\xdb1" +
+	"-\x9cB\xcf\xf9\x02$\x8b\xe7\x92\xa6\xd57\xe3H\xa4" +
+	"\"\xa2O\x0cYXspY(\x8a\xcbB!3n" +
+	"8\x1e\xc6r\xbd\xfd+\x09\xc6~\"\x82Z\xc7\x195" +
+	"\xf7Z\x84\xd4j\x11\xd4\x05\x02@\x12\x0b\xea2\x84\xd4" +
+	":\x11\xd4\x1b\x04p\xc3\xba\x85C\x8ei!hc\x06" +
+	"\x16\xe0\xa8\xa6G<s\xb5&\x0b\xe3\x05\xe6\x02\x94\x8f" +
+	"\xad\xa8\x0d\x80\x04\x80\xde\xbd\x10\xc6\x11\xec\xe0\x856\xb6" +
+	"\x12>pl\x84z\x955[\x0d\x12=\xe5\x14z\xc4" +
+	"$\xa9\xdb9\x05\xb3\xc5~\x06\xd4\xa6\x80s\xe3\x07\x87" +
+	"\xc7\xb6\x16-:\xd4\x1d8\x032\x01\xc7\"\xff\xcd1" +
+	"-\xac7\x19\x04>\x86\x16\xc5\x99\"9\xc8Ers" +
+	"R\x8e\xfb\xfa\xf9\xd1i\xc7\x1b\xed\x90\xa57\xe2\x05\x11" +
+	"\xbb\x06\xb7\xd9^\x10dO\x92e\xb1\xf4,\x09\xfds" +
+	"\x94\x16\xd3\x17\x98-\xd8\xe0\x1d\xe5%\xc8\xfb\xce\xcc\xab" +
+	"\xbdc\xc2'\xe7\xb2\x04p\xe2l9\x80;`\xf7)" +
+	"\x1a\x98\xc2\x1cX\x83\x99\xc0Z\x9e\x02\xab\x97\xb9T\xf2" +
+	"\xb0V\x04\xf5g\x17\x96\xa4\xfa\x08\xbe\x1e\x07\xd1\xf7t" +
+	"\xef\xe1\x9c\xb7\x8f\xc4]\xa9\x08j-g_ \x98\xc9" +
+	"\xbe\x17\x11R\x17\x88\xa0.\x11\xa0@\x8b\xc58\xcd\xa3" +
+	"\x9a\xa1/\xc5\xb6C\xac\x1d\xea\x1e\xec\xf8X_6\xf6" +
+	"\xc6vvHZ\xdci6\xad\xba&!V\x83\xdb\xe6" +
+	"\xe8F\x13\xb6b\x96n8\xbdB\x91\xab\xe8$>{" +
+	"\x16t\x07\xfaW\xd0s2a5\x81\xec\x0a-\x12i" +
+	"\xd4\xc4PK\x1d\x80\x9a#\xfa\x10\xf2\xae\x84\xc0\xbao" +
+	"Y.G\x82\xec\x93V\xdb\xd8!\xc1P\x0au\xd0#" +
+	"H\xeb5#L\x90\x14\xad0-<G#\xa9\xaa\x8d" +
+	"\xf6$\xfcG\xbdb\xdd[-\xa1\xc1m\x81\xcc\x93\x00" +
+	"i)\xe1\xfc\xa5*\x99\x99\xfa\xe3P\xafZ\xf7\xa2Q" +
+	"\xdc\xe6A\xdb\x9b\x1e\xb6\xa3Y\x0e\x1fp\xddvl\xe0" +
+	"\x92\x91\x1d\x8fa\xeb&\xddF\xa2I,\x9d\xb4\xb0(" +
+	"t\xc5>\xf5\xfe^\xaa\xa6WZ,l\xe0\xd6\x0al" +
+	"9\xfaR=\xa49\xf8z\xb3\x95\xc5k\x1f\xb4b\x09" +
+	"r\x94\xa7\xd3\x1e\x12\xaf;EP\xf7r\xc8\x7f\x9a<" +
+	"\xfc\xbd\x08\xea\x0b\x1c\xf2\x9f#\x05k\xaf\x08\xea\x01\xae" +
+	"'y\x85H\xbe \x82\xfa\xba\x00\x903\x0cr\x10\x92" +
+	"_%\xc1\xf4\xb2\x08\xea\x11\x01d\x1f\x0c\x03\x1f\x80|" +
+	"\x88\x08\x1e\x10A}K\x00y\x800\x0c\x06\x00\xc8G" +
+	"\xc9\x96GDP\xdf\x13\xb2'\x86\x0c}\xd8\xea\x90\x19" +
+	"\x8djF\x18\x86\xba\x87\xd7^\xf5\xf0n5\xf0\xc7d" +
+	"\xb8\x15\xe8\xf6\xf5\xb8\x95U\xbf\xd5a|\xd3\\3\x8c" +
+	"\xbdj\x18%E\xb9\xce2\x11\x84\xfaV!Si\x87" +
+	"\xf6\x09\xbd\x09\xf7L;\x10M\x85\x14#5\x81Qe" +
+	"\xb2\\LC\xca\x9fHM\xa5\xa0\xe6\x00pu\x10\x9d" +
+	"_)\x0e\xef\x9a\x18\xb5\xbfG\x03\x9b\x9e\x13\xea\x1d\xcd" +
+	"\xd1C\x89\x86L\x0cab\x00\xd7\xc4\x92<s\x83\x08" +
+	"j3\x07\x18\x1c\xcc\xd4\xc4\x06S\xfd\xaa\x07\x988Y" +
+	"\x1e\x13A\xfd\x07\x01\xf2\x9d\xb6\x98\xd7\xff\xbb\x11\xcdh" +
+	"\x8akMi\xd5\x19\x1b!3\xac\x1bM\xdc\xb3\xfcF" +
+	"3\xdc\x06yH\x80\xbcl=\x02\x9f\xdbB-\x13\x93" +
+	"y+S=\x1e\x9d\xa9\xc1\x9c\x9f\xaa\xc7R\x0b\xf6\xfa" +
+	"-7\x84-\xa7\xa2Y\xd3\x11\x18\xd9\x12B<\x96^" +
+	"\xb3z4\x99\x19;\xe8\xde\x1a\xa1>\xdc\xc8\xbc\xc2\xc0" +
+	"\xd5\xb6\xf2L\xb5m}\xaaL{\x07\xb6pY\xaa\xb6" +
+	"\xadN^\xd3@v\xdfx\xec\xba\xb9\x9bdi\x0bS" +
+	"\x87\x98\xa4\x1bM\x010\xc2$\x05\x99\x16B \xbb\xa7" +
+	"\xca\x97,y\xbc\xf0\xeb\x7ffR1\xcd\xc2\x863\xcf" +
+	"B\xf9z\x93\xde\xab\xa3\xbc\xbcfc\x87\xf4\xcb\x15\xcd" +
+	"Z$\x82\x8d&\\\xe8\xaf\xeb\xdb5\xa0\x9c\xbb\x06D" +
+	"\xcdp<\x82S\xadF\xcc\xd1M\xc3\xee\xf1m`\x87" +
+	"T@\xff\xa6A\x97b_a\xb3\xcb\xc2\x18X\x1cK" +
+	"X\x8b\xaa\xa5\xa2\x0f\xc0cx\x81\xb1\xc4J\x174 " +
+	"A\xe9\x04\x09\x04\x8f\xc5\x01F\xb9('!\x88\x04\xe5" +
+	"8H z$\x190\x02^y\x15\x1a\x91\xa0\xec\x03" +
+	"\x09\x06x\x8c5\xb0\xd1\x85\xb2\x07V\"A\xd9\x0e\x12" +
+	"H\x1e\x8b\x00\x8cpQ6\x81\x85\x04\xe5~\x90`\xa0" +
+	"G\x07\x03#j\x94;\xe8\xdbv\x90`\x907,\x01" +
+	"F\xf0)m\xf4\xbb\xcbA\x82\xc1\x1e\xe7\x0fl\xe0\xa1" +
+	"`X\x86\x04e1H\xf0\x03\x8f\\\x01F\x01+*" +
+	"}\x1b\x00\x09r\xbd1\x06\xb0\xb9\x802\x8b\xea|\x1d" +
+	"H\x90\xe7q~\x90\xb7\x13\x0e\xa0\xed\xebv(c\xe9" +
+	"\xda+@\x82!\x1e\x0f\x0fl0\xa0\x0c\x87\xcdHP" +
+	"d\x90 \xc7#+\x81\x0d\x89\x14\x1f\xb1H\xfeN\x02" +
+	"\x9f\xc7\xb9\x00\x1b\xb0\xc8]\x0dH\x90;%\x84\x18=" +
+	"\xcaqq'\xc7!A>*A\xbeG\x01\x02\x9b]" +
+	"\xc9\xaflC\x82\xbcOrY\x91D\xa2n\x94\x82\xcb" +
+	"h\x14\x84P)\xb8\xac\x93F\x92F\xdf\xb2~\x03\xf9" +
+	"\x13@)\x05\xd7\xb1\xda\xaa\xb0S\xa7\xa1\x02\xf6\x84\xe5" +
+	"\xe8\xd4\x13F\x0f\xb0mX\xd3\x8d\xf2\xad\xc4\x03\x96." +
+	"P>\x11${$\xbb^\xe4O\xe4\x10o[N\x86" +
+	"\xb53\xc0\xfa\x19\x89i\x94\xe0GPAUr{v" +
+	"\xd9C\"\xb6J!?\xa6\x1bM\x9c\xa9\xc0\x1a\xa2|" +
+	"\x9bn\xc0wwB\xf7\xcc#9\xd8Rs\x81\x1f3" +
+	"\xc8+S\x1c\xb8,o\xe6\xa69\xc3W\xba\xac\xa4 " +
+	"\x7f\xe2\x96\xef\xb2\xab\x1b$\xefd\x01\xc9Xj\xba," +
+	"c#\x7f\"g\xab\x85\xb4p\xb2A\"\xb0)\x83\"" +
+	"St\x0f\x02\x09\xc0\x1bw\x01#\xc0\xe5\xefV\"A" +
+	">C\x80\xc2hW`\x1c\x9b\xdcI\xdeu\x90xc" +
+	"\xcc\x1e0\xdeW>\xfeb\x02(\x927}\x03F|" +
+	"3\xa0\xc0@o\x98\x00l\x02'\xefY\x8f\x04y\x17" +
+	"A-c\x88\x81\x0d\x14\xe4-w!A\xdeD\xa2\x9f" +
+	"\x0d\x1c\x811\xfc\xf2=\x1b\x91 o y\x83\xf1\x90" +
+	"\xc0Xp\xb9\x9d\xac[#\xb9,\xbf\xa3\x02\x9a\x8fK" +
+	"\xc1e\xd7K\xe4\xc7\xecQ\x13v\xa8\x87\x91?Tf" +
+	"\xdb\xd8\xe1\x1e\x09\xa1\xbaxcD\xb7\x9bu\xa3\x89\\" +
+	"\x94\x09\x9e\xd9\xe5\x19\xd8\xed9\x9f\x1cA)iJ\x13" +
+	"\x17^`7^\x0a\x7fF\xd2\x80\xed\xcc\xa3)\x15\xec" +
+	"\xf4\xa7^\xabP\x0an\x0b\xc61-\xa2\xdf\x04\xb8," +
+	"q\x87\x05#\x1dK}\xbbi3v\xa1\x97\xab|(" +
+	"Y\xd4\x11\xad=\x1e\xd4\xfaG9%\x8c!7\xc2\x02" +
+	"\xbb;\xb55:Y\x98\x0b\x05\x90\xc2\xdaM0\x04A" +
+	"\x9d\x08\xb4\x94\x0c\xc9\xd0\x9e\xf7r\xeda\xe5\xadp\xbe" +
+	"\x1f\xf7\xf8\x04o\x8f\x9d\x14L\xd8\xe3\x8d5\xfabO" +
+	"7\x12$`,5Q\xb2e\xcbu\xddD\xcfV\x9e" +
+	"\xea\xd9\xf2\xe0\x9c\x9bl\xda\xd6\xa7H\xc6<\xe1;7" +
+	"\xd1\x04,oH5h\xb2\x08\x89\xae\xad\x8d<\\!" +
+	"\x82z\xab\x00\xab\xe3F\x8ba\xb6\x1ah\x00I\x9a\x8e" +
+	"\x1e\xaa\x8b\x03\x03\x18\xd7\xba\xd9\x8ef\x84\xb5\x88\x89D" +
+	"\x03\xa3\x01\xae\xe3D\xeaq\xc84\x90\x18\xb6a \x12" +
+	"`\xe0\x05x1I\x0d\xf6\x9bR\xcc\xe6}+)\x98" +
+	"\xb8\xb9{)\xad\x1b\xbd\"\xa6\xf7v$}\xf6\xb8z" +
+	"\xf5\x85\x0f\xca\xd4\x07\x96\xa7\xfa@\xae\xf3\xda\x7fh\xcc" +
+	"\x1f\xdb>h;\x90\xe5\xfa\x9b\xce\x84\xb3\xdb@\xb6\x0e" +
+	"\xb0\x9c\xa3tX\x078\xb7!\xd5\x16f\xbd\x90\x19\xb8" +
+	"u\x1e\x11Ab\xa0_\xccx\x0f.\xaa\xef\x04_\xc6" +
+	"[u\x06\xa2\xd6+D}g\xc82\xcd2\xca\xb34" +
+	"\x9c\x17Lf\xf1wJv\x1d\xe9\x05\x9b\x198\xb4\xf3" +
+	"\xa3\x8d%`\x96\x7f\x0d/\xbf]\xd0m\xa9\xc7\x95\x17" +
+	"X\xe7\xeeOD%\xc95\xb9\xb4L\xb3\xdf\xc3\x00\x1b" +
+	"\xd5\xc9*)bsI\x91f\xe3\x7f`cL\xb9\x8c" +
+	"\x14\xcdY\xa4\xf8\xb1\x9fS\x00\x9b\xd3\xc9\x937#A" +
+	"\x9e \xb9\x8cH\x07\xc6\xa4\x03)m\xec\xae\x00\xec\xb2" +
+	"@\xab\x14cF\x80Q#\xd2\xf5fk\xc6\xd2s\xde" +
+	"YY\x86\xdb\xe1\xdf\x0c\x06\x03z\xc9W\xf5\xc9<\xca" +
+	"\xd7\xe9\x8c$\xd9\x85\x13H\xd9j`\x9d\x96ou\xab" +
+	"\xb7\xfc\xdd4}\xc0r\xde\x94\xd8\x030\xbe\xf3ZM" +
+	"\xfb\x95LApI\xea\xf3\xa2\x9e\xf5\xd3\xec,3\x8d" +
+	"\x8f\xfef\xe7\x97\x9b\xed\xd2\xca\xf2\x13[\x90\xa5\xae\xf1" +
+	"\xcf3\xb18|U\xe8M\xa7\xde\xfc\x90\xa9\xe6]\x00" +
+	"|\x06\xf4\xc7\x84L\x90\xe5\xb3s\xc8\xb40\xc8n\xee" +
+	"\x13wo^\xb1\xe8\x91\x7f\xc9R\xd6\xd2I\xae\x1e\x03" +
+	"\xde\x1eE0q\x01K\x97\xfe\xff\xca\xf1\x8b\xbd\xb9U" +
+	"\xb4\xdaR\x09\x95\xfd\xb0\x03\xd8\xef3du=K\xa8" +
+	"\xec\x87\x12@\x7f\x07\x87*\x1f\xe3\x12*\xfbq\x11\xb0" +
+	"_-\xc9\x93\x1b\x91 \x8f\x95\\vd\xc0>\xca\x1a" +
+	"|\x1a\x9d\xc0\xc2\x93=\xa5HGRED\xff\x1el" +
+	"\x7f\x12\xd8\xfd\x98\x96f\x1dE\xa6\xf1j\xdf\xbf\x80\x9e" +
+	"\x97]\xef[>\xebYuYF\xcd<\xf6\xf3\xa6~" +
+	"$&'\x89\xa0\x96d\x9e\xfa\xb9\xe1\xb8\xa5\x91\x14\x8d" +
+	"\xc4\xb9=\x1b\xe7~\x15\x94\x0c\x09\x86\xf7S\x8cH\x87" +
+	"2\xfb\xa9\xf7\xa9q\x86\x91k\xff\xe7&\xe9\xb1\xfb=" +
+	"\xe8\xec\xbe\x94\x1a\xaf\xfd\xce\xd6 \x8f\xcb\xd4 \x07\xb9" +
+	"\x069d\x1a\x0e6\x1cFF\xa7\xd3\xd9\x19\xa8\xeb\xff" +
+	"\x0b\x00\x00\xff\xffC_\x085"
 
 func init() {
 	schemas.Register(schema_dcbc0d702b1b47a5,
 		0x809d3d6d45c4c37d,
-		0x835c613045824121,
 		0x83ffc259cf8da847,
 		0x86362c69f5c42997,
 		0x86ca17d397d72d2b,
@@ -6787,6 +7576,7 @@ func init() {
 		0x8829b2e76d8325f1,
 		0x88751049aa34129f,
 		0x8b790707193ea7ff,
+		0x8ca64856a439e754,
 		0x9145c7ea308343d9,
 		0x916d32f140971035,
 		0x94ff7bf84a8553ee,
@@ -6802,6 +7592,7 @@ func init() {
 		0xa98fd02dd93dd26b,
 		0xaaef1f8c301b865d,
 		0xac9557813c4f78cf,
+		0xad91bb3785f964f9,
 		0xadfbf90ef9c01c9a,
 		0xaf88ad00c801b00d,
 		0xb481d35d0da2713c,
@@ -6810,11 +7601,14 @@ func init() {
 		0xbb33202722933fa6,
 		0xbc51d6bc865a8fcf,
 		0xbd05d1a434a60c2a,
+		0xbf2816cab7a3b8d9,
 		0xc1b0e9713ac1ad4f,
 		0xc3a9d72077d3a1da,
 		0xc44a2ee5cb2413d8,
 		0xc537e92b2708501c,
+		0xc701240ec8cce7ff,
 		0xc70587321bf0dd8b,
+		0xc8fe0af361f6297a,
 		0xca94bf70a6be91b7,
 		0xcb56f444d1311800,
 		0xcc8a20b16569f588,
@@ -6825,12 +7619,14 @@ func init() {
 		0xd0d6ed6a5ed70e62,
 		0xd285f754a2dafae2,
 		0xd3961c234a15cdf1,
+		0xdd2b1e18de9ed1b8,
 		0xe06fe4e0d4e93178,
 		0xe0f162f7d6b6e614,
 		0xe29212b1cf072afc,
 		0xe3a9cebde9177d60,
 		0xe4d0899af24786be,
 		0xe4d3afafc9fe1acf,
+		0xe60c482f4f0d4d90,
 		0xe8ac8c6560747234,
 		0xea0b2836fb52aee9,
 		0xea75b020e3e6c12a,
@@ -6838,7 +7634,9 @@ func init() {
 		0xef241fd6058030cf,
 		0xf0832c3f66256d2b,
 		0xf0b05750d16cf185,
+		0xf153e1cffe8f580a,
 		0xf2ccecff0178227b,
+		0xf3e0d28b0ad162be,
 		0xf716a4e3f32b4130,
 		0xf92f4e3c080d2237,
 		0xfa7238e0a9345914,

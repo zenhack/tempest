@@ -35,21 +35,21 @@ func (c HackSessionContext) GetPublicId(ctx context.Context, params func(HackSes
 	ans, release := c.Client.SendCall(ctx, s)
 	return HackSessionContext_getPublicId_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) HttpGet(ctx context.Context, params func(HackSessionContext_httpGet_Params) error) (HackSessionContext_httpGet_Results_Future, capnp.ReleaseFunc) {
+func (c HackSessionContext) ObsoleteHttpGet(ctx context.Context, params func(HackSessionContext_obsoleteHttpGet_Params) error) (HackSessionContext_obsoleteHttpGet_Results_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      1,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
-			MethodName:    "httpGet",
+			MethodName:    "obsoleteHttpGet",
 		},
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_httpGet_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteHttpGet_Params{Struct: s}) }
 	}
 	ans, release := c.Client.SendCall(ctx, s)
-	return HackSessionContext_httpGet_Results_Future{Future: ans.Future()}, release
+	return HackSessionContext_obsoleteHttpGet_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) GetUserAddress(ctx context.Context, params func(HackSessionContext_getUserAddress_Params) error) (email.EmailAddress_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
@@ -149,21 +149,23 @@ func (c HackSessionContext) ObsoleteGetIpInterface(ctx context.Context, params f
 	ans, release := c.Client.SendCall(ctx, s)
 	return HackSessionContext_obsoleteGetIpInterface_Results_Future{Future: ans.Future()}, release
 }
-func (c HackSessionContext) GetUiViewForEndpoint(ctx context.Context, params func(HackSessionContext_getUiViewForEndpoint_Params) error) (HackSessionContext_getUiViewForEndpoint_Results_Future, capnp.ReleaseFunc) {
+func (c HackSessionContext) ObsoleteGetUiViewForEndpoint(ctx context.Context, params func(HackSessionContext_obsoleteGetUiViewForEndpoint_Params) error) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      8,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
-			MethodName:    "getUiViewForEndpoint",
+			MethodName:    "obsoleteGetUiViewForEndpoint",
 		},
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getUiViewForEndpoint_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error {
+			return params(HackSessionContext_obsoleteGetUiViewForEndpoint_Params{Struct: s})
+		}
 	}
 	ans, release := c.Client.SendCall(ctx, s)
-	return HackSessionContext_getUiViewForEndpoint_Results_Future{Future: ans.Future()}, release
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) GetSharedPermissions(ctx context.Context, params func(grain.SessionContext_getSharedPermissions_Params) error) (grain.SessionContext_getSharedPermissions_Results_Future, capnp.ReleaseFunc) {
 	s := capnp.Send{
@@ -356,7 +358,7 @@ func (c HackSessionContext) Release() {
 type HackSessionContext_Server interface {
 	GetPublicId(context.Context, HackSessionContext_getPublicId) error
 
-	HttpGet(context.Context, HackSessionContext_httpGet) error
+	ObsoleteHttpGet(context.Context, HackSessionContext_obsoleteHttpGet) error
 
 	GetUserAddress(context.Context, HackSessionContext_getUserAddress) error
 
@@ -370,7 +372,7 @@ type HackSessionContext_Server interface {
 
 	ObsoleteGetIpInterface(context.Context, HackSessionContext_obsoleteGetIpInterface) error
 
-	GetUiViewForEndpoint(context.Context, HackSessionContext_getUiViewForEndpoint) error
+	ObsoleteGetUiViewForEndpoint(context.Context, HackSessionContext_obsoleteGetUiViewForEndpoint) error
 
 	GetSharedPermissions(context.Context, grain.SessionContext_getSharedPermissions) error
 
@@ -431,10 +433,10 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      1,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
-			MethodName:    "httpGet",
+			MethodName:    "obsoleteHttpGet",
 		},
 		Impl: func(ctx context.Context, call *server.Call) error {
-			return s.HttpGet(ctx, HackSessionContext_httpGet{call})
+			return s.ObsoleteHttpGet(ctx, HackSessionContext_obsoleteHttpGet{call})
 		},
 	})
 
@@ -515,10 +517,10 @@ func HackSessionContext_Methods(methods []server.Method, s HackSessionContext_Se
 			InterfaceID:   0xe14c1f5321159b8f,
 			MethodID:      8,
 			InterfaceName: "hack-session.capnp:HackSessionContext",
-			MethodName:    "getUiViewForEndpoint",
+			MethodName:    "obsoleteGetUiViewForEndpoint",
 		},
 		Impl: func(ctx context.Context, call *server.Call) error {
-			return s.GetUiViewForEndpoint(ctx, HackSessionContext_getUiViewForEndpoint{call})
+			return s.ObsoleteGetUiViewForEndpoint(ctx, HackSessionContext_obsoleteGetUiViewForEndpoint{call})
 		},
 	})
 
@@ -674,21 +676,21 @@ func (c HackSessionContext_getPublicId) AllocResults() (HackSessionContext_getPu
 	return HackSessionContext_getPublicId_Results{Struct: r}, err
 }
 
-// HackSessionContext_httpGet holds the state for a server call to HackSessionContext.httpGet.
+// HackSessionContext_obsoleteHttpGet holds the state for a server call to HackSessionContext.obsoleteHttpGet.
 // See server.Call for documentation.
-type HackSessionContext_httpGet struct {
+type HackSessionContext_obsoleteHttpGet struct {
 	*server.Call
 }
 
 // Args returns the call's arguments.
-func (c HackSessionContext_httpGet) Args() HackSessionContext_httpGet_Params {
-	return HackSessionContext_httpGet_Params{Struct: c.Call.Args()}
+func (c HackSessionContext_obsoleteHttpGet) Args() HackSessionContext_obsoleteHttpGet_Params {
+	return HackSessionContext_obsoleteHttpGet_Params{Struct: c.Call.Args()}
 }
 
 // AllocResults allocates the results struct.
-func (c HackSessionContext_httpGet) AllocResults() (HackSessionContext_httpGet_Results, error) {
+func (c HackSessionContext_obsoleteHttpGet) AllocResults() (HackSessionContext_obsoleteHttpGet_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_httpGet_Results{Struct: r}, err
+	return HackSessionContext_obsoleteHttpGet_Results{Struct: r}, err
 }
 
 // HackSessionContext_getUserAddress holds the state for a server call to HackSessionContext.getUserAddress.
@@ -793,21 +795,21 @@ func (c HackSessionContext_obsoleteGetIpInterface) AllocResults() (HackSessionCo
 	return HackSessionContext_obsoleteGetIpInterface_Results{Struct: r}, err
 }
 
-// HackSessionContext_getUiViewForEndpoint holds the state for a server call to HackSessionContext.getUiViewForEndpoint.
+// HackSessionContext_obsoleteGetUiViewForEndpoint holds the state for a server call to HackSessionContext.obsoleteGetUiViewForEndpoint.
 // See server.Call for documentation.
-type HackSessionContext_getUiViewForEndpoint struct {
+type HackSessionContext_obsoleteGetUiViewForEndpoint struct {
 	*server.Call
 }
 
 // Args returns the call's arguments.
-func (c HackSessionContext_getUiViewForEndpoint) Args() HackSessionContext_getUiViewForEndpoint_Params {
-	return HackSessionContext_getUiViewForEndpoint_Params{Struct: c.Call.Args()}
+func (c HackSessionContext_obsoleteGetUiViewForEndpoint) Args() HackSessionContext_obsoleteGetUiViewForEndpoint_Params {
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{Struct: c.Call.Args()}
 }
 
 // AllocResults allocates the results struct.
-func (c HackSessionContext_getUiViewForEndpoint) AllocResults() (HackSessionContext_getUiViewForEndpoint_Results, error) {
+func (c HackSessionContext_obsoleteGetUiViewForEndpoint) AllocResults() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_getUiViewForEndpoint_Results{Struct: r}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{Struct: r}, err
 }
 
 type HackSessionContext_TokenInfo struct{ capnp.Struct }
@@ -1101,163 +1103,163 @@ func (p HackSessionContext_getPublicId_Results_Future) Struct() (HackSessionCont
 	return HackSessionContext_getPublicId_Results{s}, err
 }
 
-type HackSessionContext_httpGet_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteHttpGet_Params struct{ capnp.Struct }
 
-// HackSessionContext_httpGet_Params_TypeID is the unique identifier for the type HackSessionContext_httpGet_Params.
-const HackSessionContext_httpGet_Params_TypeID = 0xe54437a7b8f52843
+// HackSessionContext_obsoleteHttpGet_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteHttpGet_Params.
+const HackSessionContext_obsoleteHttpGet_Params_TypeID = 0xe54437a7b8f52843
 
-func NewHackSessionContext_httpGet_Params(s *capnp.Segment) (HackSessionContext_httpGet_Params, error) {
+func NewHackSessionContext_obsoleteHttpGet_Params(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_httpGet_Params{st}, err
+	return HackSessionContext_obsoleteHttpGet_Params{st}, err
 }
 
-func NewRootHackSessionContext_httpGet_Params(s *capnp.Segment) (HackSessionContext_httpGet_Params, error) {
+func NewRootHackSessionContext_obsoleteHttpGet_Params(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_httpGet_Params{st}, err
+	return HackSessionContext_obsoleteHttpGet_Params{st}, err
 }
 
-func ReadRootHackSessionContext_httpGet_Params(msg *capnp.Message) (HackSessionContext_httpGet_Params, error) {
+func ReadRootHackSessionContext_obsoleteHttpGet_Params(msg *capnp.Message) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_httpGet_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteHttpGet_Params{root.Struct()}, err
 }
 
-func (s HackSessionContext_httpGet_Params) String() string {
+func (s HackSessionContext_obsoleteHttpGet_Params) String() string {
 	str, _ := text.Marshal(0xe54437a7b8f52843, s.Struct)
 	return str
 }
 
-func (s HackSessionContext_httpGet_Params) Url() (string, error) {
+func (s HackSessionContext_obsoleteHttpGet_Params) Url() (string, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.Text(), err
 }
 
-func (s HackSessionContext_httpGet_Params) HasUrl() bool {
+func (s HackSessionContext_obsoleteHttpGet_Params) HasUrl() bool {
 	return s.Struct.HasPtr(0)
 }
 
-func (s HackSessionContext_httpGet_Params) UrlBytes() ([]byte, error) {
+func (s HackSessionContext_obsoleteHttpGet_Params) UrlBytes() ([]byte, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.TextBytes(), err
 }
 
-func (s HackSessionContext_httpGet_Params) SetUrl(v string) error {
+func (s HackSessionContext_obsoleteHttpGet_Params) SetUrl(v string) error {
 	return s.Struct.SetText(0, v)
 }
 
-// HackSessionContext_httpGet_Params_List is a list of HackSessionContext_httpGet_Params.
-type HackSessionContext_httpGet_Params_List struct{ capnp.List }
+// HackSessionContext_obsoleteHttpGet_Params_List is a list of HackSessionContext_obsoleteHttpGet_Params.
+type HackSessionContext_obsoleteHttpGet_Params_List struct{ capnp.List }
 
-// NewHackSessionContext_httpGet_Params creates a new list of HackSessionContext_httpGet_Params.
-func NewHackSessionContext_httpGet_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_httpGet_Params_List, error) {
+// NewHackSessionContext_obsoleteHttpGet_Params creates a new list of HackSessionContext_obsoleteHttpGet_Params.
+func NewHackSessionContext_obsoleteHttpGet_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteHttpGet_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_httpGet_Params_List{l}, err
+	return HackSessionContext_obsoleteHttpGet_Params_List{l}, err
 }
 
-func (s HackSessionContext_httpGet_Params_List) At(i int) HackSessionContext_httpGet_Params {
-	return HackSessionContext_httpGet_Params{s.List.Struct(i)}
+func (s HackSessionContext_obsoleteHttpGet_Params_List) At(i int) HackSessionContext_obsoleteHttpGet_Params {
+	return HackSessionContext_obsoleteHttpGet_Params{s.List.Struct(i)}
 }
 
-func (s HackSessionContext_httpGet_Params_List) Set(i int, v HackSessionContext_httpGet_Params) error {
+func (s HackSessionContext_obsoleteHttpGet_Params_List) Set(i int, v HackSessionContext_obsoleteHttpGet_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-func (s HackSessionContext_httpGet_Params_List) String() string {
+func (s HackSessionContext_obsoleteHttpGet_Params_List) String() string {
 	str, _ := text.MarshalList(0xe54437a7b8f52843, s.List)
 	return str
 }
 
-// HackSessionContext_httpGet_Params_Future is a wrapper for a HackSessionContext_httpGet_Params promised by a client call.
-type HackSessionContext_httpGet_Params_Future struct{ *capnp.Future }
+// HackSessionContext_obsoleteHttpGet_Params_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Params promised by a client call.
+type HackSessionContext_obsoleteHttpGet_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_httpGet_Params_Future) Struct() (HackSessionContext_httpGet_Params, error) {
+func (p HackSessionContext_obsoleteHttpGet_Params_Future) Struct() (HackSessionContext_obsoleteHttpGet_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_httpGet_Params{s}, err
+	return HackSessionContext_obsoleteHttpGet_Params{s}, err
 }
 
-type HackSessionContext_httpGet_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteHttpGet_Results struct{ capnp.Struct }
 
-// HackSessionContext_httpGet_Results_TypeID is the unique identifier for the type HackSessionContext_httpGet_Results.
-const HackSessionContext_httpGet_Results_TypeID = 0xb44df810894a44f4
+// HackSessionContext_obsoleteHttpGet_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteHttpGet_Results.
+const HackSessionContext_obsoleteHttpGet_Results_TypeID = 0xb44df810894a44f4
 
-func NewHackSessionContext_httpGet_Results(s *capnp.Segment) (HackSessionContext_httpGet_Results, error) {
+func NewHackSessionContext_obsoleteHttpGet_Results(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_httpGet_Results{st}, err
+	return HackSessionContext_obsoleteHttpGet_Results{st}, err
 }
 
-func NewRootHackSessionContext_httpGet_Results(s *capnp.Segment) (HackSessionContext_httpGet_Results, error) {
+func NewRootHackSessionContext_obsoleteHttpGet_Results(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_httpGet_Results{st}, err
+	return HackSessionContext_obsoleteHttpGet_Results{st}, err
 }
 
-func ReadRootHackSessionContext_httpGet_Results(msg *capnp.Message) (HackSessionContext_httpGet_Results, error) {
+func ReadRootHackSessionContext_obsoleteHttpGet_Results(msg *capnp.Message) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_httpGet_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteHttpGet_Results{root.Struct()}, err
 }
 
-func (s HackSessionContext_httpGet_Results) String() string {
+func (s HackSessionContext_obsoleteHttpGet_Results) String() string {
 	str, _ := text.Marshal(0xb44df810894a44f4, s.Struct)
 	return str
 }
 
-func (s HackSessionContext_httpGet_Results) MimeType() (string, error) {
+func (s HackSessionContext_obsoleteHttpGet_Results) MimeType() (string, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.Text(), err
 }
 
-func (s HackSessionContext_httpGet_Results) HasMimeType() bool {
+func (s HackSessionContext_obsoleteHttpGet_Results) HasMimeType() bool {
 	return s.Struct.HasPtr(0)
 }
 
-func (s HackSessionContext_httpGet_Results) MimeTypeBytes() ([]byte, error) {
+func (s HackSessionContext_obsoleteHttpGet_Results) MimeTypeBytes() ([]byte, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.TextBytes(), err
 }
 
-func (s HackSessionContext_httpGet_Results) SetMimeType(v string) error {
+func (s HackSessionContext_obsoleteHttpGet_Results) SetMimeType(v string) error {
 	return s.Struct.SetText(0, v)
 }
 
-func (s HackSessionContext_httpGet_Results) Content() ([]byte, error) {
+func (s HackSessionContext_obsoleteHttpGet_Results) Content() ([]byte, error) {
 	p, err := s.Struct.Ptr(1)
 	return []byte(p.Data()), err
 }
 
-func (s HackSessionContext_httpGet_Results) HasContent() bool {
+func (s HackSessionContext_obsoleteHttpGet_Results) HasContent() bool {
 	return s.Struct.HasPtr(1)
 }
 
-func (s HackSessionContext_httpGet_Results) SetContent(v []byte) error {
+func (s HackSessionContext_obsoleteHttpGet_Results) SetContent(v []byte) error {
 	return s.Struct.SetData(1, v)
 }
 
-// HackSessionContext_httpGet_Results_List is a list of HackSessionContext_httpGet_Results.
-type HackSessionContext_httpGet_Results_List struct{ capnp.List }
+// HackSessionContext_obsoleteHttpGet_Results_List is a list of HackSessionContext_obsoleteHttpGet_Results.
+type HackSessionContext_obsoleteHttpGet_Results_List struct{ capnp.List }
 
-// NewHackSessionContext_httpGet_Results creates a new list of HackSessionContext_httpGet_Results.
-func NewHackSessionContext_httpGet_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_httpGet_Results_List, error) {
+// NewHackSessionContext_obsoleteHttpGet_Results creates a new list of HackSessionContext_obsoleteHttpGet_Results.
+func NewHackSessionContext_obsoleteHttpGet_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteHttpGet_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return HackSessionContext_httpGet_Results_List{l}, err
+	return HackSessionContext_obsoleteHttpGet_Results_List{l}, err
 }
 
-func (s HackSessionContext_httpGet_Results_List) At(i int) HackSessionContext_httpGet_Results {
-	return HackSessionContext_httpGet_Results{s.List.Struct(i)}
+func (s HackSessionContext_obsoleteHttpGet_Results_List) At(i int) HackSessionContext_obsoleteHttpGet_Results {
+	return HackSessionContext_obsoleteHttpGet_Results{s.List.Struct(i)}
 }
 
-func (s HackSessionContext_httpGet_Results_List) Set(i int, v HackSessionContext_httpGet_Results) error {
+func (s HackSessionContext_obsoleteHttpGet_Results_List) Set(i int, v HackSessionContext_obsoleteHttpGet_Results) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-func (s HackSessionContext_httpGet_Results_List) String() string {
+func (s HackSessionContext_obsoleteHttpGet_Results_List) String() string {
 	str, _ := text.MarshalList(0xb44df810894a44f4, s.List)
 	return str
 }
 
-// HackSessionContext_httpGet_Results_Future is a wrapper for a HackSessionContext_httpGet_Results promised by a client call.
-type HackSessionContext_httpGet_Results_Future struct{ *capnp.Future }
+// HackSessionContext_obsoleteHttpGet_Results_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Results promised by a client call.
+type HackSessionContext_obsoleteHttpGet_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_httpGet_Results_Future) Struct() (HackSessionContext_httpGet_Results, error) {
+func (p HackSessionContext_obsoleteHttpGet_Results_Future) Struct() (HackSessionContext_obsoleteHttpGet_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_httpGet_Results{s}, err
+	return HackSessionContext_obsoleteHttpGet_Results{s}, err
 }
 
 type HackSessionContext_getUserAddress_Params struct{ capnp.Struct }
@@ -2059,114 +2061,114 @@ func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Interface() ip
 	return ip.IpInterface{Client: p.Future.Field(0, nil).Client()}
 }
 
-type HackSessionContext_getUiViewForEndpoint_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Params struct{ capnp.Struct }
 
-// HackSessionContext_getUiViewForEndpoint_Params_TypeID is the unique identifier for the type HackSessionContext_getUiViewForEndpoint_Params.
-const HackSessionContext_getUiViewForEndpoint_Params_TypeID = 0xb45bb2d206694fe6
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
+const HackSessionContext_obsoleteGetUiViewForEndpoint_Params_TypeID = 0xb45bb2d206694fe6
 
-func NewHackSessionContext_getUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Params, error) {
+func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_getUiViewForEndpoint_Params{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{st}, err
 }
 
-func NewRootHackSessionContext_getUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Params, error) {
+func NewRootHackSessionContext_obsoleteGetUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_getUiViewForEndpoint_Params{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{st}, err
 }
 
-func ReadRootHackSessionContext_getUiViewForEndpoint_Params(msg *capnp.Message) (HackSessionContext_getUiViewForEndpoint_Params, error) {
+func ReadRootHackSessionContext_obsoleteGetUiViewForEndpoint_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_getUiViewForEndpoint_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{root.Struct()}, err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params) String() string {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) String() string {
 	str, _ := text.Marshal(0xb45bb2d206694fe6, s.Struct)
 	return str
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params) Url() (string, error) {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) Url() (string, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.Text(), err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params) HasUrl() bool {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) HasUrl() bool {
 	return s.Struct.HasPtr(0)
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params) UrlBytes() ([]byte, error) {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) UrlBytes() ([]byte, error) {
 	p, err := s.Struct.Ptr(0)
 	return p.TextBytes(), err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params) SetUrl(v string) error {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) SetUrl(v string) error {
 	return s.Struct.SetText(0, v)
 }
 
-// HackSessionContext_getUiViewForEndpoint_Params_List is a list of HackSessionContext_getUiViewForEndpoint_Params.
-type HackSessionContext_getUiViewForEndpoint_Params_List struct{ capnp.List }
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List is a list of HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List struct{ capnp.List }
 
-// NewHackSessionContext_getUiViewForEndpoint_Params creates a new list of HackSessionContext_getUiViewForEndpoint_Params.
-func NewHackSessionContext_getUiViewForEndpoint_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_getUiViewForEndpoint_Params_List, error) {
+// NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params creates a new list of HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
+func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_getUiViewForEndpoint_Params_List{l}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List{l}, err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params_List) At(i int) HackSessionContext_getUiViewForEndpoint_Params {
-	return HackSessionContext_getUiViewForEndpoint_Params{s.List.Struct(i)}
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) At(i int) HackSessionContext_obsoleteGetUiViewForEndpoint_Params {
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{s.List.Struct(i)}
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params_List) Set(i int, v HackSessionContext_getUiViewForEndpoint_Params) error {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) Set(i int, v HackSessionContext_obsoleteGetUiViewForEndpoint_Params) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Params_List) String() string {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) String() string {
 	str, _ := text.MarshalList(0xb45bb2d206694fe6, s.List)
 	return str
 }
 
-// HackSessionContext_getUiViewForEndpoint_Params_Future is a wrapper for a HackSessionContext_getUiViewForEndpoint_Params promised by a client call.
-type HackSessionContext_getUiViewForEndpoint_Params_Future struct{ *capnp.Future }
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Params promised by a client call.
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_getUiViewForEndpoint_Params, error) {
+func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_getUiViewForEndpoint_Params{s}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{s}, err
 }
 
-type HackSessionContext_getUiViewForEndpoint_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Results struct{ capnp.Struct }
 
-// HackSessionContext_getUiViewForEndpoint_Results_TypeID is the unique identifier for the type HackSessionContext_getUiViewForEndpoint_Results.
-const HackSessionContext_getUiViewForEndpoint_Results_TypeID = 0xfdc944999b9296df
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
+const HackSessionContext_obsoleteGetUiViewForEndpoint_Results_TypeID = 0xfdc944999b9296df
 
-func NewHackSessionContext_getUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Results, error) {
+func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_getUiViewForEndpoint_Results{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{st}, err
 }
 
-func NewRootHackSessionContext_getUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_getUiViewForEndpoint_Results, error) {
+func NewRootHackSessionContext_obsoleteGetUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_getUiViewForEndpoint_Results{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{st}, err
 }
 
-func ReadRootHackSessionContext_getUiViewForEndpoint_Results(msg *capnp.Message) (HackSessionContext_getUiViewForEndpoint_Results, error) {
+func ReadRootHackSessionContext_obsoleteGetUiViewForEndpoint_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_getUiViewForEndpoint_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{root.Struct()}, err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results) String() string {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) String() string {
 	str, _ := text.Marshal(0xfdc944999b9296df, s.Struct)
 	return str
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results) View() grain.UiView {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) View() grain.UiView {
 	p, _ := s.Struct.Ptr(0)
 	return grain.UiView{Client: p.Interface().Client()}
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results) HasView() bool {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) HasView() bool {
 	return s.Struct.HasPtr(0)
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results) SetView(v grain.UiView) error {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) SetView(v grain.UiView) error {
 	if !v.Client.IsValid() {
 		return s.Struct.SetPtr(0, capnp.Ptr{})
 	}
@@ -2175,37 +2177,37 @@ func (s HackSessionContext_getUiViewForEndpoint_Results) SetView(v grain.UiView)
 	return s.Struct.SetPtr(0, in.ToPtr())
 }
 
-// HackSessionContext_getUiViewForEndpoint_Results_List is a list of HackSessionContext_getUiViewForEndpoint_Results.
-type HackSessionContext_getUiViewForEndpoint_Results_List struct{ capnp.List }
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List is a list of HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List struct{ capnp.List }
 
-// NewHackSessionContext_getUiViewForEndpoint_Results creates a new list of HackSessionContext_getUiViewForEndpoint_Results.
-func NewHackSessionContext_getUiViewForEndpoint_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_getUiViewForEndpoint_Results_List, error) {
+// NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results creates a new list of HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
+func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_getUiViewForEndpoint_Results_List{l}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List{l}, err
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results_List) At(i int) HackSessionContext_getUiViewForEndpoint_Results {
-	return HackSessionContext_getUiViewForEndpoint_Results{s.List.Struct(i)}
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) At(i int) HackSessionContext_obsoleteGetUiViewForEndpoint_Results {
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{s.List.Struct(i)}
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results_List) Set(i int, v HackSessionContext_getUiViewForEndpoint_Results) error {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) Set(i int, v HackSessionContext_obsoleteGetUiViewForEndpoint_Results) error {
 	return s.List.SetStruct(i, v.Struct)
 }
 
-func (s HackSessionContext_getUiViewForEndpoint_Results_List) String() string {
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) String() string {
 	str, _ := text.MarshalList(0xfdc944999b9296df, s.List)
 	return str
 }
 
-// HackSessionContext_getUiViewForEndpoint_Results_Future is a wrapper for a HackSessionContext_getUiViewForEndpoint_Results promised by a client call.
-type HackSessionContext_getUiViewForEndpoint_Results_Future struct{ *capnp.Future }
+// HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Results promised by a client call.
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_getUiViewForEndpoint_Results, error) {
+func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_getUiViewForEndpoint_Results{s}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{s}, err
 }
 
-func (p HackSessionContext_getUiViewForEndpoint_Results_Future) View() grain.UiView {
+func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) View() grain.UiView {
 	return grain.UiView{Client: p.Future.Field(0, nil).Client()}
 }
 
@@ -2310,99 +2312,99 @@ func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server
 	return methods
 }
 
-const schema_bf6889795837d1e0 = "x\xda\xa4Vml\x14U\x17>\xe7\xce\xb6\xd3&\xed" +
-	"\xdb\xdew\x0b\xb6\x9b.\x85\xa6\"\x12 P\xc0\x1a\xa2" +
-	"t\x0b\xc5\xb2Xt\xa7|H0\xa0\xd3\xed\xa5\x9dt" +
-	"wf\xd9\x99\xa5\xd0hZ@4\xc5\x1f\x06Q\x81 " +
-	"?\xf8\x01\x06\xa2 H\x8d\xe0\x07\x12\x83II4)" +
-	"F\x01\xc5((b\x150D$@\x02c\xee\xec\xce" +
-	"\xec\xb0PJm\xf6\xcff\xee9\xcf}\xce\xd7s\xee" +
-	"\xc4\x8d9\x012)\xabc\"\xc0\xbc)$+\xdb\xfc" +
-	"\xf0\xb3\xce\x93\xf2\x8d\xf6\xb5 \x8dF\x04\xc8\"\"\xc0" +
-	"\xe4\x07\x8b+\x09\xa0\xf7\xf1\xe2\xbd\x80f\xc1\xfah\xcb" +
-	"\xea\xce\xa5/\x01\x1d\xcd\x0d\x90\x1b\x9c*.\xe7\x06\x97" +
-	"\x8b\xab\x01\xcd\x1a\xf1V\xd9\x8e\x13\xd77%\x0d<\xfc" +
-	"\x9c\x96\xfc\x9f\x80\xc7\xac_\xdb[\x15\xaa]\xba\xddu" +
-	"\x92[r\x16\xc1c\x8a\xaf~\xfc\xfds\x13B\xbb\xdc" +
-	"\xa07\x8b}\x1ctX\x09\x07\xfd\xed\xed\xba\xd3\x9bc" +
-	";\xf7\xb8\\\xa7\x96\x8c\xe5\xa0Wj\xe7t\x15^\x9b" +
-	"{ \xe5j\x11\x1e_\xb2\x1f9\xe1\x926\xee\xfa\xb4" +
-	"\x92}|\xff\xb3\x07\xdc\xd8\xdb8!\xf4v[\xd8/" +
-	"v\x8e;2\xbb\xbd\xe8\xa0\xdb\xe0[\x0e\x8e\xde\x8b\x96" +
-	"\xc1N\xcf\x93SN|\xdd\xfd\x05P\xaf`\xfe\xdc[" +
-	"\xb5hUW\xcba\x00\x9cL}\xe5\xe8\x1d\xe5\x13\x01" +
-	"\xbc~\x9f\xe8\xf5\xfb\x1e\x020\xaf\xbf\x92\xb3kR\xf5" +
-	"\xa6\x9e\x14\x9c\xc0\xe1\x86\xf9\xa6q\xb8\xf1>\x9e\xc1\xd7" +
-	"\xb6\x0e\x1b5\xaf\xac\xfe\xcc\x1dp=\xbeJ\xf4\x9e\xf2" +
-	"=\x000\xf9\x9c\xaf\x8ex\xbbJ9\xde\xcc1\xff|" +
-	"\xf4NU\xed97\xbd\xd5\xa5\xbby\x80\x1bJ9\xbd" +
-	"\xbdM_\xf5M=\x99}\xde\x95\x9b}\xa5\xc7xZ" +
-	"\x97|~\xb5\xfc\xe8F\xb9\xcf\xae\xa6\xc5eG\xe9q" +
-	"\xee{\xb0\xf4<\xa0\xf9\xd8\xfb#\xf7\xe4w\xfd\xda\xe7" +
-	"\x06\xdf\xe2\xb7\xaa\xb9\xcf\xcf\xc1\xb7\x17\x1ej\x1cn\xfe" +
-	"y\xc1\x05~\x86\x9f{\xcc\xb9\xcd_\xfe\xbe\x9e\x15^" +
-	"\xe7'\xe9\x98\x92w\x9c\xf2\xafA\xefE?OL\x9f" +
-	"\x9f\xc7\xfc\xd3[\xafo\xddR\xdbs\xd3}\xcf\xba\x11" +
-	"V\x81\xb7\x8d\xe0\xf7x\xaf,\xbf\xb6\xfc\x85\xb6[\xae" +
-	"{>\xe5\xe7\xa6\xf3\xab2[\xe4p\xebx\x9d\xe9\xa2" +
-	"\xaeh\xea\x84\xb0\x1cSc\xd3f\xcb\xe1\xd6yL\xe7" +
-	"_fj\xaa\xc1V\x1a\x13\xb4F]\x8b0\x83\xd51" +
-	"\x95\xc5e\x83\xd5\xc4\x94\xf9Z+S+Ber\\" +
-	"\x8e\xeaR\x9e\xe0\x01\xf0 \x00\x9d5\x03@\x0a\x08(" +
-	"\xd5\x13\xa4\x88E<K48\x07@\x9a-\xa04\x9f" +
-	" \x92\"$\x88T\xe2\x86\xf5\x02J\x8b\x08v\xc4\x98" +
-	"\xa1\xcaQ\x86y@0\x0f\xd0L\xe8,\x1eT\x97i" +
-	"\x00\x80\x85\xe67t\xc9\x07\x7f\xf5\x1e|\x03\x00\xb1\x10" +
-	"\xb0\x83\xad\x8c)q\xa6c.\x10\xcc\x05\x1cl\x14\x0d" +
-	"l\x85\xd6\xea\x8aA\x8e\x8b<\x06\x8f\x13C>\xa7\x96" +
-	"#\xa0TD\xb0\xc3\xe0F\xc1&\x87\xda\xa0Sf\x04" +
-	"cO1\xa3M\x8b\xb7\xf2\xab\xe4(\xea\x0eF\xf6\xbd" +
-	"1\x9a\x99\xb1@g\xf1\x9a\xa6\xa68\xd3u\x9b\xe8\x90" +
-	"\x1840=\x11\x11\x8c~\xa3U\x93vH\xcd\xc0\xc8" +
-	"\xb1\xed\xad\xcf\xac\xd9\xc5\x93N\x87\x9c\xe4\x06\xa6\x17$" +
-	"\"F\x9a|\xd6\xbdaZ\x0c#V\xc7\x8c\x8a\x06V" +
-	"\xa6s?)\xc7\xe1\xfb0o\xa61\x02JS\\\x1d" +
-	"6\x89\x071N@\xe9Q\x82fT\x89\xb2\xf9\xabb" +
-	"\x8cwO\xaal\x1da\x0e\xac\x1a\x98\x0f\x04\xf3\xef?" +
-	"\x1c^\x02e\xa1\xc2\xda\x9e\xd0\xe2\xb3\xd4\xa6\x98\xa6\xa8" +
-	"\x86]Fw\x0e\xcb\xd39\x14\x13\xf1\xc8\x90\xba%\xa8" +
-	"\x1a,\xbeL\x0e3'k\xee\x9b\x1a\x00\xa4<\x01\xa5" +
-	"b\x82\xa6\x92\xb2\x04dH\xcd\x1b\xdfM\xefSC\xe3" +
-	"~\xc9\xac\x98\x90q\xf7\xac\xa8\xacD8\x01Q\xd1\xd4" +
-	"\x10bH\xc8\x92r\x10Mmx\xf7\xa2K5\x95W" +
-	"\x01\xc0<\xf6IO\xfda\xff\xda\x0b\xfc\xffPE\xa2" +
-	"\xa1\x9a%k\xe8R\x89\xca\xbb\xa9DcZ%(\xe1" +
-	"2\x01p\x9bL\x94Y\xb3\xe8\xe4\x96\xa5\xea\x01\xe2\x82" +
-	"t\xc6\xfb\x9dW\xa1?\xf6e\x16}\xc9\x83\xe8\x12`" +
-	"l0-\xf2Au\x19\xa0&U\x08Y\x00\xceZ@" +
-	"{\x0bx)6\x02\xf1\xe6\xa2\x88\xe8l\x15\xb4\xf7'" +
-	"\xbd9\x03\x08\xbd,\"q\xf64\x9e\x99\xbe\xf0\xe5K" +
-	"\xa7\xdf{\x97\x9ek\x07B\x7f\x14Qp\x1e\x08h\xaf" +
-	"9\xda{\x0c\x08\xed\x15\xd1\xe3h8\xda[\x85\x1e\xdd" +
-	"\x0f\x84\x1e\x111\xcby6\xa0\xbd\xc9i\xf7! t" +
-	"\x9f\x88\xa2\xf3b@\xfb\x19@w\xec\x06B\xb7\x8b\x98" +
-	"\xe3\xec\x1f\xb4\xb74}\x93\xfbm\x101\xdb\xd9\xech" +
-	"o\x17\xba\x8e\xfb\xad\x16\xcdff\x84\x12\x8d\x11\x05\xc4" +
-	"p\xb0)\x80\x1d\xa9\x01\x0d\xa0i\xab\x14T'u*" +
-	"\x80\xa6\xdd\x0a$\xb3\x17\x00\\\xa7X\xaf\xe8\x06?)" +
-	"\xe3Gn?\xb4\xd5\xa3:\xe9\xe6>\xb2\xe5\xac\x80\xeb" +
-	"\xd4\x1d\x07A\xd5\xa8N\x0eO\x8a\x19\x1f^\xb4\xa7\xb7" +
-	"\x80\xb7K\x00\xadn\x7f\xe4\xef\xf0b\x7f`\xfa\xe1\xfe" +
-	"\xba\xfd>\x05*$\x17\xc43\xb6\xc7@Z0\xb0\xea" +
-	"[\x99\x0e\x07\x9b\x92J\xa3\xbbX\x0d\xc2\xd7\x92z\x03" +
-	"u\xa9\xd0\xa1&s\xe9|^@)\xe2\x1a;\x85\x7f" +
-	"l\x11P2\\c\xb7\x9c\x8f]D@i%A\x14" +
-	"\x8aP\x00\xa0\x89\xc5\x00\x92!\xa0\xd4I\xd0\x8c\xa5\xae" +
-	"qi\xac\xd9\xa2\xe9\xd6\x1aw\xeb\xae\x9c04\xd7x" +
-	"\x9a\x8a^\xcb\xa2\xda\x02\x1d\x04\x16G\x04\x828x\x95" +
-	"\xb4\xfb\xc6j\x1b+N1C$\xa7\xa5JPA\xb0" +
-	"\xda\x12\x04\x1d\xff\x07\x18\x12\x10\x0b\xd3C\x0e\xc8?\x0e" +
-	"Q\xa23\x97\xf2\x00mc\x8b\x8a\x06!\xc4\x01\x9fM" +
-	"\xfcc\xad\x80R\xc8U\x99\xb9s\\\xef\xa6\x0c\xb1\x1b" +
-	"\xdc;jH;\xf0n\x0f\x89\xb1\xe9\xc6/X\xa1\xb0" +
-	"6\xa4\xe6\xf9\xb3\xcd\x7fl>q\xe0\x87\xff\xf8\x8a\xb8" +
-	"\xbd\xd2|\x1a\x84\xa8\xfeo\x00\x00\x00\xff\xff.Y\x0e" +
-	"\xd7"
+const schema_bf6889795837d1e0 = "x\xda\xacVml\x14\xd5\x1a~\xdf3\xbb\x9d6i" +
+	"o;w{\xb9\xec\xd2v\xa1i\xb8\xd0\x00\x81\x02\x17" +
+	"B\xee\xa5-\xb4\xb7]n\xd1\x9d\x85\"b@\xa7\xdb" +
+	"C;\xe9\xee\xcc\xb23\xa5\xd0hZ\xc1h\x8a?L" +
+	"\xfc\x02\x82\x7fH\x04S\xa3`\x10\x8c\xe0\x07\x1aS\x93" +
+	"\x92`R\x0c\x16\x95D\x8b\"\x16\x09\x06\x05BI`" +
+	"\xcc\x99\xdd\x99\x9e\x16\x0a\xd4\x9a\xfd\xb3\x99\xf3\x9e\xe7\xfd" +
+	"~\x9e3\xf7\xf5\xcc\x0a2\xcf\xdb?\x17`\xd5b\xe2" +
+	"\xcd\xb0\xde\xfb\xb8\xf3\x8cr\xb3};\xc8\xd3\x11\x01\xbc" +
+	"D\x04\x98/O.#\x80>u\xf2A@+wG" +
+	"\xbc\xf9\xe9\xce\x0d\xcf\x804\x9d\x19 3\xf0\xfa\x8b\x99" +
+	"A\xa1\xbf\x1c\xd0\xaa\x14o\x07\xf7\xf5\x0f\xedL\x19x" +
+	"\xd8\xf9\x7f\xfd\x7f'\xe0\xb1\xea\xb6\xf7-\x0aWm\xd8" +
+	"\xcb\x9d,\xf4\x9fC\xf0X\xe2\xf3\x1f|\xf3\xf8\x9cp" +
+	"7\x0f:\xd3\x1f`\xa0\x956\xe8O\xaf\xd5\x9c\xdd\x95" +
+	"\xd8\x7f\x80\xbb\xaa\xf8K\x19\xe8\xd5\xaa\x15]y7V" +
+	"\x1eN_\xb5\x03~\xd4\xff\x1b\x02\xfa\xe2\xfe6v\xf5" +
+	"a5\xe3\xd4\xa1\xc7\x0e\xf3\xd8'\xfd\x11\x86=hc" +
+	"?\xd59\xeb\xd3\xda\xf6\xfc\xa3\xbcAV\xa0\x94\x19L" +
+	"\x0b0\x83\xfd\x9e\xff/\xe8\xff\xe2\xc8g \xf9\x04\xeb" +
+	"\xfb\xbeEk\xb7v5\x1f\x07\xc0\xf9\xd5\x81b\xf4\xd5" +
+	"\x07D\x00\x9f\x1c\x10}r\xe0_\x00\xd6\xd0s\x99\xdd" +
+	"\xf3\xcaw\xf6\xa6\xe1\x04\x06\x17\x0a,apJ\x80U" +
+	"\xf0\x85=\xff\x98\xb6*X7p\x07\xdc\xad@\x19\xfa" +
+	"r\xa6\xfc\x13`\xbe\x7fJ\x0d\xf1\xf5\x140\xbc\xe53" +
+	"\xae\xbd\xff\xc6\xa2\xaa\xf3|x\x1f\x15\\d\x09\xf6\x15" +
+	"\xb0\xf0\x0e6\x9e\x1c\\x&\xe3\x02W\x9b+\x05'" +
+	"XY\xd7\x7fr\xbd\xb8\xe7%e\xd0\xe9\xa6\x1d\xcb\xf9" +
+	"\x82S\xec\xeeP\xc1\x05@\xeb?\xefL=\x90\xd3\xf5" +
+	"\xe3 \x0f\xfeu\xa1\xdd\xcd+\x85\x0c|o\xde\xb1\x86" +
+	"I\xd6/\x978\xf0iE\xc5\xac\xf0+\x9b>\xffy" +
+	"\x07\xcd\x1bb'\xc39\xa5|\xf8\x8b\xb6\xa1ov\x11" +
+	"+\xcc\xcc\"\x96\xf3w\xaf\xbe\xb8gwU\xef-\xde" +
+	"OO\xd1:\xe6g\xa0\x88\xf9\xf1]\xddtc\xd3\x93" +
+	"m\xb79?\x18\x0c\x10\xb0\xdc\xdf2\xabY\x89\xb6\xcc" +
+	"6\xa8!\x1a\xaa\xae\xcd\x89*\x09-\xb1\xa4V\x89\xb6" +
+	"\xac\xa2\x06\xfb\xb2\\\xd7L\xba\xc5\x9c\xa37\x18z\x8c" +
+	"\x9a\xb4\x86j4\xa9\x98\xb42\xa1\xae\xd6[\xa8V\x12" +
+	"\x0e*I%n\xc8\xd9\x82\x07\xc0\x83\x00R\xf52\x00" +
+	"\xb9B@\xb9\x8e\xa0\x84\x98\xcf\xaa$\x85V\x00\xc8\xb5" +
+	"\x02\xca\xab\x09\"\xc9G\x82(\xc9\xcc\xb0N@y-" +
+	"\xc1\x8e\x0455%N1\x1b\x08f\x03Z\xad\x06M" +
+	"\x86\xb4\x8d:\x00`\x9e\xf5\xa5\xb4\xfe\xdd_\xfb\x8e\xbe" +
+	"\x0c\x80\x98\x07\xd8A\xb7$\xd4$50\x0b\x08f\x01" +
+	"\x8e7\x8b\x08\xdd\xac\xb7p9(I\x91\xe5\xe0qs" +
+	"\xc8a\xa1e\x0a(\xe7\x13\xec0\x99Q\xa8\xd1\x0dm" +
+	"\xdc%3C\x89\x87\xa8\xd9\xa6'[\x98+%\x8e\x86" +
+	"\x8b\x91qo\x8c&j\xd6\x1b4Y\xd9\xd8\x98\xa4\x86" +
+	"\xe1\x04:\xa1\x08\"\xd4h\x8d\x09\xe6\x98\xd9j);" +
+	"\x94\xac\x8a\xa9\xa5\xed-\x8fl\xebfE\x97&\\\xe4" +
+	"\x085r[c\xe6\x03\xa7\xee\xc0\xd4\x9af\xa2\x86\x9a" +
+	"%\x11\x1a4\xd8}9\xd3\x8d{&\x1b\xaa\x19\x02\xca" +
+	"\x0b\xb8I\x9b\xc7\x92\x99%\xa0\xbc\x98\xa0\x15W\xe3t" +
+	"\xf5\xd6\x04eS\x94n_G\x949\xd0L\xcc\x01\x82" +
+	"9\\Z\x99\x0f\\\xcczu\x8dJ\xdb\xfe\xa7'\xab" +
+	"\xb5\xc6\x84\xaej\xa6\xd3V\xbe\xa6\xc5\xc35\x15[\x93" +
+	"\xb1\x09MOH3ir\xa3\x12\xa5n\x15yO\x11" +
+	"\x009[@y2AKM[\x02R\x94\xac\x9b_" +
+	"-\x1d\xd4\xc2\xb3~\x18\xddAa\x94\xef\xea\xb8\xa2\xc6" +
+	"X\x00\xa2\xaaka\xc4\xb0\xe0\x953\x11-}\xd2\x91" +
+	"\xb5\x97+\xcb\xae\x03\x80u\xe2\xc3\xde\xba\xe3\x85\xdb/" +
+	"\xb1\xff\x13%\x8dH9M\xf5\x92c\x8d\xb2\xbb\xb1F" +
+	"\xc30kH\x84\xd1\x06\xc0\x08\xda\x08\xda\xbb\xe9\xd6\x96" +
+	"\xa6\xfb\x01b\xfdp\xc5\xc7\xdc_a\xac\xe8\x83v\xf8" +
+	"\xb2\x07\x91#d\x8cXv\xf0!m#\xa0.\x97\x08" +
+	"^\x00W&\xd0Q\x05\x9f\x84\x0d@|Y(\"\xba" +
+	"*\x83\x8e\x9eJ\xb7\xb6\x01\x91\xae\x89(\xb8\xba\x8d\x03" +
+	"K\xd7<{\xf9\xec\xdboI\x83\xed@\xa4\x01\x11=" +
+	"\xee\x83\x01\x1d\xd9\x93N\x9f\x00\"\x9d\x16\xd1\xebr:" +
+	":*#\xf5\x1e\x02\"\xf5\x88\x98\xe1>#\xd0Qv" +
+	"\xe9\xe81 \xd2\x11\x11E\xf7\x05\x81\xce\xb3@\xea~" +
+	"\x13\x88\xb4O\xc4LW\x8f\xd0Qmi7\xbb\xf7\x8a" +
+	"\x88\xc4Uzt\xd4F\xea\xba\x08D\xea\x12\xad&j" +
+	"\x86[\x1bb*\x88\xd1Pc\x05ZN\xb71\xbd\xb1" +
+	"P\x81\x96\xc3_P\x9eb0\xce\x8c\x8c\x9e\x0a\x00\x1e" +
+	"\xa4N5Lv\x12dG\xfc=tx\xa5<u\x8d" +
+	"?r\x88.\x971\xd8\x1d\x07!\xcd,O\xad\xd1\xc8" +
+	"0F\xees.\x1b\xa0\x0a\xb4\xe7\xff\xdf\xbfG\xd7\x15" +
+	"V,=>\xd6\xfc\x8f\x93\xc2\xc2Jnr\x94\xce\xdc" +
+	"\x8f%\xee\xaf\x0fv\x0f\xa2\xa1\xc6\x14\x07\x19\x0f\x1e\x1d" +
+	"\x7f\xd7\x16\x05\x13\x0d9\xcf\x0dMa\xe4\xfa\x84\x80r" +
+	"\x8c[H\x95}l\x16P6\xb9\x85\xdc\xc4\x162&" +
+	"\xa0\xbc\x85 \x0a\xf9(\x00H\xad\xeb\x00dS@\xb9" +
+	"\x93\xa0\x95H\xbb\xe1X\xd8j\xd6\x0d[\xf0yfV" +
+	"ZM\x9d[\\K5\xaah\\\xaf7@\xa0ID" +
+	" \x88\xe3\xe7Og\x8e\xec1\xb2\xf3\x14G\xd1\xe7\x92" +
+	"t\x0bJ\x08\x96\xdbTa\xe0\xdf\x00\xc3\x02b\xde\xf0" +
+	"\xfa\x03\xb2\x8f\x13$\xef\xd1\xf2\xed\xbd7\x8aC7:" +
+	"\x84\x11\xef\xfb\xc0b\x1f\xab\x04\x94\xc3\\gV\xae\xe0" +
+	"^X\xa3hp|/\xae\xbfD%\xef\xf6\xf4(\x1d" +
+	"^\x80\xdc\xcd*mC\xc9\xbap\xae\xe9\xe2\xae\xfe\xc3" +
+	"\xdf\xfe\xc9w\xc7\xc8\x8e\xb3\xad\x10\xe2\xc6\x1f\x01\x00\x00" +
+	"\xff\xff\xf4D!W"
 
 func init() {
 	schemas.Register(schema_bf6889795837d1e0,
