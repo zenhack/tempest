@@ -12,7 +12,7 @@ import (
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 )
 
-type PersistentUiView struct{ Client *capnp.Client }
+type PersistentUiView capnp.Client
 
 // PersistentUiView_TypeID is the unique identifier for the type PersistentUiView.
 const PersistentUiView_TypeID = 0x826f7187e23c37c9
@@ -28,9 +28,9 @@ func (c PersistentUiView) GetViewInfo(ctx context.Context, params func(grain.UiV
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_getViewInfo_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_getViewInfo_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.UiView_ViewInfo_Future{Future: ans.Future()}, release
 }
 func (c PersistentUiView) NewSession(ctx context.Context, params func(grain.UiView_newSession_Params) error) (grain.UiView_newSession_Results_Future, capnp.ReleaseFunc) {
@@ -44,9 +44,9 @@ func (c PersistentUiView) NewSession(ctx context.Context, params func(grain.UiVi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newSession_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newSession_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.UiView_newSession_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentUiView) NewRequestSession(ctx context.Context, params func(grain.UiView_newRequestSession_Params) error) (grain.UiView_newRequestSession_Results_Future, capnp.ReleaseFunc) {
@@ -60,9 +60,9 @@ func (c PersistentUiView) NewRequestSession(ctx context.Context, params func(gra
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 5}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newRequestSession_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newRequestSession_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.UiView_newRequestSession_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentUiView) NewOfferSession(ctx context.Context, params func(grain.UiView_newOfferSession_Params) error) (grain.UiView_newOfferSession_Results_Future, capnp.ReleaseFunc) {
@@ -76,9 +76,9 @@ func (c PersistentUiView) NewOfferSession(ctx context.Context, params func(grain
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 6}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newOfferSession_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.UiView_newOfferSession_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.UiView_newOfferSession_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentUiView) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -92,11 +92,9 @@ func (c PersistentUiView) AddRequirements(ctx context.Context, params func(super
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -110,20 +108,30 @@ func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentUiView) AddRef() PersistentUiView {
-	return PersistentUiView{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentUiView(capnp.Client(c).AddRef())
 }
 
 func (c PersistentUiView) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentUiView) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentUiView) DecodeFromPtr(p capnp.Ptr) PersistentUiView {
+	return PersistentUiView(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentUiView) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentUiView_Server is a PersistentUiView with a local implementation.
@@ -142,15 +150,15 @@ type PersistentUiView_Server interface {
 }
 
 // PersistentUiView_NewServer creates a new Server from an implementation of PersistentUiView_Server.
-func PersistentUiView_NewServer(s PersistentUiView_Server, policy *server.Policy) *server.Server {
+func PersistentUiView_NewServer(s PersistentUiView_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentUiView_Methods(nil, s), s, c, policy)
+	return server.New(PersistentUiView_Methods(nil, s), s, c)
 }
 
 // PersistentUiView_ServerToClient creates a new Client from an implementation of PersistentUiView_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentUiView_ServerToClient(s PersistentUiView_Server, policy *server.Policy) PersistentUiView {
-	return PersistentUiView{Client: capnp.NewClient(PersistentUiView_NewServer(s, policy))}
+func PersistentUiView_ServerToClient(s PersistentUiView_Server) PersistentUiView {
+	return PersistentUiView(capnp.NewClient(PersistentUiView_NewServer(s)))
 }
 
 // PersistentUiView_Methods appends Methods to a slice that invoke the methods on s.
@@ -235,7 +243,16 @@ func PersistentUiView_Methods(methods []server.Method, s PersistentUiView_Server
 	return methods
 }
 
-const schema_fe5c7cde99284f21 = "x\xda2\xa8eq`2d\xcdWf`\x08\x9e\xc3" +
+// PersistentUiView_List is a list of PersistentUiView.
+type PersistentUiView_List = capnp.CapList[PersistentUiView]
+
+// NewPersistentUiView creates a new list of PersistentUiView.
+func NewPersistentUiView_List(s *capnp.Segment, sz int32) (PersistentUiView_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentUiView](l), err
+}
+
+const schema_fe5c7cde99284f21 = "x\xda2\xa8gq`1\xe4\xcdWf`\x0a\x9e\xc3" +
 	"\xc8\xca\xf6\xff\xa4\xb9\xcd\xa3\xf6\xc2\xfc&\x06Aq\xe6" +
 	"\xff\x8a\xfe\x1a3\xef\xd5\xc4\xfcc``4\x9e+\xe8" +
 	"\xc4(\xbcV\x90\x9d\x81Ax\xa5 \xbb\xf0JAu" +
@@ -244,7 +261,7 @@ const schema_fe5c7cde99284f21 = "x\xda2\xa8eq`2d\xcdWf`\x08\x9e\xc3" +
 	"\x9eW\x12\x9a\x19\x96\x99Z\xce\x10\xc0\xc8\x18\xc0\xcc\x1a" +
 	"\xc8\xc1\xc8\xf8\xff\xf9\xa3\xf4W3\xaeo\xb9\xcd\xc0\xc0" +
 	"\xf0\x7f\xcb\xd5}5\xd7\xdf\xf6\x1cf``\x00\x04\x00" +
-	"\x00\xff\xff\xa7$4\xd1"
+	"\x00\xff\xff\xae\xd24\xdf"
 
 func init() {
 	schemas.Register(schema_fe5c7cde99284f21,

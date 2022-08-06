@@ -13,7 +13,7 @@ import (
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
 )
 
-type SandstormHttpBridge struct{ Client *capnp.Client }
+type SandstormHttpBridge capnp.Client
 
 // SandstormHttpBridge_TypeID is the unique identifier for the type SandstormHttpBridge.
 const SandstormHttpBridge_TypeID = 0xad678f0d09bdd98a
@@ -29,9 +29,9 @@ func (c SandstormHttpBridge) GetSandstormApi(ctx context.Context, params func(Sa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSandstormApi_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSandstormApi_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_getSandstormApi_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(SandstormHttpBridge_getSessionContext_Params) error) (SandstormHttpBridge_getSessionContext_Results_Future, capnp.ReleaseFunc) {
@@ -45,9 +45,9 @@ func (c SandstormHttpBridge) GetSessionContext(ctx context.Context, params func(
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionContext_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionContext_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_getSessionContext_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormHttpBridge) GetSavedIdentity(ctx context.Context, params func(SandstormHttpBridge_getSavedIdentity_Params) error) (SandstormHttpBridge_getSavedIdentity_Results_Future, capnp.ReleaseFunc) {
@@ -61,9 +61,9 @@ func (c SandstormHttpBridge) GetSavedIdentity(ctx context.Context, params func(S
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSavedIdentity_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSavedIdentity_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_getSavedIdentity_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(SandstormHttpBridge_saveIdentity_Params) error) (SandstormHttpBridge_saveIdentity_Results_Future, capnp.ReleaseFunc) {
@@ -77,9 +77,9 @@ func (c SandstormHttpBridge) SaveIdentity(ctx context.Context, params func(Sands
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_saveIdentity_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_saveIdentity_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_saveIdentity_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormHttpBridge) GetSessionRequest(ctx context.Context, params func(SandstormHttpBridge_getSessionRequest_Params) error) (SandstormHttpBridge_getSessionRequest_Results_Future, capnp.ReleaseFunc) {
@@ -93,9 +93,9 @@ func (c SandstormHttpBridge) GetSessionRequest(ctx context.Context, params func(
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionRequest_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionRequest_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_getSessionRequest_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormHttpBridge) GetSessionOffer(ctx context.Context, params func(SandstormHttpBridge_getSessionOffer_Params) error) (SandstormHttpBridge_getSessionOffer_Results_Future, capnp.ReleaseFunc) {
@@ -109,20 +109,30 @@ func (c SandstormHttpBridge) GetSessionOffer(ctx context.Context, params func(Sa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionOffer_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormHttpBridge_getSessionOffer_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormHttpBridge_getSessionOffer_Results_Future{Future: ans.Future()}, release
 }
 
 func (c SandstormHttpBridge) AddRef() SandstormHttpBridge {
-	return SandstormHttpBridge{
-		Client: c.Client.AddRef(),
-	}
+	return SandstormHttpBridge(capnp.Client(c).AddRef())
 }
 
 func (c SandstormHttpBridge) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c SandstormHttpBridge) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge {
+	return SandstormHttpBridge(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c SandstormHttpBridge) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
@@ -141,15 +151,15 @@ type SandstormHttpBridge_Server interface {
 }
 
 // SandstormHttpBridge_NewServer creates a new Server from an implementation of SandstormHttpBridge_Server.
-func SandstormHttpBridge_NewServer(s SandstormHttpBridge_Server, policy *server.Policy) *server.Server {
+func SandstormHttpBridge_NewServer(s SandstormHttpBridge_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(SandstormHttpBridge_Methods(nil, s), s, c, policy)
+	return server.New(SandstormHttpBridge_Methods(nil, s), s, c)
 }
 
 // SandstormHttpBridge_ServerToClient creates a new Client from an implementation of SandstormHttpBridge_Server.
 // The caller is responsible for calling Release on the returned Client.
-func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server, policy *server.Policy) SandstormHttpBridge {
-	return SandstormHttpBridge{Client: capnp.NewClient(SandstormHttpBridge_NewServer(s, policy))}
+func SandstormHttpBridge_ServerToClient(s SandstormHttpBridge_Server) SandstormHttpBridge {
+	return SandstormHttpBridge(capnp.NewClient(SandstormHttpBridge_NewServer(s)))
 }
 
 // SandstormHttpBridge_Methods appends Methods to a slice that invoke the methods on s.
@@ -242,13 +252,13 @@ type SandstormHttpBridge_getSandstormApi struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_getSandstormApi) Args() SandstormHttpBridge_getSandstormApi_Params {
-	return SandstormHttpBridge_getSandstormApi_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_getSandstormApi_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_getSandstormApi) AllocResults() (SandstormHttpBridge_getSandstormApi_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSandstormApi_Results{Struct: r}, err
+	return SandstormHttpBridge_getSandstormApi_Results(r), err
 }
 
 // SandstormHttpBridge_getSessionContext holds the state for a server call to SandstormHttpBridge.getSessionContext.
@@ -259,13 +269,13 @@ type SandstormHttpBridge_getSessionContext struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_getSessionContext) Args() SandstormHttpBridge_getSessionContext_Params {
-	return SandstormHttpBridge_getSessionContext_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_getSessionContext_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_getSessionContext) AllocResults() (SandstormHttpBridge_getSessionContext_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionContext_Results{Struct: r}, err
+	return SandstormHttpBridge_getSessionContext_Results(r), err
 }
 
 // SandstormHttpBridge_getSavedIdentity holds the state for a server call to SandstormHttpBridge.getSavedIdentity.
@@ -276,13 +286,13 @@ type SandstormHttpBridge_getSavedIdentity struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_getSavedIdentity) Args() SandstormHttpBridge_getSavedIdentity_Params {
-	return SandstormHttpBridge_getSavedIdentity_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_getSavedIdentity_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_getSavedIdentity) AllocResults() (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSavedIdentity_Results{Struct: r}, err
+	return SandstormHttpBridge_getSavedIdentity_Results(r), err
 }
 
 // SandstormHttpBridge_saveIdentity holds the state for a server call to SandstormHttpBridge.saveIdentity.
@@ -293,13 +303,13 @@ type SandstormHttpBridge_saveIdentity struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_saveIdentity) Args() SandstormHttpBridge_saveIdentity_Params {
-	return SandstormHttpBridge_saveIdentity_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_saveIdentity_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_saveIdentity) AllocResults() (SandstormHttpBridge_saveIdentity_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormHttpBridge_saveIdentity_Results{Struct: r}, err
+	return SandstormHttpBridge_saveIdentity_Results(r), err
 }
 
 // SandstormHttpBridge_getSessionRequest holds the state for a server call to SandstormHttpBridge.getSessionRequest.
@@ -310,13 +320,13 @@ type SandstormHttpBridge_getSessionRequest struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_getSessionRequest) Args() SandstormHttpBridge_getSessionRequest_Params {
-	return SandstormHttpBridge_getSessionRequest_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_getSessionRequest_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_getSessionRequest) AllocResults() (SandstormHttpBridge_getSessionRequest_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionRequest_Results{Struct: r}, err
+	return SandstormHttpBridge_getSessionRequest_Results(r), err
 }
 
 // SandstormHttpBridge_getSessionOffer holds the state for a server call to SandstormHttpBridge.getSessionOffer.
@@ -327,60 +337,79 @@ type SandstormHttpBridge_getSessionOffer struct {
 
 // Args returns the call's arguments.
 func (c SandstormHttpBridge_getSessionOffer) Args() SandstormHttpBridge_getSessionOffer_Params {
-	return SandstormHttpBridge_getSessionOffer_Params{Struct: c.Call.Args()}
+	return SandstormHttpBridge_getSessionOffer_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormHttpBridge_getSessionOffer) AllocResults() (SandstormHttpBridge_getSessionOffer_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SandstormHttpBridge_getSessionOffer_Results{Struct: r}, err
+	return SandstormHttpBridge_getSessionOffer_Results(r), err
 }
 
-type SandstormHttpBridge_getSandstormApi_Params struct{ capnp.Struct }
+// SandstormHttpBridge_List is a list of SandstormHttpBridge.
+type SandstormHttpBridge_List = capnp.CapList[SandstormHttpBridge]
+
+// NewSandstormHttpBridge creates a new list of SandstormHttpBridge.
+func NewSandstormHttpBridge_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[SandstormHttpBridge](l), err
+}
+
+type SandstormHttpBridge_getSandstormApi_Params capnp.Struct
 
 // SandstormHttpBridge_getSandstormApi_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSandstormApi_Params.
 const SandstormHttpBridge_getSandstormApi_Params_TypeID = 0x86d490c59f64c564
 
 func NewSandstormHttpBridge_getSandstormApi_Params(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormHttpBridge_getSandstormApi_Params{st}, err
+	return SandstormHttpBridge_getSandstormApi_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_getSandstormApi_Params(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormHttpBridge_getSandstormApi_Params{st}, err
+	return SandstormHttpBridge_getSandstormApi_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Params(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSandstormApi_Params{root.Struct()}, err
+	return SandstormHttpBridge_getSandstormApi_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Params) String() string {
-	str, _ := text.Marshal(0x86d490c59f64c564, s.Struct)
+	str, _ := text.Marshal(0x86d490c59f64c564, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSandstormApi_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSandstormApi_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSandstormApi_Params {
+	return SandstormHttpBridge_getSandstormApi_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSandstormApi_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormHttpBridge_getSandstormApi_Params_List is a list of SandstormHttpBridge_getSandstormApi_Params.
-type SandstormHttpBridge_getSandstormApi_Params_List struct{ capnp.List }
+type SandstormHttpBridge_getSandstormApi_Params_List = capnp.StructList[SandstormHttpBridge_getSandstormApi_Params]
 
 // NewSandstormHttpBridge_getSandstormApi_Params creates a new list of SandstormHttpBridge_getSandstormApi_Params.
 func NewSandstormHttpBridge_getSandstormApi_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSandstormApi_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormHttpBridge_getSandstormApi_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Params_List) At(i int) SandstormHttpBridge_getSandstormApi_Params {
-	return SandstormHttpBridge_getSandstormApi_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Params_List) Set(i int, v SandstormHttpBridge_getSandstormApi_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Params_List) String() string {
-	str, _ := text.MarshalList(0x86d490c59f64c564, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSandstormApi_Params](l), err
 }
 
 // SandstormHttpBridge_getSandstormApi_Params_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Params promised by a client call.
@@ -388,72 +417,81 @@ type SandstormHttpBridge_getSandstormApi_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSandstormApi_Params_Future) Struct() (SandstormHttpBridge_getSandstormApi_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSandstormApi_Params{s}, err
+	return SandstormHttpBridge_getSandstormApi_Params(s), err
 }
 
-type SandstormHttpBridge_getSandstormApi_Results struct{ capnp.Struct }
+type SandstormHttpBridge_getSandstormApi_Results capnp.Struct
 
 // SandstormHttpBridge_getSandstormApi_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSandstormApi_Results.
 const SandstormHttpBridge_getSandstormApi_Results_TypeID = 0xc174fe273bd649ac
 
 func NewSandstormHttpBridge_getSandstormApi_Results(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSandstormApi_Results{st}, err
+	return SandstormHttpBridge_getSandstormApi_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_getSandstormApi_Results(s *capnp.Segment) (SandstormHttpBridge_getSandstormApi_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSandstormApi_Results{st}, err
+	return SandstormHttpBridge_getSandstormApi_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSandstormApi_Results(msg *capnp.Message) (SandstormHttpBridge_getSandstormApi_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSandstormApi_Results{root.Struct()}, err
+	return SandstormHttpBridge_getSandstormApi_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) String() string {
-	str, _ := text.Marshal(0xc174fe273bd649ac, s.Struct)
+	str, _ := text.Marshal(0xc174fe273bd649ac, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSandstormApi_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSandstormApi_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSandstormApi_Results {
+	return SandstormHttpBridge_getSandstormApi_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSandstormApi_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSandstormApi_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSandstormApi_Results) Api() grain.SandstormApi {
-	p, _ := s.Struct.Ptr(0)
-	return grain.SandstormApi{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return grain.SandstormApi(p.Interface().Client())
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) HasApi() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSandstormApi_Results) SetApi(v grain.SandstormApi) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_getSandstormApi_Results_List is a list of SandstormHttpBridge_getSandstormApi_Results.
-type SandstormHttpBridge_getSandstormApi_Results_List struct{ capnp.List }
+type SandstormHttpBridge_getSandstormApi_Results_List = capnp.StructList[SandstormHttpBridge_getSandstormApi_Results]
 
 // NewSandstormHttpBridge_getSandstormApi_Results creates a new list of SandstormHttpBridge_getSandstormApi_Results.
 func NewSandstormHttpBridge_getSandstormApi_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSandstormApi_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSandstormApi_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Results_List) At(i int) SandstormHttpBridge_getSandstormApi_Results {
-	return SandstormHttpBridge_getSandstormApi_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Results_List) Set(i int, v SandstormHttpBridge_getSandstormApi_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSandstormApi_Results_List) String() string {
-	str, _ := text.MarshalList(0xc174fe273bd649ac, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSandstormApi_Results](l), err
 }
 
 // SandstormHttpBridge_getSandstormApi_Results_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Results promised by a client call.
@@ -461,76 +499,85 @@ type SandstormHttpBridge_getSandstormApi_Results_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSandstormApi_Results_Future) Struct() (SandstormHttpBridge_getSandstormApi_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSandstormApi_Results{s}, err
+	return SandstormHttpBridge_getSandstormApi_Results(s), err
 }
 
 func (p SandstormHttpBridge_getSandstormApi_Results_Future) Api() grain.SandstormApi {
-	return grain.SandstormApi{Client: p.Future.Field(0, nil).Client()}
+	return grain.SandstormApi(p.Future.Field(0, nil).Client())
 }
 
-type SandstormHttpBridge_getSessionContext_Params struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionContext_Params capnp.Struct
 
 // SandstormHttpBridge_getSessionContext_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionContext_Params.
 const SandstormHttpBridge_getSessionContext_Params_TypeID = 0xc2a480fa3863a3fa
 
 func NewSandstormHttpBridge_getSessionContext_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionContext_Params{st}, err
+	return SandstormHttpBridge_getSessionContext_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionContext_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionContext_Params{st}, err
+	return SandstormHttpBridge_getSessionContext_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionContext_Params{root.Struct()}, err
+	return SandstormHttpBridge_getSessionContext_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) String() string {
-	str, _ := text.Marshal(0xc2a480fa3863a3fa, s.Struct)
+	str, _ := text.Marshal(0xc2a480fa3863a3fa, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSessionContext_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionContext_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionContext_Params {
+	return SandstormHttpBridge_getSessionContext_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionContext_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionContext_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionContext_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionContext_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSessionContext_Params) Id() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) IdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SandstormHttpBridge_getSessionContext_Params) SetId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // SandstormHttpBridge_getSessionContext_Params_List is a list of SandstormHttpBridge_getSessionContext_Params.
-type SandstormHttpBridge_getSessionContext_Params_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionContext_Params_List = capnp.StructList[SandstormHttpBridge_getSessionContext_Params]
 
 // NewSandstormHttpBridge_getSessionContext_Params creates a new list of SandstormHttpBridge_getSessionContext_Params.
 func NewSandstormHttpBridge_getSessionContext_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionContext_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSessionContext_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionContext_Params_List) At(i int) SandstormHttpBridge_getSessionContext_Params {
-	return SandstormHttpBridge_getSessionContext_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionContext_Params_List) Set(i int, v SandstormHttpBridge_getSessionContext_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionContext_Params_List) String() string {
-	str, _ := text.MarshalList(0xc2a480fa3863a3fa, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionContext_Params](l), err
 }
 
 // SandstormHttpBridge_getSessionContext_Params_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Params promised by a client call.
@@ -538,72 +585,81 @@ type SandstormHttpBridge_getSessionContext_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSessionContext_Params_Future) Struct() (SandstormHttpBridge_getSessionContext_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionContext_Params{s}, err
+	return SandstormHttpBridge_getSessionContext_Params(s), err
 }
 
-type SandstormHttpBridge_getSessionContext_Results struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionContext_Results capnp.Struct
 
 // SandstormHttpBridge_getSessionContext_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionContext_Results.
 const SandstormHttpBridge_getSessionContext_Results_TypeID = 0xb84ffa3322e48dbd
 
 func NewSandstormHttpBridge_getSessionContext_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionContext_Results{st}, err
+	return SandstormHttpBridge_getSessionContext_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionContext_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionContext_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionContext_Results{st}, err
+	return SandstormHttpBridge_getSessionContext_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionContext_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionContext_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionContext_Results{root.Struct()}, err
+	return SandstormHttpBridge_getSessionContext_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) String() string {
-	str, _ := text.Marshal(0xb84ffa3322e48dbd, s.Struct)
+	str, _ := text.Marshal(0xb84ffa3322e48dbd, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSessionContext_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionContext_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionContext_Results {
+	return SandstormHttpBridge_getSessionContext_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionContext_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionContext_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionContext_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionContext_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSessionContext_Results) Context() grain.SessionContext {
-	p, _ := s.Struct.Ptr(0)
-	return grain.SessionContext{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return grain.SessionContext(p.Interface().Client())
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) HasContext() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionContext_Results) SetContext(v grain.SessionContext) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_getSessionContext_Results_List is a list of SandstormHttpBridge_getSessionContext_Results.
-type SandstormHttpBridge_getSessionContext_Results_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionContext_Results_List = capnp.StructList[SandstormHttpBridge_getSessionContext_Results]
 
 // NewSandstormHttpBridge_getSessionContext_Results creates a new list of SandstormHttpBridge_getSessionContext_Results.
 func NewSandstormHttpBridge_getSessionContext_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionContext_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSessionContext_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionContext_Results_List) At(i int) SandstormHttpBridge_getSessionContext_Results {
-	return SandstormHttpBridge_getSessionContext_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionContext_Results_List) Set(i int, v SandstormHttpBridge_getSessionContext_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionContext_Results_List) String() string {
-	str, _ := text.MarshalList(0xb84ffa3322e48dbd, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionContext_Results](l), err
 }
 
 // SandstormHttpBridge_getSessionContext_Results_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Results promised by a client call.
@@ -611,76 +667,85 @@ type SandstormHttpBridge_getSessionContext_Results_Future struct{ *capnp.Future 
 
 func (p SandstormHttpBridge_getSessionContext_Results_Future) Struct() (SandstormHttpBridge_getSessionContext_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionContext_Results{s}, err
+	return SandstormHttpBridge_getSessionContext_Results(s), err
 }
 
 func (p SandstormHttpBridge_getSessionContext_Results_Future) Context() grain.SessionContext {
-	return grain.SessionContext{Client: p.Future.Field(0, nil).Client()}
+	return grain.SessionContext(p.Future.Field(0, nil).Client())
 }
 
-type SandstormHttpBridge_getSavedIdentity_Params struct{ capnp.Struct }
+type SandstormHttpBridge_getSavedIdentity_Params capnp.Struct
 
 // SandstormHttpBridge_getSavedIdentity_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSavedIdentity_Params.
 const SandstormHttpBridge_getSavedIdentity_Params_TypeID = 0x930d8201947c86bf
 
 func NewSandstormHttpBridge_getSavedIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSavedIdentity_Params{st}, err
+	return SandstormHttpBridge_getSavedIdentity_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_getSavedIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSavedIdentity_Params{st}, err
+	return SandstormHttpBridge_getSavedIdentity_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSavedIdentity_Params(msg *capnp.Message) (SandstormHttpBridge_getSavedIdentity_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSavedIdentity_Params{root.Struct()}, err
+	return SandstormHttpBridge_getSavedIdentity_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) String() string {
-	str, _ := text.Marshal(0x930d8201947c86bf, s.Struct)
+	str, _ := text.Marshal(0x930d8201947c86bf, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSavedIdentity_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSavedIdentity_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSavedIdentity_Params {
+	return SandstormHttpBridge_getSavedIdentity_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSavedIdentity_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSavedIdentity_Params) IdentityId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) HasIdentityId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) IdentityIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Params) SetIdentityId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // SandstormHttpBridge_getSavedIdentity_Params_List is a list of SandstormHttpBridge_getSavedIdentity_Params.
-type SandstormHttpBridge_getSavedIdentity_Params_List struct{ capnp.List }
+type SandstormHttpBridge_getSavedIdentity_Params_List = capnp.StructList[SandstormHttpBridge_getSavedIdentity_Params]
 
 // NewSandstormHttpBridge_getSavedIdentity_Params creates a new list of SandstormHttpBridge_getSavedIdentity_Params.
 func NewSandstormHttpBridge_getSavedIdentity_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSavedIdentity_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSavedIdentity_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Params_List) At(i int) SandstormHttpBridge_getSavedIdentity_Params {
-	return SandstormHttpBridge_getSavedIdentity_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Params_List) Set(i int, v SandstormHttpBridge_getSavedIdentity_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Params_List) String() string {
-	str, _ := text.MarshalList(0x930d8201947c86bf, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSavedIdentity_Params](l), err
 }
 
 // SandstormHttpBridge_getSavedIdentity_Params_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Params promised by a client call.
@@ -688,72 +753,81 @@ type SandstormHttpBridge_getSavedIdentity_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSavedIdentity_Params_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSavedIdentity_Params{s}, err
+	return SandstormHttpBridge_getSavedIdentity_Params(s), err
 }
 
-type SandstormHttpBridge_getSavedIdentity_Results struct{ capnp.Struct }
+type SandstormHttpBridge_getSavedIdentity_Results capnp.Struct
 
 // SandstormHttpBridge_getSavedIdentity_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSavedIdentity_Results.
 const SandstormHttpBridge_getSavedIdentity_Results_TypeID = 0xc2ba6a7e9ab2e369
 
 func NewSandstormHttpBridge_getSavedIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSavedIdentity_Results{st}, err
+	return SandstormHttpBridge_getSavedIdentity_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_getSavedIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSavedIdentity_Results{st}, err
+	return SandstormHttpBridge_getSavedIdentity_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSavedIdentity_Results(msg *capnp.Message) (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSavedIdentity_Results{root.Struct()}, err
+	return SandstormHttpBridge_getSavedIdentity_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Results) String() string {
-	str, _ := text.Marshal(0xc2ba6a7e9ab2e369, s.Struct)
+	str, _ := text.Marshal(0xc2ba6a7e9ab2e369, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSavedIdentity_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSavedIdentity_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSavedIdentity_Results {
+	return SandstormHttpBridge_getSavedIdentity_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSavedIdentity_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSavedIdentity_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSavedIdentity_Results) Identity() identity.Identity {
-	p, _ := s.Struct.Ptr(0)
-	return identity.Identity{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return identity.Identity(p.Interface().Client())
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Results) HasIdentity() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSavedIdentity_Results) SetIdentity(v identity.Identity) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_getSavedIdentity_Results_List is a list of SandstormHttpBridge_getSavedIdentity_Results.
-type SandstormHttpBridge_getSavedIdentity_Results_List struct{ capnp.List }
+type SandstormHttpBridge_getSavedIdentity_Results_List = capnp.StructList[SandstormHttpBridge_getSavedIdentity_Results]
 
 // NewSandstormHttpBridge_getSavedIdentity_Results creates a new list of SandstormHttpBridge_getSavedIdentity_Results.
 func NewSandstormHttpBridge_getSavedIdentity_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSavedIdentity_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSavedIdentity_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Results_List) At(i int) SandstormHttpBridge_getSavedIdentity_Results {
-	return SandstormHttpBridge_getSavedIdentity_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Results_List) Set(i int, v SandstormHttpBridge_getSavedIdentity_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSavedIdentity_Results_List) String() string {
-	str, _ := text.MarshalList(0xc2ba6a7e9ab2e369, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSavedIdentity_Results](l), err
 }
 
 // SandstormHttpBridge_getSavedIdentity_Results_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Results promised by a client call.
@@ -761,76 +835,85 @@ type SandstormHttpBridge_getSavedIdentity_Results_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSavedIdentity_Results{s}, err
+	return SandstormHttpBridge_getSavedIdentity_Results(s), err
 }
 
 func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Identity() identity.Identity {
-	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
+	return identity.Identity(p.Future.Field(0, nil).Client())
 }
 
-type SandstormHttpBridge_saveIdentity_Params struct{ capnp.Struct }
+type SandstormHttpBridge_saveIdentity_Params capnp.Struct
 
 // SandstormHttpBridge_saveIdentity_Params_TypeID is the unique identifier for the type SandstormHttpBridge_saveIdentity_Params.
 const SandstormHttpBridge_saveIdentity_Params_TypeID = 0xd274ecd8fd2907d0
 
 func NewSandstormHttpBridge_saveIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_saveIdentity_Params{st}, err
+	return SandstormHttpBridge_saveIdentity_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_saveIdentity_Params(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_saveIdentity_Params{st}, err
+	return SandstormHttpBridge_saveIdentity_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_saveIdentity_Params(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_saveIdentity_Params{root.Struct()}, err
+	return SandstormHttpBridge_saveIdentity_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_saveIdentity_Params) String() string {
-	str, _ := text.Marshal(0xd274ecd8fd2907d0, s.Struct)
+	str, _ := text.Marshal(0xd274ecd8fd2907d0, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_saveIdentity_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_saveIdentity_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_saveIdentity_Params {
+	return SandstormHttpBridge_saveIdentity_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_saveIdentity_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_saveIdentity_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_saveIdentity_Params) Identity() identity.Identity {
-	p, _ := s.Struct.Ptr(0)
-	return identity.Identity{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return identity.Identity(p.Interface().Client())
 }
 
 func (s SandstormHttpBridge_saveIdentity_Params) HasIdentity() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_saveIdentity_Params) SetIdentity(v identity.Identity) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormHttpBridge_saveIdentity_Params_List is a list of SandstormHttpBridge_saveIdentity_Params.
-type SandstormHttpBridge_saveIdentity_Params_List struct{ capnp.List }
+type SandstormHttpBridge_saveIdentity_Params_List = capnp.StructList[SandstormHttpBridge_saveIdentity_Params]
 
 // NewSandstormHttpBridge_saveIdentity_Params creates a new list of SandstormHttpBridge_saveIdentity_Params.
 func NewSandstormHttpBridge_saveIdentity_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_saveIdentity_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_saveIdentity_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_saveIdentity_Params_List) At(i int) SandstormHttpBridge_saveIdentity_Params {
-	return SandstormHttpBridge_saveIdentity_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_saveIdentity_Params_List) Set(i int, v SandstormHttpBridge_saveIdentity_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_saveIdentity_Params_List) String() string {
-	str, _ := text.MarshalList(0xd274ecd8fd2907d0, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_saveIdentity_Params](l), err
 }
 
 // SandstormHttpBridge_saveIdentity_Params_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Params promised by a client call.
@@ -838,58 +921,68 @@ type SandstormHttpBridge_saveIdentity_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_saveIdentity_Params_Future) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_saveIdentity_Params{s}, err
+	return SandstormHttpBridge_saveIdentity_Params(s), err
 }
 
 func (p SandstormHttpBridge_saveIdentity_Params_Future) Identity() identity.Identity {
-	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
+	return identity.Identity(p.Future.Field(0, nil).Client())
 }
 
-type SandstormHttpBridge_saveIdentity_Results struct{ capnp.Struct }
+type SandstormHttpBridge_saveIdentity_Results capnp.Struct
 
 // SandstormHttpBridge_saveIdentity_Results_TypeID is the unique identifier for the type SandstormHttpBridge_saveIdentity_Results.
 const SandstormHttpBridge_saveIdentity_Results_TypeID = 0xb1b610269c6a2190
 
 func NewSandstormHttpBridge_saveIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormHttpBridge_saveIdentity_Results{st}, err
+	return SandstormHttpBridge_saveIdentity_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_saveIdentity_Results(s *capnp.Segment) (SandstormHttpBridge_saveIdentity_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormHttpBridge_saveIdentity_Results{st}, err
+	return SandstormHttpBridge_saveIdentity_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_saveIdentity_Results(msg *capnp.Message) (SandstormHttpBridge_saveIdentity_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_saveIdentity_Results{root.Struct()}, err
+	return SandstormHttpBridge_saveIdentity_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_saveIdentity_Results) String() string {
-	str, _ := text.Marshal(0xb1b610269c6a2190, s.Struct)
+	str, _ := text.Marshal(0xb1b610269c6a2190, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_saveIdentity_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_saveIdentity_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_saveIdentity_Results {
+	return SandstormHttpBridge_saveIdentity_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_saveIdentity_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_saveIdentity_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormHttpBridge_saveIdentity_Results_List is a list of SandstormHttpBridge_saveIdentity_Results.
-type SandstormHttpBridge_saveIdentity_Results_List struct{ capnp.List }
+type SandstormHttpBridge_saveIdentity_Results_List = capnp.StructList[SandstormHttpBridge_saveIdentity_Results]
 
 // NewSandstormHttpBridge_saveIdentity_Results creates a new list of SandstormHttpBridge_saveIdentity_Results.
 func NewSandstormHttpBridge_saveIdentity_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_saveIdentity_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormHttpBridge_saveIdentity_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_saveIdentity_Results_List) At(i int) SandstormHttpBridge_saveIdentity_Results {
-	return SandstormHttpBridge_saveIdentity_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_saveIdentity_Results_List) Set(i int, v SandstormHttpBridge_saveIdentity_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_saveIdentity_Results_List) String() string {
-	str, _ := text.MarshalList(0xb1b610269c6a2190, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_saveIdentity_Results](l), err
 }
 
 // SandstormHttpBridge_saveIdentity_Results_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Results promised by a client call.
@@ -897,72 +990,81 @@ type SandstormHttpBridge_saveIdentity_Results_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_saveIdentity_Results_Future) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_saveIdentity_Results{s}, err
+	return SandstormHttpBridge_saveIdentity_Results(s), err
 }
 
-type SandstormHttpBridge_getSessionRequest_Params struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionRequest_Params capnp.Struct
 
 // SandstormHttpBridge_getSessionRequest_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionRequest_Params.
 const SandstormHttpBridge_getSessionRequest_Params_TypeID = 0xee4b3bf929955f83
 
 func NewSandstormHttpBridge_getSessionRequest_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionRequest_Params{st}, err
+	return SandstormHttpBridge_getSessionRequest_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionRequest_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionRequest_Params{st}, err
+	return SandstormHttpBridge_getSessionRequest_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionRequest_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionRequest_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionRequest_Params{root.Struct()}, err
+	return SandstormHttpBridge_getSessionRequest_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Params) String() string {
-	str, _ := text.Marshal(0xee4b3bf929955f83, s.Struct)
+	str, _ := text.Marshal(0xee4b3bf929955f83, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSessionRequest_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionRequest_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionRequest_Params {
+	return SandstormHttpBridge_getSessionRequest_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionRequest_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSessionRequest_Params) Id() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Params) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Params) IdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Params) SetId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // SandstormHttpBridge_getSessionRequest_Params_List is a list of SandstormHttpBridge_getSessionRequest_Params.
-type SandstormHttpBridge_getSessionRequest_Params_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionRequest_Params_List = capnp.StructList[SandstormHttpBridge_getSessionRequest_Params]
 
 // NewSandstormHttpBridge_getSessionRequest_Params creates a new list of SandstormHttpBridge_getSessionRequest_Params.
 func NewSandstormHttpBridge_getSessionRequest_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionRequest_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSessionRequest_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Params_List) At(i int) SandstormHttpBridge_getSessionRequest_Params {
-	return SandstormHttpBridge_getSessionRequest_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Params_List) Set(i int, v SandstormHttpBridge_getSessionRequest_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Params_List) String() string {
-	str, _ := text.MarshalList(0xee4b3bf929955f83, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionRequest_Params](l), err
 }
 
 // SandstormHttpBridge_getSessionRequest_Params_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Params promised by a client call.
@@ -970,78 +1072,87 @@ type SandstormHttpBridge_getSessionRequest_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSessionRequest_Params_Future) Struct() (SandstormHttpBridge_getSessionRequest_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionRequest_Params{s}, err
+	return SandstormHttpBridge_getSessionRequest_Params(s), err
 }
 
-type SandstormHttpBridge_getSessionRequest_Results struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionRequest_Results capnp.Struct
 
 // SandstormHttpBridge_getSessionRequest_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionRequest_Results.
 const SandstormHttpBridge_getSessionRequest_Results_TypeID = 0xb2e5439feb5f31ce
 
 func NewSandstormHttpBridge_getSessionRequest_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionRequest_Results{st}, err
+	return SandstormHttpBridge_getSessionRequest_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionRequest_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionRequest_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionRequest_Results{st}, err
+	return SandstormHttpBridge_getSessionRequest_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionRequest_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionRequest_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionRequest_Results{root.Struct()}, err
+	return SandstormHttpBridge_getSessionRequest_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Results) String() string {
-	str, _ := text.Marshal(0xb2e5439feb5f31ce, s.Struct)
+	str, _ := text.Marshal(0xb2e5439feb5f31ce, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSessionRequest_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionRequest_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionRequest_Results {
+	return SandstormHttpBridge_getSessionRequest_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionRequest_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionRequest_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSessionRequest_Results) RequestInfo() (powerbox.PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return powerbox.PowerboxDescriptor_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return powerbox.PowerboxDescriptor_List(p.List()), err
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Results) HasRequestInfo() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionRequest_Results) SetRequestInfo(v powerbox.PowerboxDescriptor_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewRequestInfo sets the requestInfo field to a newly
 // allocated powerbox.PowerboxDescriptor_List, preferring placement in s's segment.
 func (s SandstormHttpBridge_getSessionRequest_Results) NewRequestInfo(n int32) (powerbox.PowerboxDescriptor_List, error) {
-	l, err := powerbox.NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	l, err := powerbox.NewPowerboxDescriptor_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return powerbox.PowerboxDescriptor_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // SandstormHttpBridge_getSessionRequest_Results_List is a list of SandstormHttpBridge_getSessionRequest_Results.
-type SandstormHttpBridge_getSessionRequest_Results_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionRequest_Results_List = capnp.StructList[SandstormHttpBridge_getSessionRequest_Results]
 
 // NewSandstormHttpBridge_getSessionRequest_Results creates a new list of SandstormHttpBridge_getSessionRequest_Results.
 func NewSandstormHttpBridge_getSessionRequest_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionRequest_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSessionRequest_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Results_List) At(i int) SandstormHttpBridge_getSessionRequest_Results {
-	return SandstormHttpBridge_getSessionRequest_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Results_List) Set(i int, v SandstormHttpBridge_getSessionRequest_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionRequest_Results_List) String() string {
-	str, _ := text.MarshalList(0xb2e5439feb5f31ce, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionRequest_Results](l), err
 }
 
 // SandstormHttpBridge_getSessionRequest_Results_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Results promised by a client call.
@@ -1049,72 +1160,81 @@ type SandstormHttpBridge_getSessionRequest_Results_Future struct{ *capnp.Future 
 
 func (p SandstormHttpBridge_getSessionRequest_Results_Future) Struct() (SandstormHttpBridge_getSessionRequest_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionRequest_Results{s}, err
+	return SandstormHttpBridge_getSessionRequest_Results(s), err
 }
 
-type SandstormHttpBridge_getSessionOffer_Params struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionOffer_Params capnp.Struct
 
 // SandstormHttpBridge_getSessionOffer_Params_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionOffer_Params.
 const SandstormHttpBridge_getSessionOffer_Params_TypeID = 0xd7dfe01ad496e65c
 
 func NewSandstormHttpBridge_getSessionOffer_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionOffer_Params{st}, err
+	return SandstormHttpBridge_getSessionOffer_Params(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionOffer_Params(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormHttpBridge_getSessionOffer_Params{st}, err
+	return SandstormHttpBridge_getSessionOffer_Params(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionOffer_Params(msg *capnp.Message) (SandstormHttpBridge_getSessionOffer_Params, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionOffer_Params{root.Struct()}, err
+	return SandstormHttpBridge_getSessionOffer_Params(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Params) String() string {
-	str, _ := text.Marshal(0xd7dfe01ad496e65c, s.Struct)
+	str, _ := text.Marshal(0xd7dfe01ad496e65c, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormHttpBridge_getSessionOffer_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionOffer_Params) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionOffer_Params {
+	return SandstormHttpBridge_getSessionOffer_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionOffer_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormHttpBridge_getSessionOffer_Params) Id() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Params) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Params) IdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Params) SetId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // SandstormHttpBridge_getSessionOffer_Params_List is a list of SandstormHttpBridge_getSessionOffer_Params.
-type SandstormHttpBridge_getSessionOffer_Params_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionOffer_Params_List = capnp.StructList[SandstormHttpBridge_getSessionOffer_Params]
 
 // NewSandstormHttpBridge_getSessionOffer_Params creates a new list of SandstormHttpBridge_getSessionOffer_Params.
 func NewSandstormHttpBridge_getSessionOffer_Params_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionOffer_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormHttpBridge_getSessionOffer_Params_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Params_List) At(i int) SandstormHttpBridge_getSessionOffer_Params {
-	return SandstormHttpBridge_getSessionOffer_Params{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Params_List) Set(i int, v SandstormHttpBridge_getSessionOffer_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Params_List) String() string {
-	str, _ := text.MarshalList(0xd7dfe01ad496e65c, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionOffer_Params](l), err
 }
 
 // SandstormHttpBridge_getSessionOffer_Params_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Params promised by a client call.
@@ -1122,90 +1242,104 @@ type SandstormHttpBridge_getSessionOffer_Params_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSessionOffer_Params_Future) Struct() (SandstormHttpBridge_getSessionOffer_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionOffer_Params{s}, err
+	return SandstormHttpBridge_getSessionOffer_Params(s), err
 }
 
-type SandstormHttpBridge_getSessionOffer_Results struct{ capnp.Struct }
+type SandstormHttpBridge_getSessionOffer_Results capnp.Struct
 
 // SandstormHttpBridge_getSessionOffer_Results_TypeID is the unique identifier for the type SandstormHttpBridge_getSessionOffer_Results.
 const SandstormHttpBridge_getSessionOffer_Results_TypeID = 0xf38a4e91679a53d1
 
 func NewSandstormHttpBridge_getSessionOffer_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SandstormHttpBridge_getSessionOffer_Results{st}, err
+	return SandstormHttpBridge_getSessionOffer_Results(st), err
 }
 
 func NewRootSandstormHttpBridge_getSessionOffer_Results(s *capnp.Segment) (SandstormHttpBridge_getSessionOffer_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SandstormHttpBridge_getSessionOffer_Results{st}, err
+	return SandstormHttpBridge_getSessionOffer_Results(st), err
 }
 
 func ReadRootSandstormHttpBridge_getSessionOffer_Results(msg *capnp.Message) (SandstormHttpBridge_getSessionOffer_Results, error) {
 	root, err := msg.Root()
-	return SandstormHttpBridge_getSessionOffer_Results{root.Struct()}, err
+	return SandstormHttpBridge_getSessionOffer_Results(root.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Results) String() string {
-	str, _ := text.Marshal(0xf38a4e91679a53d1, s.Struct)
+	str, _ := text.Marshal(0xf38a4e91679a53d1, capnp.Struct(s))
 	return str
 }
 
-func (s SandstormHttpBridge_getSessionOffer_Results) Offer() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s SandstormHttpBridge_getSessionOffer_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormHttpBridge_getSessionOffer_Results) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge_getSessionOffer_Results {
+	return SandstormHttpBridge_getSessionOffer_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormHttpBridge_getSessionOffer_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormHttpBridge_getSessionOffer_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SandstormHttpBridge_getSessionOffer_Results) Offer() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Results) HasOffer() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s SandstormHttpBridge_getSessionOffer_Results) SetOffer(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s SandstormHttpBridge_getSessionOffer_Results) SetOffer(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
-
 func (s SandstormHttpBridge_getSessionOffer_Results) Descriptor() (powerbox.PowerboxDescriptor, error) {
-	p, err := s.Struct.Ptr(1)
-	return powerbox.PowerboxDescriptor{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return powerbox.PowerboxDescriptor(p.Struct()), err
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Results) HasDescriptor() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SandstormHttpBridge_getSessionOffer_Results) SetDescriptor(v powerbox.PowerboxDescriptor) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated powerbox.PowerboxDescriptor struct, preferring placement in s's segment.
 func (s SandstormHttpBridge_getSessionOffer_Results) NewDescriptor() (powerbox.PowerboxDescriptor, error) {
-	ss, err := powerbox.NewPowerboxDescriptor(s.Struct.Segment())
+	ss, err := powerbox.NewPowerboxDescriptor(capnp.Struct(s).Segment())
 	if err != nil {
 		return powerbox.PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // SandstormHttpBridge_getSessionOffer_Results_List is a list of SandstormHttpBridge_getSessionOffer_Results.
-type SandstormHttpBridge_getSessionOffer_Results_List struct{ capnp.List }
+type SandstormHttpBridge_getSessionOffer_Results_List = capnp.StructList[SandstormHttpBridge_getSessionOffer_Results]
 
 // NewSandstormHttpBridge_getSessionOffer_Results creates a new list of SandstormHttpBridge_getSessionOffer_Results.
 func NewSandstormHttpBridge_getSessionOffer_Results_List(s *capnp.Segment, sz int32) (SandstormHttpBridge_getSessionOffer_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return SandstormHttpBridge_getSessionOffer_Results_List{l}, err
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Results_List) At(i int) SandstormHttpBridge_getSessionOffer_Results {
-	return SandstormHttpBridge_getSessionOffer_Results{s.List.Struct(i)}
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Results_List) Set(i int, v SandstormHttpBridge_getSessionOffer_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormHttpBridge_getSessionOffer_Results_List) String() string {
-	str, _ := text.MarshalList(0xf38a4e91679a53d1, s.List)
-	return str
+	return capnp.StructList[SandstormHttpBridge_getSessionOffer_Results](l), err
 }
 
 // SandstormHttpBridge_getSessionOffer_Results_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Results promised by a client call.
@@ -1213,7 +1347,7 @@ type SandstormHttpBridge_getSessionOffer_Results_Future struct{ *capnp.Future }
 
 func (p SandstormHttpBridge_getSessionOffer_Results_Future) Struct() (SandstormHttpBridge_getSessionOffer_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionOffer_Results{s}, err
+	return SandstormHttpBridge_getSessionOffer_Results(s), err
 }
 
 func (p SandstormHttpBridge_getSessionOffer_Results_Future) Offer() *capnp.Future {
@@ -1224,7 +1358,7 @@ func (p SandstormHttpBridge_getSessionOffer_Results_Future) Descriptor() powerbo
 	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
 }
 
-type AppHooks struct{ Client *capnp.Client }
+type AppHooks capnp.Client
 
 // AppHooks_TypeID is the unique identifier for the type AppHooks.
 const AppHooks_TypeID = 0xcb12390f1429f70f
@@ -1240,9 +1374,9 @@ func (c AppHooks) GetViewInfo(ctx context.Context, params func(AppHooks_getViewI
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_getViewInfo_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_getViewInfo_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.UiView_ViewInfo_Future{Future: ans.Future()}, release
 }
 func (c AppHooks) Restore(ctx context.Context, params func(AppHooks_restore_Params) error) (AppHooks_restore_Results_Future, capnp.ReleaseFunc) {
@@ -1256,9 +1390,9 @@ func (c AppHooks) Restore(ctx context.Context, params func(AppHooks_restore_Para
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_restore_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_restore_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return AppHooks_restore_Results_Future{Future: ans.Future()}, release
 }
 func (c AppHooks) Drop(ctx context.Context, params func(AppHooks_drop_Params) error) (AppHooks_drop_Results_Future, capnp.ReleaseFunc) {
@@ -1272,20 +1406,30 @@ func (c AppHooks) Drop(ctx context.Context, params func(AppHooks_drop_Params) er
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_drop_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(AppHooks_drop_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return AppHooks_drop_Results_Future{Future: ans.Future()}, release
 }
 
 func (c AppHooks) AddRef() AppHooks {
-	return AppHooks{
-		Client: c.Client.AddRef(),
-	}
+	return AppHooks(capnp.Client(c).AddRef())
 }
 
 func (c AppHooks) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c AppHooks) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (AppHooks) DecodeFromPtr(p capnp.Ptr) AppHooks {
+	return AppHooks(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c AppHooks) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A AppHooks_Server is a AppHooks with a local implementation.
@@ -1298,15 +1442,15 @@ type AppHooks_Server interface {
 }
 
 // AppHooks_NewServer creates a new Server from an implementation of AppHooks_Server.
-func AppHooks_NewServer(s AppHooks_Server, policy *server.Policy) *server.Server {
+func AppHooks_NewServer(s AppHooks_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(AppHooks_Methods(nil, s), s, c, policy)
+	return server.New(AppHooks_Methods(nil, s), s, c)
 }
 
 // AppHooks_ServerToClient creates a new Client from an implementation of AppHooks_Server.
 // The caller is responsible for calling Release on the returned Client.
-func AppHooks_ServerToClient(s AppHooks_Server, policy *server.Policy) AppHooks {
-	return AppHooks{Client: capnp.NewClient(AppHooks_NewServer(s, policy))}
+func AppHooks_ServerToClient(s AppHooks_Server) AppHooks {
+	return AppHooks(capnp.NewClient(AppHooks_NewServer(s)))
 }
 
 // AppHooks_Methods appends Methods to a slice that invoke the methods on s.
@@ -1363,13 +1507,13 @@ type AppHooks_getViewInfo struct {
 
 // Args returns the call's arguments.
 func (c AppHooks_getViewInfo) Args() AppHooks_getViewInfo_Params {
-	return AppHooks_getViewInfo_Params{Struct: c.Call.Args()}
+	return AppHooks_getViewInfo_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c AppHooks_getViewInfo) AllocResults() (grain.UiView_ViewInfo, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 8})
-	return grain.UiView_ViewInfo{Struct: r}, err
+	return grain.UiView_ViewInfo(r), err
 }
 
 // AppHooks_restore holds the state for a server call to AppHooks.restore.
@@ -1380,13 +1524,13 @@ type AppHooks_restore struct {
 
 // Args returns the call's arguments.
 func (c AppHooks_restore) Args() AppHooks_restore_Params {
-	return AppHooks_restore_Params{Struct: c.Call.Args()}
+	return AppHooks_restore_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c AppHooks_restore) AllocResults() (AppHooks_restore_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_restore_Results{Struct: r}, err
+	return AppHooks_restore_Results(r), err
 }
 
 // AppHooks_drop holds the state for a server call to AppHooks.drop.
@@ -1397,60 +1541,79 @@ type AppHooks_drop struct {
 
 // Args returns the call's arguments.
 func (c AppHooks_drop) Args() AppHooks_drop_Params {
-	return AppHooks_drop_Params{Struct: c.Call.Args()}
+	return AppHooks_drop_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c AppHooks_drop) AllocResults() (AppHooks_drop_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return AppHooks_drop_Results{Struct: r}, err
+	return AppHooks_drop_Results(r), err
 }
 
-type AppHooks_getViewInfo_Params struct{ capnp.Struct }
+// AppHooks_List is a list of AppHooks.
+type AppHooks_List = capnp.CapList[AppHooks]
+
+// NewAppHooks creates a new list of AppHooks.
+func NewAppHooks_List(s *capnp.Segment, sz int32) (AppHooks_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[AppHooks](l), err
+}
+
+type AppHooks_getViewInfo_Params capnp.Struct
 
 // AppHooks_getViewInfo_Params_TypeID is the unique identifier for the type AppHooks_getViewInfo_Params.
 const AppHooks_getViewInfo_Params_TypeID = 0xd70d957bcd120795
 
 func NewAppHooks_getViewInfo_Params(s *capnp.Segment) (AppHooks_getViewInfo_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return AppHooks_getViewInfo_Params{st}, err
+	return AppHooks_getViewInfo_Params(st), err
 }
 
 func NewRootAppHooks_getViewInfo_Params(s *capnp.Segment) (AppHooks_getViewInfo_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return AppHooks_getViewInfo_Params{st}, err
+	return AppHooks_getViewInfo_Params(st), err
 }
 
 func ReadRootAppHooks_getViewInfo_Params(msg *capnp.Message) (AppHooks_getViewInfo_Params, error) {
 	root, err := msg.Root()
-	return AppHooks_getViewInfo_Params{root.Struct()}, err
+	return AppHooks_getViewInfo_Params(root.Struct()), err
 }
 
 func (s AppHooks_getViewInfo_Params) String() string {
-	str, _ := text.Marshal(0xd70d957bcd120795, s.Struct)
+	str, _ := text.Marshal(0xd70d957bcd120795, capnp.Struct(s))
 	return str
 }
 
+func (s AppHooks_getViewInfo_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppHooks_getViewInfo_Params) DecodeFromPtr(p capnp.Ptr) AppHooks_getViewInfo_Params {
+	return AppHooks_getViewInfo_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppHooks_getViewInfo_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppHooks_getViewInfo_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppHooks_getViewInfo_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppHooks_getViewInfo_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // AppHooks_getViewInfo_Params_List is a list of AppHooks_getViewInfo_Params.
-type AppHooks_getViewInfo_Params_List struct{ capnp.List }
+type AppHooks_getViewInfo_Params_List = capnp.StructList[AppHooks_getViewInfo_Params]
 
 // NewAppHooks_getViewInfo_Params creates a new list of AppHooks_getViewInfo_Params.
 func NewAppHooks_getViewInfo_Params_List(s *capnp.Segment, sz int32) (AppHooks_getViewInfo_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return AppHooks_getViewInfo_Params_List{l}, err
-}
-
-func (s AppHooks_getViewInfo_Params_List) At(i int) AppHooks_getViewInfo_Params {
-	return AppHooks_getViewInfo_Params{s.List.Struct(i)}
-}
-
-func (s AppHooks_getViewInfo_Params_List) Set(i int, v AppHooks_getViewInfo_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s AppHooks_getViewInfo_Params_List) String() string {
-	str, _ := text.MarshalList(0xd70d957bcd120795, s.List)
-	return str
+	return capnp.StructList[AppHooks_getViewInfo_Params](l), err
 }
 
 // AppHooks_getViewInfo_Params_Future is a wrapper for a AppHooks_getViewInfo_Params promised by a client call.
@@ -1458,66 +1621,75 @@ type AppHooks_getViewInfo_Params_Future struct{ *capnp.Future }
 
 func (p AppHooks_getViewInfo_Params_Future) Struct() (AppHooks_getViewInfo_Params, error) {
 	s, err := p.Future.Struct()
-	return AppHooks_getViewInfo_Params{s}, err
+	return AppHooks_getViewInfo_Params(s), err
 }
 
-type AppHooks_restore_Params struct{ capnp.Struct }
+type AppHooks_restore_Params capnp.Struct
 
 // AppHooks_restore_Params_TypeID is the unique identifier for the type AppHooks_restore_Params.
 const AppHooks_restore_Params_TypeID = 0xd7ba83f0808259c3
 
 func NewAppHooks_restore_Params(s *capnp.Segment) (AppHooks_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_restore_Params{st}, err
+	return AppHooks_restore_Params(st), err
 }
 
 func NewRootAppHooks_restore_Params(s *capnp.Segment) (AppHooks_restore_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_restore_Params{st}, err
+	return AppHooks_restore_Params(st), err
 }
 
 func ReadRootAppHooks_restore_Params(msg *capnp.Message) (AppHooks_restore_Params, error) {
 	root, err := msg.Root()
-	return AppHooks_restore_Params{root.Struct()}, err
+	return AppHooks_restore_Params(root.Struct()), err
 }
 
 func (s AppHooks_restore_Params) String() string {
-	str, _ := text.Marshal(0xd7ba83f0808259c3, s.Struct)
+	str, _ := text.Marshal(0xd7ba83f0808259c3, capnp.Struct(s))
 	return str
 }
 
+func (s AppHooks_restore_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppHooks_restore_Params) DecodeFromPtr(p capnp.Ptr) AppHooks_restore_Params {
+	return AppHooks_restore_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppHooks_restore_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppHooks_restore_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppHooks_restore_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppHooks_restore_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s AppHooks_restore_Params) ObjectId() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+	return capnp.Struct(s).Ptr(0)
 }
 
 func (s AppHooks_restore_Params) HasObjectId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s AppHooks_restore_Params) SetObjectId(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+	return capnp.Struct(s).SetPtr(0, v)
 }
 
 // AppHooks_restore_Params_List is a list of AppHooks_restore_Params.
-type AppHooks_restore_Params_List struct{ capnp.List }
+type AppHooks_restore_Params_List = capnp.StructList[AppHooks_restore_Params]
 
 // NewAppHooks_restore_Params creates a new list of AppHooks_restore_Params.
 func NewAppHooks_restore_Params_List(s *capnp.Segment, sz int32) (AppHooks_restore_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return AppHooks_restore_Params_List{l}, err
-}
-
-func (s AppHooks_restore_Params_List) At(i int) AppHooks_restore_Params {
-	return AppHooks_restore_Params{s.List.Struct(i)}
-}
-
-func (s AppHooks_restore_Params_List) Set(i int, v AppHooks_restore_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s AppHooks_restore_Params_List) String() string {
-	str, _ := text.MarshalList(0xd7ba83f0808259c3, s.List)
-	return str
+	return capnp.StructList[AppHooks_restore_Params](l), err
 }
 
 // AppHooks_restore_Params_Future is a wrapper for a AppHooks_restore_Params promised by a client call.
@@ -1525,70 +1697,85 @@ type AppHooks_restore_Params_Future struct{ *capnp.Future }
 
 func (p AppHooks_restore_Params_Future) Struct() (AppHooks_restore_Params, error) {
 	s, err := p.Future.Struct()
-	return AppHooks_restore_Params{s}, err
+	return AppHooks_restore_Params(s), err
 }
 
 func (p AppHooks_restore_Params_Future) ObjectId() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type AppHooks_restore_Results struct{ capnp.Struct }
+type AppHooks_restore_Results capnp.Struct
 
 // AppHooks_restore_Results_TypeID is the unique identifier for the type AppHooks_restore_Results.
 const AppHooks_restore_Results_TypeID = 0xf4bee520c5eef2bc
 
 func NewAppHooks_restore_Results(s *capnp.Segment) (AppHooks_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_restore_Results{st}, err
+	return AppHooks_restore_Results(st), err
 }
 
 func NewRootAppHooks_restore_Results(s *capnp.Segment) (AppHooks_restore_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_restore_Results{st}, err
+	return AppHooks_restore_Results(st), err
 }
 
 func ReadRootAppHooks_restore_Results(msg *capnp.Message) (AppHooks_restore_Results, error) {
 	root, err := msg.Root()
-	return AppHooks_restore_Results{root.Struct()}, err
+	return AppHooks_restore_Results(root.Struct()), err
 }
 
 func (s AppHooks_restore_Results) String() string {
-	str, _ := text.Marshal(0xf4bee520c5eef2bc, s.Struct)
+	str, _ := text.Marshal(0xf4bee520c5eef2bc, capnp.Struct(s))
 	return str
 }
 
-func (s AppHooks_restore_Results) Cap() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s AppHooks_restore_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppHooks_restore_Results) DecodeFromPtr(p capnp.Ptr) AppHooks_restore_Results {
+	return AppHooks_restore_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppHooks_restore_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppHooks_restore_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppHooks_restore_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppHooks_restore_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s AppHooks_restore_Results) Cap() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s AppHooks_restore_Results) HasCap() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s AppHooks_restore_Results) SetCap(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s AppHooks_restore_Results) SetCap(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // AppHooks_restore_Results_List is a list of AppHooks_restore_Results.
-type AppHooks_restore_Results_List struct{ capnp.List }
+type AppHooks_restore_Results_List = capnp.StructList[AppHooks_restore_Results]
 
 // NewAppHooks_restore_Results creates a new list of AppHooks_restore_Results.
 func NewAppHooks_restore_Results_List(s *capnp.Segment, sz int32) (AppHooks_restore_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return AppHooks_restore_Results_List{l}, err
-}
-
-func (s AppHooks_restore_Results_List) At(i int) AppHooks_restore_Results {
-	return AppHooks_restore_Results{s.List.Struct(i)}
-}
-
-func (s AppHooks_restore_Results_List) Set(i int, v AppHooks_restore_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s AppHooks_restore_Results_List) String() string {
-	str, _ := text.MarshalList(0xf4bee520c5eef2bc, s.List)
-	return str
+	return capnp.StructList[AppHooks_restore_Results](l), err
 }
 
 // AppHooks_restore_Results_Future is a wrapper for a AppHooks_restore_Results promised by a client call.
@@ -1596,70 +1783,79 @@ type AppHooks_restore_Results_Future struct{ *capnp.Future }
 
 func (p AppHooks_restore_Results_Future) Struct() (AppHooks_restore_Results, error) {
 	s, err := p.Future.Struct()
-	return AppHooks_restore_Results{s}, err
+	return AppHooks_restore_Results(s), err
 }
 
 func (p AppHooks_restore_Results_Future) Cap() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type AppHooks_drop_Params struct{ capnp.Struct }
+type AppHooks_drop_Params capnp.Struct
 
 // AppHooks_drop_Params_TypeID is the unique identifier for the type AppHooks_drop_Params.
 const AppHooks_drop_Params_TypeID = 0xc2aaaaa69f8230cc
 
 func NewAppHooks_drop_Params(s *capnp.Segment) (AppHooks_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_drop_Params{st}, err
+	return AppHooks_drop_Params(st), err
 }
 
 func NewRootAppHooks_drop_Params(s *capnp.Segment) (AppHooks_drop_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return AppHooks_drop_Params{st}, err
+	return AppHooks_drop_Params(st), err
 }
 
 func ReadRootAppHooks_drop_Params(msg *capnp.Message) (AppHooks_drop_Params, error) {
 	root, err := msg.Root()
-	return AppHooks_drop_Params{root.Struct()}, err
+	return AppHooks_drop_Params(root.Struct()), err
 }
 
 func (s AppHooks_drop_Params) String() string {
-	str, _ := text.Marshal(0xc2aaaaa69f8230cc, s.Struct)
+	str, _ := text.Marshal(0xc2aaaaa69f8230cc, capnp.Struct(s))
 	return str
 }
 
+func (s AppHooks_drop_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppHooks_drop_Params) DecodeFromPtr(p capnp.Ptr) AppHooks_drop_Params {
+	return AppHooks_drop_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppHooks_drop_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppHooks_drop_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppHooks_drop_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppHooks_drop_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s AppHooks_drop_Params) ObjectId() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+	return capnp.Struct(s).Ptr(0)
 }
 
 func (s AppHooks_drop_Params) HasObjectId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s AppHooks_drop_Params) SetObjectId(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+	return capnp.Struct(s).SetPtr(0, v)
 }
 
 // AppHooks_drop_Params_List is a list of AppHooks_drop_Params.
-type AppHooks_drop_Params_List struct{ capnp.List }
+type AppHooks_drop_Params_List = capnp.StructList[AppHooks_drop_Params]
 
 // NewAppHooks_drop_Params creates a new list of AppHooks_drop_Params.
 func NewAppHooks_drop_Params_List(s *capnp.Segment, sz int32) (AppHooks_drop_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return AppHooks_drop_Params_List{l}, err
-}
-
-func (s AppHooks_drop_Params_List) At(i int) AppHooks_drop_Params {
-	return AppHooks_drop_Params{s.List.Struct(i)}
-}
-
-func (s AppHooks_drop_Params_List) Set(i int, v AppHooks_drop_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s AppHooks_drop_Params_List) String() string {
-	str, _ := text.MarshalList(0xc2aaaaa69f8230cc, s.List)
-	return str
+	return capnp.StructList[AppHooks_drop_Params](l), err
 }
 
 // AppHooks_drop_Params_Future is a wrapper for a AppHooks_drop_Params promised by a client call.
@@ -1667,58 +1863,68 @@ type AppHooks_drop_Params_Future struct{ *capnp.Future }
 
 func (p AppHooks_drop_Params_Future) Struct() (AppHooks_drop_Params, error) {
 	s, err := p.Future.Struct()
-	return AppHooks_drop_Params{s}, err
+	return AppHooks_drop_Params(s), err
 }
 
 func (p AppHooks_drop_Params_Future) ObjectId() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type AppHooks_drop_Results struct{ capnp.Struct }
+type AppHooks_drop_Results capnp.Struct
 
 // AppHooks_drop_Results_TypeID is the unique identifier for the type AppHooks_drop_Results.
 const AppHooks_drop_Results_TypeID = 0x9439551d1ee49012
 
 func NewAppHooks_drop_Results(s *capnp.Segment) (AppHooks_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return AppHooks_drop_Results{st}, err
+	return AppHooks_drop_Results(st), err
 }
 
 func NewRootAppHooks_drop_Results(s *capnp.Segment) (AppHooks_drop_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return AppHooks_drop_Results{st}, err
+	return AppHooks_drop_Results(st), err
 }
 
 func ReadRootAppHooks_drop_Results(msg *capnp.Message) (AppHooks_drop_Results, error) {
 	root, err := msg.Root()
-	return AppHooks_drop_Results{root.Struct()}, err
+	return AppHooks_drop_Results(root.Struct()), err
 }
 
 func (s AppHooks_drop_Results) String() string {
-	str, _ := text.Marshal(0x9439551d1ee49012, s.Struct)
+	str, _ := text.Marshal(0x9439551d1ee49012, capnp.Struct(s))
 	return str
 }
 
+func (s AppHooks_drop_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppHooks_drop_Results) DecodeFromPtr(p capnp.Ptr) AppHooks_drop_Results {
+	return AppHooks_drop_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppHooks_drop_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppHooks_drop_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppHooks_drop_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppHooks_drop_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // AppHooks_drop_Results_List is a list of AppHooks_drop_Results.
-type AppHooks_drop_Results_List struct{ capnp.List }
+type AppHooks_drop_Results_List = capnp.StructList[AppHooks_drop_Results]
 
 // NewAppHooks_drop_Results creates a new list of AppHooks_drop_Results.
 func NewAppHooks_drop_Results_List(s *capnp.Segment, sz int32) (AppHooks_drop_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return AppHooks_drop_Results_List{l}, err
-}
-
-func (s AppHooks_drop_Results_List) At(i int) AppHooks_drop_Results {
-	return AppHooks_drop_Results{s.List.Struct(i)}
-}
-
-func (s AppHooks_drop_Results_List) Set(i int, v AppHooks_drop_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s AppHooks_drop_Results_List) String() string {
-	str, _ := text.MarshalList(0x9439551d1ee49012, s.List)
-	return str
+	return capnp.StructList[AppHooks_drop_Results](l), err
 }
 
 // AppHooks_drop_Results_Future is a wrapper for a AppHooks_drop_Results promised by a client call.
@@ -1726,85 +1932,85 @@ type AppHooks_drop_Results_Future struct{ *capnp.Future }
 
 func (p AppHooks_drop_Results_Future) Struct() (AppHooks_drop_Results, error) {
 	s, err := p.Future.Struct()
-	return AppHooks_drop_Results{s}, err
+	return AppHooks_drop_Results(s), err
 }
 
 const schema_ac137d236832bb1e = "x\xda\xa4V_L\x1c\xd5\x17>gf\xf77\xfc\x12" +
-	"\xd6\xe5\xb2}X\x96\xddV\x11\xff@\x84@\x89\x86\xd2" +
-	"(,}\xb0\x8bFv \x1ai\xd0f\xd9\x19\xe8 " +
-	"\xec\x8c;C+*\xb6R\xa9\x81\xa4\x11k1\xb6\xd1" +
-	"\x90X5\x96\xb4\x0f\xed\x831\xb5\x88bH\xd3T\xad" +
-	"m\x1a\x91\x07\xa3\x89\xa5\x89\xd16\xc6\x9a\x98\x92\xe0\x98" +
-	";\xb3w\x18\x08`Y\xb2O{\xefw\xce\xf9\xce\xbf" +
-	"\xefNEyN\x1dW\xe9\x9d\xae\x00h\xae\xe6\xbc\xff" +
-	"3\xa5)itj\xf8\xca\x01 \x15\x08\xe0\x11\x00\xaa" +
-	"\xc4`\x0d\x07\x1es\xe2\xc0\xcb\x87\xb1\xdf\xf7\x96}\xe3" +
-	"Ez\x15\x0b\xd6s\x80\x81D\xb0\x16\xd0\xcc\x1f\xbe\xba" +
-	"1\xf2\xe4\x96\xc3@\xee\xb1L\xf3\xb0j x\x08\xc1" +
-	"c\x0e\xcd\x8c\xff\xdf\xf7F\xc7I a\xde\xdc\xf8\xd9" +
-	"\xe6]w\xf7\x05N\x00`UO\xb0\x1f\x03\x83A\xea" +
-	"j \xf8:\x06\x8e\x14\x08\x00\xe6\xf0]\x9d\xef\xde\x9b" +
-	"\xf7\xc9)\x17\x87W\x0bJ)\x87o+w\xfe6\xba" +
-	"m\xf6\xb4\x9bCoA\x13\xe50R@9\x8c\x1f\xbc" +
-	"ZT5\xd7\xf8\xa9\x1bp\xde\x06\xccZ\x80\x13\xb1\xef" +
-	"\xb7\xde\xf7\x8f\xf1\xa5\x1b\xe0\x0dYYDB\x140w" +
-	",Y=\xb7\xef\x83I7\xe0\xe1P\x03\x05\xb4X\x80" +
-	"\xaf+\xfaG?\x1a\x1b\x9b\xb4\xd3\xf4\"\xcd\xb374" +
-	"\x84\x80\x81A\x0b\xa0\xfcr\xfa\xe8+\x9dg\x16y8" +
-	"i{8o\x01\xfc\x7f\x97l\xf0o\xc9\xbf\xb0\xa4\x1c" +
-	"\x90\x87U\xd7C\xa5\x18\x98\x0f\x09\x00\x81[\xa1s\x81" +
-	"\x99B!0S\xe87\xbf\x13J\xe6\x7f\xf8\xdd\xb8\xec" +
-	"vy\xa9\xb0\x88\xba\xfc\xb5\x90\xba\x1c\x11\xf2\xbfyi" +
-	"\xc47\xed\xaa\xbd/<Ik\xffUK\xff\xbe?\xf6" +
-	"\x9f\x99v\xd3\x9d/|\x9f\xd2\xf5\x85\xa9i\xeb\xb5\xb7" +
-	"\xaf\x84~\xfei\xda\xed\xbb2\\C}\xc7,\xc0\xfe" +
-	"\x9d#%\xb7\xb6>v\xc3\x0dP\xc2V>\x03\x16\xe0" +
-	"R\xf3\xd1\x8e7\x9f\x18\xba\x99\x01p\x14\xf0a\xd8\xaa" +
-	"\xe9xx\x0f\xa0y\xf6\xcf\x1bSw\xce~\xfe\x97\x9b" +
-	"C$2F9\x94Ej\xc1t~\x0d\xa6\x9eHI" +
-	"\xba\xa1\xa6\x85\xee\xb2]\x86\xa1\x95\xb5\xa5\x15\xa9C." +
-	"O&\xb4\x94V\xd3\x9c\xb9\xec\xden\x18Z\xbd}\xd3" +
-	"!\x1b\xceqTS\x8ak\xe3\x89t\xa2[w\x1c\xe5" +
-	"\xac\xc9\xd1nY\x8aIr\xcaP\x8c\xdeb\xdb\x11\x88" +
-	"\x1e\xde\x03\xe0A\x00\xe2\xdb\x01 \xe6\xf2(\x0694" +
-	"\x95\x0c\x0e\xf8\x98\x84\xb9\xc0a.\xa0\x13\xd5\xbb\\\xd4" +
-	"\xa8\xa6mW\xd5\xe7\xf4r)\xadj\xc5M\xb2\xde\xd3" +
-	"e\xa0\xbe\xba\xcd2L!\x8e(\x06y/\x80\xb3\xad" +
-	"\xc8\xc6\x9a\x9c\xea\x07\x8e\x1c\x17pa\x90\x91\xed\x04y" +
-	"\xef\x10p\xe4\x88\x80\x0b\xbb\x8clV\xc9\xc1!\xe0\xc8" +
-	"\xa0\x80^g\xd6\x90\xad!\xe9\xeb\x04\x8e\xf4\x08\xc89" +
-	"\xa3\x80l\x11\x89B}\xca\x02\xf2\xce\x1c!\x1b\x07\xd2" +
-	"B\xb9\x88\x82\xc9Z\x84\x99\x1eA\x1dZg\xb2\xae+" +
-	"\xa8\xa6\xb6\xa9)C~\x01\x8d\xcc)\xed\x01\xb2&\x00" +
-	"\xc5\xea\x89\xdd2=\x00?=Zl\xdc$?\xdf#" +
-	"\xeb\x8eq\xe6\xb4\xb1\xbd]NC\x1d\xc6\x11\xd7>Q" +
-	",\x9c5\x04M\xb2\xee\xef\xe92\xb2\x9c'J\x87q" +
-	"4\x9c\x8e\xbb'\xaa-3Q\xf7sh\xa6m\\\x0c" +
-	"\x84T\xbb\x8aw\x00\xc6y\xc4<\xf3\xe9\xf0\xb9\x89c" +
-	"\xfe\x8b\xd7\x01\x90\x1e\xae\x87\x89]\xea\xe5\x99\xd4\x03\x88" +
-	"9<\x8a\x1b8\xdc\x9b\xb4qH\xcc\x87n&wD" +
-	"\xea\x1e\x99\xa0\xc1I\xb6\xc1\xdd\xfbi\x87^\xbcVE" +
-	"\x0b\xa1\x85\x84\xa6 1/pZ\xe9\xc5F\xf9\xf2\xba" +
-	"\xc2.\xce9\xb3\xce\x8b\x02\x87\x16\x02\xf3JV[\xbc" +
-	"\x9c\xd7\x06\x97J\xa8m\x9dr\xd2\x88I\x00\x80\xf9\xe8" +
-	"\xd2~\xfa?\xebz\xbae\x8a\x15tE\x0a\x8eP\x01" +
-	" 1\x83?\x8a\xc7_|\xe7\xb5/\x96V\x96_)" +
-	"W?M\x96JN\xae%9\xec\xa5A\xf9\xda\xc7\xd1" +
-	"G\x1f|\xf6,\x11\xdb\x00\xa2q\x1a\xf6\x19\xaa;\xec" +
-	"\xc1A\xa6\xfaD\xac\x07\x88>\x8e\xd1V$\xddTE" +
-	"\xd8\x0b\x8a\xec\x8b\x81$J\x01\xa2\xad\x18\xedB\xd2g" +
-	"\xe9\xc5S\x8a\xbc\xc7\xde\x03\x82\x9bD\x0f\xe7*\x1c\"" +
-	"\x15\x85\xbdi\x99\xb2\x96\x97\xbd^\xc1\xc6O;\xb6\x16" +
-	"\x838b\xd4\x83\x04\xdb\xcc\xa8\xa65\xd2N\x82`\xc4" +
-	"\xa4uJJ<\x91\x16\x12\xdd\xfa\xfa\xda\x95\xbb\xeah" +
-	"\xb2\x0a\xa6\xdaU6\xa1\xccpU\xbbLQ\xff\x8b\xe2" +
-	"\xed\x0e\xb5\xb0\xf6m\xb5\x94\x9b=\xe2kX\xd5u\xc8" +
-	"r\x16\xc2\x90\x93mb\x8e\xfa\xe58\xb1J6\x03\x88" +
-	"\xc5<\x8a\x15\x1c\x12\xc4\x0d\xd6<\x96\xd1/\x8d\x07x" +
-	"\x14\xab9\xdc\xa4RS\xcc\xf7\xf0\x80Vy%YO" +
-	"\xa6\x15\xcd\x00^M/y\x1f\xf2n[\xbdX\xab\xd9" +
-	"\x03\xb7\x92\x1e'\x13\xdaB\xe8\x7f\x03\x00\x00\xff\xff/" +
-	"\xbf\xb0\xbb"
+	"\xd6\xe5\xb2}X\x96\xddV+\xfe\x81H\xb3\x94h(" +
+	"\x8d\xc2\xd2\x07\xbbhd\x07\xa2\x91\x06m\x96\x9d\x81\x0e" +
+	"\xc2\xce\xb83\xb4\xa2b+\x95\x1aH\x1a\xb1\x16c\x1b" +
+	"\x0d\x89UcI\xfb\xd0>\x18S\x8b(\x864M\xd5" +
+	"\xda\xa6\x11y0\x9aX\x9a\x18mc\xac\x89)\x09\x8e" +
+	"\xb93{\x87\x81\x00\x96%\xfb\xb4\xf7~\xe7\x9c\xef\xfc" +
+	"\xfb\xeeD\xa3y\xb5\x9e\x0a\xdfT\x14\xb8\xa6*\xce\xfb" +
+	"?S\x9a\x94F&\x87\xae\x1c\x00\x12E\x00\x8f\x00P" +
+	")\x06\xab9\xf0\x98\xe3\x07^>\x8c}\xbe\xb7\xec\x1b" +
+	"/\xd2\xabx\xb0\x8e\x03\x0c$\x835\x80f\xe1\xd0\xd5" +
+	"\xf5\x91'\xb7\x1c\x06r\x8feZ\x80\x95\xfd\xc1C\x08" +
+	"\x1espz\xec\xff\xbe7\xdaO\x02\x09\xf3\xe6\xfa\xcf" +
+	"6\xef\xba\xbb7p\x02\x00+\xbb\x83}\x18\x18\x08R" +
+	"W\xfd\xc1\xd71p\xa4H\x000\x87\xee\xeax\xf7\xde" +
+	"\x82ON\xb98\xbcZTF9|[\xb1\xf3\xb7\x91" +
+	"m3\xa7\xdd\x1cz\x8a\x1a)\x87\xe1\"\xcaa\xec\xe0" +
+	"\xd5\x8d\x95\xb3\x0d\x9f\xba\x01\xe7m\xc0\x8c\x058\x11\xff" +
+	"~\xeb}\xff\x18_\xba\x01\xde\x90\x95E$D\x01\xb3" +
+	"\xc7RU\xb3\xfb>\x98p\x03\x1e\x0e\xd5S@\xb3\x05" +
+	"\xf8:\xda7\xf2\xd1\xe8\xe8\x84\x9d\xa6\x17i\x9e=\xa1" +
+	"A\x04\x0c\x0cX\x00\xe5\x97\xd3G_\xe98\xb3\xc0\xc3" +
+	"I\xdb\xc3y\x0b\xe0\xff\xbbt\x9d\x7fK\xe1\x85E\xe5" +
+	"\x80\x02\xac\xbc\x1e*\xc3\xc0\\H\x00\x08\xdc\x0a\x9d\x0b" +
+	"L\x17\x0b\x81\xe9b\xbf\xf9\x9dP:\xf7\xc3\xef\xc6e" +
+	"\xb7\xcbK\xc5\x1b\xa9\xcb_\x8b\xa9\xcba\xa1\xf0\x9b\x97" +
+	"\x86}S\xae\xda\xfb\xc2\x13\xb4\xf6_5\xf7\xed\xfbc" +
+	"\xff\x99)7\xdd\xb9\xe2\xf7)]_\x98\x9a\xb6\\{" +
+	"\xfbJ\xe8\xe7\x9f\xa6\xdc\xbe+\xc2\xd5\xd4w\xdc\x02\xec" +
+	"\xdf9\\zk\xebc7\xdc\x00%l\xe5\xd3o\x01" +
+	".5\x1dm\x7f\xf3\x89\xc1\x9bY\x00G\x01\x1f\x86\xad" +
+	"\x9a\x8e\x85\xf7\x00\x9ag\xff\xbc1y\xe7\xcc\xe7\x7f\xb9" +
+	"9D\"\xa3\x94Cy\xa4\x06L\xe7Wo\xea\xc9\xb4" +
+	"\xa4\x1bjF\xe8*\xdfe\x18ZykF\x91\xda\xe5" +
+	"M\xa9\xa4\x96\xd6\xaa\x9b\xb2\x97]\xdb\x0dC\xab\xb3o" +
+	"\xdae\xc39\x8eiJIM\"\x99Iv\xe9\x8e\xa3" +
+	"\xbcU9\xda-KqIN\x1b\x8a\xd1Sb;\x02" +
+	"\xd1\xc3{\x00<\x08@|;\x00\xc4|\x1e\xc5 \x87" +
+	"\xa6\x92\xc5\x01\x1f\x970\x1f8\xcc\x07t\xa2z\x97\x8a" +
+	"\x1a\xd3\xb4\xed\xaa\xfa\x9c\xbeI\xca\xa8ZI\xa3\xacw" +
+	"w\x1a\xa8\xafl\xb3\x04SH \x8aA\xde\x0b\xe0l" +
+	"+\xb2\xb1&\xa7\xfa\x80#\xc7\x05\x9c\x1fdd;A" +
+	"\xde;\x04\x1c9\"\xe0\xfc.#\x9bUrp\x108" +
+	"2 \xa0\xd7\x995dkHz;\x80#\xdd\x02r" +
+	"\xce( [D\xa2P\x9f\xb2\x80\xbc3G\xc8\xc6\x81" +
+	"4S.\xa2`\xb2\x16a\xb6GP\x8b\xd6\x99\xac\xeb" +
+	"\x0a\xaa\xe9mj\xda\x90_@#{J{\x80\xac\x09" +
+	"@\xb1zr\xb7L\x0f\xc0O\x8f\x16\x1a7\xca\xcfw" +
+	"\xcb\xbac\x9c=mhk\x933P\x8b\x09\xc4\xd5O" +
+	"\x14\x0bg\x0dA\xa3\xac\xfb\xbb;\x8d\x1c\xe7\x89\xd2a" +
+	"\x1c\x0d\xa7\xe3\xee\x89j\xcdN\xd4\xfd\x1c\x9a\x19\x1b\x17" +
+	"\x07!\xdd\xa6\xe2\x1d\x80\x09\x1e\xb1\xc0|:|n\xfc" +
+	"\x98\xff\xe2u\x00\xa4\x87kab\x97zi&u\x00" +
+	"b\x1e\x8f\xe2:\x0e\xf7\xa6l\x1c\x12\xf3\xa1\x9b\xa9\x1d" +
+	"\x91\xdaG\xc6ip\x92kp\xf7~\xda\xa1\x17\xae\xd5" +
+	"\xc6\xf9\xd0BRS\x90\x98\x178\xad\xecb\x83|y" +
+	"Ma\x17\xe6\x9c]\xe7\x05\x81C\xf3\x81y%\xa7-" +
+	"^\xcak\xbdK%\xd4\xd6\x0e9e\xc4%\x00\xc0B" +
+	"ti?\xfd\x9fs=\xdd2\xc5\x0a\xba,\x05G\xa8" +
+	"\x00\x90\x98\xc1\x1f\xc5\xe3/\xbe\xf3\xda\x17\x8b+\xcb/" +
+	"\x97\xab\x9f&K%'\xdf\x92\x1c\xf6\xd2\xa0|\xed\xe3" +
+	"\xd8\xa3\x0f>{\x96\x88\xad\x00\xb1\x04\x0d\xfb\x0c\xd5\x1d" +
+	"\xf6\xe0 S}\"\xd6\x01\xc4\x1e\xc7X\x0b\x92.\xaa" +
+	"\"\xec\x05E\xf6\xc5@\x92e\x00\xb1\x16\x8cu\"\xe9" +
+	"\xb5\xf4\xe2)E\xdec\xef\x01\xc1\x0d\xa2\x87s\x15\x0e" +
+	"\x91\x8a\xc2\xde\x8cLY\xcbK^/c\xe3\xa7\x1d[" +
+	"\x8dA\x021\xe6A\x82\xadfL\xd3\x1ah'A0" +
+	"\xe2\xd2\x1a%%\x91\xcc\x08\xc9.}m\xed\xca_q" +
+	"4Y\x05\xd3m*\x9bPf\xb8\xa2]\xb6\xa8\xffE" +
+	"\xf1v\x87ZX\xfd\xb6Z\xca\xcd\x1e\xf1U\xac\xea\x1a" +
+	"d9\x07a\xc8\xcb51G\xfd\xf2\x9cX\xa5\x9b\x01" +
+	"\xc4\x12\x1e\xc5(\x87\x04q\x9d5\x8f\xe5\xf4K\xe3\x01" +
+	"\x1e\xc5*\x0e7\xa8\xd4\x14\x0b=<\xa0U^I\xd6" +
+	"S\x19E3\x80W3\x8b\xde\x87\x82\xdbV/\xd6j" +
+	"\xf6\xc0-\xa7\xc7\xa9\xa46\x1f\xfa\xdf\x00\x00\x00\xff\xff" +
+	"\xda\x03\xb0\xc9"
 
 func init() {
 	schemas.Register(schema_ac137d236832bb1e,

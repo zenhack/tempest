@@ -12,7 +12,7 @@ import (
 	websession "zenhack.net/go/sandstorm/capnp/websession"
 )
 
-type ApiSession struct{ Client *capnp.Client }
+type ApiSession capnp.Client
 
 // ApiSession_TypeID is the unique identifier for the type ApiSession.
 const ApiSession_TypeID = 0xc879e379c625cdc7
@@ -28,9 +28,9 @@ func (c ApiSession) Get(ctx context.Context, params func(websession.WebSession_g
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Post(ctx context.Context, params func(websession.WebSession_post_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -44,9 +44,9 @@ func (c ApiSession) Post(ctx context.Context, params func(websession.WebSession_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) OpenWebSocket(ctx context.Context, params func(websession.WebSession_openWebSocket_Params) error) (websession.WebSession_openWebSocket_Results_Future, capnp.ReleaseFunc) {
@@ -60,9 +60,9 @@ func (c ApiSession) OpenWebSocket(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_openWebSocket_Results_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Put(ctx context.Context, params func(websession.WebSession_put_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -76,9 +76,9 @@ func (c ApiSession) Put(ctx context.Context, params func(websession.WebSession_p
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Delete(ctx context.Context, params func(websession.WebSession_delete_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -92,9 +92,9 @@ func (c ApiSession) Delete(ctx context.Context, params func(websession.WebSessio
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) PostStreaming(ctx context.Context, params func(websession.WebSession_postStreaming_Params) error) (websession.WebSession_postStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -108,9 +108,9 @@ func (c ApiSession) PostStreaming(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_postStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) PutStreaming(ctx context.Context, params func(websession.WebSession_putStreaming_Params) error) (websession.WebSession_putStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -124,9 +124,9 @@ func (c ApiSession) PutStreaming(ctx context.Context, params func(websession.Web
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_putStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Propfind(ctx context.Context, params func(websession.WebSession_propfind_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -140,9 +140,9 @@ func (c ApiSession) Propfind(ctx context.Context, params func(websession.WebSess
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Proppatch(ctx context.Context, params func(websession.WebSession_proppatch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -156,9 +156,9 @@ func (c ApiSession) Proppatch(ctx context.Context, params func(websession.WebSes
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Mkcol(ctx context.Context, params func(websession.WebSession_mkcol_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -172,9 +172,9 @@ func (c ApiSession) Mkcol(ctx context.Context, params func(websession.WebSession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Copy(ctx context.Context, params func(websession.WebSession_copy_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -188,9 +188,9 @@ func (c ApiSession) Copy(ctx context.Context, params func(websession.WebSession_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Move(ctx context.Context, params func(websession.WebSession_move_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -204,9 +204,9 @@ func (c ApiSession) Move(ctx context.Context, params func(websession.WebSession_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Lock(ctx context.Context, params func(websession.WebSession_lock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -220,9 +220,9 @@ func (c ApiSession) Lock(ctx context.Context, params func(websession.WebSession_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Unlock(ctx context.Context, params func(websession.WebSession_unlock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -236,9 +236,9 @@ func (c ApiSession) Unlock(ctx context.Context, params func(websession.WebSessio
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Acl(ctx context.Context, params func(websession.WebSession_acl_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -252,9 +252,9 @@ func (c ApiSession) Acl(ctx context.Context, params func(websession.WebSession_a
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Report(ctx context.Context, params func(websession.WebSession_report_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -268,9 +268,9 @@ func (c ApiSession) Report(ctx context.Context, params func(websession.WebSessio
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Options(ctx context.Context, params func(websession.WebSession_options_Params) error) (websession.WebSession_Options_Future, capnp.ReleaseFunc) {
@@ -284,9 +284,9 @@ func (c ApiSession) Options(ctx context.Context, params func(websession.WebSessi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Options_Future{Future: ans.Future()}, release
 }
 func (c ApiSession) Patch(ctx context.Context, params func(websession.WebSession_patch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -300,20 +300,30 @@ func (c ApiSession) Patch(ctx context.Context, params func(websession.WebSession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 
 func (c ApiSession) AddRef() ApiSession {
-	return ApiSession{
-		Client: c.Client.AddRef(),
-	}
+	return ApiSession(capnp.Client(c).AddRef())
 }
 
 func (c ApiSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c ApiSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (ApiSession) DecodeFromPtr(p capnp.Ptr) ApiSession {
+	return ApiSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c ApiSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A ApiSession_Server is a ApiSession with a local implementation.
@@ -356,15 +366,15 @@ type ApiSession_Server interface {
 }
 
 // ApiSession_NewServer creates a new Server from an implementation of ApiSession_Server.
-func ApiSession_NewServer(s ApiSession_Server, policy *server.Policy) *server.Server {
+func ApiSession_NewServer(s ApiSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(ApiSession_Methods(nil, s), s, c, policy)
+	return server.New(ApiSession_Methods(nil, s), s, c)
 }
 
 // ApiSession_ServerToClient creates a new Client from an implementation of ApiSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func ApiSession_ServerToClient(s ApiSession_Server, policy *server.Policy) ApiSession {
-	return ApiSession{Client: capnp.NewClient(ApiSession_NewServer(s, policy))}
+func ApiSession_ServerToClient(s ApiSession_Server) ApiSession {
+	return ApiSession(capnp.NewClient(ApiSession_NewServer(s)))
 }
 
 // ApiSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -593,75 +603,93 @@ func ApiSession_Methods(methods []server.Method, s ApiSession_Server) []server.M
 	return methods
 }
 
-type ApiSession_Params struct{ capnp.Struct }
+// ApiSession_List is a list of ApiSession.
+type ApiSession_List = capnp.CapList[ApiSession]
+
+// NewApiSession creates a new list of ApiSession.
+func NewApiSession_List(s *capnp.Segment, sz int32) (ApiSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[ApiSession](l), err
+}
+
+type ApiSession_Params capnp.Struct
 
 // ApiSession_Params_TypeID is the unique identifier for the type ApiSession_Params.
 const ApiSession_Params_TypeID = 0xfee82d8d4c4ff597
 
 func NewApiSession_Params(s *capnp.Segment) (ApiSession_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return ApiSession_Params{st}, err
+	return ApiSession_Params(st), err
 }
 
 func NewRootApiSession_Params(s *capnp.Segment) (ApiSession_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return ApiSession_Params{st}, err
+	return ApiSession_Params(st), err
 }
 
 func ReadRootApiSession_Params(msg *capnp.Message) (ApiSession_Params, error) {
 	root, err := msg.Root()
-	return ApiSession_Params{root.Struct()}, err
+	return ApiSession_Params(root.Struct()), err
 }
 
 func (s ApiSession_Params) String() string {
-	str, _ := text.Marshal(0xfee82d8d4c4ff597, s.Struct)
+	str, _ := text.Marshal(0xfee82d8d4c4ff597, capnp.Struct(s))
 	return str
 }
 
+func (s ApiSession_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ApiSession_Params) DecodeFromPtr(p capnp.Ptr) ApiSession_Params {
+	return ApiSession_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ApiSession_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ApiSession_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiSession_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiSession_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiSession_Params) RemoteAddress() (ip.IpAddress, error) {
-	p, err := s.Struct.Ptr(0)
-	return ip.IpAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return ip.IpAddress(p.Struct()), err
 }
 
 func (s ApiSession_Params) HasRemoteAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiSession_Params) SetRemoteAddress(v ip.IpAddress) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewRemoteAddress sets the remoteAddress field to a newly
 // allocated ip.IpAddress struct, preferring placement in s's segment.
 func (s ApiSession_Params) NewRemoteAddress() (ip.IpAddress, error) {
-	ss, err := ip.NewIpAddress(s.Struct.Segment())
+	ss, err := ip.NewIpAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return ip.IpAddress{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // ApiSession_Params_List is a list of ApiSession_Params.
-type ApiSession_Params_List struct{ capnp.List }
+type ApiSession_Params_List = capnp.StructList[ApiSession_Params]
 
 // NewApiSession_Params creates a new list of ApiSession_Params.
 func NewApiSession_Params_List(s *capnp.Segment, sz int32) (ApiSession_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return ApiSession_Params_List{l}, err
-}
-
-func (s ApiSession_Params_List) At(i int) ApiSession_Params {
-	return ApiSession_Params{s.List.Struct(i)}
-}
-
-func (s ApiSession_Params_List) Set(i int, v ApiSession_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ApiSession_Params_List) String() string {
-	str, _ := text.MarshalList(0xfee82d8d4c4ff597, s.List)
-	return str
+	return capnp.StructList[ApiSession_Params](l), err
 }
 
 // ApiSession_Params_Future is a wrapper for a ApiSession_Params promised by a client call.
@@ -669,118 +697,127 @@ type ApiSession_Params_Future struct{ *capnp.Future }
 
 func (p ApiSession_Params_Future) Struct() (ApiSession_Params, error) {
 	s, err := p.Future.Struct()
-	return ApiSession_Params{s}, err
+	return ApiSession_Params(s), err
 }
 
 func (p ApiSession_Params_Future) RemoteAddress() ip.IpAddress_Future {
 	return ip.IpAddress_Future{Future: p.Future.Field(0, nil)}
 }
 
-type ApiSession_PowerboxTag struct{ capnp.Struct }
+type ApiSession_PowerboxTag capnp.Struct
 
 // ApiSession_PowerboxTag_TypeID is the unique identifier for the type ApiSession_PowerboxTag.
 const ApiSession_PowerboxTag_TypeID = 0x93e1f7ca567dee32
 
 func NewApiSession_PowerboxTag(s *capnp.Segment) (ApiSession_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return ApiSession_PowerboxTag{st}, err
+	return ApiSession_PowerboxTag(st), err
 }
 
 func NewRootApiSession_PowerboxTag(s *capnp.Segment) (ApiSession_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return ApiSession_PowerboxTag{st}, err
+	return ApiSession_PowerboxTag(st), err
 }
 
 func ReadRootApiSession_PowerboxTag(msg *capnp.Message) (ApiSession_PowerboxTag, error) {
 	root, err := msg.Root()
-	return ApiSession_PowerboxTag{root.Struct()}, err
+	return ApiSession_PowerboxTag(root.Struct()), err
 }
 
 func (s ApiSession_PowerboxTag) String() string {
-	str, _ := text.Marshal(0x93e1f7ca567dee32, s.Struct)
+	str, _ := text.Marshal(0x93e1f7ca567dee32, capnp.Struct(s))
 	return str
 }
 
+func (s ApiSession_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ApiSession_PowerboxTag) DecodeFromPtr(p capnp.Ptr) ApiSession_PowerboxTag {
+	return ApiSession_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ApiSession_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ApiSession_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiSession_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiSession_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiSession_PowerboxTag) CanonicalUrl() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiSession_PowerboxTag) HasCanonicalUrl() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiSession_PowerboxTag) CanonicalUrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiSession_PowerboxTag) SetCanonicalUrl(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ApiSession_PowerboxTag) OauthScopes() (ApiSession_PowerboxTag_OAuthScope_List, error) {
-	p, err := s.Struct.Ptr(1)
-	return ApiSession_PowerboxTag_OAuthScope_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return ApiSession_PowerboxTag_OAuthScope_List(p.List()), err
 }
 
 func (s ApiSession_PowerboxTag) HasOauthScopes() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ApiSession_PowerboxTag) SetOauthScopes(v ApiSession_PowerboxTag_OAuthScope_List) error {
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewOauthScopes sets the oauthScopes field to a newly
 // allocated ApiSession_PowerboxTag_OAuthScope_List, preferring placement in s's segment.
 func (s ApiSession_PowerboxTag) NewOauthScopes(n int32) (ApiSession_PowerboxTag_OAuthScope_List, error) {
-	l, err := NewApiSession_PowerboxTag_OAuthScope_List(s.Struct.Segment(), n)
+	l, err := NewApiSession_PowerboxTag_OAuthScope_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return ApiSession_PowerboxTag_OAuthScope_List{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 func (s ApiSession_PowerboxTag) Authentication() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s ApiSession_PowerboxTag) HasAuthentication() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ApiSession_PowerboxTag) AuthenticationBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s ApiSession_PowerboxTag) SetAuthentication(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // ApiSession_PowerboxTag_List is a list of ApiSession_PowerboxTag.
-type ApiSession_PowerboxTag_List struct{ capnp.List }
+type ApiSession_PowerboxTag_List = capnp.StructList[ApiSession_PowerboxTag]
 
 // NewApiSession_PowerboxTag creates a new list of ApiSession_PowerboxTag.
 func NewApiSession_PowerboxTag_List(s *capnp.Segment, sz int32) (ApiSession_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return ApiSession_PowerboxTag_List{l}, err
-}
-
-func (s ApiSession_PowerboxTag_List) At(i int) ApiSession_PowerboxTag {
-	return ApiSession_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s ApiSession_PowerboxTag_List) Set(i int, v ApiSession_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ApiSession_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0x93e1f7ca567dee32, s.List)
-	return str
+	return capnp.StructList[ApiSession_PowerboxTag](l), err
 }
 
 // ApiSession_PowerboxTag_Future is a wrapper for a ApiSession_PowerboxTag promised by a client call.
@@ -788,72 +825,81 @@ type ApiSession_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p ApiSession_PowerboxTag_Future) Struct() (ApiSession_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return ApiSession_PowerboxTag{s}, err
+	return ApiSession_PowerboxTag(s), err
 }
 
-type ApiSession_PowerboxTag_OAuthScope struct{ capnp.Struct }
+type ApiSession_PowerboxTag_OAuthScope capnp.Struct
 
 // ApiSession_PowerboxTag_OAuthScope_TypeID is the unique identifier for the type ApiSession_PowerboxTag_OAuthScope.
 const ApiSession_PowerboxTag_OAuthScope_TypeID = 0xbb95f31093b1fd88
 
 func NewApiSession_PowerboxTag_OAuthScope(s *capnp.Segment) (ApiSession_PowerboxTag_OAuthScope, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return ApiSession_PowerboxTag_OAuthScope{st}, err
+	return ApiSession_PowerboxTag_OAuthScope(st), err
 }
 
 func NewRootApiSession_PowerboxTag_OAuthScope(s *capnp.Segment) (ApiSession_PowerboxTag_OAuthScope, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return ApiSession_PowerboxTag_OAuthScope{st}, err
+	return ApiSession_PowerboxTag_OAuthScope(st), err
 }
 
 func ReadRootApiSession_PowerboxTag_OAuthScope(msg *capnp.Message) (ApiSession_PowerboxTag_OAuthScope, error) {
 	root, err := msg.Root()
-	return ApiSession_PowerboxTag_OAuthScope{root.Struct()}, err
+	return ApiSession_PowerboxTag_OAuthScope(root.Struct()), err
 }
 
 func (s ApiSession_PowerboxTag_OAuthScope) String() string {
-	str, _ := text.Marshal(0xbb95f31093b1fd88, s.Struct)
+	str, _ := text.Marshal(0xbb95f31093b1fd88, capnp.Struct(s))
 	return str
 }
 
+func (s ApiSession_PowerboxTag_OAuthScope) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ApiSession_PowerboxTag_OAuthScope) DecodeFromPtr(p capnp.Ptr) ApiSession_PowerboxTag_OAuthScope {
+	return ApiSession_PowerboxTag_OAuthScope(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ApiSession_PowerboxTag_OAuthScope) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ApiSession_PowerboxTag_OAuthScope) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiSession_PowerboxTag_OAuthScope) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiSession_PowerboxTag_OAuthScope) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiSession_PowerboxTag_OAuthScope) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiSession_PowerboxTag_OAuthScope) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiSession_PowerboxTag_OAuthScope) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiSession_PowerboxTag_OAuthScope) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // ApiSession_PowerboxTag_OAuthScope_List is a list of ApiSession_PowerboxTag_OAuthScope.
-type ApiSession_PowerboxTag_OAuthScope_List struct{ capnp.List }
+type ApiSession_PowerboxTag_OAuthScope_List = capnp.StructList[ApiSession_PowerboxTag_OAuthScope]
 
 // NewApiSession_PowerboxTag_OAuthScope creates a new list of ApiSession_PowerboxTag_OAuthScope.
 func NewApiSession_PowerboxTag_OAuthScope_List(s *capnp.Segment, sz int32) (ApiSession_PowerboxTag_OAuthScope_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return ApiSession_PowerboxTag_OAuthScope_List{l}, err
-}
-
-func (s ApiSession_PowerboxTag_OAuthScope_List) At(i int) ApiSession_PowerboxTag_OAuthScope {
-	return ApiSession_PowerboxTag_OAuthScope{s.List.Struct(i)}
-}
-
-func (s ApiSession_PowerboxTag_OAuthScope_List) Set(i int, v ApiSession_PowerboxTag_OAuthScope) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ApiSession_PowerboxTag_OAuthScope_List) String() string {
-	str, _ := text.MarshalList(0xbb95f31093b1fd88, s.List)
-	return str
+	return capnp.StructList[ApiSession_PowerboxTag_OAuthScope](l), err
 }
 
 // ApiSession_PowerboxTag_OAuthScope_Future is a wrapper for a ApiSession_PowerboxTag_OAuthScope promised by a client call.
@@ -861,40 +907,40 @@ type ApiSession_PowerboxTag_OAuthScope_Future struct{ *capnp.Future }
 
 func (p ApiSession_PowerboxTag_OAuthScope_Future) Struct() (ApiSession_PowerboxTag_OAuthScope, error) {
 	s, err := p.Future.Struct()
-	return ApiSession_PowerboxTag_OAuthScope{s}, err
+	return ApiSession_PowerboxTag_OAuthScope(s), err
 }
 
-const schema_eb014c0c3413cbfb = "x\xda\x84\x92\xcdk\x13A\x18\xc6\x9fwf\xd7\xad\x18" +
-	"3Y7P\x0fJA\x10QL\xf1\x13\xa1\x97\x18\xb0" +
-	"\x17I\xe9\x0e\xa9\x82\xde&\xc9\xd0\xaet?\xdcI\xd1" +
-	"\x08\x1e<\x14\xbc\x88\x87\"\xe2QA\xf0&\x1e\xc5\xbb" +
-	"\x8a\xa2\x17\xff\x02\xf1\xa0(\xf4\"\xe2AtdC\x9b" +
-	"\x86(\x94\xbd=<\xef\xf3>\xbfw\xe7\xd8\x94s\x96" +
-	"\x1dw?\xef\x03Z!\xb9;\xec\x89\xf5\x9b\x17\xdf\xfc" +
-	"\xfc\xb8\x06\x7f?\xd9W\xef\x0e\xbe\xec\x7f\xea\xbf\x86\xcb" +
-	"=\xe0\xe4\xa5\xf2y\x0a\xe2\xf2$\x10\xf4\xcbOA\xf6" +
-	"\xf6\xefgk\x95\xef\xf7^\xc0?L[\x93.\x15\xe6" +
-	"\x9axD\xc1\xac\xf0\x80\xa0!\xea\x18\x09\xf3\xf7p\xfb" +
-	"\xebmp\xaa\xd4\xa4o\x00\x05J|\x0dbq\x08\x08" +
-	"V\x85\x17\xac\x8aI\xc0\xde\xff1\xdf\xbcS\xfb\xf2g" +
-	"\xac\xc6 yE\x1c\xa0\xc2\x0a\x04\xb7D\x1dv\xf0]" +
-	"\xb5*\x8bjF\x1b\xe3Di2\xddQY\x92\xcd4" +
-	"\xb2\xa8\xa5\x8d)\x840\xbd\xa6\xf3vz}A-\x02" +
-	"\xd2\xa1\xd1\xf2t\xd9\xce7VzK\xadN\x0a\x9ei" +
-	"Y\xe2\x0e\xe0\x10\xe0\xcf^\x01\xe49N2d\xe4\x13" +
-	"U\xa9\x10\xe7\xda\x80lr\x92K\x8c|\xc6\xaa\xc4\x00" +
-	"_\xdf\x00d\x97\x93\xcc\x18\xd9\x8eJ\xd2$\xea(\x88" +
-	"\xe5\x0b\xf92\x95\xc0\xa8\x04\xb2\xa9\xdaX\xe2e\xdaP" +
-	"\x19\x14r\xa2\xcaV\x11P!\xda\xc2\xa5\x93^\x84z" +
-	"G\xf5\xa24\x19\xceo\x12\xba\xdb\x11No\xe0xi" +
-	"\xa6C\"\xe9\x0c\x81v\x1f\x01\xe4\x04'Ye$\x12" +
-	"\x15\xeb\x7f\xc2\xd9x\xb8(\xd2\xe5\x04\xd1\xc8O\xd99" +
-	"3\xf2P\xdcv=T\xb9\x8a\x8d\xdd\xac\x00oA-" +
-	"\x86\xdc\x1d\xdc\xf9\xfd\x93\xd3s\x0f}\xef1\x80\xe1\x12" +
-	"\xfe\x7f\x02\x95{*6c\x8ds@\x968\xc9\xbd\x8c" +
-	"l\xae\xe3\xb4\xa7\x1b]Lusm\x0cU\xec\xae\xa3" +
-	"\x1f\xce<\xb8\xfb|\xbd8^\x05\xf47\x00\x00\xff\xff" +
-	"8U\xd8\x0c"
+const schema_eb014c0c3413cbfb = "x\xda\x84\x92\xcfk\x13A\x1c\xc5\xdfwf\xd7\xad\x98" +
+	"f\xb2n\xa0^\x8a \x88(m\xf1'B/1\xa0" +
+	"\x17I\xe9\x0e\x89\x82\xde&\xc9\xd0\xae4\xbb\xebND" +
+	"+z\x14\xbc\x14\x0fE$\xc7\x0a\x05/\"9\x8aw" +
+	"\x15E/\xfe\x05\xe2E\x14z\x11\xf1 :\xb2\xa1M" +
+	"C\x14do\x8f\xf7}\xdf\xf7\xf9\xee\x1c\x9fq\xce9" +
+	"'&+\xd3`\xf5\x06\xb9{\xec\xc9\xad\xbb\x97\xdf\xfc" +
+	"\xf8\xb8\x0e\x7f\x9a\xec\xabw\x87_\xae~Z}\x0d\x97" +
+	"{\xc0\xa9{\xc5\x8b\x14\xf4\x8aS@\xb0Y|\x06\xb2" +
+	"\xf7\x7f\xf5\xd7K\xdf\x1e\xbe\x80\x7f\x94v']\xca\xcd" +
+	"W\xc4c\x0a\xae\x0b\x0f\x08:\xa2\x82\x910\x7f?\xb7" +
+	"?\xdf\x06\xa7\x0b5\xfa\x0aP\xb0&\xbe\x04=q\x04" +
+	"\x08\xfa\xc2\x0b\xfab\x0a\xb0\x8f\xbe/\xd6\xd6f?\xff" +
+	"\x1e\xab1H\xde\x10\x87(\xb7\x02\xc1SQ\x81\x1d|" +
+	"w\xacJ\xa3Y\xa3\x8dq\xa2$\x9ek\xa94N\xe7" +
+	"\xabiT\xd7\xc6\xe4B\x98\xdc\xd4Y3\xb9\xd5PK" +
+	"\x80th\xb4<]\xb5\x8b\xd5\x1b\xdd\xe5z+\x01O" +
+	"\xb5,p\x07p\x08\xf0/\\\x03\xe4yN2d\xe4" +
+	"\x13\x95)\x17\x17\x9a\x80\xacq\x92\xcb\x8c|\xc6\xca\xc4" +
+	"\x00_\xdf\x06d\x9b\x93L\x19\xd9\x96\x8a\x938j)" +
+	"\x88\x95K\xd9\x0a\x15\xc0\xa8\x00\xb2\x89\xda^\xe2\xa5\xda" +
+	"P\x11\x14r\xa2\xd2n\x11P.\xda\xdc\xa5\xe3n\x84" +
+	"JKu\xa3$\x1e\xce\xef\x10\xba\xff#\x9c\xdb\xc6\xf1" +
+	"\x92T\x87D\xd2\x19\x02M\x1e\x03\xe4\x04'Yf$" +
+	"b\xd5\xd1\x7f\x85\xb3\xf1p\x91\xa7\xcb\x09\xa2\x91\x9f\xb2" +
+	"w~\xe4\xa1\xb8\xcdJ\xa82\xd51v\xa7\x02\xbc\x86" +
+	"Z\x0a\xb9;\xb8\xf3\xfb'g\x166|o\x13\xc0p" +
+	"\x09\xff7\x81\xca<\xd51c\x8d3@\x168\xc9\x03" +
+	"\x8cl\xa6;IWW\xdb8\xd8\xce\xb41T\xb2\xfb" +
+	"f>\x9c\xed=x\xbe\x95\x1f\xaf\x04\xfa\x13\x00\x00\xff" +
+	"\xff\x0dI\xd9\xc9"
 
 func init() {
 	schemas.Register(schema_eb014c0c3413cbfb,

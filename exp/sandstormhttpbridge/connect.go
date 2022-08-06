@@ -33,27 +33,27 @@ func tryConnectSocket() (net.Conn, error) {
 	return net.Dial("unix", "/tmp/sandstorm-api")
 }
 
-func connectBridge(ctx context.Context, hooks *capnp.Client) (ret bridge.SandstormHttpBridge, err error) {
+func connectBridge(ctx context.Context, hooks capnp.Client) (ret bridge.SandstormHttpBridge, err error) {
 	conn, err := connectSocket()
 	if err != nil {
 		return
 	}
 	var options *rpc.Options
-	if hooks != nil {
+	if (hooks != capnp.Client{}) {
 		options = &rpc.Options{
 			BootstrapClient: hooks,
 		}
 	}
 
 	transport := rpc.NewStreamTransport(conn)
-	ret.Client = rpc.NewConn(transport, options).Bootstrap(ctx)
+	ret = bridge.SandstormHttpBridge(rpc.NewConn(transport, options).Bootstrap(ctx))
 	return
 }
 
 func ConnectWithHooks(ctx context.Context, hooks bridge.AppHooks) (bridge.SandstormHttpBridge, error) {
-	return connectBridge(ctx, hooks.Client)
+	return connectBridge(ctx, capnp.Client(hooks))
 }
 
 func Connect(ctx context.Context) (bridge.SandstormHttpBridge, error) {
-	return connectBridge(ctx, nil)
+	return connectBridge(ctx, capnp.Client{})
 }

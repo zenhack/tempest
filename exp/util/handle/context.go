@@ -5,8 +5,6 @@ import (
 	"context"
 
 	"zenhack.net/go/sandstorm/capnp/util"
-
-	"capnproto.org/go/capnp/v3/server"
 )
 
 // WithCancel is like context.WithCancel, except that it returns a Handle
@@ -16,7 +14,7 @@ func WithCancel(ctx context.Context) (context.Context, util.Handle) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	// The server policy doesn't matter, because handles have no methods:
-	return ctx, util.Handle_ServerToClient(&cancelHandle{cancel}, &server.Policy{})
+	return ctx, util.Handle_ServerToClient(&cancelHandle{cancel})
 }
 
 type cancelHandle struct {

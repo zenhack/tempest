@@ -14,7 +14,7 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type IpNetwork struct{ Client *capnp.Client }
+type IpNetwork capnp.Client
 
 // IpNetwork_TypeID is the unique identifier for the type IpNetwork.
 const IpNetwork_TypeID = 0xa982576b7a2a2040
@@ -30,9 +30,9 @@ func (c IpNetwork) GetRemoteHost(ctx context.Context, params func(IpNetwork_getR
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHost_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHost_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpNetwork_getRemoteHost_Results_Future{Future: ans.Future()}, release
 }
 func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwork_getRemoteHostByName_Params) error) (IpNetwork_getRemoteHostByName_Results_Future, capnp.ReleaseFunc) {
@@ -46,20 +46,30 @@ func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwor
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHostByName_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHostByName_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpNetwork_getRemoteHostByName_Results_Future{Future: ans.Future()}, release
 }
 
 func (c IpNetwork) AddRef() IpNetwork {
-	return IpNetwork{
-		Client: c.Client.AddRef(),
-	}
+	return IpNetwork(capnp.Client(c).AddRef())
 }
 
 func (c IpNetwork) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c IpNetwork) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (IpNetwork) DecodeFromPtr(p capnp.Ptr) IpNetwork {
+	return IpNetwork(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c IpNetwork) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A IpNetwork_Server is a IpNetwork with a local implementation.
@@ -70,15 +80,15 @@ type IpNetwork_Server interface {
 }
 
 // IpNetwork_NewServer creates a new Server from an implementation of IpNetwork_Server.
-func IpNetwork_NewServer(s IpNetwork_Server, policy *server.Policy) *server.Server {
+func IpNetwork_NewServer(s IpNetwork_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(IpNetwork_Methods(nil, s), s, c, policy)
+	return server.New(IpNetwork_Methods(nil, s), s, c)
 }
 
 // IpNetwork_ServerToClient creates a new Client from an implementation of IpNetwork_Server.
 // The caller is responsible for calling Release on the returned Client.
-func IpNetwork_ServerToClient(s IpNetwork_Server, policy *server.Policy) IpNetwork {
-	return IpNetwork{Client: capnp.NewClient(IpNetwork_NewServer(s, policy))}
+func IpNetwork_ServerToClient(s IpNetwork_Server) IpNetwork {
+	return IpNetwork(capnp.NewClient(IpNetwork_NewServer(s)))
 }
 
 // IpNetwork_Methods appends Methods to a slice that invoke the methods on s.
@@ -123,13 +133,13 @@ type IpNetwork_getRemoteHost struct {
 
 // Args returns the call's arguments.
 func (c IpNetwork_getRemoteHost) Args() IpNetwork_getRemoteHost_Params {
-	return IpNetwork_getRemoteHost_Params{Struct: c.Call.Args()}
+	return IpNetwork_getRemoteHost_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpNetwork_getRemoteHost) AllocResults() (IpNetwork_getRemoteHost_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHost_Results{Struct: r}, err
+	return IpNetwork_getRemoteHost_Results(r), err
 }
 
 // IpNetwork_getRemoteHostByName holds the state for a server call to IpNetwork.getRemoteHostByName.
@@ -140,84 +150,102 @@ type IpNetwork_getRemoteHostByName struct {
 
 // Args returns the call's arguments.
 func (c IpNetwork_getRemoteHostByName) Args() IpNetwork_getRemoteHostByName_Params {
-	return IpNetwork_getRemoteHostByName_Params{Struct: c.Call.Args()}
+	return IpNetwork_getRemoteHostByName_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpNetwork_getRemoteHostByName) AllocResults() (IpNetwork_getRemoteHostByName_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHostByName_Results{Struct: r}, err
+	return IpNetwork_getRemoteHostByName_Results(r), err
 }
 
-type IpNetwork_PowerboxTag struct{ capnp.Struct }
+// IpNetwork_List is a list of IpNetwork.
+type IpNetwork_List = capnp.CapList[IpNetwork]
+
+// NewIpNetwork creates a new list of IpNetwork.
+func NewIpNetwork_List(s *capnp.Segment, sz int32) (IpNetwork_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[IpNetwork](l), err
+}
+
+type IpNetwork_PowerboxTag capnp.Struct
 
 // IpNetwork_PowerboxTag_TypeID is the unique identifier for the type IpNetwork_PowerboxTag.
 const IpNetwork_PowerboxTag_TypeID = 0xcf9e3f33950df819
 
 func NewIpNetwork_PowerboxTag(s *capnp.Segment) (IpNetwork_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_PowerboxTag{st}, err
+	return IpNetwork_PowerboxTag(st), err
 }
 
 func NewRootIpNetwork_PowerboxTag(s *capnp.Segment) (IpNetwork_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_PowerboxTag{st}, err
+	return IpNetwork_PowerboxTag(st), err
 }
 
 func ReadRootIpNetwork_PowerboxTag(msg *capnp.Message) (IpNetwork_PowerboxTag, error) {
 	root, err := msg.Root()
-	return IpNetwork_PowerboxTag{root.Struct()}, err
+	return IpNetwork_PowerboxTag(root.Struct()), err
 }
 
 func (s IpNetwork_PowerboxTag) String() string {
-	str, _ := text.Marshal(0xcf9e3f33950df819, s.Struct)
+	str, _ := text.Marshal(0xcf9e3f33950df819, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_PowerboxTag) DecodeFromPtr(p capnp.Ptr) IpNetwork_PowerboxTag {
+	return IpNetwork_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpNetwork_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpNetwork_PowerboxTag) Encryption() (IpNetwork_PowerboxTag_Encryption, error) {
-	p, err := s.Struct.Ptr(0)
-	return IpNetwork_PowerboxTag_Encryption{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return IpNetwork_PowerboxTag_Encryption(p.Struct()), err
 }
 
 func (s IpNetwork_PowerboxTag) HasEncryption() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpNetwork_PowerboxTag) SetEncryption(v IpNetwork_PowerboxTag_Encryption) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewEncryption sets the encryption field to a newly
 // allocated IpNetwork_PowerboxTag_Encryption struct, preferring placement in s's segment.
 func (s IpNetwork_PowerboxTag) NewEncryption() (IpNetwork_PowerboxTag_Encryption, error) {
-	ss, err := NewIpNetwork_PowerboxTag_Encryption(s.Struct.Segment())
+	ss, err := NewIpNetwork_PowerboxTag_Encryption(capnp.Struct(s).Segment())
 	if err != nil {
 		return IpNetwork_PowerboxTag_Encryption{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // IpNetwork_PowerboxTag_List is a list of IpNetwork_PowerboxTag.
-type IpNetwork_PowerboxTag_List struct{ capnp.List }
+type IpNetwork_PowerboxTag_List = capnp.StructList[IpNetwork_PowerboxTag]
 
 // NewIpNetwork_PowerboxTag creates a new list of IpNetwork_PowerboxTag.
 func NewIpNetwork_PowerboxTag_List(s *capnp.Segment, sz int32) (IpNetwork_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpNetwork_PowerboxTag_List{l}, err
-}
-
-func (s IpNetwork_PowerboxTag_List) At(i int) IpNetwork_PowerboxTag {
-	return IpNetwork_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s IpNetwork_PowerboxTag_List) Set(i int, v IpNetwork_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0xcf9e3f33950df819, s.List)
-	return str
+	return capnp.StructList[IpNetwork_PowerboxTag](l), err
 }
 
 // IpNetwork_PowerboxTag_Future is a wrapper for a IpNetwork_PowerboxTag promised by a client call.
@@ -225,14 +253,14 @@ type IpNetwork_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p IpNetwork_PowerboxTag_Future) Struct() (IpNetwork_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_PowerboxTag{s}, err
+	return IpNetwork_PowerboxTag(s), err
 }
 
 func (p IpNetwork_PowerboxTag_Future) Encryption() IpNetwork_PowerboxTag_Encryption_Future {
 	return IpNetwork_PowerboxTag_Encryption_Future{Future: p.Future.Field(0, nil)}
 }
 
-type IpNetwork_PowerboxTag_Encryption struct{ capnp.Struct }
+type IpNetwork_PowerboxTag_Encryption capnp.Struct
 type IpNetwork_PowerboxTag_Encryption_Which uint16
 
 const (
@@ -257,57 +285,67 @@ const IpNetwork_PowerboxTag_Encryption_TypeID = 0xe2d94cf90fe4078d
 
 func NewIpNetwork_PowerboxTag_Encryption(s *capnp.Segment) (IpNetwork_PowerboxTag_Encryption, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpNetwork_PowerboxTag_Encryption{st}, err
+	return IpNetwork_PowerboxTag_Encryption(st), err
 }
 
 func NewRootIpNetwork_PowerboxTag_Encryption(s *capnp.Segment) (IpNetwork_PowerboxTag_Encryption, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpNetwork_PowerboxTag_Encryption{st}, err
+	return IpNetwork_PowerboxTag_Encryption(st), err
 }
 
 func ReadRootIpNetwork_PowerboxTag_Encryption(msg *capnp.Message) (IpNetwork_PowerboxTag_Encryption, error) {
 	root, err := msg.Root()
-	return IpNetwork_PowerboxTag_Encryption{root.Struct()}, err
+	return IpNetwork_PowerboxTag_Encryption(root.Struct()), err
 }
 
 func (s IpNetwork_PowerboxTag_Encryption) String() string {
-	str, _ := text.Marshal(0xe2d94cf90fe4078d, s.Struct)
+	str, _ := text.Marshal(0xe2d94cf90fe4078d, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_PowerboxTag_Encryption) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_PowerboxTag_Encryption) DecodeFromPtr(p capnp.Ptr) IpNetwork_PowerboxTag_Encryption {
+	return IpNetwork_PowerboxTag_Encryption(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s IpNetwork_PowerboxTag_Encryption) Which() IpNetwork_PowerboxTag_Encryption_Which {
-	return IpNetwork_PowerboxTag_Encryption_Which(s.Struct.Uint16(0))
+	return IpNetwork_PowerboxTag_Encryption_Which(capnp.Struct(s).Uint16(0))
+}
+func (s IpNetwork_PowerboxTag_Encryption) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_PowerboxTag_Encryption) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s IpNetwork_PowerboxTag_Encryption) SetNone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s IpNetwork_PowerboxTag_Encryption) SetTls() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 
 }
 
 // IpNetwork_PowerboxTag_Encryption_List is a list of IpNetwork_PowerboxTag_Encryption.
-type IpNetwork_PowerboxTag_Encryption_List struct{ capnp.List }
+type IpNetwork_PowerboxTag_Encryption_List = capnp.StructList[IpNetwork_PowerboxTag_Encryption]
 
 // NewIpNetwork_PowerboxTag_Encryption creates a new list of IpNetwork_PowerboxTag_Encryption.
 func NewIpNetwork_PowerboxTag_Encryption_List(s *capnp.Segment, sz int32) (IpNetwork_PowerboxTag_Encryption_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return IpNetwork_PowerboxTag_Encryption_List{l}, err
-}
-
-func (s IpNetwork_PowerboxTag_Encryption_List) At(i int) IpNetwork_PowerboxTag_Encryption {
-	return IpNetwork_PowerboxTag_Encryption{s.List.Struct(i)}
-}
-
-func (s IpNetwork_PowerboxTag_Encryption_List) Set(i int, v IpNetwork_PowerboxTag_Encryption) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_PowerboxTag_Encryption_List) String() string {
-	str, _ := text.MarshalList(0xe2d94cf90fe4078d, s.List)
-	return str
+	return capnp.StructList[IpNetwork_PowerboxTag_Encryption](l), err
 }
 
 // IpNetwork_PowerboxTag_Encryption_Future is a wrapper for a IpNetwork_PowerboxTag_Encryption promised by a client call.
@@ -315,78 +353,87 @@ type IpNetwork_PowerboxTag_Encryption_Future struct{ *capnp.Future }
 
 func (p IpNetwork_PowerboxTag_Encryption_Future) Struct() (IpNetwork_PowerboxTag_Encryption, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_PowerboxTag_Encryption{s}, err
+	return IpNetwork_PowerboxTag_Encryption(s), err
 }
 
-type IpNetwork_getRemoteHost_Params struct{ capnp.Struct }
+type IpNetwork_getRemoteHost_Params capnp.Struct
 
 // IpNetwork_getRemoteHost_Params_TypeID is the unique identifier for the type IpNetwork_getRemoteHost_Params.
 const IpNetwork_getRemoteHost_Params_TypeID = 0xdd1700c1eb725eb4
 
 func NewIpNetwork_getRemoteHost_Params(s *capnp.Segment) (IpNetwork_getRemoteHost_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHost_Params{st}, err
+	return IpNetwork_getRemoteHost_Params(st), err
 }
 
 func NewRootIpNetwork_getRemoteHost_Params(s *capnp.Segment) (IpNetwork_getRemoteHost_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHost_Params{st}, err
+	return IpNetwork_getRemoteHost_Params(st), err
 }
 
 func ReadRootIpNetwork_getRemoteHost_Params(msg *capnp.Message) (IpNetwork_getRemoteHost_Params, error) {
 	root, err := msg.Root()
-	return IpNetwork_getRemoteHost_Params{root.Struct()}, err
+	return IpNetwork_getRemoteHost_Params(root.Struct()), err
 }
 
 func (s IpNetwork_getRemoteHost_Params) String() string {
-	str, _ := text.Marshal(0xdd1700c1eb725eb4, s.Struct)
+	str, _ := text.Marshal(0xdd1700c1eb725eb4, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_getRemoteHost_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_getRemoteHost_Params) DecodeFromPtr(p capnp.Ptr) IpNetwork_getRemoteHost_Params {
+	return IpNetwork_getRemoteHost_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_getRemoteHost_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpNetwork_getRemoteHost_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_getRemoteHost_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_getRemoteHost_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpNetwork_getRemoteHost_Params) Address() (IpAddress, error) {
-	p, err := s.Struct.Ptr(0)
-	return IpAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return IpAddress(p.Struct()), err
 }
 
 func (s IpNetwork_getRemoteHost_Params) HasAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpNetwork_getRemoteHost_Params) SetAddress(v IpAddress) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewAddress sets the address field to a newly
 // allocated IpAddress struct, preferring placement in s's segment.
 func (s IpNetwork_getRemoteHost_Params) NewAddress() (IpAddress, error) {
-	ss, err := NewIpAddress(s.Struct.Segment())
+	ss, err := NewIpAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return IpAddress{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // IpNetwork_getRemoteHost_Params_List is a list of IpNetwork_getRemoteHost_Params.
-type IpNetwork_getRemoteHost_Params_List struct{ capnp.List }
+type IpNetwork_getRemoteHost_Params_List = capnp.StructList[IpNetwork_getRemoteHost_Params]
 
 // NewIpNetwork_getRemoteHost_Params creates a new list of IpNetwork_getRemoteHost_Params.
 func NewIpNetwork_getRemoteHost_Params_List(s *capnp.Segment, sz int32) (IpNetwork_getRemoteHost_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpNetwork_getRemoteHost_Params_List{l}, err
-}
-
-func (s IpNetwork_getRemoteHost_Params_List) At(i int) IpNetwork_getRemoteHost_Params {
-	return IpNetwork_getRemoteHost_Params{s.List.Struct(i)}
-}
-
-func (s IpNetwork_getRemoteHost_Params_List) Set(i int, v IpNetwork_getRemoteHost_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_getRemoteHost_Params_List) String() string {
-	str, _ := text.MarshalList(0xdd1700c1eb725eb4, s.List)
-	return str
+	return capnp.StructList[IpNetwork_getRemoteHost_Params](l), err
 }
 
 // IpNetwork_getRemoteHost_Params_Future is a wrapper for a IpNetwork_getRemoteHost_Params promised by a client call.
@@ -394,76 +441,85 @@ type IpNetwork_getRemoteHost_Params_Future struct{ *capnp.Future }
 
 func (p IpNetwork_getRemoteHost_Params_Future) Struct() (IpNetwork_getRemoteHost_Params, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHost_Params{s}, err
+	return IpNetwork_getRemoteHost_Params(s), err
 }
 
 func (p IpNetwork_getRemoteHost_Params_Future) Address() IpAddress_Future {
 	return IpAddress_Future{Future: p.Future.Field(0, nil)}
 }
 
-type IpNetwork_getRemoteHost_Results struct{ capnp.Struct }
+type IpNetwork_getRemoteHost_Results capnp.Struct
 
 // IpNetwork_getRemoteHost_Results_TypeID is the unique identifier for the type IpNetwork_getRemoteHost_Results.
 const IpNetwork_getRemoteHost_Results_TypeID = 0xb57bd5aef30c4b61
 
 func NewIpNetwork_getRemoteHost_Results(s *capnp.Segment) (IpNetwork_getRemoteHost_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHost_Results{st}, err
+	return IpNetwork_getRemoteHost_Results(st), err
 }
 
 func NewRootIpNetwork_getRemoteHost_Results(s *capnp.Segment) (IpNetwork_getRemoteHost_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHost_Results{st}, err
+	return IpNetwork_getRemoteHost_Results(st), err
 }
 
 func ReadRootIpNetwork_getRemoteHost_Results(msg *capnp.Message) (IpNetwork_getRemoteHost_Results, error) {
 	root, err := msg.Root()
-	return IpNetwork_getRemoteHost_Results{root.Struct()}, err
+	return IpNetwork_getRemoteHost_Results(root.Struct()), err
 }
 
 func (s IpNetwork_getRemoteHost_Results) String() string {
-	str, _ := text.Marshal(0xb57bd5aef30c4b61, s.Struct)
+	str, _ := text.Marshal(0xb57bd5aef30c4b61, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_getRemoteHost_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_getRemoteHost_Results) DecodeFromPtr(p capnp.Ptr) IpNetwork_getRemoteHost_Results {
+	return IpNetwork_getRemoteHost_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_getRemoteHost_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpNetwork_getRemoteHost_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_getRemoteHost_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_getRemoteHost_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpNetwork_getRemoteHost_Results) Host() IpRemoteHost {
-	p, _ := s.Struct.Ptr(0)
-	return IpRemoteHost{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return IpRemoteHost(p.Interface().Client())
 }
 
 func (s IpNetwork_getRemoteHost_Results) HasHost() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpNetwork_getRemoteHost_Results) SetHost(v IpRemoteHost) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpNetwork_getRemoteHost_Results_List is a list of IpNetwork_getRemoteHost_Results.
-type IpNetwork_getRemoteHost_Results_List struct{ capnp.List }
+type IpNetwork_getRemoteHost_Results_List = capnp.StructList[IpNetwork_getRemoteHost_Results]
 
 // NewIpNetwork_getRemoteHost_Results creates a new list of IpNetwork_getRemoteHost_Results.
 func NewIpNetwork_getRemoteHost_Results_List(s *capnp.Segment, sz int32) (IpNetwork_getRemoteHost_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpNetwork_getRemoteHost_Results_List{l}, err
-}
-
-func (s IpNetwork_getRemoteHost_Results_List) At(i int) IpNetwork_getRemoteHost_Results {
-	return IpNetwork_getRemoteHost_Results{s.List.Struct(i)}
-}
-
-func (s IpNetwork_getRemoteHost_Results_List) Set(i int, v IpNetwork_getRemoteHost_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_getRemoteHost_Results_List) String() string {
-	str, _ := text.MarshalList(0xb57bd5aef30c4b61, s.List)
-	return str
+	return capnp.StructList[IpNetwork_getRemoteHost_Results](l), err
 }
 
 // IpNetwork_getRemoteHost_Results_Future is a wrapper for a IpNetwork_getRemoteHost_Results promised by a client call.
@@ -471,76 +527,85 @@ type IpNetwork_getRemoteHost_Results_Future struct{ *capnp.Future }
 
 func (p IpNetwork_getRemoteHost_Results_Future) Struct() (IpNetwork_getRemoteHost_Results, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHost_Results{s}, err
+	return IpNetwork_getRemoteHost_Results(s), err
 }
 
 func (p IpNetwork_getRemoteHost_Results_Future) Host() IpRemoteHost {
-	return IpRemoteHost{Client: p.Future.Field(0, nil).Client()}
+	return IpRemoteHost(p.Future.Field(0, nil).Client())
 }
 
-type IpNetwork_getRemoteHostByName_Params struct{ capnp.Struct }
+type IpNetwork_getRemoteHostByName_Params capnp.Struct
 
 // IpNetwork_getRemoteHostByName_Params_TypeID is the unique identifier for the type IpNetwork_getRemoteHostByName_Params.
 const IpNetwork_getRemoteHostByName_Params_TypeID = 0x9d5f1f6efcf7bbc4
 
 func NewIpNetwork_getRemoteHostByName_Params(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHostByName_Params{st}, err
+	return IpNetwork_getRemoteHostByName_Params(st), err
 }
 
 func NewRootIpNetwork_getRemoteHostByName_Params(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHostByName_Params{st}, err
+	return IpNetwork_getRemoteHostByName_Params(st), err
 }
 
 func ReadRootIpNetwork_getRemoteHostByName_Params(msg *capnp.Message) (IpNetwork_getRemoteHostByName_Params, error) {
 	root, err := msg.Root()
-	return IpNetwork_getRemoteHostByName_Params{root.Struct()}, err
+	return IpNetwork_getRemoteHostByName_Params(root.Struct()), err
 }
 
 func (s IpNetwork_getRemoteHostByName_Params) String() string {
-	str, _ := text.Marshal(0x9d5f1f6efcf7bbc4, s.Struct)
+	str, _ := text.Marshal(0x9d5f1f6efcf7bbc4, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_getRemoteHostByName_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_getRemoteHostByName_Params) DecodeFromPtr(p capnp.Ptr) IpNetwork_getRemoteHostByName_Params {
+	return IpNetwork_getRemoteHostByName_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_getRemoteHostByName_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpNetwork_getRemoteHostByName_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_getRemoteHostByName_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_getRemoteHostByName_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpNetwork_getRemoteHostByName_Params) Address() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s IpNetwork_getRemoteHostByName_Params) HasAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpNetwork_getRemoteHostByName_Params) AddressBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s IpNetwork_getRemoteHostByName_Params) SetAddress(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // IpNetwork_getRemoteHostByName_Params_List is a list of IpNetwork_getRemoteHostByName_Params.
-type IpNetwork_getRemoteHostByName_Params_List struct{ capnp.List }
+type IpNetwork_getRemoteHostByName_Params_List = capnp.StructList[IpNetwork_getRemoteHostByName_Params]
 
 // NewIpNetwork_getRemoteHostByName_Params creates a new list of IpNetwork_getRemoteHostByName_Params.
 func NewIpNetwork_getRemoteHostByName_Params_List(s *capnp.Segment, sz int32) (IpNetwork_getRemoteHostByName_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpNetwork_getRemoteHostByName_Params_List{l}, err
-}
-
-func (s IpNetwork_getRemoteHostByName_Params_List) At(i int) IpNetwork_getRemoteHostByName_Params {
-	return IpNetwork_getRemoteHostByName_Params{s.List.Struct(i)}
-}
-
-func (s IpNetwork_getRemoteHostByName_Params_List) Set(i int, v IpNetwork_getRemoteHostByName_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_getRemoteHostByName_Params_List) String() string {
-	str, _ := text.MarshalList(0x9d5f1f6efcf7bbc4, s.List)
-	return str
+	return capnp.StructList[IpNetwork_getRemoteHostByName_Params](l), err
 }
 
 // IpNetwork_getRemoteHostByName_Params_Future is a wrapper for a IpNetwork_getRemoteHostByName_Params promised by a client call.
@@ -548,72 +613,81 @@ type IpNetwork_getRemoteHostByName_Params_Future struct{ *capnp.Future }
 
 func (p IpNetwork_getRemoteHostByName_Params_Future) Struct() (IpNetwork_getRemoteHostByName_Params, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHostByName_Params{s}, err
+	return IpNetwork_getRemoteHostByName_Params(s), err
 }
 
-type IpNetwork_getRemoteHostByName_Results struct{ capnp.Struct }
+type IpNetwork_getRemoteHostByName_Results capnp.Struct
 
 // IpNetwork_getRemoteHostByName_Results_TypeID is the unique identifier for the type IpNetwork_getRemoteHostByName_Results.
 const IpNetwork_getRemoteHostByName_Results_TypeID = 0xd14a2ec2bad45f69
 
 func NewIpNetwork_getRemoteHostByName_Results(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHostByName_Results{st}, err
+	return IpNetwork_getRemoteHostByName_Results(st), err
 }
 
 func NewRootIpNetwork_getRemoteHostByName_Results(s *capnp.Segment) (IpNetwork_getRemoteHostByName_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpNetwork_getRemoteHostByName_Results{st}, err
+	return IpNetwork_getRemoteHostByName_Results(st), err
 }
 
 func ReadRootIpNetwork_getRemoteHostByName_Results(msg *capnp.Message) (IpNetwork_getRemoteHostByName_Results, error) {
 	root, err := msg.Root()
-	return IpNetwork_getRemoteHostByName_Results{root.Struct()}, err
+	return IpNetwork_getRemoteHostByName_Results(root.Struct()), err
 }
 
 func (s IpNetwork_getRemoteHostByName_Results) String() string {
-	str, _ := text.Marshal(0xd14a2ec2bad45f69, s.Struct)
+	str, _ := text.Marshal(0xd14a2ec2bad45f69, capnp.Struct(s))
 	return str
 }
 
+func (s IpNetwork_getRemoteHostByName_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpNetwork_getRemoteHostByName_Results) DecodeFromPtr(p capnp.Ptr) IpNetwork_getRemoteHostByName_Results {
+	return IpNetwork_getRemoteHostByName_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpNetwork_getRemoteHostByName_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpNetwork_getRemoteHostByName_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpNetwork_getRemoteHostByName_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpNetwork_getRemoteHostByName_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpNetwork_getRemoteHostByName_Results) Host() IpRemoteHost {
-	p, _ := s.Struct.Ptr(0)
-	return IpRemoteHost{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return IpRemoteHost(p.Interface().Client())
 }
 
 func (s IpNetwork_getRemoteHostByName_Results) HasHost() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpNetwork_getRemoteHostByName_Results) SetHost(v IpRemoteHost) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpNetwork_getRemoteHostByName_Results_List is a list of IpNetwork_getRemoteHostByName_Results.
-type IpNetwork_getRemoteHostByName_Results_List struct{ capnp.List }
+type IpNetwork_getRemoteHostByName_Results_List = capnp.StructList[IpNetwork_getRemoteHostByName_Results]
 
 // NewIpNetwork_getRemoteHostByName_Results creates a new list of IpNetwork_getRemoteHostByName_Results.
 func NewIpNetwork_getRemoteHostByName_Results_List(s *capnp.Segment, sz int32) (IpNetwork_getRemoteHostByName_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpNetwork_getRemoteHostByName_Results_List{l}, err
-}
-
-func (s IpNetwork_getRemoteHostByName_Results_List) At(i int) IpNetwork_getRemoteHostByName_Results {
-	return IpNetwork_getRemoteHostByName_Results{s.List.Struct(i)}
-}
-
-func (s IpNetwork_getRemoteHostByName_Results_List) Set(i int, v IpNetwork_getRemoteHostByName_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpNetwork_getRemoteHostByName_Results_List) String() string {
-	str, _ := text.MarshalList(0xd14a2ec2bad45f69, s.List)
-	return str
+	return capnp.StructList[IpNetwork_getRemoteHostByName_Results](l), err
 }
 
 // IpNetwork_getRemoteHostByName_Results_Future is a wrapper for a IpNetwork_getRemoteHostByName_Results promised by a client call.
@@ -621,70 +695,83 @@ type IpNetwork_getRemoteHostByName_Results_Future struct{ *capnp.Future }
 
 func (p IpNetwork_getRemoteHostByName_Results_Future) Struct() (IpNetwork_getRemoteHostByName_Results, error) {
 	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHostByName_Results{s}, err
+	return IpNetwork_getRemoteHostByName_Results(s), err
 }
 
 func (p IpNetwork_getRemoteHostByName_Results_Future) Host() IpRemoteHost {
-	return IpRemoteHost{Client: p.Future.Field(0, nil).Client()}
+	return IpRemoteHost(p.Future.Field(0, nil).Client())
 }
 
-type IpAddress struct{ capnp.Struct }
+type IpAddress capnp.Struct
 
 // IpAddress_TypeID is the unique identifier for the type IpAddress.
 const IpAddress_TypeID = 0xeeb98f9937d32c0b
 
 func NewIpAddress(s *capnp.Segment) (IpAddress, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	return IpAddress{st}, err
+	return IpAddress(st), err
 }
 
 func NewRootIpAddress(s *capnp.Segment) (IpAddress, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	return IpAddress{st}, err
+	return IpAddress(st), err
 }
 
 func ReadRootIpAddress(msg *capnp.Message) (IpAddress, error) {
 	root, err := msg.Root()
-	return IpAddress{root.Struct()}, err
+	return IpAddress(root.Struct()), err
 }
 
 func (s IpAddress) String() string {
-	str, _ := text.Marshal(0xeeb98f9937d32c0b, s.Struct)
+	str, _ := text.Marshal(0xeeb98f9937d32c0b, capnp.Struct(s))
 	return str
 }
 
+func (s IpAddress) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpAddress) DecodeFromPtr(p capnp.Ptr) IpAddress {
+	return IpAddress(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpAddress) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpAddress) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpAddress) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpAddress) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpAddress) Lower64() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s IpAddress) SetLower64(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s IpAddress) Upper64() uint64 {
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s IpAddress) SetUpper64(v uint64) {
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // IpAddress_List is a list of IpAddress.
-type IpAddress_List struct{ capnp.List }
+type IpAddress_List = capnp.StructList[IpAddress]
 
 // NewIpAddress creates a new list of IpAddress.
 func NewIpAddress_List(s *capnp.Segment, sz int32) (IpAddress_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
-	return IpAddress_List{l}, err
-}
-
-func (s IpAddress_List) At(i int) IpAddress { return IpAddress{s.List.Struct(i)} }
-
-func (s IpAddress_List) Set(i int, v IpAddress) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s IpAddress_List) String() string {
-	str, _ := text.MarshalList(0xeeb98f9937d32c0b, s.List)
-	return str
+	return capnp.StructList[IpAddress](l), err
 }
 
 // IpAddress_Future is a wrapper for a IpAddress promised by a client call.
@@ -692,10 +779,10 @@ type IpAddress_Future struct{ *capnp.Future }
 
 func (p IpAddress_Future) Struct() (IpAddress, error) {
 	s, err := p.Future.Struct()
-	return IpAddress{s}, err
+	return IpAddress(s), err
 }
 
-type IpInterface struct{ Client *capnp.Client }
+type IpInterface capnp.Client
 
 // IpInterface_TypeID is the unique identifier for the type IpInterface.
 const IpInterface_TypeID = 0xe32c506ee93ed6fa
@@ -711,9 +798,9 @@ func (c IpInterface) ListenTcp(ctx context.Context, params func(IpInterface_list
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenTcp_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenTcp_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpInterface_listenTcp_Results_Future{Future: ans.Future()}, release
 }
 func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_listenUdp_Params) error) (IpInterface_listenUdp_Results_Future, capnp.ReleaseFunc) {
@@ -727,20 +814,30 @@ func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_list
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenUdp_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenUdp_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpInterface_listenUdp_Results_Future{Future: ans.Future()}, release
 }
 
 func (c IpInterface) AddRef() IpInterface {
-	return IpInterface{
-		Client: c.Client.AddRef(),
-	}
+	return IpInterface(capnp.Client(c).AddRef())
 }
 
 func (c IpInterface) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c IpInterface) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (IpInterface) DecodeFromPtr(p capnp.Ptr) IpInterface {
+	return IpInterface(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c IpInterface) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A IpInterface_Server is a IpInterface with a local implementation.
@@ -751,15 +848,15 @@ type IpInterface_Server interface {
 }
 
 // IpInterface_NewServer creates a new Server from an implementation of IpInterface_Server.
-func IpInterface_NewServer(s IpInterface_Server, policy *server.Policy) *server.Server {
+func IpInterface_NewServer(s IpInterface_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(IpInterface_Methods(nil, s), s, c, policy)
+	return server.New(IpInterface_Methods(nil, s), s, c)
 }
 
 // IpInterface_ServerToClient creates a new Client from an implementation of IpInterface_Server.
 // The caller is responsible for calling Release on the returned Client.
-func IpInterface_ServerToClient(s IpInterface_Server, policy *server.Policy) IpInterface {
-	return IpInterface{Client: capnp.NewClient(IpInterface_NewServer(s, policy))}
+func IpInterface_ServerToClient(s IpInterface_Server) IpInterface {
+	return IpInterface(capnp.NewClient(IpInterface_NewServer(s)))
 }
 
 // IpInterface_Methods appends Methods to a slice that invoke the methods on s.
@@ -804,13 +901,13 @@ type IpInterface_listenTcp struct {
 
 // Args returns the call's arguments.
 func (c IpInterface_listenTcp) Args() IpInterface_listenTcp_Params {
-	return IpInterface_listenTcp_Params{Struct: c.Call.Args()}
+	return IpInterface_listenTcp_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpInterface_listenTcp) AllocResults() (IpInterface_listenTcp_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenTcp_Results{Struct: r}, err
+	return IpInterface_listenTcp_Results(r), err
 }
 
 // IpInterface_listenUdp holds the state for a server call to IpInterface.listenUdp.
@@ -821,86 +918,104 @@ type IpInterface_listenUdp struct {
 
 // Args returns the call's arguments.
 func (c IpInterface_listenUdp) Args() IpInterface_listenUdp_Params {
-	return IpInterface_listenUdp_Params{Struct: c.Call.Args()}
+	return IpInterface_listenUdp_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpInterface_listenUdp) AllocResults() (IpInterface_listenUdp_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenUdp_Results{Struct: r}, err
+	return IpInterface_listenUdp_Results(r), err
 }
 
-type IpInterface_listenTcp_Params struct{ capnp.Struct }
+// IpInterface_List is a list of IpInterface.
+type IpInterface_List = capnp.CapList[IpInterface]
+
+// NewIpInterface creates a new list of IpInterface.
+func NewIpInterface_List(s *capnp.Segment, sz int32) (IpInterface_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[IpInterface](l), err
+}
+
+type IpInterface_listenTcp_Params capnp.Struct
 
 // IpInterface_listenTcp_Params_TypeID is the unique identifier for the type IpInterface_listenTcp_Params.
 const IpInterface_listenTcp_Params_TypeID = 0xfd226ae4c6bd2b1e
 
 func NewIpInterface_listenTcp_Params(s *capnp.Segment) (IpInterface_listenTcp_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpInterface_listenTcp_Params{st}, err
+	return IpInterface_listenTcp_Params(st), err
 }
 
 func NewRootIpInterface_listenTcp_Params(s *capnp.Segment) (IpInterface_listenTcp_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpInterface_listenTcp_Params{st}, err
+	return IpInterface_listenTcp_Params(st), err
 }
 
 func ReadRootIpInterface_listenTcp_Params(msg *capnp.Message) (IpInterface_listenTcp_Params, error) {
 	root, err := msg.Root()
-	return IpInterface_listenTcp_Params{root.Struct()}, err
+	return IpInterface_listenTcp_Params(root.Struct()), err
 }
 
 func (s IpInterface_listenTcp_Params) String() string {
-	str, _ := text.Marshal(0xfd226ae4c6bd2b1e, s.Struct)
+	str, _ := text.Marshal(0xfd226ae4c6bd2b1e, capnp.Struct(s))
 	return str
 }
 
+func (s IpInterface_listenTcp_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpInterface_listenTcp_Params) DecodeFromPtr(p capnp.Ptr) IpInterface_listenTcp_Params {
+	return IpInterface_listenTcp_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpInterface_listenTcp_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpInterface_listenTcp_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpInterface_listenTcp_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpInterface_listenTcp_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpInterface_listenTcp_Params) PortNum() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s IpInterface_listenTcp_Params) SetPortNum(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 func (s IpInterface_listenTcp_Params) Port() TcpPort {
-	p, _ := s.Struct.Ptr(0)
-	return TcpPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return TcpPort(p.Interface().Client())
 }
 
 func (s IpInterface_listenTcp_Params) HasPort() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpInterface_listenTcp_Params) SetPort(v TcpPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenTcp_Params_List is a list of IpInterface_listenTcp_Params.
-type IpInterface_listenTcp_Params_List struct{ capnp.List }
+type IpInterface_listenTcp_Params_List = capnp.StructList[IpInterface_listenTcp_Params]
 
 // NewIpInterface_listenTcp_Params creates a new list of IpInterface_listenTcp_Params.
 func NewIpInterface_listenTcp_Params_List(s *capnp.Segment, sz int32) (IpInterface_listenTcp_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return IpInterface_listenTcp_Params_List{l}, err
-}
-
-func (s IpInterface_listenTcp_Params_List) At(i int) IpInterface_listenTcp_Params {
-	return IpInterface_listenTcp_Params{s.List.Struct(i)}
-}
-
-func (s IpInterface_listenTcp_Params_List) Set(i int, v IpInterface_listenTcp_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpInterface_listenTcp_Params_List) String() string {
-	str, _ := text.MarshalList(0xfd226ae4c6bd2b1e, s.List)
-	return str
+	return capnp.StructList[IpInterface_listenTcp_Params](l), err
 }
 
 // IpInterface_listenTcp_Params_Future is a wrapper for a IpInterface_listenTcp_Params promised by a client call.
@@ -908,76 +1023,85 @@ type IpInterface_listenTcp_Params_Future struct{ *capnp.Future }
 
 func (p IpInterface_listenTcp_Params_Future) Struct() (IpInterface_listenTcp_Params, error) {
 	s, err := p.Future.Struct()
-	return IpInterface_listenTcp_Params{s}, err
+	return IpInterface_listenTcp_Params(s), err
 }
 
 func (p IpInterface_listenTcp_Params_Future) Port() TcpPort {
-	return TcpPort{Client: p.Future.Field(0, nil).Client()}
+	return TcpPort(p.Future.Field(0, nil).Client())
 }
 
-type IpInterface_listenTcp_Results struct{ capnp.Struct }
+type IpInterface_listenTcp_Results capnp.Struct
 
 // IpInterface_listenTcp_Results_TypeID is the unique identifier for the type IpInterface_listenTcp_Results.
 const IpInterface_listenTcp_Results_TypeID = 0x9381253786627ecf
 
 func NewIpInterface_listenTcp_Results(s *capnp.Segment) (IpInterface_listenTcp_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenTcp_Results{st}, err
+	return IpInterface_listenTcp_Results(st), err
 }
 
 func NewRootIpInterface_listenTcp_Results(s *capnp.Segment) (IpInterface_listenTcp_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenTcp_Results{st}, err
+	return IpInterface_listenTcp_Results(st), err
 }
 
 func ReadRootIpInterface_listenTcp_Results(msg *capnp.Message) (IpInterface_listenTcp_Results, error) {
 	root, err := msg.Root()
-	return IpInterface_listenTcp_Results{root.Struct()}, err
+	return IpInterface_listenTcp_Results(root.Struct()), err
 }
 
 func (s IpInterface_listenTcp_Results) String() string {
-	str, _ := text.Marshal(0x9381253786627ecf, s.Struct)
+	str, _ := text.Marshal(0x9381253786627ecf, capnp.Struct(s))
 	return str
 }
 
+func (s IpInterface_listenTcp_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpInterface_listenTcp_Results) DecodeFromPtr(p capnp.Ptr) IpInterface_listenTcp_Results {
+	return IpInterface_listenTcp_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpInterface_listenTcp_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpInterface_listenTcp_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpInterface_listenTcp_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpInterface_listenTcp_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpInterface_listenTcp_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s IpInterface_listenTcp_Results) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpInterface_listenTcp_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenTcp_Results_List is a list of IpInterface_listenTcp_Results.
-type IpInterface_listenTcp_Results_List struct{ capnp.List }
+type IpInterface_listenTcp_Results_List = capnp.StructList[IpInterface_listenTcp_Results]
 
 // NewIpInterface_listenTcp_Results creates a new list of IpInterface_listenTcp_Results.
 func NewIpInterface_listenTcp_Results_List(s *capnp.Segment, sz int32) (IpInterface_listenTcp_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpInterface_listenTcp_Results_List{l}, err
-}
-
-func (s IpInterface_listenTcp_Results_List) At(i int) IpInterface_listenTcp_Results {
-	return IpInterface_listenTcp_Results{s.List.Struct(i)}
-}
-
-func (s IpInterface_listenTcp_Results_List) Set(i int, v IpInterface_listenTcp_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpInterface_listenTcp_Results_List) String() string {
-	str, _ := text.MarshalList(0x9381253786627ecf, s.List)
-	return str
+	return capnp.StructList[IpInterface_listenTcp_Results](l), err
 }
 
 // IpInterface_listenTcp_Results_Future is a wrapper for a IpInterface_listenTcp_Results promised by a client call.
@@ -985,84 +1109,93 @@ type IpInterface_listenTcp_Results_Future struct{ *capnp.Future }
 
 func (p IpInterface_listenTcp_Results_Future) Struct() (IpInterface_listenTcp_Results, error) {
 	s, err := p.Future.Struct()
-	return IpInterface_listenTcp_Results{s}, err
+	return IpInterface_listenTcp_Results(s), err
 }
 
 func (p IpInterface_listenTcp_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
-type IpInterface_listenUdp_Params struct{ capnp.Struct }
+type IpInterface_listenUdp_Params capnp.Struct
 
 // IpInterface_listenUdp_Params_TypeID is the unique identifier for the type IpInterface_listenUdp_Params.
 const IpInterface_listenUdp_Params_TypeID = 0xa1d8815a262abc49
 
 func NewIpInterface_listenUdp_Params(s *capnp.Segment) (IpInterface_listenUdp_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpInterface_listenUdp_Params{st}, err
+	return IpInterface_listenUdp_Params(st), err
 }
 
 func NewRootIpInterface_listenUdp_Params(s *capnp.Segment) (IpInterface_listenUdp_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpInterface_listenUdp_Params{st}, err
+	return IpInterface_listenUdp_Params(st), err
 }
 
 func ReadRootIpInterface_listenUdp_Params(msg *capnp.Message) (IpInterface_listenUdp_Params, error) {
 	root, err := msg.Root()
-	return IpInterface_listenUdp_Params{root.Struct()}, err
+	return IpInterface_listenUdp_Params(root.Struct()), err
 }
 
 func (s IpInterface_listenUdp_Params) String() string {
-	str, _ := text.Marshal(0xa1d8815a262abc49, s.Struct)
+	str, _ := text.Marshal(0xa1d8815a262abc49, capnp.Struct(s))
 	return str
 }
 
+func (s IpInterface_listenUdp_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpInterface_listenUdp_Params) DecodeFromPtr(p capnp.Ptr) IpInterface_listenUdp_Params {
+	return IpInterface_listenUdp_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpInterface_listenUdp_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpInterface_listenUdp_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpInterface_listenUdp_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpInterface_listenUdp_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpInterface_listenUdp_Params) PortNum() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s IpInterface_listenUdp_Params) SetPortNum(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 func (s IpInterface_listenUdp_Params) Port() UdpPort {
-	p, _ := s.Struct.Ptr(0)
-	return UdpPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return UdpPort(p.Interface().Client())
 }
 
 func (s IpInterface_listenUdp_Params) HasPort() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpInterface_listenUdp_Params) SetPort(v UdpPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenUdp_Params_List is a list of IpInterface_listenUdp_Params.
-type IpInterface_listenUdp_Params_List struct{ capnp.List }
+type IpInterface_listenUdp_Params_List = capnp.StructList[IpInterface_listenUdp_Params]
 
 // NewIpInterface_listenUdp_Params creates a new list of IpInterface_listenUdp_Params.
 func NewIpInterface_listenUdp_Params_List(s *capnp.Segment, sz int32) (IpInterface_listenUdp_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return IpInterface_listenUdp_Params_List{l}, err
-}
-
-func (s IpInterface_listenUdp_Params_List) At(i int) IpInterface_listenUdp_Params {
-	return IpInterface_listenUdp_Params{s.List.Struct(i)}
-}
-
-func (s IpInterface_listenUdp_Params_List) Set(i int, v IpInterface_listenUdp_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpInterface_listenUdp_Params_List) String() string {
-	str, _ := text.MarshalList(0xa1d8815a262abc49, s.List)
-	return str
+	return capnp.StructList[IpInterface_listenUdp_Params](l), err
 }
 
 // IpInterface_listenUdp_Params_Future is a wrapper for a IpInterface_listenUdp_Params promised by a client call.
@@ -1070,76 +1203,85 @@ type IpInterface_listenUdp_Params_Future struct{ *capnp.Future }
 
 func (p IpInterface_listenUdp_Params_Future) Struct() (IpInterface_listenUdp_Params, error) {
 	s, err := p.Future.Struct()
-	return IpInterface_listenUdp_Params{s}, err
+	return IpInterface_listenUdp_Params(s), err
 }
 
 func (p IpInterface_listenUdp_Params_Future) Port() UdpPort {
-	return UdpPort{Client: p.Future.Field(0, nil).Client()}
+	return UdpPort(p.Future.Field(0, nil).Client())
 }
 
-type IpInterface_listenUdp_Results struct{ capnp.Struct }
+type IpInterface_listenUdp_Results capnp.Struct
 
 // IpInterface_listenUdp_Results_TypeID is the unique identifier for the type IpInterface_listenUdp_Results.
 const IpInterface_listenUdp_Results_TypeID = 0xcb83a480981bc290
 
 func NewIpInterface_listenUdp_Results(s *capnp.Segment) (IpInterface_listenUdp_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenUdp_Results{st}, err
+	return IpInterface_listenUdp_Results(st), err
 }
 
 func NewRootIpInterface_listenUdp_Results(s *capnp.Segment) (IpInterface_listenUdp_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpInterface_listenUdp_Results{st}, err
+	return IpInterface_listenUdp_Results(st), err
 }
 
 func ReadRootIpInterface_listenUdp_Results(msg *capnp.Message) (IpInterface_listenUdp_Results, error) {
 	root, err := msg.Root()
-	return IpInterface_listenUdp_Results{root.Struct()}, err
+	return IpInterface_listenUdp_Results(root.Struct()), err
 }
 
 func (s IpInterface_listenUdp_Results) String() string {
-	str, _ := text.Marshal(0xcb83a480981bc290, s.Struct)
+	str, _ := text.Marshal(0xcb83a480981bc290, capnp.Struct(s))
 	return str
 }
 
+func (s IpInterface_listenUdp_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpInterface_listenUdp_Results) DecodeFromPtr(p capnp.Ptr) IpInterface_listenUdp_Results {
+	return IpInterface_listenUdp_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpInterface_listenUdp_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpInterface_listenUdp_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpInterface_listenUdp_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpInterface_listenUdp_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpInterface_listenUdp_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s IpInterface_listenUdp_Results) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpInterface_listenUdp_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpInterface_listenUdp_Results_List is a list of IpInterface_listenUdp_Results.
-type IpInterface_listenUdp_Results_List struct{ capnp.List }
+type IpInterface_listenUdp_Results_List = capnp.StructList[IpInterface_listenUdp_Results]
 
 // NewIpInterface_listenUdp_Results creates a new list of IpInterface_listenUdp_Results.
 func NewIpInterface_listenUdp_Results_List(s *capnp.Segment, sz int32) (IpInterface_listenUdp_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpInterface_listenUdp_Results_List{l}, err
-}
-
-func (s IpInterface_listenUdp_Results_List) At(i int) IpInterface_listenUdp_Results {
-	return IpInterface_listenUdp_Results{s.List.Struct(i)}
-}
-
-func (s IpInterface_listenUdp_Results_List) Set(i int, v IpInterface_listenUdp_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpInterface_listenUdp_Results_List) String() string {
-	str, _ := text.MarshalList(0xcb83a480981bc290, s.List)
-	return str
+	return capnp.StructList[IpInterface_listenUdp_Results](l), err
 }
 
 // IpInterface_listenUdp_Results_Future is a wrapper for a IpInterface_listenUdp_Results promised by a client call.
@@ -1147,14 +1289,14 @@ type IpInterface_listenUdp_Results_Future struct{ *capnp.Future }
 
 func (p IpInterface_listenUdp_Results_Future) Struct() (IpInterface_listenUdp_Results, error) {
 	s, err := p.Future.Struct()
-	return IpInterface_listenUdp_Results{s}, err
+	return IpInterface_listenUdp_Results(s), err
 }
 
 func (p IpInterface_listenUdp_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
-type IpRemoteHost struct{ Client *capnp.Client }
+type IpRemoteHost capnp.Client
 
 // IpRemoteHost_TypeID is the unique identifier for the type IpRemoteHost.
 const IpRemoteHost_TypeID = 0x905dd76b298b3130
@@ -1170,9 +1312,9 @@ func (c IpRemoteHost) GetTcpPort(ctx context.Context, params func(IpRemoteHost_g
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpRemoteHost_getTcpPort_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpRemoteHost_getTcpPort_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpRemoteHost_getTcpPort_Results_Future{Future: ans.Future()}, release
 }
 func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_getUdpPort_Params) error) (IpRemoteHost_getUdpPort_Results_Future, capnp.ReleaseFunc) {
@@ -1186,20 +1328,30 @@ func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_g
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpRemoteHost_getUdpPort_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpRemoteHost_getUdpPort_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpRemoteHost_getUdpPort_Results_Future{Future: ans.Future()}, release
 }
 
 func (c IpRemoteHost) AddRef() IpRemoteHost {
-	return IpRemoteHost{
-		Client: c.Client.AddRef(),
-	}
+	return IpRemoteHost(capnp.Client(c).AddRef())
 }
 
 func (c IpRemoteHost) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c IpRemoteHost) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (IpRemoteHost) DecodeFromPtr(p capnp.Ptr) IpRemoteHost {
+	return IpRemoteHost(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c IpRemoteHost) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A IpRemoteHost_Server is a IpRemoteHost with a local implementation.
@@ -1210,15 +1362,15 @@ type IpRemoteHost_Server interface {
 }
 
 // IpRemoteHost_NewServer creates a new Server from an implementation of IpRemoteHost_Server.
-func IpRemoteHost_NewServer(s IpRemoteHost_Server, policy *server.Policy) *server.Server {
+func IpRemoteHost_NewServer(s IpRemoteHost_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(IpRemoteHost_Methods(nil, s), s, c, policy)
+	return server.New(IpRemoteHost_Methods(nil, s), s, c)
 }
 
 // IpRemoteHost_ServerToClient creates a new Client from an implementation of IpRemoteHost_Server.
 // The caller is responsible for calling Release on the returned Client.
-func IpRemoteHost_ServerToClient(s IpRemoteHost_Server, policy *server.Policy) IpRemoteHost {
-	return IpRemoteHost{Client: capnp.NewClient(IpRemoteHost_NewServer(s, policy))}
+func IpRemoteHost_ServerToClient(s IpRemoteHost_Server) IpRemoteHost {
+	return IpRemoteHost(capnp.NewClient(IpRemoteHost_NewServer(s)))
 }
 
 // IpRemoteHost_Methods appends Methods to a slice that invoke the methods on s.
@@ -1263,13 +1415,13 @@ type IpRemoteHost_getTcpPort struct {
 
 // Args returns the call's arguments.
 func (c IpRemoteHost_getTcpPort) Args() IpRemoteHost_getTcpPort_Params {
-	return IpRemoteHost_getTcpPort_Params{Struct: c.Call.Args()}
+	return IpRemoteHost_getTcpPort_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpRemoteHost_getTcpPort) AllocResults() (IpRemoteHost_getTcpPort_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getTcpPort_Results{Struct: r}, err
+	return IpRemoteHost_getTcpPort_Results(r), err
 }
 
 // IpRemoteHost_getUdpPort holds the state for a server call to IpRemoteHost.getUdpPort.
@@ -1280,68 +1432,86 @@ type IpRemoteHost_getUdpPort struct {
 
 // Args returns the call's arguments.
 func (c IpRemoteHost_getUdpPort) Args() IpRemoteHost_getUdpPort_Params {
-	return IpRemoteHost_getUdpPort_Params{Struct: c.Call.Args()}
+	return IpRemoteHost_getUdpPort_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c IpRemoteHost_getUdpPort) AllocResults() (IpRemoteHost_getUdpPort_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getUdpPort_Results{Struct: r}, err
+	return IpRemoteHost_getUdpPort_Results(r), err
 }
 
-type IpRemoteHost_getTcpPort_Params struct{ capnp.Struct }
+// IpRemoteHost_List is a list of IpRemoteHost.
+type IpRemoteHost_List = capnp.CapList[IpRemoteHost]
+
+// NewIpRemoteHost creates a new list of IpRemoteHost.
+func NewIpRemoteHost_List(s *capnp.Segment, sz int32) (IpRemoteHost_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[IpRemoteHost](l), err
+}
+
+type IpRemoteHost_getTcpPort_Params capnp.Struct
 
 // IpRemoteHost_getTcpPort_Params_TypeID is the unique identifier for the type IpRemoteHost_getTcpPort_Params.
 const IpRemoteHost_getTcpPort_Params_TypeID = 0xed10beb11e7383e9
 
 func NewIpRemoteHost_getTcpPort_Params(s *capnp.Segment) (IpRemoteHost_getTcpPort_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpRemoteHost_getTcpPort_Params{st}, err
+	return IpRemoteHost_getTcpPort_Params(st), err
 }
 
 func NewRootIpRemoteHost_getTcpPort_Params(s *capnp.Segment) (IpRemoteHost_getTcpPort_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpRemoteHost_getTcpPort_Params{st}, err
+	return IpRemoteHost_getTcpPort_Params(st), err
 }
 
 func ReadRootIpRemoteHost_getTcpPort_Params(msg *capnp.Message) (IpRemoteHost_getTcpPort_Params, error) {
 	root, err := msg.Root()
-	return IpRemoteHost_getTcpPort_Params{root.Struct()}, err
+	return IpRemoteHost_getTcpPort_Params(root.Struct()), err
 }
 
 func (s IpRemoteHost_getTcpPort_Params) String() string {
-	str, _ := text.Marshal(0xed10beb11e7383e9, s.Struct)
+	str, _ := text.Marshal(0xed10beb11e7383e9, capnp.Struct(s))
 	return str
 }
 
+func (s IpRemoteHost_getTcpPort_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpRemoteHost_getTcpPort_Params) DecodeFromPtr(p capnp.Ptr) IpRemoteHost_getTcpPort_Params {
+	return IpRemoteHost_getTcpPort_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpRemoteHost_getTcpPort_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpRemoteHost_getTcpPort_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpRemoteHost_getTcpPort_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpRemoteHost_getTcpPort_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpRemoteHost_getTcpPort_Params) PortNum() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s IpRemoteHost_getTcpPort_Params) SetPortNum(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 // IpRemoteHost_getTcpPort_Params_List is a list of IpRemoteHost_getTcpPort_Params.
-type IpRemoteHost_getTcpPort_Params_List struct{ capnp.List }
+type IpRemoteHost_getTcpPort_Params_List = capnp.StructList[IpRemoteHost_getTcpPort_Params]
 
 // NewIpRemoteHost_getTcpPort_Params creates a new list of IpRemoteHost_getTcpPort_Params.
 func NewIpRemoteHost_getTcpPort_Params_List(s *capnp.Segment, sz int32) (IpRemoteHost_getTcpPort_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return IpRemoteHost_getTcpPort_Params_List{l}, err
-}
-
-func (s IpRemoteHost_getTcpPort_Params_List) At(i int) IpRemoteHost_getTcpPort_Params {
-	return IpRemoteHost_getTcpPort_Params{s.List.Struct(i)}
-}
-
-func (s IpRemoteHost_getTcpPort_Params_List) Set(i int, v IpRemoteHost_getTcpPort_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpRemoteHost_getTcpPort_Params_List) String() string {
-	str, _ := text.MarshalList(0xed10beb11e7383e9, s.List)
-	return str
+	return capnp.StructList[IpRemoteHost_getTcpPort_Params](l), err
 }
 
 // IpRemoteHost_getTcpPort_Params_Future is a wrapper for a IpRemoteHost_getTcpPort_Params promised by a client call.
@@ -1349,72 +1519,81 @@ type IpRemoteHost_getTcpPort_Params_Future struct{ *capnp.Future }
 
 func (p IpRemoteHost_getTcpPort_Params_Future) Struct() (IpRemoteHost_getTcpPort_Params, error) {
 	s, err := p.Future.Struct()
-	return IpRemoteHost_getTcpPort_Params{s}, err
+	return IpRemoteHost_getTcpPort_Params(s), err
 }
 
-type IpRemoteHost_getTcpPort_Results struct{ capnp.Struct }
+type IpRemoteHost_getTcpPort_Results capnp.Struct
 
 // IpRemoteHost_getTcpPort_Results_TypeID is the unique identifier for the type IpRemoteHost_getTcpPort_Results.
 const IpRemoteHost_getTcpPort_Results_TypeID = 0xd77df9f44cfcde33
 
 func NewIpRemoteHost_getTcpPort_Results(s *capnp.Segment) (IpRemoteHost_getTcpPort_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getTcpPort_Results{st}, err
+	return IpRemoteHost_getTcpPort_Results(st), err
 }
 
 func NewRootIpRemoteHost_getTcpPort_Results(s *capnp.Segment) (IpRemoteHost_getTcpPort_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getTcpPort_Results{st}, err
+	return IpRemoteHost_getTcpPort_Results(st), err
 }
 
 func ReadRootIpRemoteHost_getTcpPort_Results(msg *capnp.Message) (IpRemoteHost_getTcpPort_Results, error) {
 	root, err := msg.Root()
-	return IpRemoteHost_getTcpPort_Results{root.Struct()}, err
+	return IpRemoteHost_getTcpPort_Results(root.Struct()), err
 }
 
 func (s IpRemoteHost_getTcpPort_Results) String() string {
-	str, _ := text.Marshal(0xd77df9f44cfcde33, s.Struct)
+	str, _ := text.Marshal(0xd77df9f44cfcde33, capnp.Struct(s))
 	return str
 }
 
+func (s IpRemoteHost_getTcpPort_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpRemoteHost_getTcpPort_Results) DecodeFromPtr(p capnp.Ptr) IpRemoteHost_getTcpPort_Results {
+	return IpRemoteHost_getTcpPort_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpRemoteHost_getTcpPort_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpRemoteHost_getTcpPort_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpRemoteHost_getTcpPort_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpRemoteHost_getTcpPort_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpRemoteHost_getTcpPort_Results) Port() TcpPort {
-	p, _ := s.Struct.Ptr(0)
-	return TcpPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return TcpPort(p.Interface().Client())
 }
 
 func (s IpRemoteHost_getTcpPort_Results) HasPort() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpRemoteHost_getTcpPort_Results) SetPort(v TcpPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpRemoteHost_getTcpPort_Results_List is a list of IpRemoteHost_getTcpPort_Results.
-type IpRemoteHost_getTcpPort_Results_List struct{ capnp.List }
+type IpRemoteHost_getTcpPort_Results_List = capnp.StructList[IpRemoteHost_getTcpPort_Results]
 
 // NewIpRemoteHost_getTcpPort_Results creates a new list of IpRemoteHost_getTcpPort_Results.
 func NewIpRemoteHost_getTcpPort_Results_List(s *capnp.Segment, sz int32) (IpRemoteHost_getTcpPort_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpRemoteHost_getTcpPort_Results_List{l}, err
-}
-
-func (s IpRemoteHost_getTcpPort_Results_List) At(i int) IpRemoteHost_getTcpPort_Results {
-	return IpRemoteHost_getTcpPort_Results{s.List.Struct(i)}
-}
-
-func (s IpRemoteHost_getTcpPort_Results_List) Set(i int, v IpRemoteHost_getTcpPort_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpRemoteHost_getTcpPort_Results_List) String() string {
-	str, _ := text.MarshalList(0xd77df9f44cfcde33, s.List)
-	return str
+	return capnp.StructList[IpRemoteHost_getTcpPort_Results](l), err
 }
 
 // IpRemoteHost_getTcpPort_Results_Future is a wrapper for a IpRemoteHost_getTcpPort_Results promised by a client call.
@@ -1422,66 +1601,75 @@ type IpRemoteHost_getTcpPort_Results_Future struct{ *capnp.Future }
 
 func (p IpRemoteHost_getTcpPort_Results_Future) Struct() (IpRemoteHost_getTcpPort_Results, error) {
 	s, err := p.Future.Struct()
-	return IpRemoteHost_getTcpPort_Results{s}, err
+	return IpRemoteHost_getTcpPort_Results(s), err
 }
 
 func (p IpRemoteHost_getTcpPort_Results_Future) Port() TcpPort {
-	return TcpPort{Client: p.Future.Field(0, nil).Client()}
+	return TcpPort(p.Future.Field(0, nil).Client())
 }
 
-type IpRemoteHost_getUdpPort_Params struct{ capnp.Struct }
+type IpRemoteHost_getUdpPort_Params capnp.Struct
 
 // IpRemoteHost_getUdpPort_Params_TypeID is the unique identifier for the type IpRemoteHost_getUdpPort_Params.
 const IpRemoteHost_getUdpPort_Params_TypeID = 0xb62b02486ebe26ed
 
 func NewIpRemoteHost_getUdpPort_Params(s *capnp.Segment) (IpRemoteHost_getUdpPort_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpRemoteHost_getUdpPort_Params{st}, err
+	return IpRemoteHost_getUdpPort_Params(st), err
 }
 
 func NewRootIpRemoteHost_getUdpPort_Params(s *capnp.Segment) (IpRemoteHost_getUdpPort_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return IpRemoteHost_getUdpPort_Params{st}, err
+	return IpRemoteHost_getUdpPort_Params(st), err
 }
 
 func ReadRootIpRemoteHost_getUdpPort_Params(msg *capnp.Message) (IpRemoteHost_getUdpPort_Params, error) {
 	root, err := msg.Root()
-	return IpRemoteHost_getUdpPort_Params{root.Struct()}, err
+	return IpRemoteHost_getUdpPort_Params(root.Struct()), err
 }
 
 func (s IpRemoteHost_getUdpPort_Params) String() string {
-	str, _ := text.Marshal(0xb62b02486ebe26ed, s.Struct)
+	str, _ := text.Marshal(0xb62b02486ebe26ed, capnp.Struct(s))
 	return str
 }
 
+func (s IpRemoteHost_getUdpPort_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpRemoteHost_getUdpPort_Params) DecodeFromPtr(p capnp.Ptr) IpRemoteHost_getUdpPort_Params {
+	return IpRemoteHost_getUdpPort_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpRemoteHost_getUdpPort_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpRemoteHost_getUdpPort_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpRemoteHost_getUdpPort_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpRemoteHost_getUdpPort_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpRemoteHost_getUdpPort_Params) PortNum() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s IpRemoteHost_getUdpPort_Params) SetPortNum(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 // IpRemoteHost_getUdpPort_Params_List is a list of IpRemoteHost_getUdpPort_Params.
-type IpRemoteHost_getUdpPort_Params_List struct{ capnp.List }
+type IpRemoteHost_getUdpPort_Params_List = capnp.StructList[IpRemoteHost_getUdpPort_Params]
 
 // NewIpRemoteHost_getUdpPort_Params creates a new list of IpRemoteHost_getUdpPort_Params.
 func NewIpRemoteHost_getUdpPort_Params_List(s *capnp.Segment, sz int32) (IpRemoteHost_getUdpPort_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return IpRemoteHost_getUdpPort_Params_List{l}, err
-}
-
-func (s IpRemoteHost_getUdpPort_Params_List) At(i int) IpRemoteHost_getUdpPort_Params {
-	return IpRemoteHost_getUdpPort_Params{s.List.Struct(i)}
-}
-
-func (s IpRemoteHost_getUdpPort_Params_List) Set(i int, v IpRemoteHost_getUdpPort_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpRemoteHost_getUdpPort_Params_List) String() string {
-	str, _ := text.MarshalList(0xb62b02486ebe26ed, s.List)
-	return str
+	return capnp.StructList[IpRemoteHost_getUdpPort_Params](l), err
 }
 
 // IpRemoteHost_getUdpPort_Params_Future is a wrapper for a IpRemoteHost_getUdpPort_Params promised by a client call.
@@ -1489,72 +1677,81 @@ type IpRemoteHost_getUdpPort_Params_Future struct{ *capnp.Future }
 
 func (p IpRemoteHost_getUdpPort_Params_Future) Struct() (IpRemoteHost_getUdpPort_Params, error) {
 	s, err := p.Future.Struct()
-	return IpRemoteHost_getUdpPort_Params{s}, err
+	return IpRemoteHost_getUdpPort_Params(s), err
 }
 
-type IpRemoteHost_getUdpPort_Results struct{ capnp.Struct }
+type IpRemoteHost_getUdpPort_Results capnp.Struct
 
 // IpRemoteHost_getUdpPort_Results_TypeID is the unique identifier for the type IpRemoteHost_getUdpPort_Results.
 const IpRemoteHost_getUdpPort_Results_TypeID = 0xf53aa3a93e49003b
 
 func NewIpRemoteHost_getUdpPort_Results(s *capnp.Segment) (IpRemoteHost_getUdpPort_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getUdpPort_Results{st}, err
+	return IpRemoteHost_getUdpPort_Results(st), err
 }
 
 func NewRootIpRemoteHost_getUdpPort_Results(s *capnp.Segment) (IpRemoteHost_getUdpPort_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return IpRemoteHost_getUdpPort_Results{st}, err
+	return IpRemoteHost_getUdpPort_Results(st), err
 }
 
 func ReadRootIpRemoteHost_getUdpPort_Results(msg *capnp.Message) (IpRemoteHost_getUdpPort_Results, error) {
 	root, err := msg.Root()
-	return IpRemoteHost_getUdpPort_Results{root.Struct()}, err
+	return IpRemoteHost_getUdpPort_Results(root.Struct()), err
 }
 
 func (s IpRemoteHost_getUdpPort_Results) String() string {
-	str, _ := text.Marshal(0xf53aa3a93e49003b, s.Struct)
+	str, _ := text.Marshal(0xf53aa3a93e49003b, capnp.Struct(s))
 	return str
 }
 
+func (s IpRemoteHost_getUdpPort_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpRemoteHost_getUdpPort_Results) DecodeFromPtr(p capnp.Ptr) IpRemoteHost_getUdpPort_Results {
+	return IpRemoteHost_getUdpPort_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpRemoteHost_getUdpPort_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpRemoteHost_getUdpPort_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpRemoteHost_getUdpPort_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpRemoteHost_getUdpPort_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpRemoteHost_getUdpPort_Results) Port() UdpPort {
-	p, _ := s.Struct.Ptr(0)
-	return UdpPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return UdpPort(p.Interface().Client())
 }
 
 func (s IpRemoteHost_getUdpPort_Results) HasPort() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpRemoteHost_getUdpPort_Results) SetPort(v UdpPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // IpRemoteHost_getUdpPort_Results_List is a list of IpRemoteHost_getUdpPort_Results.
-type IpRemoteHost_getUdpPort_Results_List struct{ capnp.List }
+type IpRemoteHost_getUdpPort_Results_List = capnp.StructList[IpRemoteHost_getUdpPort_Results]
 
 // NewIpRemoteHost_getUdpPort_Results creates a new list of IpRemoteHost_getUdpPort_Results.
 func NewIpRemoteHost_getUdpPort_Results_List(s *capnp.Segment, sz int32) (IpRemoteHost_getUdpPort_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return IpRemoteHost_getUdpPort_Results_List{l}, err
-}
-
-func (s IpRemoteHost_getUdpPort_Results_List) At(i int) IpRemoteHost_getUdpPort_Results {
-	return IpRemoteHost_getUdpPort_Results{s.List.Struct(i)}
-}
-
-func (s IpRemoteHost_getUdpPort_Results_List) Set(i int, v IpRemoteHost_getUdpPort_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpRemoteHost_getUdpPort_Results_List) String() string {
-	str, _ := text.MarshalList(0xf53aa3a93e49003b, s.List)
-	return str
+	return capnp.StructList[IpRemoteHost_getUdpPort_Results](l), err
 }
 
 // IpRemoteHost_getUdpPort_Results_Future is a wrapper for a IpRemoteHost_getUdpPort_Results promised by a client call.
@@ -1562,14 +1759,14 @@ type IpRemoteHost_getUdpPort_Results_Future struct{ *capnp.Future }
 
 func (p IpRemoteHost_getUdpPort_Results_Future) Struct() (IpRemoteHost_getUdpPort_Results, error) {
 	s, err := p.Future.Struct()
-	return IpRemoteHost_getUdpPort_Results{s}, err
+	return IpRemoteHost_getUdpPort_Results(s), err
 }
 
 func (p IpRemoteHost_getUdpPort_Results_Future) Port() UdpPort {
-	return UdpPort{Client: p.Future.Field(0, nil).Client()}
+	return UdpPort(p.Future.Field(0, nil).Client())
 }
 
-type TcpPort struct{ Client *capnp.Client }
+type TcpPort capnp.Client
 
 // TcpPort_TypeID is the unique identifier for the type TcpPort.
 const TcpPort_TypeID = 0xeab20e1af07806b4
@@ -1585,20 +1782,30 @@ func (c TcpPort) Connect(ctx context.Context, params func(TcpPort_connect_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(TcpPort_connect_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(TcpPort_connect_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return TcpPort_connect_Results_Future{Future: ans.Future()}, release
 }
 
 func (c TcpPort) AddRef() TcpPort {
-	return TcpPort{
-		Client: c.Client.AddRef(),
-	}
+	return TcpPort(capnp.Client(c).AddRef())
 }
 
 func (c TcpPort) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c TcpPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (TcpPort) DecodeFromPtr(p capnp.Ptr) TcpPort {
+	return TcpPort(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c TcpPort) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A TcpPort_Server is a TcpPort with a local implementation.
@@ -1607,15 +1814,15 @@ type TcpPort_Server interface {
 }
 
 // TcpPort_NewServer creates a new Server from an implementation of TcpPort_Server.
-func TcpPort_NewServer(s TcpPort_Server, policy *server.Policy) *server.Server {
+func TcpPort_NewServer(s TcpPort_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(TcpPort_Methods(nil, s), s, c, policy)
+	return server.New(TcpPort_Methods(nil, s), s, c)
 }
 
 // TcpPort_ServerToClient creates a new Client from an implementation of TcpPort_Server.
 // The caller is responsible for calling Release on the returned Client.
-func TcpPort_ServerToClient(s TcpPort_Server, policy *server.Policy) TcpPort {
-	return TcpPort{Client: capnp.NewClient(TcpPort_NewServer(s, policy))}
+func TcpPort_ServerToClient(s TcpPort_Server) TcpPort {
+	return TcpPort(capnp.NewClient(TcpPort_NewServer(s)))
 }
 
 // TcpPort_Methods appends Methods to a slice that invoke the methods on s.
@@ -1648,78 +1855,96 @@ type TcpPort_connect struct {
 
 // Args returns the call's arguments.
 func (c TcpPort_connect) Args() TcpPort_connect_Params {
-	return TcpPort_connect_Params{Struct: c.Call.Args()}
+	return TcpPort_connect_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c TcpPort_connect) AllocResults() (TcpPort_connect_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return TcpPort_connect_Results{Struct: r}, err
+	return TcpPort_connect_Results(r), err
 }
 
-type TcpPort_connect_Params struct{ capnp.Struct }
+// TcpPort_List is a list of TcpPort.
+type TcpPort_List = capnp.CapList[TcpPort]
+
+// NewTcpPort creates a new list of TcpPort.
+func NewTcpPort_List(s *capnp.Segment, sz int32) (TcpPort_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[TcpPort](l), err
+}
+
+type TcpPort_connect_Params capnp.Struct
 
 // TcpPort_connect_Params_TypeID is the unique identifier for the type TcpPort_connect_Params.
 const TcpPort_connect_Params_TypeID = 0x8a60e53250a32321
 
 func NewTcpPort_connect_Params(s *capnp.Segment) (TcpPort_connect_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return TcpPort_connect_Params{st}, err
+	return TcpPort_connect_Params(st), err
 }
 
 func NewRootTcpPort_connect_Params(s *capnp.Segment) (TcpPort_connect_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return TcpPort_connect_Params{st}, err
+	return TcpPort_connect_Params(st), err
 }
 
 func ReadRootTcpPort_connect_Params(msg *capnp.Message) (TcpPort_connect_Params, error) {
 	root, err := msg.Root()
-	return TcpPort_connect_Params{root.Struct()}, err
+	return TcpPort_connect_Params(root.Struct()), err
 }
 
 func (s TcpPort_connect_Params) String() string {
-	str, _ := text.Marshal(0x8a60e53250a32321, s.Struct)
+	str, _ := text.Marshal(0x8a60e53250a32321, capnp.Struct(s))
 	return str
 }
 
+func (s TcpPort_connect_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (TcpPort_connect_Params) DecodeFromPtr(p capnp.Ptr) TcpPort_connect_Params {
+	return TcpPort_connect_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s TcpPort_connect_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s TcpPort_connect_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s TcpPort_connect_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s TcpPort_connect_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s TcpPort_connect_Params) Downstream() util.ByteStream {
-	p, _ := s.Struct.Ptr(0)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s TcpPort_connect_Params) HasDownstream() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s TcpPort_connect_Params) SetDownstream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // TcpPort_connect_Params_List is a list of TcpPort_connect_Params.
-type TcpPort_connect_Params_List struct{ capnp.List }
+type TcpPort_connect_Params_List = capnp.StructList[TcpPort_connect_Params]
 
 // NewTcpPort_connect_Params creates a new list of TcpPort_connect_Params.
 func NewTcpPort_connect_Params_List(s *capnp.Segment, sz int32) (TcpPort_connect_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return TcpPort_connect_Params_List{l}, err
-}
-
-func (s TcpPort_connect_Params_List) At(i int) TcpPort_connect_Params {
-	return TcpPort_connect_Params{s.List.Struct(i)}
-}
-
-func (s TcpPort_connect_Params_List) Set(i int, v TcpPort_connect_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s TcpPort_connect_Params_List) String() string {
-	str, _ := text.MarshalList(0x8a60e53250a32321, s.List)
-	return str
+	return capnp.StructList[TcpPort_connect_Params](l), err
 }
 
 // TcpPort_connect_Params_Future is a wrapper for a TcpPort_connect_Params promised by a client call.
@@ -1727,76 +1952,85 @@ type TcpPort_connect_Params_Future struct{ *capnp.Future }
 
 func (p TcpPort_connect_Params_Future) Struct() (TcpPort_connect_Params, error) {
 	s, err := p.Future.Struct()
-	return TcpPort_connect_Params{s}, err
+	return TcpPort_connect_Params(s), err
 }
 
 func (p TcpPort_connect_Params_Future) Downstream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(0, nil).Client()}
+	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
 
-type TcpPort_connect_Results struct{ capnp.Struct }
+type TcpPort_connect_Results capnp.Struct
 
 // TcpPort_connect_Results_TypeID is the unique identifier for the type TcpPort_connect_Results.
 const TcpPort_connect_Results_TypeID = 0xcdd1222d14073645
 
 func NewTcpPort_connect_Results(s *capnp.Segment) (TcpPort_connect_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return TcpPort_connect_Results{st}, err
+	return TcpPort_connect_Results(st), err
 }
 
 func NewRootTcpPort_connect_Results(s *capnp.Segment) (TcpPort_connect_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return TcpPort_connect_Results{st}, err
+	return TcpPort_connect_Results(st), err
 }
 
 func ReadRootTcpPort_connect_Results(msg *capnp.Message) (TcpPort_connect_Results, error) {
 	root, err := msg.Root()
-	return TcpPort_connect_Results{root.Struct()}, err
+	return TcpPort_connect_Results(root.Struct()), err
 }
 
 func (s TcpPort_connect_Results) String() string {
-	str, _ := text.Marshal(0xcdd1222d14073645, s.Struct)
+	str, _ := text.Marshal(0xcdd1222d14073645, capnp.Struct(s))
 	return str
 }
 
+func (s TcpPort_connect_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (TcpPort_connect_Results) DecodeFromPtr(p capnp.Ptr) TcpPort_connect_Results {
+	return TcpPort_connect_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s TcpPort_connect_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s TcpPort_connect_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s TcpPort_connect_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s TcpPort_connect_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s TcpPort_connect_Results) Upstream() util.ByteStream {
-	p, _ := s.Struct.Ptr(0)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s TcpPort_connect_Results) HasUpstream() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s TcpPort_connect_Results) SetUpstream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // TcpPort_connect_Results_List is a list of TcpPort_connect_Results.
-type TcpPort_connect_Results_List struct{ capnp.List }
+type TcpPort_connect_Results_List = capnp.StructList[TcpPort_connect_Results]
 
 // NewTcpPort_connect_Results creates a new list of TcpPort_connect_Results.
 func NewTcpPort_connect_Results_List(s *capnp.Segment, sz int32) (TcpPort_connect_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return TcpPort_connect_Results_List{l}, err
-}
-
-func (s TcpPort_connect_Results_List) At(i int) TcpPort_connect_Results {
-	return TcpPort_connect_Results{s.List.Struct(i)}
-}
-
-func (s TcpPort_connect_Results_List) Set(i int, v TcpPort_connect_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s TcpPort_connect_Results_List) String() string {
-	str, _ := text.MarshalList(0xcdd1222d14073645, s.List)
-	return str
+	return capnp.StructList[TcpPort_connect_Results](l), err
 }
 
 // TcpPort_connect_Results_Future is a wrapper for a TcpPort_connect_Results promised by a client call.
@@ -1804,14 +2038,14 @@ type TcpPort_connect_Results_Future struct{ *capnp.Future }
 
 func (p TcpPort_connect_Results_Future) Struct() (TcpPort_connect_Results, error) {
 	s, err := p.Future.Struct()
-	return TcpPort_connect_Results{s}, err
+	return TcpPort_connect_Results(s), err
 }
 
 func (p TcpPort_connect_Results_Future) Upstream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(0, nil).Client()}
+	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
 
-type UdpPort struct{ Client *capnp.Client }
+type UdpPort capnp.Client
 
 // UdpPort_TypeID is the unique identifier for the type UdpPort.
 const UdpPort_TypeID = 0xc6212e1217d001ce
@@ -1827,20 +2061,30 @@ func (c UdpPort) Send(ctx context.Context, params func(UdpPort_send_Params) erro
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(UdpPort_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(UdpPort_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return UdpPort_send_Results_Future{Future: ans.Future()}, release
 }
 
 func (c UdpPort) AddRef() UdpPort {
-	return UdpPort{
-		Client: c.Client.AddRef(),
-	}
+	return UdpPort(capnp.Client(c).AddRef())
 }
 
 func (c UdpPort) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c UdpPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (UdpPort) DecodeFromPtr(p capnp.Ptr) UdpPort {
+	return UdpPort(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c UdpPort) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A UdpPort_Server is a UdpPort with a local implementation.
@@ -1849,15 +2093,15 @@ type UdpPort_Server interface {
 }
 
 // UdpPort_NewServer creates a new Server from an implementation of UdpPort_Server.
-func UdpPort_NewServer(s UdpPort_Server, policy *server.Policy) *server.Server {
+func UdpPort_NewServer(s UdpPort_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(UdpPort_Methods(nil, s), s, c, policy)
+	return server.New(UdpPort_Methods(nil, s), s, c)
 }
 
 // UdpPort_ServerToClient creates a new Client from an implementation of UdpPort_Server.
 // The caller is responsible for calling Release on the returned Client.
-func UdpPort_ServerToClient(s UdpPort_Server, policy *server.Policy) UdpPort {
-	return UdpPort{Client: capnp.NewClient(UdpPort_NewServer(s, policy))}
+func UdpPort_ServerToClient(s UdpPort_Server) UdpPort {
+	return UdpPort(capnp.NewClient(UdpPort_NewServer(s)))
 }
 
 // UdpPort_Methods appends Methods to a slice that invoke the methods on s.
@@ -1890,91 +2134,109 @@ type UdpPort_send struct {
 
 // Args returns the call's arguments.
 func (c UdpPort_send) Args() UdpPort_send_Params {
-	return UdpPort_send_Params{Struct: c.Call.Args()}
+	return UdpPort_send_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c UdpPort_send) AllocResults() (UdpPort_send_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return UdpPort_send_Results{Struct: r}, err
+	return UdpPort_send_Results(r), err
 }
 
-type UdpPort_send_Params struct{ capnp.Struct }
+// UdpPort_List is a list of UdpPort.
+type UdpPort_List = capnp.CapList[UdpPort]
+
+// NewUdpPort creates a new list of UdpPort.
+func NewUdpPort_List(s *capnp.Segment, sz int32) (UdpPort_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[UdpPort](l), err
+}
+
+type UdpPort_send_Params capnp.Struct
 
 // UdpPort_send_Params_TypeID is the unique identifier for the type UdpPort_send_Params.
 const UdpPort_send_Params_TypeID = 0xc6ca13f7c8dbd102
 
 func NewUdpPort_send_Params(s *capnp.Segment) (UdpPort_send_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return UdpPort_send_Params{st}, err
+	return UdpPort_send_Params(st), err
 }
 
 func NewRootUdpPort_send_Params(s *capnp.Segment) (UdpPort_send_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return UdpPort_send_Params{st}, err
+	return UdpPort_send_Params(st), err
 }
 
 func ReadRootUdpPort_send_Params(msg *capnp.Message) (UdpPort_send_Params, error) {
 	root, err := msg.Root()
-	return UdpPort_send_Params{root.Struct()}, err
+	return UdpPort_send_Params(root.Struct()), err
 }
 
 func (s UdpPort_send_Params) String() string {
-	str, _ := text.Marshal(0xc6ca13f7c8dbd102, s.Struct)
+	str, _ := text.Marshal(0xc6ca13f7c8dbd102, capnp.Struct(s))
 	return str
 }
 
-func (s UdpPort_send_Params) Message() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+func (s UdpPort_send_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (UdpPort_send_Params) DecodeFromPtr(p capnp.Ptr) UdpPort_send_Params {
+	return UdpPort_send_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s UdpPort_send_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s UdpPort_send_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s UdpPort_send_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s UdpPort_send_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s UdpPort_send_Params) Msg() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
-func (s UdpPort_send_Params) HasMessage() bool {
-	return s.Struct.HasPtr(0)
+func (s UdpPort_send_Params) HasMsg() bool {
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s UdpPort_send_Params) SetMessage(v []byte) error {
-	return s.Struct.SetData(0, v)
+func (s UdpPort_send_Params) SetMsg(v []byte) error {
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s UdpPort_send_Params) ReturnPort() UdpPort {
-	p, _ := s.Struct.Ptr(1)
-	return UdpPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return UdpPort(p.Interface().Client())
 }
 
 func (s UdpPort_send_Params) HasReturnPort() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s UdpPort_send_Params) SetReturnPort(v UdpPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // UdpPort_send_Params_List is a list of UdpPort_send_Params.
-type UdpPort_send_Params_List struct{ capnp.List }
+type UdpPort_send_Params_List = capnp.StructList[UdpPort_send_Params]
 
 // NewUdpPort_send_Params creates a new list of UdpPort_send_Params.
 func NewUdpPort_send_Params_List(s *capnp.Segment, sz int32) (UdpPort_send_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return UdpPort_send_Params_List{l}, err
-}
-
-func (s UdpPort_send_Params_List) At(i int) UdpPort_send_Params {
-	return UdpPort_send_Params{s.List.Struct(i)}
-}
-
-func (s UdpPort_send_Params_List) Set(i int, v UdpPort_send_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s UdpPort_send_Params_List) String() string {
-	str, _ := text.MarshalList(0xc6ca13f7c8dbd102, s.List)
-	return str
+	return capnp.StructList[UdpPort_send_Params](l), err
 }
 
 // UdpPort_send_Params_Future is a wrapper for a UdpPort_send_Params promised by a client call.
@@ -1982,58 +2244,68 @@ type UdpPort_send_Params_Future struct{ *capnp.Future }
 
 func (p UdpPort_send_Params_Future) Struct() (UdpPort_send_Params, error) {
 	s, err := p.Future.Struct()
-	return UdpPort_send_Params{s}, err
+	return UdpPort_send_Params(s), err
 }
 
 func (p UdpPort_send_Params_Future) ReturnPort() UdpPort {
-	return UdpPort{Client: p.Future.Field(1, nil).Client()}
+	return UdpPort(p.Future.Field(1, nil).Client())
 }
 
-type UdpPort_send_Results struct{ capnp.Struct }
+type UdpPort_send_Results capnp.Struct
 
 // UdpPort_send_Results_TypeID is the unique identifier for the type UdpPort_send_Results.
 const UdpPort_send_Results_TypeID = 0x8e43fd8e213b1811
 
 func NewUdpPort_send_Results(s *capnp.Segment) (UdpPort_send_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return UdpPort_send_Results{st}, err
+	return UdpPort_send_Results(st), err
 }
 
 func NewRootUdpPort_send_Results(s *capnp.Segment) (UdpPort_send_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return UdpPort_send_Results{st}, err
+	return UdpPort_send_Results(st), err
 }
 
 func ReadRootUdpPort_send_Results(msg *capnp.Message) (UdpPort_send_Results, error) {
 	root, err := msg.Root()
-	return UdpPort_send_Results{root.Struct()}, err
+	return UdpPort_send_Results(root.Struct()), err
 }
 
 func (s UdpPort_send_Results) String() string {
-	str, _ := text.Marshal(0x8e43fd8e213b1811, s.Struct)
+	str, _ := text.Marshal(0x8e43fd8e213b1811, capnp.Struct(s))
 	return str
 }
 
+func (s UdpPort_send_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (UdpPort_send_Results) DecodeFromPtr(p capnp.Ptr) UdpPort_send_Results {
+	return UdpPort_send_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s UdpPort_send_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s UdpPort_send_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s UdpPort_send_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s UdpPort_send_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // UdpPort_send_Results_List is a list of UdpPort_send_Results.
-type UdpPort_send_Results_List struct{ capnp.List }
+type UdpPort_send_Results_List = capnp.StructList[UdpPort_send_Results]
 
 // NewUdpPort_send_Results creates a new list of UdpPort_send_Results.
 func NewUdpPort_send_Results_List(s *capnp.Segment, sz int32) (UdpPort_send_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return UdpPort_send_Results_List{l}, err
-}
-
-func (s UdpPort_send_Results_List) At(i int) UdpPort_send_Results {
-	return UdpPort_send_Results{s.List.Struct(i)}
-}
-
-func (s UdpPort_send_Results_List) Set(i int, v UdpPort_send_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s UdpPort_send_Results_List) String() string {
-	str, _ := text.MarshalList(0x8e43fd8e213b1811, s.List)
-	return str
+	return capnp.StructList[UdpPort_send_Results](l), err
 }
 
 // UdpPort_send_Results_Future is a wrapper for a UdpPort_send_Results promised by a client call.
@@ -2041,80 +2313,89 @@ type UdpPort_send_Results_Future struct{ *capnp.Future }
 
 func (p UdpPort_send_Results_Future) Struct() (UdpPort_send_Results, error) {
 	s, err := p.Future.Struct()
-	return UdpPort_send_Results{s}, err
+	return UdpPort_send_Results(s), err
 }
 
-type IpPortPowerboxMetadata struct{ capnp.Struct }
+type IpPortPowerboxMetadata capnp.Struct
 
 // IpPortPowerboxMetadata_TypeID is the unique identifier for the type IpPortPowerboxMetadata.
 const IpPortPowerboxMetadata_TypeID = 0x856e71a6a4f22bba
 
 func NewIpPortPowerboxMetadata(s *capnp.Segment) (IpPortPowerboxMetadata, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpPortPowerboxMetadata{st}, err
+	return IpPortPowerboxMetadata(st), err
 }
 
 func NewRootIpPortPowerboxMetadata(s *capnp.Segment) (IpPortPowerboxMetadata, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return IpPortPowerboxMetadata{st}, err
+	return IpPortPowerboxMetadata(st), err
 }
 
 func ReadRootIpPortPowerboxMetadata(msg *capnp.Message) (IpPortPowerboxMetadata, error) {
 	root, err := msg.Root()
-	return IpPortPowerboxMetadata{root.Struct()}, err
+	return IpPortPowerboxMetadata(root.Struct()), err
 }
 
 func (s IpPortPowerboxMetadata) String() string {
-	str, _ := text.Marshal(0x856e71a6a4f22bba, s.Struct)
+	str, _ := text.Marshal(0x856e71a6a4f22bba, capnp.Struct(s))
 	return str
 }
 
+func (s IpPortPowerboxMetadata) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (IpPortPowerboxMetadata) DecodeFromPtr(p capnp.Ptr) IpPortPowerboxMetadata {
+	return IpPortPowerboxMetadata(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s IpPortPowerboxMetadata) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s IpPortPowerboxMetadata) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s IpPortPowerboxMetadata) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s IpPortPowerboxMetadata) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s IpPortPowerboxMetadata) PreferredPortNum() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s IpPortPowerboxMetadata) SetPreferredPortNum(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 func (s IpPortPowerboxMetadata) PreferredHost() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s IpPortPowerboxMetadata) HasPreferredHost() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s IpPortPowerboxMetadata) PreferredHostBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s IpPortPowerboxMetadata) SetPreferredHost(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // IpPortPowerboxMetadata_List is a list of IpPortPowerboxMetadata.
-type IpPortPowerboxMetadata_List struct{ capnp.List }
+type IpPortPowerboxMetadata_List = capnp.StructList[IpPortPowerboxMetadata]
 
 // NewIpPortPowerboxMetadata creates a new list of IpPortPowerboxMetadata.
 func NewIpPortPowerboxMetadata_List(s *capnp.Segment, sz int32) (IpPortPowerboxMetadata_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return IpPortPowerboxMetadata_List{l}, err
-}
-
-func (s IpPortPowerboxMetadata_List) At(i int) IpPortPowerboxMetadata {
-	return IpPortPowerboxMetadata{s.List.Struct(i)}
-}
-
-func (s IpPortPowerboxMetadata_List) Set(i int, v IpPortPowerboxMetadata) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s IpPortPowerboxMetadata_List) String() string {
-	str, _ := text.MarshalList(0x856e71a6a4f22bba, s.List)
-	return str
+	return capnp.StructList[IpPortPowerboxMetadata](l), err
 }
 
 // IpPortPowerboxMetadata_Future is a wrapper for a IpPortPowerboxMetadata promised by a client call.
@@ -2122,10 +2403,10 @@ type IpPortPowerboxMetadata_Future struct{ *capnp.Future }
 
 func (p IpPortPowerboxMetadata_Future) Struct() (IpPortPowerboxMetadata, error) {
 	s, err := p.Future.Struct()
-	return IpPortPowerboxMetadata{s}, err
+	return IpPortPowerboxMetadata(s), err
 }
 
-type PersistentIpNetwork struct{ Client *capnp.Client }
+type PersistentIpNetwork capnp.Client
 
 // PersistentIpNetwork_TypeID is the unique identifier for the type PersistentIpNetwork.
 const PersistentIpNetwork_TypeID = 0xa5b3215660e038f2
@@ -2141,9 +2422,9 @@ func (c PersistentIpNetwork) GetRemoteHost(ctx context.Context, params func(IpNe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHost_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHost_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpNetwork_getRemoteHost_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwork_getRemoteHostByName_Params) error) (IpNetwork_getRemoteHostByName_Results_Future, capnp.ReleaseFunc) {
@@ -2157,9 +2438,9 @@ func (c PersistentIpNetwork) GetRemoteHostByName(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHostByName_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpNetwork_getRemoteHostByName_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpNetwork_getRemoteHostByName_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpNetwork) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -2173,11 +2454,9 @@ func (c PersistentIpNetwork) AddRequirements(ctx context.Context, params func(su
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -2191,20 +2470,30 @@ func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Pe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentIpNetwork) AddRef() PersistentIpNetwork {
-	return PersistentIpNetwork{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentIpNetwork(capnp.Client(c).AddRef())
 }
 
 func (c PersistentIpNetwork) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentIpNetwork) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentIpNetwork) DecodeFromPtr(p capnp.Ptr) PersistentIpNetwork {
+	return PersistentIpNetwork(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentIpNetwork) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentIpNetwork_Server is a PersistentIpNetwork with a local implementation.
@@ -2219,15 +2508,15 @@ type PersistentIpNetwork_Server interface {
 }
 
 // PersistentIpNetwork_NewServer creates a new Server from an implementation of PersistentIpNetwork_Server.
-func PersistentIpNetwork_NewServer(s PersistentIpNetwork_Server, policy *server.Policy) *server.Server {
+func PersistentIpNetwork_NewServer(s PersistentIpNetwork_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentIpNetwork_Methods(nil, s), s, c, policy)
+	return server.New(PersistentIpNetwork_Methods(nil, s), s, c)
 }
 
 // PersistentIpNetwork_ServerToClient creates a new Client from an implementation of PersistentIpNetwork_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentIpNetwork_ServerToClient(s PersistentIpNetwork_Server, policy *server.Policy) PersistentIpNetwork {
-	return PersistentIpNetwork{Client: capnp.NewClient(PersistentIpNetwork_NewServer(s, policy))}
+func PersistentIpNetwork_ServerToClient(s PersistentIpNetwork_Server) PersistentIpNetwork {
+	return PersistentIpNetwork(capnp.NewClient(PersistentIpNetwork_NewServer(s)))
 }
 
 // PersistentIpNetwork_Methods appends Methods to a slice that invoke the methods on s.
@@ -2288,7 +2577,16 @@ func PersistentIpNetwork_Methods(methods []server.Method, s PersistentIpNetwork_
 	return methods
 }
 
-type PersistentIpInterface struct{ Client *capnp.Client }
+// PersistentIpNetwork_List is a list of PersistentIpNetwork.
+type PersistentIpNetwork_List = capnp.CapList[PersistentIpNetwork]
+
+// NewPersistentIpNetwork creates a new list of PersistentIpNetwork.
+func NewPersistentIpNetwork_List(s *capnp.Segment, sz int32) (PersistentIpNetwork_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentIpNetwork](l), err
+}
+
+type PersistentIpInterface capnp.Client
 
 // PersistentIpInterface_TypeID is the unique identifier for the type PersistentIpInterface.
 const PersistentIpInterface_TypeID = 0xcf43ebe6a5a6f1b4
@@ -2304,9 +2602,9 @@ func (c PersistentIpInterface) ListenTcp(ctx context.Context, params func(IpInte
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenTcp_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenTcp_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpInterface_listenTcp_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpInterface) ListenUdp(ctx context.Context, params func(IpInterface_listenUdp_Params) error) (IpInterface_listenUdp_Results_Future, capnp.ReleaseFunc) {
@@ -2320,9 +2618,9 @@ func (c PersistentIpInterface) ListenUdp(ctx context.Context, params func(IpInte
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenUdp_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(IpInterface_listenUdp_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return IpInterface_listenUdp_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpInterface) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -2336,11 +2634,9 @@ func (c PersistentIpInterface) AddRequirements(ctx context.Context, params func(
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -2354,20 +2650,30 @@ func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentIpInterface) AddRef() PersistentIpInterface {
-	return PersistentIpInterface{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentIpInterface(capnp.Client(c).AddRef())
 }
 
 func (c PersistentIpInterface) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentIpInterface) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentIpInterface) DecodeFromPtr(p capnp.Ptr) PersistentIpInterface {
+	return PersistentIpInterface(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentIpInterface) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentIpInterface_Server is a PersistentIpInterface with a local implementation.
@@ -2382,15 +2688,15 @@ type PersistentIpInterface_Server interface {
 }
 
 // PersistentIpInterface_NewServer creates a new Server from an implementation of PersistentIpInterface_Server.
-func PersistentIpInterface_NewServer(s PersistentIpInterface_Server, policy *server.Policy) *server.Server {
+func PersistentIpInterface_NewServer(s PersistentIpInterface_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentIpInterface_Methods(nil, s), s, c, policy)
+	return server.New(PersistentIpInterface_Methods(nil, s), s, c)
 }
 
 // PersistentIpInterface_ServerToClient creates a new Client from an implementation of PersistentIpInterface_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentIpInterface_ServerToClient(s PersistentIpInterface_Server, policy *server.Policy) PersistentIpInterface {
-	return PersistentIpInterface{Client: capnp.NewClient(PersistentIpInterface_NewServer(s, policy))}
+func PersistentIpInterface_ServerToClient(s PersistentIpInterface_Server) PersistentIpInterface {
+	return PersistentIpInterface(capnp.NewClient(PersistentIpInterface_NewServer(s)))
 }
 
 // PersistentIpInterface_Methods appends Methods to a slice that invoke the methods on s.
@@ -2451,105 +2757,116 @@ func PersistentIpInterface_Methods(methods []server.Method, s PersistentIpInterf
 	return methods
 }
 
-const schema_f44732d435305f86 = "x\xda\xacW}l\x14e\x1a\x7f\x9e\xd9\xdd\x0e\xbd\x9d" +
-	"\xdd\xd9\xb9\x01\x0aw\x81^\xb9\x1ew-t\xd3R\xbe" +
-	"\xae\xe4h\xaf\x1c\x81\xe58\xb2\xd3k\x8f\xa4\x09\xd7N" +
-	"\xbbC\xa9\xed\xce\x0e3\xd3\x14\xf0\xa3\"\x01B\x15\x84" +
-	"\x18\x12J\xa2\x89BI0\xc6DD\x13PHD%" +
-	"~\x04k#\x88\xc6\xa0 `\x02\xa4\xc6\"\x04K\xc0" +
-	"1\xef\xbb;;\xd3\xee\xb6\x80\xf8\xdf\xbc;\xcf<\x9f" +
-	"\xbf\xdf\xefy\xb7T\xf3U1e>>\x0f\xe0\xbf\x1c" +
-	"\xfar\xac\xa33\xae\xef?\xb0V\xdd\x0cR.\xa2\xb5" +
-	"\xa5\xa1t\xce\xe9YKn\x80\x0fY\x80\xf2\xb8\x9fA" +
-	"q\xbd\x9f\x05\x10;\xfc\x9d\x80V\xc1\x9f\xf7Eg]" +
-	"n\xec\x06A@H\x19\x9d\xf33\x08(^\xf0W\x02" +
-	"Z\xc2\xa4\x05\x05;\xee.\xda\x914\xf0\x92/}\xdc" +
-	"u\xf0Z\xa5eO\x17\xb5\x9d]\xb5\x13\x84\\\x8f\x13" +
-	"\x06P\xbc\xe2?$\x0e\xd2\x10\x03\xfe\xad\xe2b\x8e\x05" +
-	"\xb0\xfa\x9eh\xda2\xef/\x1b\x9f\x03aB:L\x09" +
-	"WA\xc2\xcc\xe1H\x98\xf7\xde\xbauG\xcdox\x1e" +
-	"\x041mP\xc7\xe9\xc4@\xa6\x06\x91\xb7\x8b\xa7\xd7o" +
-	"\xfc\xe2E\x90&`\xdab#7\x8bXl\xe3H)" +
-	"\xd7\xe7\x9fo\xfc_\xc1\xeb\xbd\x19\x09]\xe6\xae\x8a\x83" +
-	"\x1cM\x88c\xc5\x01\xee\xaf\x00V\xd5\x9f\x8a7\xb4\xad" +
-	"|\xea`\x16\xe3\xbd\xe2\x00\x97\x07 \x0eq[\xc5\xba" +
-	"\x00\xc9^\xfe7\xf7\xe3\xabg\x1e}\xc3\x9d\xdc?\x02" +
-	"\xcbH\xe8H\x80$70\xfd\xb8\xba\x94\x99\xf1&H" +
-	"\x131\xd5\xa5\xf2\xd6@51XK\x0d>\xc1O\xf3" +
-	"~\x1f.8\x99\x11nW\xa0[\xec!A\xc4\xdd\x81" +
-	"%\xe21\x1a\x8e\xe9\xff\xea\x83[\xe2G'S3a" +
-	"\xc8\xdb\xde\xc0U@\xf1`\x80\x14\xba\xf3\xc4\x1f\xf7<" +
-	"\xb9\x7f\xd3\xc7\xeef\xe6\x06i3\x85 \x89\xb6x." +
-	";\xbedZ\xff)\xf7P\xcb\x82\xbf#\x06\x7f\xa7\x06" +
-	"\x87\x07\x0f\xf4~wmQ_F:\xab\x82\xb7\xc5\xd6" +
-	" \x09\xa8\x04YQ\x09\x92VM\xfe)\xb0\xbb\xbc\xf2" +
-	"\x85>R\xbd\xd37\xea5eO\xba\xd5A\x1d\xb76" +
-	"\x9c>z\"\xbc\xac\xdf\xdd\xa9\x9e\xe0\x06\x12\xb9\x97\x1a" +
-	"\x94\x7f}g\xf9\x8d\xa1\xc7\xcf\x8201m\xf0~\x90" +
-	"\xb6\xb2\x9f\x18|s\xf8\xff\xfa\xb5w\xf2\xce\xb9\xbe\x1f" +
-	"\x0c\xd2F\x0e\xd1\xef\xb7\xb3\x97\xf8\xa1\xe5_~\x0bR" +
-	">\xa2\x93\xda\xbfX\x06\xa0|2_\x83b\x09O\x12" +
-	"+\xe2I\xa7n\x7f\xbe\xf0\x8a\x1a\x9dy1\xa3\xce\xcd" +
-	"\xfc\xcb\xe2vj\xb8\x8d\xdf*^ O\xd6\xe1\x9cu" +
-	"?\xfc!x\xe8j\x86\xf1\x87|\xb7\xd8O\x8dO\xf1" +
-	"K\xc4\x9b\xd4\xf8\xca&c\xeak\xc7C\x03\xee\x89\x9f" +
-	"\xe3i\xa2\x97y\x92\xa8\x7f\xe6g\xf3z\x9e=\xf2=" +
-	"\xa1!\xe3\xb8K\x12(\xb4W\x0c\x84\xc8Sn\xa8\x13" +
-	"\xf0\xee\x82\xc8\xc2\x83\xfb*n\xbaZ\xa2\x84hK\xd6" +
-	"\x86\x88\xab\xa93\x8e\x9d\xbc\xf4\xc8\xb4\xbb\xc3\xa0\xbf+" +
-	"D\xa1\xdf\x13\xea\x04\x0b\x8eX\xadZ\xb8Y\xd6T\xcd" +
-	"S\x11\xd1\xa2\x09\xdd\x8c&:\x15\xbd)\xb1\xee?\x8a" +
-	")\xc7dS\x86(\xa24\xce\xe3\x05\xf0\"\x80P\xd4" +
-	"\x0d \xcd\xf4\xa04\x9fA\xc4\xf1\xc4\xad0G\x07\x90" +
-	"f{P\xaab\xd0\xd2te\xb5\xa2\xeb\x0a\xc6\x88\xb7" +
-	"\x15\x1dq\x00d\x81A\x16\x9cw\x90\x1f[\x9a0L" +
-	"\xe4\x80A\x8e\x0c?\x9dCm3M\"\xdc\x9cPU" +
-	"\xa5\xd9,\x8c\xca\xba\x1c7@\xf2\xa6\x13\x08\xd4\x03H" +
-	"\x9c\x07\xa5I\x0cZ\xb1D\xa7j\x98\xba\x02\x1e9\x8e" +
-	"\x82\xd5p\xb1\xaf\xa8s\xfe\xcaS\x00\x88\x82\xcb/S" +
-	"Q\x17K\xfa5\x145VX\xa3\xe4\x1b\x1d\xed\xa6\x91" +
-	"~\x8f\x15\x11\xadF\x89'\xcc|\x85\xe4\x95\xac\xd8\xe7" +
-	"\x1a\x16\xda\xe8\x13\xca\xea\x81\x11\x8aXt\xa8\x8b\x0b " +
-	"5\x85)\xe4\xdd\x04\xd6jQLZ\x07xt\xb3\x0a" +
-	"\xc9\x91\x86O\x1e\xa3\x88\xc3z\x1eQME_-7" +
-	"+\xe1\xf6V\xc3T\xd4\xdaf\xad\xb0\xa6R\xa1\x09\xba" +
-	"\xcb\xae\x00\x90\xc6yP\x1a\xcf`\xe5\x1aY\x8d\xb5+" +
-	"(X\xe7\xab\x1b\x1b_)\xbc\xb1gd\xc1\xde\x8a\x88" +
-	"\xb6B1;\x13z[\xb8E1im\xb4\xb4\xea\xf5" +
-	"+\xe4\xb8R\x18\xcd\xa7}u\xfb\xafv\xfcw\xc9\xb1" +
-	"\x98\xae\x18F\x96\xf9d\xe6[\x17\xd3\xd2\xee\\0!" +
-	"\xee\x0a=(\x95:0))\x06\x90\xfe\xe6Ai6" +
-	"\x83]Z\x12\x1c64xrF\xc1\x91\xbb\x8c\x09F" +
-	"\x15\xdd\xa0\x01MZ\x1aOj\x8b\"F=>i\x1c" +
-	"\xba\xe4\x85\xf0\xf1\xcc\xf1\xc7\xce\x0e<\xf3.yv\x8f" +
-	"\x98v\xc4\xa3\xb7I^\xb7\x02\x08\xd8d\xd9\xa0\x07\xb6" +
-	"VnI\xce\xde\xd6\x13\x97\x86\x97\xe9\xf6\xec\xed\xa5\x83" +
-	"\xb6l\x09S^\x02F\x98LgO\xbb\x0dI(%" +
-	"\xc7O\x7fA{\x00\xac\x1cW\x86\xe3`\xd4q\x15\xd6" +
-	"$\x81\x00\xc3\x18P\xec\x8c\x8a_Cx$8;5" +
-	"\x0b\x10\x1cwa\x1b\x8azVf\xb9!0b>\xae" +
-	">\xa6\x1c\x00\x15\x06/\xa5\x89\xbdw\xd0\xde\xf9\x82P" +
-	"\x0c\x8c\xe0cy\xc2\xb7\xe1\xb5\x8e\xe0bT\xe6\xc7\x80" +
-	"\x8e\x90\xc6N\xbd#;]q\xc50\xe4\x16\x05\x03\xc0" +
-	"`\x00\xd0\xd2\x15\xb3CW\x93\x04\x1b\x03C\xa3\xa1\xf7" +
-	"\xa1\xd9\x96)[Y\xc7\xb6\xcc%\\\x1d\x1a\x91-9" +
-	"\x0e\x00c\xea\x96\x1b\xf5\x11\xd5\xacL&\xef\xc2}z" +
-	"Q\x8d\x82{\xc6\x05-\x8a\xf2\xca\xa6\xc4:\x02r\xc2" +
-	"\x81\xf4N\x14\xb0\xdeZ\xac6\xeb\xeb5\xb3\x15<\x09" +
-	"u4\xbdU\\6\x18r\xbe\x07\xc4\xd0\x03\xc8O\xb6" +
-	"\x8e?\x14\xa8S\xfd\xbf7]R2\x93\xde\xd8\xf7\xab" +
-	"\x9b\xf7\xa2\x8b\xad\x98!g}\x8f\xd1\x13[nj\xe5" +
-	"\x96\xb0\xdd\xf6\x04\xaa\xa9M\xcbYV\x92\x08\xc5\x0e\x11" +
-	"\x02\xf8\xb3\x95b\xc24GEy5\xa1*\x90\xc3\x9a" +
-	"\xed\x06\xe4\x0c\x93:\x8as>\x85\x95\xd42\xb3o\x03" +
-	"h\xdf\xa9\x85\xb2\x1a[\xd0\xecK2\xdaWDaJ" +
-	"Mr\x99\xd9[\x09P\xabB\xcbf\x0d=\xb9i\x8d" +
-	"6\x07\xdc\xba`\xffG@\xfb^)\x08\xd5T\x17\xba" +
-	"RD\xc9\x94\xc1\xecs\xfd\xd5b\x15\xd1\xfeI&\xe3" +
-	"1\x8c\x11\xd7\x98\xac\"S\xedZP\xeddFsg" +
-	"c.0\x98\x0b\xd8\xd5\xa1i\xee\xf3}(\xec\xfd\x82" +
-	"\xf1A\xf4\x8a\xdc\x0e~\xbbm;\x82\x06\xbf\x04\x00\x00" +
-	"\xff\xff\xc1\x93\xe3g"
+// PersistentIpInterface_List is a list of PersistentIpInterface.
+type PersistentIpInterface_List = capnp.CapList[PersistentIpInterface]
+
+// NewPersistentIpInterface creates a new list of PersistentIpInterface.
+func NewPersistentIpInterface_List(s *capnp.Segment, sz int32) (PersistentIpInterface_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentIpInterface](l), err
+}
+
+const schema_f44732d435305f86 = "x\xda\xacW}l\xd5l\x15?\xa7\xbd[\x99ko" +
+	"\xdb\xb7\x8c1\xcd\x98\x9b\x03\xdd`\xd7\x8d\xf1\x95\x91\xb0" +
+	"1$p\x11\xc9\xed\x1c\x12\x16q\xebv\xcb\x98\xdb\xed" +
+	"-m\x97\x01\x8as\x12!NA\x12C\x02$\x98 " +
+	"\x1f\x09FLDf\x02\x0a\x09\x08\xc4hp.2\x91" +
+	"\x18\x14\x05M\x06\xc1\x08B\x10\x02\xd6<\xcf\xbd\xbd\xed" +
+	"v7>\xe4\xfd\xefv==\xcf9\xe7\xf7q\x9eU" +
+	"\xef\xcei\x08\xd5\x08\x9d\x85\xc0|^\xc2\x9c\\\xf7\xfc" +
+	"\xdc\xc7\xc7On5\xbe\x09j\x1e\xa2\xbb\xbb\xb5z\xe1" +
+	"\x8d\xf9\xab\x9e@\x0er\x00\xb5\x87\xf2\x19TN\xe4s" +
+	"\x00\xca\xd1\xfc>@\xb7\xf4\x13\xc7b\xf3\xff\xde6\x08" +
+	"\xb2\x8c\x90\x0e\xca\xe3\x19\x04T\x04\xbe\x1e\xd0\x95g." +
+	"-\xdd\xf7j\xc5\xbeT@\x88|Y\xc3?\x86\x90[" +
+	"]\xf3\xed\x8a\xee\x9b\x9b\xf6\x83\x9c\xc7\xfa\xc7\x00*\x05" +
+	"\xfc\x19\xa5\x98'\x81E\xfc\x1ee+\xf9\xe5\x0e\x7f\xad" +
+	"}\xf7\xe2\xd9\x03\xdf\x03\xb9 s\xccF\xbe\x8e\x1c\xa3" +
+	"\xd1c\xae\xfc\xfc\xd9K\xa3\xa4\xf5\x08\xc8J&`\x80" +
+	"\xb7H\xc0^\x1a\x10\xfdE\xe5\x9c\x96\x81?\x1e\x05\xb5" +
+	"\x003\x11\xa7\xf9\xf9$b\x88'\xad<^r\xa7\xed" +
+	"\x0b\xa5?=\x91U\x90,\xdcW\x8a\x05Z\x90\xc0)" +
+	"E\xc2'\x01\xdc\x86\x8fW\xee\xe8\xde\xf0\x8dS\x93\x04" +
+	"\x1fV\x8a\x84B\x00e\xb6\xb0G\x19 \x9f\xb9\xdag" +
+	"\xf9\x7f\xffx\xf4+C\xc1\xe2\xba\x845\xe4\xe8^\x81" +
+	"\x14\xf7p\xceEc53\xf7g\xa0\xce\xc0\xf4\x94j" +
+	"\x0f\x08\x8d$\xe0\x08\x0d\xf8-\xfe\xae\xf0\x83H\xe9\xb5" +
+	"\xac\xe3.\x08\x83\xcaUZ\xdb%a\x952F\x8fc" +
+	"F\xfe\xf4\xabg\xca\xaf\xaf\xa51a\xc8\xdb\x11\xe1>" +
+	"\xa02*\x90F\xf7_\xfe\xd8\xc1\xaf\x1f\xdf\xf5\x9bq" +
+	"\xc3\x0c\xa7\x86\x19&\xa7\xad\\\xc4M\xaf*\x1b\xb9\x1e" +
+	"\x04u \xfc\x11\x12\xf0-\x1ap\xf6\xd1\xc9\x13\xffx" +
+	"\xb0b8\xab\x9c\xd3\xe1\x17\xca\xb909p(\xcc)" +
+	"Ca2\xaa\xa2\xff\x08\x07j\xeb\xbf?L\xba\xf7\xe7" +
+	"F\xb3\xa6\xe3\xc9\xb4\xae\xd2\xc4]\xad7\xce_\x8e\xac" +
+	"\x19\x09Nj,\xbc\x83\x9c\xfc\x94\x06\xd4\xfe\xf9\xe5\xda" +
+	"'\xcfw\xde\x04yF&\xa0@\xa4\xa3,\x15\xeb\x01" +
+	"\xffr\xf6K\xd6\x83K\x85\xb7\x03\xdf/\x17\xe9 \xa3" +
+	"\xe4\xb5\xbb\x97\xbb'>_{\xebo\xa0\x96 \xfa\xa5" +
+	"}\x86c\x08&b\x13*;ER\xd8v\x91L\xea" +
+	"\xc5\x1f\x96\x8d\x19\xb1yw\xb3\xfa\x1c\x15\x7f\xa8\xdc\xa6" +
+	"\x81\xb7\xc4=J\x8dD\xc6~6w\xdb\xbf>\x1a>" +
+	"s?+\xb8H\x1aTJI\x88R,\xadRV\xd2" +
+	"\xe0\xb1]\xf6\xac\x9f\\\x94\x1e\x06\x11\xaf\x92h\xa1\x0b" +
+	"%Rh\xfe\xbc\xdf/>\xf4\xdds\xff$2d\xfc" +
+	"tT@\xeb\xa5\xc3\xca&\x9ap\xa3\xd4\x07\xf8ji" +
+	"t\xd9\xa9cuO\x03#\x19\x92\xe8H.\xd1T\xb3" +
+	"\xe6^\xb8v\xef\xcbe\xaf\xc6Q\xff\xaf\x12\xa5\xfe\x98" +
+	"\xd4\x07.\\q\xbb\xccH\x87f\x1a&[\x175c" +
+	"I\xcb\x89%\xfbt\xab=\xb9\xeds\xba\xa3\xc55G" +
+	"\x83\x18\xa2:\x8d\x0d\x01\x84\x10@\xae\x18\x04P\xe7\xb1" +
+	"\xa8.a\x10q:I+/\xb4\x00\xd4\x05,\xaa\x0d" +
+	"\x0c\xba\xa6\xa5o\xd6-K\xc78\xc9\xb6\xae7\x01\x80" +
+	"\x1c0\xc8\x81\xff\x0eJ\xe2\xab\x93\xb6\x83<0\xc8\x13" +
+	"\xf0354w\xd0\"\"\x1dI\xc3\xd0;\x9c\xf2\x98" +
+	"fi\x09\x1b\xd4P\xa6\x00\xa1\x05@\xe5YTg2" +
+	"\xe8\xc6\x93}\x86\xedX:\xb0Z\x02e\xb7\xf5\xeep" +
+	"E\xdf\x92\x0d\xd7\x01\x10\xe5@^\xa6n}<\x95\xd7" +
+	"\xd6\x8dxy\x93^b\xf7\xf68v\xe6=\xd6E\xcd" +
+	"&=\x91tJtRW\xaa\xe3\x9c\x00X\xe8\xb1O" +
+	"\xaei\x01F\xae\xe0\xd0\x97..\x854\x0a\xc5\xe4]" +
+	"\x01\xe7v\xea\x0e\xed\x03X\xcbi@\xf2H\x8fO=" +
+	"\xc6\x10\xc7\xcd<j8\xba\xb5Y\xeb\xd0#=]\xb6" +
+	"\xa3\x1b\xcd\x1dfyS\xbdN\x0b\x0c\xb6]\x07\xa0N" +
+	"cQ\x9d\xce`\xfd\x16\xcd\x88\xf7\xe8(\xbbw\x1a\xdb" +
+	"\xda~T\xfe\xe4\xe0\xc4\x86CuQs\x9d\xee\xf4%" +
+	"\xad\xeeH\xa7\xee\xd0\xdehk\x8d\xdb\xd7i\x09\xbd<" +
+	"VB\xe7\x1a\xcc\xdf\xe8\xe7\xef\xd7\xe2qK\xb7\xedI" +
+	"\xf0\xc9\xaew}\xdc\xcc\xa4\x0b\xd0\x84\xa4+gQ\xad" +
+	"\xf6iRU\x09\xa0~\x8aEu\x01\x83\xfdf\x8a\x1c" +
+	"\x1e5D\xf2\x8c\xb2owY\x08\xc6t\xcb\xa6\x07:" +
+	"\xb45\x91\xf4\x16C\x8c\xb19\xea4\x0c\xd8\x0b\xd1\xe3" +
+	"\xe8\xc5\xaf\xde|\xf8\x9d_\x92\xdfA\x88\xe9DX\xab" +
+	"[\x0d\x05\x1d@\xc6v\xd7#=p\xcdZg\x0a{" +
+	"\xcfO\x02\x1e^cy\xd8{K\x07=\xdb\x92\x8b\x7f" +
+	"\x00\x8c\\D\xb1\xa7\xd3\x86\x14\x95R\xf0\xd3\xbf\xa0\x07" +
+	"\x00\xa7%\xf4\xf1<\x98\x12\xae\xf2\xa6\x14\x11`\x9c\x02" +
+	"*}\xa8\xc4-DG\xb2\xbfS'!\x82\x9f.\xe2" +
+	"Q\xd1\x9aTYA\x0aL\xc0'0\xc7t\x02\xa0\xc6" +
+	"\x10\xa22\xf1\xf6\x0ez;_\x96+\x81\x91s8\x91" +
+	"\xe8m|\xaf\x13\xb4\x18\xd3\xc4,\xea\xc8\x15%\xeaj" +
+	"\x16\xd5f\x06e\x8f<*\x91}\x8cE\xf5\x8b\x0c\xf6" +
+	"'t\xdb\xd6:u5\x84\x8c\xfbh\xef\xa7\x0b?h" +
+	";w\x19\xd4\x10\x83\xcb%D\x1e@\xc62.aw" +
+	"\x02\xa0\x00\x0c\x0a\x80\xae\xa5;\xbd\x96\x91\xd2\xe0kh" +
+	"6\x15\xc1\xdf[\x90\xd9\xce6)\xb2k\x02\xde\xd6k" +
+	"\x12g\xd3\x12\x00\xf0Zk\x0b\x0a#j8\xf5\xa9\xe2" +
+	"\x03\xd2\xc8\xec\xb2)\xa4\xc1\x04\xd8G\x85P\xdf\x9e\xdc" +
+	"Ft@d\x92Y\x9b2\xb6\xb8+\x8d\x0ek\xbb\xe9" +
+	"t\x01\x9b4\xa6\xb2d=\x10\x83\x92\xff= J\xef" +
+	"\xe0P\x93M\xfc\xbdx\x9f\x9e\xff\x9b\x15\x95v\xa2\xcc" +
+	"R\x7f[k}\x93\xa2<S\x95\xfc\x0d\xff\x9a\x99x" +
+	"\x8e\xd4\xacuF\xbc\xb1'\xd1H/c\xdeuSZ" +
+	"\xa9\xf4mV\xc0\xff\xbai\xa3-\xf3\x8dV4\x92\x86" +
+	"\x0e\xb9\x9c\xd3cC\xee87\xa4<\x17\xd3\\I\xef" +
+	";\xef\xc2\x80\xde\xb5[\xaei\xf2<\xcf\xbbG\xa3w" +
+	"\x8b\x94\x8b\x9bR\xfb\xce[\\\x80f\x03\xba\x9ej\xe8" +
+	"SP\xf9\xe8i h\x1d\xde\xbf\x11\xe8]=e\xb9" +
+	"\x91ZG\x7fZ(\xd9N99\xae\xff\xb7\x9fE\xcd" +
+	"\xe5\x04\x19\xd6\xb6'\xdct\x02+,cCU\x8d\x81" +
+	"\x1d\xd6C0Z\xb4\x00\xf3\x80\xc1<\xc0\xfe^\xd3\x0c" +
+	">\xbf\x85\x09\xbf-\x19\xdf\xc5\xaf\xc8\x05\xe2\xc3[\xc8" +
+	"\x13d\xf0\xbf\x00\x00\x00\xff\xff\x82r\xe6\xbd"
 
 func init() {
 	schemas.Register(schema_f44732d435305f86,

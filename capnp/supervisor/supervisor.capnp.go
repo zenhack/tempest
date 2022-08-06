@@ -16,7 +16,7 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type Supervisor struct{ Client *capnp.Client }
+type Supervisor capnp.Client
 
 // Supervisor_TypeID is the unique identifier for the type Supervisor.
 const Supervisor_TypeID = 0x9951c12163385530
@@ -32,9 +32,9 @@ func (c Supervisor) GetMainView(ctx context.Context, params func(Supervisor_getM
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_getMainView_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_getMainView_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_getMainView_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) KeepAlive(ctx context.Context, params func(Supervisor_keepAlive_Params) error) (Supervisor_keepAlive_Results_Future, capnp.ReleaseFunc) {
@@ -48,9 +48,9 @@ func (c Supervisor) KeepAlive(ctx context.Context, params func(Supervisor_keepAl
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_keepAlive_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_keepAlive_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_keepAlive_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdown_Params) error) (Supervisor_shutdown_Results_Future, capnp.ReleaseFunc) {
@@ -64,9 +64,9 @@ func (c Supervisor) Shutdown(ctx context.Context, params func(Supervisor_shutdow
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_shutdown_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_shutdown_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_shutdown_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) ObsoleteGetGrainSize(ctx context.Context, params func(Supervisor_obsoleteGetGrainSize_Params) error) (Supervisor_obsoleteGetGrainSize_Results_Future, capnp.ReleaseFunc) {
@@ -80,9 +80,9 @@ func (c Supervisor) ObsoleteGetGrainSize(ctx context.Context, params func(Superv
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_obsoleteGetGrainSize_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_obsoleteGetGrainSize_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_obsoleteGetGrainSize_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) ObsoleteGetGrainSizeWhenDifferent(ctx context.Context, params func(Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) error) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Future, capnp.ReleaseFunc) {
@@ -96,11 +96,9 @@ func (c Supervisor) ObsoleteGetGrainSizeWhenDifferent(ctx context.Context, param
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_Params) error) (Supervisor_restore_Results_Future, capnp.ReleaseFunc) {
@@ -114,9 +112,9 @@ func (c Supervisor) Restore(ctx context.Context, params func(Supervisor_restore_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_restore_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_restore_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_restore_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) Drop(ctx context.Context, params func(Supervisor_drop_Params) error) (Supervisor_drop_Results_Future, capnp.ReleaseFunc) {
@@ -130,9 +128,9 @@ func (c Supervisor) Drop(ctx context.Context, params func(Supervisor_drop_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_drop_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_drop_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_drop_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) WatchLog(ctx context.Context, params func(Supervisor_watchLog_Params) error) (Supervisor_watchLog_Results_Future, capnp.ReleaseFunc) {
@@ -146,9 +144,9 @@ func (c Supervisor) WatchLog(ctx context.Context, params func(Supervisor_watchLo
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_watchLog_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_watchLog_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_watchLog_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) SyncStorage(ctx context.Context, params func(Supervisor_syncStorage_Params) error) (Supervisor_syncStorage_Results_Future, capnp.ReleaseFunc) {
@@ -162,9 +160,9 @@ func (c Supervisor) SyncStorage(ctx context.Context, params func(Supervisor_sync
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_syncStorage_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_syncStorage_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_syncStorage_Results_Future{Future: ans.Future()}, release
 }
 func (c Supervisor) GetWwwFileHack(ctx context.Context, params func(Supervisor_getWwwFileHack_Params) error) (Supervisor_getWwwFileHack_Results_Future, capnp.ReleaseFunc) {
@@ -178,20 +176,30 @@ func (c Supervisor) GetWwwFileHack(ctx context.Context, params func(Supervisor_g
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_getWwwFileHack_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Supervisor_getWwwFileHack_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Supervisor_getWwwFileHack_Results_Future{Future: ans.Future()}, release
 }
 
 func (c Supervisor) AddRef() Supervisor {
-	return Supervisor{
-		Client: c.Client.AddRef(),
-	}
+	return Supervisor(capnp.Client(c).AddRef())
 }
 
 func (c Supervisor) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c Supervisor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (Supervisor) DecodeFromPtr(p capnp.Ptr) Supervisor {
+	return Supervisor(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c Supervisor) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A Supervisor_Server is a Supervisor with a local implementation.
@@ -218,15 +226,15 @@ type Supervisor_Server interface {
 }
 
 // Supervisor_NewServer creates a new Server from an implementation of Supervisor_Server.
-func Supervisor_NewServer(s Supervisor_Server, policy *server.Policy) *server.Server {
+func Supervisor_NewServer(s Supervisor_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(Supervisor_Methods(nil, s), s, c, policy)
+	return server.New(Supervisor_Methods(nil, s), s, c)
 }
 
 // Supervisor_ServerToClient creates a new Client from an implementation of Supervisor_Server.
 // The caller is responsible for calling Release on the returned Client.
-func Supervisor_ServerToClient(s Supervisor_Server, policy *server.Policy) Supervisor {
-	return Supervisor{Client: capnp.NewClient(Supervisor_NewServer(s, policy))}
+func Supervisor_ServerToClient(s Supervisor_Server) Supervisor {
+	return Supervisor(capnp.NewClient(Supervisor_NewServer(s)))
 }
 
 // Supervisor_Methods appends Methods to a slice that invoke the methods on s.
@@ -367,13 +375,13 @@ type Supervisor_getMainView struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_getMainView) Args() Supervisor_getMainView_Params {
-	return Supervisor_getMainView_Params{Struct: c.Call.Args()}
+	return Supervisor_getMainView_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_getMainView) AllocResults() (Supervisor_getMainView_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_getMainView_Results{Struct: r}, err
+	return Supervisor_getMainView_Results(r), err
 }
 
 // Supervisor_keepAlive holds the state for a server call to Supervisor.keepAlive.
@@ -384,13 +392,13 @@ type Supervisor_keepAlive struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_keepAlive) Args() Supervisor_keepAlive_Params {
-	return Supervisor_keepAlive_Params{Struct: c.Call.Args()}
+	return Supervisor_keepAlive_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_keepAlive) AllocResults() (Supervisor_keepAlive_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_keepAlive_Results{Struct: r}, err
+	return Supervisor_keepAlive_Results(r), err
 }
 
 // Supervisor_shutdown holds the state for a server call to Supervisor.shutdown.
@@ -401,13 +409,13 @@ type Supervisor_shutdown struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_shutdown) Args() Supervisor_shutdown_Params {
-	return Supervisor_shutdown_Params{Struct: c.Call.Args()}
+	return Supervisor_shutdown_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_shutdown) AllocResults() (Supervisor_shutdown_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_shutdown_Results{Struct: r}, err
+	return Supervisor_shutdown_Results(r), err
 }
 
 // Supervisor_obsoleteGetGrainSize holds the state for a server call to Supervisor.obsoleteGetGrainSize.
@@ -418,13 +426,13 @@ type Supervisor_obsoleteGetGrainSize struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_obsoleteGetGrainSize) Args() Supervisor_obsoleteGetGrainSize_Params {
-	return Supervisor_obsoleteGetGrainSize_Params{Struct: c.Call.Args()}
+	return Supervisor_obsoleteGetGrainSize_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_obsoleteGetGrainSize) AllocResults() (Supervisor_obsoleteGetGrainSize_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSize_Results{Struct: r}, err
+	return Supervisor_obsoleteGetGrainSize_Results(r), err
 }
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent holds the state for a server call to Supervisor.obsoleteGetGrainSizeWhenDifferent.
@@ -435,13 +443,13 @@ type Supervisor_obsoleteGetGrainSizeWhenDifferent struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_obsoleteGetGrainSizeWhenDifferent) Args() Supervisor_obsoleteGetGrainSizeWhenDifferent_Params {
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{Struct: c.Call.Args()}
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_obsoleteGetGrainSizeWhenDifferent) AllocResults() (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{Struct: r}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(r), err
 }
 
 // Supervisor_restore holds the state for a server call to Supervisor.restore.
@@ -452,13 +460,13 @@ type Supervisor_restore struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_restore) Args() Supervisor_restore_Params {
-	return Supervisor_restore_Params{Struct: c.Call.Args()}
+	return Supervisor_restore_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_restore) AllocResults() (Supervisor_restore_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_restore_Results{Struct: r}, err
+	return Supervisor_restore_Results(r), err
 }
 
 // Supervisor_drop holds the state for a server call to Supervisor.drop.
@@ -469,13 +477,13 @@ type Supervisor_drop struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_drop) Args() Supervisor_drop_Params {
-	return Supervisor_drop_Params{Struct: c.Call.Args()}
+	return Supervisor_drop_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_drop) AllocResults() (Supervisor_drop_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_drop_Results{Struct: r}, err
+	return Supervisor_drop_Results(r), err
 }
 
 // Supervisor_watchLog holds the state for a server call to Supervisor.watchLog.
@@ -486,13 +494,13 @@ type Supervisor_watchLog struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_watchLog) Args() Supervisor_watchLog_Params {
-	return Supervisor_watchLog_Params{Struct: c.Call.Args()}
+	return Supervisor_watchLog_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_watchLog) AllocResults() (Supervisor_watchLog_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_watchLog_Results{Struct: r}, err
+	return Supervisor_watchLog_Results(r), err
 }
 
 // Supervisor_syncStorage holds the state for a server call to Supervisor.syncStorage.
@@ -503,13 +511,13 @@ type Supervisor_syncStorage struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_syncStorage) Args() Supervisor_syncStorage_Params {
-	return Supervisor_syncStorage_Params{Struct: c.Call.Args()}
+	return Supervisor_syncStorage_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_syncStorage) AllocResults() (Supervisor_syncStorage_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_syncStorage_Results{Struct: r}, err
+	return Supervisor_syncStorage_Results(r), err
 }
 
 // Supervisor_getWwwFileHack holds the state for a server call to Supervisor.getWwwFileHack.
@@ -520,13 +528,22 @@ type Supervisor_getWwwFileHack struct {
 
 // Args returns the call's arguments.
 func (c Supervisor_getWwwFileHack) Args() Supervisor_getWwwFileHack_Params {
-	return Supervisor_getWwwFileHack_Params{Struct: c.Call.Args()}
+	return Supervisor_getWwwFileHack_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Supervisor_getWwwFileHack) AllocResults() (Supervisor_getWwwFileHack_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getWwwFileHack_Results{Struct: r}, err
+	return Supervisor_getWwwFileHack_Results(r), err
+}
+
+// Supervisor_List is a list of Supervisor.
+type Supervisor_List = capnp.CapList[Supervisor]
+
+// NewSupervisor creates a new list of Supervisor.
+func NewSupervisor_List(s *capnp.Segment, sz int32) (Supervisor_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[Supervisor](l), err
 }
 
 type Supervisor_WwwFileStatus uint16
@@ -572,68 +589,67 @@ func Supervisor_WwwFileStatusFromString(c string) Supervisor_WwwFileStatus {
 	}
 }
 
-type Supervisor_WwwFileStatus_List struct{ capnp.List }
+type Supervisor_WwwFileStatus_List = capnp.EnumList[Supervisor_WwwFileStatus]
 
 func NewSupervisor_WwwFileStatus_List(s *capnp.Segment, sz int32) (Supervisor_WwwFileStatus_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return Supervisor_WwwFileStatus_List{l.List}, err
+	return capnp.NewEnumList[Supervisor_WwwFileStatus](s, sz)
 }
 
-func (l Supervisor_WwwFileStatus_List) At(i int) Supervisor_WwwFileStatus {
-	ul := capnp.UInt16List{List: l.List}
-	return Supervisor_WwwFileStatus(ul.At(i))
-}
-
-func (l Supervisor_WwwFileStatus_List) Set(i int, v Supervisor_WwwFileStatus) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type Supervisor_getMainView_Params struct{ capnp.Struct }
+type Supervisor_getMainView_Params capnp.Struct
 
 // Supervisor_getMainView_Params_TypeID is the unique identifier for the type Supervisor_getMainView_Params.
 const Supervisor_getMainView_Params_TypeID = 0xba19fd491deeb222
 
 func NewSupervisor_getMainView_Params(s *capnp.Segment) (Supervisor_getMainView_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_getMainView_Params{st}, err
+	return Supervisor_getMainView_Params(st), err
 }
 
 func NewRootSupervisor_getMainView_Params(s *capnp.Segment) (Supervisor_getMainView_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_getMainView_Params{st}, err
+	return Supervisor_getMainView_Params(st), err
 }
 
 func ReadRootSupervisor_getMainView_Params(msg *capnp.Message) (Supervisor_getMainView_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_getMainView_Params{root.Struct()}, err
+	return Supervisor_getMainView_Params(root.Struct()), err
 }
 
 func (s Supervisor_getMainView_Params) String() string {
-	str, _ := text.Marshal(0xba19fd491deeb222, s.Struct)
+	str, _ := text.Marshal(0xba19fd491deeb222, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_getMainView_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_getMainView_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_getMainView_Params {
+	return Supervisor_getMainView_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_getMainView_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_getMainView_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_getMainView_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_getMainView_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_getMainView_Params_List is a list of Supervisor_getMainView_Params.
-type Supervisor_getMainView_Params_List struct{ capnp.List }
+type Supervisor_getMainView_Params_List = capnp.StructList[Supervisor_getMainView_Params]
 
 // NewSupervisor_getMainView_Params creates a new list of Supervisor_getMainView_Params.
 func NewSupervisor_getMainView_Params_List(s *capnp.Segment, sz int32) (Supervisor_getMainView_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_getMainView_Params_List{l}, err
-}
-
-func (s Supervisor_getMainView_Params_List) At(i int) Supervisor_getMainView_Params {
-	return Supervisor_getMainView_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_getMainView_Params_List) Set(i int, v Supervisor_getMainView_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_getMainView_Params_List) String() string {
-	str, _ := text.MarshalList(0xba19fd491deeb222, s.List)
-	return str
+	return capnp.StructList[Supervisor_getMainView_Params](l), err
 }
 
 // Supervisor_getMainView_Params_Future is a wrapper for a Supervisor_getMainView_Params promised by a client call.
@@ -641,72 +657,81 @@ type Supervisor_getMainView_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_getMainView_Params_Future) Struct() (Supervisor_getMainView_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_getMainView_Params{s}, err
+	return Supervisor_getMainView_Params(s), err
 }
 
-type Supervisor_getMainView_Results struct{ capnp.Struct }
+type Supervisor_getMainView_Results capnp.Struct
 
 // Supervisor_getMainView_Results_TypeID is the unique identifier for the type Supervisor_getMainView_Results.
 const Supervisor_getMainView_Results_TypeID = 0x88abdb347bc63d0f
 
 func NewSupervisor_getMainView_Results(s *capnp.Segment) (Supervisor_getMainView_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_getMainView_Results{st}, err
+	return Supervisor_getMainView_Results(st), err
 }
 
 func NewRootSupervisor_getMainView_Results(s *capnp.Segment) (Supervisor_getMainView_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_getMainView_Results{st}, err
+	return Supervisor_getMainView_Results(st), err
 }
 
 func ReadRootSupervisor_getMainView_Results(msg *capnp.Message) (Supervisor_getMainView_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_getMainView_Results{root.Struct()}, err
+	return Supervisor_getMainView_Results(root.Struct()), err
 }
 
 func (s Supervisor_getMainView_Results) String() string {
-	str, _ := text.Marshal(0x88abdb347bc63d0f, s.Struct)
+	str, _ := text.Marshal(0x88abdb347bc63d0f, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_getMainView_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_getMainView_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_getMainView_Results {
+	return Supervisor_getMainView_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_getMainView_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_getMainView_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_getMainView_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_getMainView_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_getMainView_Results) View() grain.UiView {
-	p, _ := s.Struct.Ptr(0)
-	return grain.UiView{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return grain.UiView(p.Interface().Client())
 }
 
 func (s Supervisor_getMainView_Results) HasView() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_getMainView_Results) SetView(v grain.UiView) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_getMainView_Results_List is a list of Supervisor_getMainView_Results.
-type Supervisor_getMainView_Results_List struct{ capnp.List }
+type Supervisor_getMainView_Results_List = capnp.StructList[Supervisor_getMainView_Results]
 
 // NewSupervisor_getMainView_Results creates a new list of Supervisor_getMainView_Results.
 func NewSupervisor_getMainView_Results_List(s *capnp.Segment, sz int32) (Supervisor_getMainView_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Supervisor_getMainView_Results_List{l}, err
-}
-
-func (s Supervisor_getMainView_Results_List) At(i int) Supervisor_getMainView_Results {
-	return Supervisor_getMainView_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_getMainView_Results_List) Set(i int, v Supervisor_getMainView_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_getMainView_Results_List) String() string {
-	str, _ := text.MarshalList(0x88abdb347bc63d0f, s.List)
-	return str
+	return capnp.StructList[Supervisor_getMainView_Results](l), err
 }
 
 // Supervisor_getMainView_Results_Future is a wrapper for a Supervisor_getMainView_Results promised by a client call.
@@ -714,76 +739,85 @@ type Supervisor_getMainView_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_getMainView_Results_Future) Struct() (Supervisor_getMainView_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_getMainView_Results{s}, err
+	return Supervisor_getMainView_Results(s), err
 }
 
 func (p Supervisor_getMainView_Results_Future) View() grain.UiView {
-	return grain.UiView{Client: p.Future.Field(0, nil).Client()}
+	return grain.UiView(p.Future.Field(0, nil).Client())
 }
 
-type Supervisor_keepAlive_Params struct{ capnp.Struct }
+type Supervisor_keepAlive_Params capnp.Struct
 
 // Supervisor_keepAlive_Params_TypeID is the unique identifier for the type Supervisor_keepAlive_Params.
 const Supervisor_keepAlive_Params_TypeID = 0xe4a4f650ea454237
 
 func NewSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_keepAlive_Params{st}, err
+	return Supervisor_keepAlive_Params(st), err
 }
 
 func NewRootSupervisor_keepAlive_Params(s *capnp.Segment) (Supervisor_keepAlive_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_keepAlive_Params{st}, err
+	return Supervisor_keepAlive_Params(st), err
 }
 
 func ReadRootSupervisor_keepAlive_Params(msg *capnp.Message) (Supervisor_keepAlive_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_keepAlive_Params{root.Struct()}, err
+	return Supervisor_keepAlive_Params(root.Struct()), err
 }
 
 func (s Supervisor_keepAlive_Params) String() string {
-	str, _ := text.Marshal(0xe4a4f650ea454237, s.Struct)
+	str, _ := text.Marshal(0xe4a4f650ea454237, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_keepAlive_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_keepAlive_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_keepAlive_Params {
+	return Supervisor_keepAlive_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_keepAlive_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_keepAlive_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_keepAlive_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_keepAlive_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_keepAlive_Params) Core() SandstormCore {
-	p, _ := s.Struct.Ptr(0)
-	return SandstormCore{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return SandstormCore(p.Interface().Client())
 }
 
 func (s Supervisor_keepAlive_Params) HasCore() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_keepAlive_Params) SetCore(v SandstormCore) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_keepAlive_Params_List is a list of Supervisor_keepAlive_Params.
-type Supervisor_keepAlive_Params_List struct{ capnp.List }
+type Supervisor_keepAlive_Params_List = capnp.StructList[Supervisor_keepAlive_Params]
 
 // NewSupervisor_keepAlive_Params creates a new list of Supervisor_keepAlive_Params.
 func NewSupervisor_keepAlive_Params_List(s *capnp.Segment, sz int32) (Supervisor_keepAlive_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Supervisor_keepAlive_Params_List{l}, err
-}
-
-func (s Supervisor_keepAlive_Params_List) At(i int) Supervisor_keepAlive_Params {
-	return Supervisor_keepAlive_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_keepAlive_Params_List) Set(i int, v Supervisor_keepAlive_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_keepAlive_Params_List) String() string {
-	str, _ := text.MarshalList(0xe4a4f650ea454237, s.List)
-	return str
+	return capnp.StructList[Supervisor_keepAlive_Params](l), err
 }
 
 // Supervisor_keepAlive_Params_Future is a wrapper for a Supervisor_keepAlive_Params promised by a client call.
@@ -791,58 +825,68 @@ type Supervisor_keepAlive_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_keepAlive_Params_Future) Struct() (Supervisor_keepAlive_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_keepAlive_Params{s}, err
+	return Supervisor_keepAlive_Params(s), err
 }
 
 func (p Supervisor_keepAlive_Params_Future) Core() SandstormCore {
-	return SandstormCore{Client: p.Future.Field(0, nil).Client()}
+	return SandstormCore(p.Future.Field(0, nil).Client())
 }
 
-type Supervisor_keepAlive_Results struct{ capnp.Struct }
+type Supervisor_keepAlive_Results capnp.Struct
 
 // Supervisor_keepAlive_Results_TypeID is the unique identifier for the type Supervisor_keepAlive_Results.
 const Supervisor_keepAlive_Results_TypeID = 0xa0b4085080573e77
 
 func NewSupervisor_keepAlive_Results(s *capnp.Segment) (Supervisor_keepAlive_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_keepAlive_Results{st}, err
+	return Supervisor_keepAlive_Results(st), err
 }
 
 func NewRootSupervisor_keepAlive_Results(s *capnp.Segment) (Supervisor_keepAlive_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_keepAlive_Results{st}, err
+	return Supervisor_keepAlive_Results(st), err
 }
 
 func ReadRootSupervisor_keepAlive_Results(msg *capnp.Message) (Supervisor_keepAlive_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_keepAlive_Results{root.Struct()}, err
+	return Supervisor_keepAlive_Results(root.Struct()), err
 }
 
 func (s Supervisor_keepAlive_Results) String() string {
-	str, _ := text.Marshal(0xa0b4085080573e77, s.Struct)
+	str, _ := text.Marshal(0xa0b4085080573e77, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_keepAlive_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_keepAlive_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_keepAlive_Results {
+	return Supervisor_keepAlive_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_keepAlive_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_keepAlive_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_keepAlive_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_keepAlive_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_keepAlive_Results_List is a list of Supervisor_keepAlive_Results.
-type Supervisor_keepAlive_Results_List struct{ capnp.List }
+type Supervisor_keepAlive_Results_List = capnp.StructList[Supervisor_keepAlive_Results]
 
 // NewSupervisor_keepAlive_Results creates a new list of Supervisor_keepAlive_Results.
 func NewSupervisor_keepAlive_Results_List(s *capnp.Segment, sz int32) (Supervisor_keepAlive_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_keepAlive_Results_List{l}, err
-}
-
-func (s Supervisor_keepAlive_Results_List) At(i int) Supervisor_keepAlive_Results {
-	return Supervisor_keepAlive_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_keepAlive_Results_List) Set(i int, v Supervisor_keepAlive_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_keepAlive_Results_List) String() string {
-	str, _ := text.MarshalList(0xa0b4085080573e77, s.List)
-	return str
+	return capnp.StructList[Supervisor_keepAlive_Results](l), err
 }
 
 // Supervisor_keepAlive_Results_Future is a wrapper for a Supervisor_keepAlive_Results promised by a client call.
@@ -850,54 +894,64 @@ type Supervisor_keepAlive_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_keepAlive_Results_Future) Struct() (Supervisor_keepAlive_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_keepAlive_Results{s}, err
+	return Supervisor_keepAlive_Results(s), err
 }
 
-type Supervisor_shutdown_Params struct{ capnp.Struct }
+type Supervisor_shutdown_Params capnp.Struct
 
 // Supervisor_shutdown_Params_TypeID is the unique identifier for the type Supervisor_shutdown_Params.
 const Supervisor_shutdown_Params_TypeID = 0xd597c8d788fec5df
 
 func NewSupervisor_shutdown_Params(s *capnp.Segment) (Supervisor_shutdown_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_shutdown_Params{st}, err
+	return Supervisor_shutdown_Params(st), err
 }
 
 func NewRootSupervisor_shutdown_Params(s *capnp.Segment) (Supervisor_shutdown_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_shutdown_Params{st}, err
+	return Supervisor_shutdown_Params(st), err
 }
 
 func ReadRootSupervisor_shutdown_Params(msg *capnp.Message) (Supervisor_shutdown_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_shutdown_Params{root.Struct()}, err
+	return Supervisor_shutdown_Params(root.Struct()), err
 }
 
 func (s Supervisor_shutdown_Params) String() string {
-	str, _ := text.Marshal(0xd597c8d788fec5df, s.Struct)
+	str, _ := text.Marshal(0xd597c8d788fec5df, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_shutdown_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_shutdown_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_shutdown_Params {
+	return Supervisor_shutdown_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_shutdown_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_shutdown_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_shutdown_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_shutdown_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_shutdown_Params_List is a list of Supervisor_shutdown_Params.
-type Supervisor_shutdown_Params_List struct{ capnp.List }
+type Supervisor_shutdown_Params_List = capnp.StructList[Supervisor_shutdown_Params]
 
 // NewSupervisor_shutdown_Params creates a new list of Supervisor_shutdown_Params.
 func NewSupervisor_shutdown_Params_List(s *capnp.Segment, sz int32) (Supervisor_shutdown_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_shutdown_Params_List{l}, err
-}
-
-func (s Supervisor_shutdown_Params_List) At(i int) Supervisor_shutdown_Params {
-	return Supervisor_shutdown_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_shutdown_Params_List) Set(i int, v Supervisor_shutdown_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_shutdown_Params_List) String() string {
-	str, _ := text.MarshalList(0xd597c8d788fec5df, s.List)
-	return str
+	return capnp.StructList[Supervisor_shutdown_Params](l), err
 }
 
 // Supervisor_shutdown_Params_Future is a wrapper for a Supervisor_shutdown_Params promised by a client call.
@@ -905,54 +959,64 @@ type Supervisor_shutdown_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_shutdown_Params_Future) Struct() (Supervisor_shutdown_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_shutdown_Params{s}, err
+	return Supervisor_shutdown_Params(s), err
 }
 
-type Supervisor_shutdown_Results struct{ capnp.Struct }
+type Supervisor_shutdown_Results capnp.Struct
 
 // Supervisor_shutdown_Results_TypeID is the unique identifier for the type Supervisor_shutdown_Results.
 const Supervisor_shutdown_Results_TypeID = 0xcb7ee0fa69cd6e70
 
 func NewSupervisor_shutdown_Results(s *capnp.Segment) (Supervisor_shutdown_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_shutdown_Results{st}, err
+	return Supervisor_shutdown_Results(st), err
 }
 
 func NewRootSupervisor_shutdown_Results(s *capnp.Segment) (Supervisor_shutdown_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_shutdown_Results{st}, err
+	return Supervisor_shutdown_Results(st), err
 }
 
 func ReadRootSupervisor_shutdown_Results(msg *capnp.Message) (Supervisor_shutdown_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_shutdown_Results{root.Struct()}, err
+	return Supervisor_shutdown_Results(root.Struct()), err
 }
 
 func (s Supervisor_shutdown_Results) String() string {
-	str, _ := text.Marshal(0xcb7ee0fa69cd6e70, s.Struct)
+	str, _ := text.Marshal(0xcb7ee0fa69cd6e70, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_shutdown_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_shutdown_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_shutdown_Results {
+	return Supervisor_shutdown_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_shutdown_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_shutdown_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_shutdown_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_shutdown_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_shutdown_Results_List is a list of Supervisor_shutdown_Results.
-type Supervisor_shutdown_Results_List struct{ capnp.List }
+type Supervisor_shutdown_Results_List = capnp.StructList[Supervisor_shutdown_Results]
 
 // NewSupervisor_shutdown_Results creates a new list of Supervisor_shutdown_Results.
 func NewSupervisor_shutdown_Results_List(s *capnp.Segment, sz int32) (Supervisor_shutdown_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_shutdown_Results_List{l}, err
-}
-
-func (s Supervisor_shutdown_Results_List) At(i int) Supervisor_shutdown_Results {
-	return Supervisor_shutdown_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_shutdown_Results_List) Set(i int, v Supervisor_shutdown_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_shutdown_Results_List) String() string {
-	str, _ := text.MarshalList(0xcb7ee0fa69cd6e70, s.List)
-	return str
+	return capnp.StructList[Supervisor_shutdown_Results](l), err
 }
 
 // Supervisor_shutdown_Results_Future is a wrapper for a Supervisor_shutdown_Results promised by a client call.
@@ -960,54 +1024,64 @@ type Supervisor_shutdown_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_shutdown_Results_Future) Struct() (Supervisor_shutdown_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_shutdown_Results{s}, err
+	return Supervisor_shutdown_Results(s), err
 }
 
-type Supervisor_obsoleteGetGrainSize_Params struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSize_Params capnp.Struct
 
 // Supervisor_obsoleteGetGrainSize_Params_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSize_Params.
 const Supervisor_obsoleteGetGrainSize_Params_TypeID = 0xf3e98c16ae117300
 
 func NewSupervisor_obsoleteGetGrainSize_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSize_Params{st}, err
+	return Supervisor_obsoleteGetGrainSize_Params(st), err
 }
 
 func NewRootSupervisor_obsoleteGetGrainSize_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSize_Params{st}, err
+	return Supervisor_obsoleteGetGrainSize_Params(st), err
 }
 
 func ReadRootSupervisor_obsoleteGetGrainSize_Params(msg *capnp.Message) (Supervisor_obsoleteGetGrainSize_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_obsoleteGetGrainSize_Params{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSize_Params(root.Struct()), err
 }
 
 func (s Supervisor_obsoleteGetGrainSize_Params) String() string {
-	str, _ := text.Marshal(0xf3e98c16ae117300, s.Struct)
+	str, _ := text.Marshal(0xf3e98c16ae117300, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_obsoleteGetGrainSize_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_obsoleteGetGrainSize_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_obsoleteGetGrainSize_Params {
+	return Supervisor_obsoleteGetGrainSize_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_obsoleteGetGrainSize_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_obsoleteGetGrainSize_Params_List is a list of Supervisor_obsoleteGetGrainSize_Params.
-type Supervisor_obsoleteGetGrainSize_Params_List struct{ capnp.List }
+type Supervisor_obsoleteGetGrainSize_Params_List = capnp.StructList[Supervisor_obsoleteGetGrainSize_Params]
 
 // NewSupervisor_obsoleteGetGrainSize_Params creates a new list of Supervisor_obsoleteGetGrainSize_Params.
 func NewSupervisor_obsoleteGetGrainSize_Params_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSize_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_obsoleteGetGrainSize_Params_List{l}, err
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Params_List) At(i int) Supervisor_obsoleteGetGrainSize_Params {
-	return Supervisor_obsoleteGetGrainSize_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Params_List) Set(i int, v Supervisor_obsoleteGetGrainSize_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Params_List) String() string {
-	str, _ := text.MarshalList(0xf3e98c16ae117300, s.List)
-	return str
+	return capnp.StructList[Supervisor_obsoleteGetGrainSize_Params](l), err
 }
 
 // Supervisor_obsoleteGetGrainSize_Params_Future is a wrapper for a Supervisor_obsoleteGetGrainSize_Params promised by a client call.
@@ -1015,62 +1089,71 @@ type Supervisor_obsoleteGetGrainSize_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_obsoleteGetGrainSize_Params_Future) Struct() (Supervisor_obsoleteGetGrainSize_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_obsoleteGetGrainSize_Params{s}, err
+	return Supervisor_obsoleteGetGrainSize_Params(s), err
 }
 
-type Supervisor_obsoleteGetGrainSize_Results struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSize_Results capnp.Struct
 
 // Supervisor_obsoleteGetGrainSize_Results_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSize_Results.
 const Supervisor_obsoleteGetGrainSize_Results_TypeID = 0xdc76071bd22f9a4b
 
 func NewSupervisor_obsoleteGetGrainSize_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSize_Results{st}, err
+	return Supervisor_obsoleteGetGrainSize_Results(st), err
 }
 
 func NewRootSupervisor_obsoleteGetGrainSize_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSize_Results{st}, err
+	return Supervisor_obsoleteGetGrainSize_Results(st), err
 }
 
 func ReadRootSupervisor_obsoleteGetGrainSize_Results(msg *capnp.Message) (Supervisor_obsoleteGetGrainSize_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_obsoleteGetGrainSize_Results{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSize_Results(root.Struct()), err
 }
 
 func (s Supervisor_obsoleteGetGrainSize_Results) String() string {
-	str, _ := text.Marshal(0xdc76071bd22f9a4b, s.Struct)
+	str, _ := text.Marshal(0xdc76071bd22f9a4b, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_obsoleteGetGrainSize_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_obsoleteGetGrainSize_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_obsoleteGetGrainSize_Results {
+	return Supervisor_obsoleteGetGrainSize_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_obsoleteGetGrainSize_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_obsoleteGetGrainSize_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_obsoleteGetGrainSize_Results) Size() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s Supervisor_obsoleteGetGrainSize_Results) SetSize(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Supervisor_obsoleteGetGrainSize_Results_List is a list of Supervisor_obsoleteGetGrainSize_Results.
-type Supervisor_obsoleteGetGrainSize_Results_List struct{ capnp.List }
+type Supervisor_obsoleteGetGrainSize_Results_List = capnp.StructList[Supervisor_obsoleteGetGrainSize_Results]
 
 // NewSupervisor_obsoleteGetGrainSize_Results creates a new list of Supervisor_obsoleteGetGrainSize_Results.
 func NewSupervisor_obsoleteGetGrainSize_Results_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSize_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_obsoleteGetGrainSize_Results_List{l}, err
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Results_List) At(i int) Supervisor_obsoleteGetGrainSize_Results {
-	return Supervisor_obsoleteGetGrainSize_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Results_List) Set(i int, v Supervisor_obsoleteGetGrainSize_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_obsoleteGetGrainSize_Results_List) String() string {
-	str, _ := text.MarshalList(0xdc76071bd22f9a4b, s.List)
-	return str
+	return capnp.StructList[Supervisor_obsoleteGetGrainSize_Results](l), err
 }
 
 // Supervisor_obsoleteGetGrainSize_Results_Future is a wrapper for a Supervisor_obsoleteGetGrainSize_Results promised by a client call.
@@ -1078,62 +1161,71 @@ type Supervisor_obsoleteGetGrainSize_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_obsoleteGetGrainSize_Results_Future) Struct() (Supervisor_obsoleteGetGrainSize_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_obsoleteGetGrainSize_Results{s}, err
+	return Supervisor_obsoleteGetGrainSize_Results(s), err
 }
 
-type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params capnp.Struct
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
 const Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_TypeID = 0xc08fb7eab4fb0e05
 
 func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(st), err
 }
 
 func NewRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(st), err
 }
 
 func ReadRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Params(msg *capnp.Message) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(root.Struct()), err
 }
 
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) String() string {
-	str, _ := text.Marshal(0xc08fb7eab4fb0e05, s.Struct)
+	str, _ := text.Marshal(0xc08fb7eab4fb0e05, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_obsoleteGetGrainSizeWhenDifferent_Params {
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) OldSize() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) SetOldSize(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List is a list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
-type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List struct{ capnp.List }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List = capnp.StructList[Supervisor_obsoleteGetGrainSizeWhenDifferent_Params]
 
 // NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params creates a new list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Params.
 func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Params_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List{l}, err
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List) At(i int) Supervisor_obsoleteGetGrainSizeWhenDifferent_Params {
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List) Set(i int, v Supervisor_obsoleteGetGrainSizeWhenDifferent_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_List) String() string {
-	str, _ := text.MarshalList(0xc08fb7eab4fb0e05, s.List)
-	return str
+	return capnp.StructList[Supervisor_obsoleteGetGrainSizeWhenDifferent_Params](l), err
 }
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Future is a wrapper for a Supervisor_obsoleteGetGrainSizeWhenDifferent_Params promised by a client call.
@@ -1141,62 +1233,71 @@ type Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Future struct{ *capnp.F
 
 func (p Supervisor_obsoleteGetGrainSizeWhenDifferent_Params_Future) Struct() (Supervisor_obsoleteGetGrainSizeWhenDifferent_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params{s}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Params(s), err
 }
 
-type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results struct{ capnp.Struct }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results capnp.Struct
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_TypeID is the unique identifier for the type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
 const Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_TypeID = 0xcce106c2fbaa9b04
 
 func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(st), err
 }
 
 func NewRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(s *capnp.Segment) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{st}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(st), err
 }
 
 func ReadRootSupervisor_obsoleteGetGrainSizeWhenDifferent_Results(msg *capnp.Message) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{root.Struct()}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(root.Struct()), err
 }
 
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) String() string {
-	str, _ := text.Marshal(0xcce106c2fbaa9b04, s.Struct)
+	str, _ := text.Marshal(0xcce106c2fbaa9b04, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_obsoleteGetGrainSizeWhenDifferent_Results {
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) Size() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) SetSize(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List is a list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
-type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List struct{ capnp.List }
+type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List = capnp.StructList[Supervisor_obsoleteGetGrainSizeWhenDifferent_Results]
 
 // NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results creates a new list of Supervisor_obsoleteGetGrainSizeWhenDifferent_Results.
 func NewSupervisor_obsoleteGetGrainSizeWhenDifferent_Results_List(s *capnp.Segment, sz int32) (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List{l}, err
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List) At(i int) Supervisor_obsoleteGetGrainSizeWhenDifferent_Results {
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List) Set(i int, v Supervisor_obsoleteGetGrainSizeWhenDifferent_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_List) String() string {
-	str, _ := text.MarshalList(0xcce106c2fbaa9b04, s.List)
-	return str
+	return capnp.StructList[Supervisor_obsoleteGetGrainSizeWhenDifferent_Results](l), err
 }
 
 // Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Future is a wrapper for a Supervisor_obsoleteGetGrainSizeWhenDifferent_Results promised by a client call.
@@ -1204,115 +1305,124 @@ type Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Future struct{ *capnp.
 
 func (p Supervisor_obsoleteGetGrainSizeWhenDifferent_Results_Future) Struct() (Supervisor_obsoleteGetGrainSizeWhenDifferent_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results{s}, err
+	return Supervisor_obsoleteGetGrainSizeWhenDifferent_Results(s), err
 }
 
-type Supervisor_restore_Params struct{ capnp.Struct }
+type Supervisor_restore_Params capnp.Struct
 
 // Supervisor_restore_Params_TypeID is the unique identifier for the type Supervisor_restore_Params.
 const Supervisor_restore_Params_TypeID = 0xaae54cb2386e60ab
 
 func NewSupervisor_restore_Params(s *capnp.Segment) (Supervisor_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return Supervisor_restore_Params{st}, err
+	return Supervisor_restore_Params(st), err
 }
 
 func NewRootSupervisor_restore_Params(s *capnp.Segment) (Supervisor_restore_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return Supervisor_restore_Params{st}, err
+	return Supervisor_restore_Params(st), err
 }
 
 func ReadRootSupervisor_restore_Params(msg *capnp.Message) (Supervisor_restore_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_restore_Params{root.Struct()}, err
+	return Supervisor_restore_Params(root.Struct()), err
 }
 
 func (s Supervisor_restore_Params) String() string {
-	str, _ := text.Marshal(0xaae54cb2386e60ab, s.Struct)
+	str, _ := text.Marshal(0xaae54cb2386e60ab, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_restore_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_restore_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_restore_Params {
+	return Supervisor_restore_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_restore_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_restore_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_restore_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_restore_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_restore_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Ptr(0)
-	return SupervisorObjectId{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return SupervisorObjectId(p.Struct()), err
 }
 
 func (s Supervisor_restore_Params) HasRef() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_restore_Params) SetRef(v SupervisorObjectId) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s Supervisor_restore_Params) NewRef() (SupervisorObjectId, error) {
-	ss, err := NewSupervisorObjectId(s.Struct.Segment())
+	ss, err := NewSupervisorObjectId(capnp.Struct(s).Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Supervisor_restore_Params) Obsolete() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Ptr(1)
-	return MembraneRequirement_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return MembraneRequirement_List(p.List()), err
 }
 
 func (s Supervisor_restore_Params) HasObsolete() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Supervisor_restore_Params) SetObsolete(v MembraneRequirement_List) error {
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewObsolete sets the obsolete field to a newly
 // allocated MembraneRequirement_List, preferring placement in s's segment.
 func (s Supervisor_restore_Params) NewObsolete(n int32) (MembraneRequirement_List, error) {
-	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	l, err := NewMembraneRequirement_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 func (s Supervisor_restore_Params) ParentToken() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return []byte(p.Data()), err
 }
 
 func (s Supervisor_restore_Params) HasParentToken() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Supervisor_restore_Params) SetParentToken(v []byte) error {
-	return s.Struct.SetData(2, v)
+	return capnp.Struct(s).SetData(2, v)
 }
 
 // Supervisor_restore_Params_List is a list of Supervisor_restore_Params.
-type Supervisor_restore_Params_List struct{ capnp.List }
+type Supervisor_restore_Params_List = capnp.StructList[Supervisor_restore_Params]
 
 // NewSupervisor_restore_Params creates a new list of Supervisor_restore_Params.
 func NewSupervisor_restore_Params_List(s *capnp.Segment, sz int32) (Supervisor_restore_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return Supervisor_restore_Params_List{l}, err
-}
-
-func (s Supervisor_restore_Params_List) At(i int) Supervisor_restore_Params {
-	return Supervisor_restore_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_restore_Params_List) Set(i int, v Supervisor_restore_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_restore_Params_List) String() string {
-	str, _ := text.MarshalList(0xaae54cb2386e60ab, s.List)
-	return str
+	return capnp.StructList[Supervisor_restore_Params](l), err
 }
 
 // Supervisor_restore_Params_Future is a wrapper for a Supervisor_restore_Params promised by a client call.
@@ -1320,70 +1430,85 @@ type Supervisor_restore_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_restore_Params_Future) Struct() (Supervisor_restore_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_restore_Params{s}, err
+	return Supervisor_restore_Params(s), err
 }
 
 func (p Supervisor_restore_Params_Future) Ref() SupervisorObjectId_Future {
 	return SupervisorObjectId_Future{Future: p.Future.Field(0, nil)}
 }
 
-type Supervisor_restore_Results struct{ capnp.Struct }
+type Supervisor_restore_Results capnp.Struct
 
 // Supervisor_restore_Results_TypeID is the unique identifier for the type Supervisor_restore_Results.
 const Supervisor_restore_Results_TypeID = 0x96fb2fd9e320599f
 
 func NewSupervisor_restore_Results(s *capnp.Segment) (Supervisor_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_restore_Results{st}, err
+	return Supervisor_restore_Results(st), err
 }
 
 func NewRootSupervisor_restore_Results(s *capnp.Segment) (Supervisor_restore_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_restore_Results{st}, err
+	return Supervisor_restore_Results(st), err
 }
 
 func ReadRootSupervisor_restore_Results(msg *capnp.Message) (Supervisor_restore_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_restore_Results{root.Struct()}, err
+	return Supervisor_restore_Results(root.Struct()), err
 }
 
 func (s Supervisor_restore_Results) String() string {
-	str, _ := text.Marshal(0x96fb2fd9e320599f, s.Struct)
+	str, _ := text.Marshal(0x96fb2fd9e320599f, capnp.Struct(s))
 	return str
 }
 
-func (s Supervisor_restore_Results) Cap() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s Supervisor_restore_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_restore_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_restore_Results {
+	return Supervisor_restore_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_restore_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_restore_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_restore_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_restore_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s Supervisor_restore_Results) Cap() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s Supervisor_restore_Results) HasCap() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s Supervisor_restore_Results) SetCap(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s Supervisor_restore_Results) SetCap(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_restore_Results_List is a list of Supervisor_restore_Results.
-type Supervisor_restore_Results_List struct{ capnp.List }
+type Supervisor_restore_Results_List = capnp.StructList[Supervisor_restore_Results]
 
 // NewSupervisor_restore_Results creates a new list of Supervisor_restore_Results.
 func NewSupervisor_restore_Results_List(s *capnp.Segment, sz int32) (Supervisor_restore_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Supervisor_restore_Results_List{l}, err
-}
-
-func (s Supervisor_restore_Results_List) At(i int) Supervisor_restore_Results {
-	return Supervisor_restore_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_restore_Results_List) Set(i int, v Supervisor_restore_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_restore_Results_List) String() string {
-	str, _ := text.MarshalList(0x96fb2fd9e320599f, s.List)
-	return str
+	return capnp.StructList[Supervisor_restore_Results](l), err
 }
 
 // Supervisor_restore_Results_Future is a wrapper for a Supervisor_restore_Results promised by a client call.
@@ -1391,82 +1516,91 @@ type Supervisor_restore_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_restore_Results_Future) Struct() (Supervisor_restore_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_restore_Results{s}, err
+	return Supervisor_restore_Results(s), err
 }
 
 func (p Supervisor_restore_Results_Future) Cap() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type Supervisor_drop_Params struct{ capnp.Struct }
+type Supervisor_drop_Params capnp.Struct
 
 // Supervisor_drop_Params_TypeID is the unique identifier for the type Supervisor_drop_Params.
 const Supervisor_drop_Params_TypeID = 0xaf3c0d4c9b788c3b
 
 func NewSupervisor_drop_Params(s *capnp.Segment) (Supervisor_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_drop_Params{st}, err
+	return Supervisor_drop_Params(st), err
 }
 
 func NewRootSupervisor_drop_Params(s *capnp.Segment) (Supervisor_drop_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_drop_Params{st}, err
+	return Supervisor_drop_Params(st), err
 }
 
 func ReadRootSupervisor_drop_Params(msg *capnp.Message) (Supervisor_drop_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_drop_Params{root.Struct()}, err
+	return Supervisor_drop_Params(root.Struct()), err
 }
 
 func (s Supervisor_drop_Params) String() string {
-	str, _ := text.Marshal(0xaf3c0d4c9b788c3b, s.Struct)
+	str, _ := text.Marshal(0xaf3c0d4c9b788c3b, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_drop_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_drop_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_drop_Params {
+	return Supervisor_drop_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_drop_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_drop_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_drop_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_drop_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_drop_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Ptr(0)
-	return SupervisorObjectId{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return SupervisorObjectId(p.Struct()), err
 }
 
 func (s Supervisor_drop_Params) HasRef() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_drop_Params) SetRef(v SupervisorObjectId) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s Supervisor_drop_Params) NewRef() (SupervisorObjectId, error) {
-	ss, err := NewSupervisorObjectId(s.Struct.Segment())
+	ss, err := NewSupervisorObjectId(capnp.Struct(s).Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // Supervisor_drop_Params_List is a list of Supervisor_drop_Params.
-type Supervisor_drop_Params_List struct{ capnp.List }
+type Supervisor_drop_Params_List = capnp.StructList[Supervisor_drop_Params]
 
 // NewSupervisor_drop_Params creates a new list of Supervisor_drop_Params.
 func NewSupervisor_drop_Params_List(s *capnp.Segment, sz int32) (Supervisor_drop_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Supervisor_drop_Params_List{l}, err
-}
-
-func (s Supervisor_drop_Params_List) At(i int) Supervisor_drop_Params {
-	return Supervisor_drop_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_drop_Params_List) Set(i int, v Supervisor_drop_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_drop_Params_List) String() string {
-	str, _ := text.MarshalList(0xaf3c0d4c9b788c3b, s.List)
-	return str
+	return capnp.StructList[Supervisor_drop_Params](l), err
 }
 
 // Supervisor_drop_Params_Future is a wrapper for a Supervisor_drop_Params promised by a client call.
@@ -1474,58 +1608,68 @@ type Supervisor_drop_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_drop_Params_Future) Struct() (Supervisor_drop_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_drop_Params{s}, err
+	return Supervisor_drop_Params(s), err
 }
 
 func (p Supervisor_drop_Params_Future) Ref() SupervisorObjectId_Future {
 	return SupervisorObjectId_Future{Future: p.Future.Field(0, nil)}
 }
 
-type Supervisor_drop_Results struct{ capnp.Struct }
+type Supervisor_drop_Results capnp.Struct
 
 // Supervisor_drop_Results_TypeID is the unique identifier for the type Supervisor_drop_Results.
 const Supervisor_drop_Results_TypeID = 0x80e7bfc1abd2efa7
 
 func NewSupervisor_drop_Results(s *capnp.Segment) (Supervisor_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_drop_Results{st}, err
+	return Supervisor_drop_Results(st), err
 }
 
 func NewRootSupervisor_drop_Results(s *capnp.Segment) (Supervisor_drop_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_drop_Results{st}, err
+	return Supervisor_drop_Results(st), err
 }
 
 func ReadRootSupervisor_drop_Results(msg *capnp.Message) (Supervisor_drop_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_drop_Results{root.Struct()}, err
+	return Supervisor_drop_Results(root.Struct()), err
 }
 
 func (s Supervisor_drop_Results) String() string {
-	str, _ := text.Marshal(0x80e7bfc1abd2efa7, s.Struct)
+	str, _ := text.Marshal(0x80e7bfc1abd2efa7, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_drop_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_drop_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_drop_Results {
+	return Supervisor_drop_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_drop_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_drop_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_drop_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_drop_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_drop_Results_List is a list of Supervisor_drop_Results.
-type Supervisor_drop_Results_List struct{ capnp.List }
+type Supervisor_drop_Results_List = capnp.StructList[Supervisor_drop_Results]
 
 // NewSupervisor_drop_Results creates a new list of Supervisor_drop_Results.
 func NewSupervisor_drop_Results_List(s *capnp.Segment, sz int32) (Supervisor_drop_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_drop_Results_List{l}, err
-}
-
-func (s Supervisor_drop_Results_List) At(i int) Supervisor_drop_Results {
-	return Supervisor_drop_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_drop_Results_List) Set(i int, v Supervisor_drop_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_drop_Results_List) String() string {
-	str, _ := text.MarshalList(0x80e7bfc1abd2efa7, s.List)
-	return str
+	return capnp.StructList[Supervisor_drop_Results](l), err
 }
 
 // Supervisor_drop_Results_Future is a wrapper for a Supervisor_drop_Results promised by a client call.
@@ -1533,80 +1677,89 @@ type Supervisor_drop_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_drop_Results_Future) Struct() (Supervisor_drop_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_drop_Results{s}, err
+	return Supervisor_drop_Results(s), err
 }
 
-type Supervisor_watchLog_Params struct{ capnp.Struct }
+type Supervisor_watchLog_Params capnp.Struct
 
 // Supervisor_watchLog_Params_TypeID is the unique identifier for the type Supervisor_watchLog_Params.
 const Supervisor_watchLog_Params_TypeID = 0xc152ab1174b40c0a
 
 func NewSupervisor_watchLog_Params(s *capnp.Segment) (Supervisor_watchLog_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return Supervisor_watchLog_Params{st}, err
+	return Supervisor_watchLog_Params(st), err
 }
 
 func NewRootSupervisor_watchLog_Params(s *capnp.Segment) (Supervisor_watchLog_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return Supervisor_watchLog_Params{st}, err
+	return Supervisor_watchLog_Params(st), err
 }
 
 func ReadRootSupervisor_watchLog_Params(msg *capnp.Message) (Supervisor_watchLog_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_watchLog_Params{root.Struct()}, err
+	return Supervisor_watchLog_Params(root.Struct()), err
 }
 
 func (s Supervisor_watchLog_Params) String() string {
-	str, _ := text.Marshal(0xc152ab1174b40c0a, s.Struct)
+	str, _ := text.Marshal(0xc152ab1174b40c0a, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_watchLog_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_watchLog_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_watchLog_Params {
+	return Supervisor_watchLog_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_watchLog_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_watchLog_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_watchLog_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_watchLog_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_watchLog_Params) BacklogAmount() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s Supervisor_watchLog_Params) SetBacklogAmount(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Supervisor_watchLog_Params) Stream() util.ByteStream {
-	p, _ := s.Struct.Ptr(0)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s Supervisor_watchLog_Params) HasStream() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_watchLog_Params) SetStream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_watchLog_Params_List is a list of Supervisor_watchLog_Params.
-type Supervisor_watchLog_Params_List struct{ capnp.List }
+type Supervisor_watchLog_Params_List = capnp.StructList[Supervisor_watchLog_Params]
 
 // NewSupervisor_watchLog_Params creates a new list of Supervisor_watchLog_Params.
 func NewSupervisor_watchLog_Params_List(s *capnp.Segment, sz int32) (Supervisor_watchLog_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return Supervisor_watchLog_Params_List{l}, err
-}
-
-func (s Supervisor_watchLog_Params_List) At(i int) Supervisor_watchLog_Params {
-	return Supervisor_watchLog_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_watchLog_Params_List) Set(i int, v Supervisor_watchLog_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_watchLog_Params_List) String() string {
-	str, _ := text.MarshalList(0xc152ab1174b40c0a, s.List)
-	return str
+	return capnp.StructList[Supervisor_watchLog_Params](l), err
 }
 
 // Supervisor_watchLog_Params_Future is a wrapper for a Supervisor_watchLog_Params promised by a client call.
@@ -1614,76 +1767,85 @@ type Supervisor_watchLog_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_watchLog_Params_Future) Struct() (Supervisor_watchLog_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_watchLog_Params{s}, err
+	return Supervisor_watchLog_Params(s), err
 }
 
 func (p Supervisor_watchLog_Params_Future) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(0, nil).Client()}
+	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
 
-type Supervisor_watchLog_Results struct{ capnp.Struct }
+type Supervisor_watchLog_Results capnp.Struct
 
 // Supervisor_watchLog_Results_TypeID is the unique identifier for the type Supervisor_watchLog_Results.
 const Supervisor_watchLog_Results_TypeID = 0x98053037c12fa689
 
 func NewSupervisor_watchLog_Results(s *capnp.Segment) (Supervisor_watchLog_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_watchLog_Results{st}, err
+	return Supervisor_watchLog_Results(st), err
 }
 
 func NewRootSupervisor_watchLog_Results(s *capnp.Segment) (Supervisor_watchLog_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Supervisor_watchLog_Results{st}, err
+	return Supervisor_watchLog_Results(st), err
 }
 
 func ReadRootSupervisor_watchLog_Results(msg *capnp.Message) (Supervisor_watchLog_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_watchLog_Results{root.Struct()}, err
+	return Supervisor_watchLog_Results(root.Struct()), err
 }
 
 func (s Supervisor_watchLog_Results) String() string {
-	str, _ := text.Marshal(0x98053037c12fa689, s.Struct)
+	str, _ := text.Marshal(0x98053037c12fa689, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_watchLog_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_watchLog_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_watchLog_Results {
+	return Supervisor_watchLog_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_watchLog_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_watchLog_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_watchLog_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_watchLog_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_watchLog_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s Supervisor_watchLog_Results) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_watchLog_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // Supervisor_watchLog_Results_List is a list of Supervisor_watchLog_Results.
-type Supervisor_watchLog_Results_List struct{ capnp.List }
+type Supervisor_watchLog_Results_List = capnp.StructList[Supervisor_watchLog_Results]
 
 // NewSupervisor_watchLog_Results creates a new list of Supervisor_watchLog_Results.
 func NewSupervisor_watchLog_Results_List(s *capnp.Segment, sz int32) (Supervisor_watchLog_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Supervisor_watchLog_Results_List{l}, err
-}
-
-func (s Supervisor_watchLog_Results_List) At(i int) Supervisor_watchLog_Results {
-	return Supervisor_watchLog_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_watchLog_Results_List) Set(i int, v Supervisor_watchLog_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_watchLog_Results_List) String() string {
-	str, _ := text.MarshalList(0x98053037c12fa689, s.List)
-	return str
+	return capnp.StructList[Supervisor_watchLog_Results](l), err
 }
 
 // Supervisor_watchLog_Results_Future is a wrapper for a Supervisor_watchLog_Results promised by a client call.
@@ -1691,58 +1853,68 @@ type Supervisor_watchLog_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_watchLog_Results_Future) Struct() (Supervisor_watchLog_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_watchLog_Results{s}, err
+	return Supervisor_watchLog_Results(s), err
 }
 
 func (p Supervisor_watchLog_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
-type Supervisor_syncStorage_Params struct{ capnp.Struct }
+type Supervisor_syncStorage_Params capnp.Struct
 
 // Supervisor_syncStorage_Params_TypeID is the unique identifier for the type Supervisor_syncStorage_Params.
 const Supervisor_syncStorage_Params_TypeID = 0xcf3e8fcfd0506bd0
 
 func NewSupervisor_syncStorage_Params(s *capnp.Segment) (Supervisor_syncStorage_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_syncStorage_Params{st}, err
+	return Supervisor_syncStorage_Params(st), err
 }
 
 func NewRootSupervisor_syncStorage_Params(s *capnp.Segment) (Supervisor_syncStorage_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_syncStorage_Params{st}, err
+	return Supervisor_syncStorage_Params(st), err
 }
 
 func ReadRootSupervisor_syncStorage_Params(msg *capnp.Message) (Supervisor_syncStorage_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_syncStorage_Params{root.Struct()}, err
+	return Supervisor_syncStorage_Params(root.Struct()), err
 }
 
 func (s Supervisor_syncStorage_Params) String() string {
-	str, _ := text.Marshal(0xcf3e8fcfd0506bd0, s.Struct)
+	str, _ := text.Marshal(0xcf3e8fcfd0506bd0, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_syncStorage_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_syncStorage_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_syncStorage_Params {
+	return Supervisor_syncStorage_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_syncStorage_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_syncStorage_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_syncStorage_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_syncStorage_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_syncStorage_Params_List is a list of Supervisor_syncStorage_Params.
-type Supervisor_syncStorage_Params_List struct{ capnp.List }
+type Supervisor_syncStorage_Params_List = capnp.StructList[Supervisor_syncStorage_Params]
 
 // NewSupervisor_syncStorage_Params creates a new list of Supervisor_syncStorage_Params.
 func NewSupervisor_syncStorage_Params_List(s *capnp.Segment, sz int32) (Supervisor_syncStorage_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_syncStorage_Params_List{l}, err
-}
-
-func (s Supervisor_syncStorage_Params_List) At(i int) Supervisor_syncStorage_Params {
-	return Supervisor_syncStorage_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_syncStorage_Params_List) Set(i int, v Supervisor_syncStorage_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_syncStorage_Params_List) String() string {
-	str, _ := text.MarshalList(0xcf3e8fcfd0506bd0, s.List)
-	return str
+	return capnp.StructList[Supervisor_syncStorage_Params](l), err
 }
 
 // Supervisor_syncStorage_Params_Future is a wrapper for a Supervisor_syncStorage_Params promised by a client call.
@@ -1750,54 +1922,64 @@ type Supervisor_syncStorage_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_syncStorage_Params_Future) Struct() (Supervisor_syncStorage_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_syncStorage_Params{s}, err
+	return Supervisor_syncStorage_Params(s), err
 }
 
-type Supervisor_syncStorage_Results struct{ capnp.Struct }
+type Supervisor_syncStorage_Results capnp.Struct
 
 // Supervisor_syncStorage_Results_TypeID is the unique identifier for the type Supervisor_syncStorage_Results.
 const Supervisor_syncStorage_Results_TypeID = 0xba8b9f7f3a411a03
 
 func NewSupervisor_syncStorage_Results(s *capnp.Segment) (Supervisor_syncStorage_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_syncStorage_Results{st}, err
+	return Supervisor_syncStorage_Results(st), err
 }
 
 func NewRootSupervisor_syncStorage_Results(s *capnp.Segment) (Supervisor_syncStorage_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Supervisor_syncStorage_Results{st}, err
+	return Supervisor_syncStorage_Results(st), err
 }
 
 func ReadRootSupervisor_syncStorage_Results(msg *capnp.Message) (Supervisor_syncStorage_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_syncStorage_Results{root.Struct()}, err
+	return Supervisor_syncStorage_Results(root.Struct()), err
 }
 
 func (s Supervisor_syncStorage_Results) String() string {
-	str, _ := text.Marshal(0xba8b9f7f3a411a03, s.Struct)
+	str, _ := text.Marshal(0xba8b9f7f3a411a03, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_syncStorage_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_syncStorage_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_syncStorage_Results {
+	return Supervisor_syncStorage_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_syncStorage_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_syncStorage_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_syncStorage_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_syncStorage_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Supervisor_syncStorage_Results_List is a list of Supervisor_syncStorage_Results.
-type Supervisor_syncStorage_Results_List struct{ capnp.List }
+type Supervisor_syncStorage_Results_List = capnp.StructList[Supervisor_syncStorage_Results]
 
 // NewSupervisor_syncStorage_Results creates a new list of Supervisor_syncStorage_Results.
 func NewSupervisor_syncStorage_Results_List(s *capnp.Segment, sz int32) (Supervisor_syncStorage_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Supervisor_syncStorage_Results_List{l}, err
-}
-
-func (s Supervisor_syncStorage_Results_List) At(i int) Supervisor_syncStorage_Results {
-	return Supervisor_syncStorage_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_syncStorage_Results_List) Set(i int, v Supervisor_syncStorage_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_syncStorage_Results_List) String() string {
-	str, _ := text.MarshalList(0xba8b9f7f3a411a03, s.List)
-	return str
+	return capnp.StructList[Supervisor_syncStorage_Results](l), err
 }
 
 // Supervisor_syncStorage_Results_Future is a wrapper for a Supervisor_syncStorage_Results promised by a client call.
@@ -1805,90 +1987,99 @@ type Supervisor_syncStorage_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_syncStorage_Results_Future) Struct() (Supervisor_syncStorage_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_syncStorage_Results{s}, err
+	return Supervisor_syncStorage_Results(s), err
 }
 
-type Supervisor_getWwwFileHack_Params struct{ capnp.Struct }
+type Supervisor_getWwwFileHack_Params capnp.Struct
 
 // Supervisor_getWwwFileHack_Params_TypeID is the unique identifier for the type Supervisor_getWwwFileHack_Params.
 const Supervisor_getWwwFileHack_Params_TypeID = 0xf9c6e362d6fcb22a
 
 func NewSupervisor_getWwwFileHack_Params(s *capnp.Segment) (Supervisor_getWwwFileHack_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Supervisor_getWwwFileHack_Params{st}, err
+	return Supervisor_getWwwFileHack_Params(st), err
 }
 
 func NewRootSupervisor_getWwwFileHack_Params(s *capnp.Segment) (Supervisor_getWwwFileHack_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Supervisor_getWwwFileHack_Params{st}, err
+	return Supervisor_getWwwFileHack_Params(st), err
 }
 
 func ReadRootSupervisor_getWwwFileHack_Params(msg *capnp.Message) (Supervisor_getWwwFileHack_Params, error) {
 	root, err := msg.Root()
-	return Supervisor_getWwwFileHack_Params{root.Struct()}, err
+	return Supervisor_getWwwFileHack_Params(root.Struct()), err
 }
 
 func (s Supervisor_getWwwFileHack_Params) String() string {
-	str, _ := text.Marshal(0xf9c6e362d6fcb22a, s.Struct)
+	str, _ := text.Marshal(0xf9c6e362d6fcb22a, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_getWwwFileHack_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_getWwwFileHack_Params) DecodeFromPtr(p capnp.Ptr) Supervisor_getWwwFileHack_Params {
+	return Supervisor_getWwwFileHack_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_getWwwFileHack_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_getWwwFileHack_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_getWwwFileHack_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_getWwwFileHack_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_getWwwFileHack_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s Supervisor_getWwwFileHack_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Supervisor_getWwwFileHack_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s Supervisor_getWwwFileHack_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s Supervisor_getWwwFileHack_Params) Stream() util.ByteStream {
-	p, _ := s.Struct.Ptr(1)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s Supervisor_getWwwFileHack_Params) HasStream() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Supervisor_getWwwFileHack_Params) SetStream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // Supervisor_getWwwFileHack_Params_List is a list of Supervisor_getWwwFileHack_Params.
-type Supervisor_getWwwFileHack_Params_List struct{ capnp.List }
+type Supervisor_getWwwFileHack_Params_List = capnp.StructList[Supervisor_getWwwFileHack_Params]
 
 // NewSupervisor_getWwwFileHack_Params creates a new list of Supervisor_getWwwFileHack_Params.
 func NewSupervisor_getWwwFileHack_Params_List(s *capnp.Segment, sz int32) (Supervisor_getWwwFileHack_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return Supervisor_getWwwFileHack_Params_List{l}, err
-}
-
-func (s Supervisor_getWwwFileHack_Params_List) At(i int) Supervisor_getWwwFileHack_Params {
-	return Supervisor_getWwwFileHack_Params{s.List.Struct(i)}
-}
-
-func (s Supervisor_getWwwFileHack_Params_List) Set(i int, v Supervisor_getWwwFileHack_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_getWwwFileHack_Params_List) String() string {
-	str, _ := text.MarshalList(0xf9c6e362d6fcb22a, s.List)
-	return str
+	return capnp.StructList[Supervisor_getWwwFileHack_Params](l), err
 }
 
 // Supervisor_getWwwFileHack_Params_Future is a wrapper for a Supervisor_getWwwFileHack_Params promised by a client call.
@@ -1896,66 +2087,75 @@ type Supervisor_getWwwFileHack_Params_Future struct{ *capnp.Future }
 
 func (p Supervisor_getWwwFileHack_Params_Future) Struct() (Supervisor_getWwwFileHack_Params, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_getWwwFileHack_Params{s}, err
+	return Supervisor_getWwwFileHack_Params(s), err
 }
 
 func (p Supervisor_getWwwFileHack_Params_Future) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
+	return util.ByteStream(p.Future.Field(1, nil).Client())
 }
 
-type Supervisor_getWwwFileHack_Results struct{ capnp.Struct }
+type Supervisor_getWwwFileHack_Results capnp.Struct
 
 // Supervisor_getWwwFileHack_Results_TypeID is the unique identifier for the type Supervisor_getWwwFileHack_Results.
 const Supervisor_getWwwFileHack_Results_TypeID = 0x902651d6de458996
 
 func NewSupervisor_getWwwFileHack_Results(s *capnp.Segment) (Supervisor_getWwwFileHack_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getWwwFileHack_Results{st}, err
+	return Supervisor_getWwwFileHack_Results(st), err
 }
 
 func NewRootSupervisor_getWwwFileHack_Results(s *capnp.Segment) (Supervisor_getWwwFileHack_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return Supervisor_getWwwFileHack_Results{st}, err
+	return Supervisor_getWwwFileHack_Results(st), err
 }
 
 func ReadRootSupervisor_getWwwFileHack_Results(msg *capnp.Message) (Supervisor_getWwwFileHack_Results, error) {
 	root, err := msg.Root()
-	return Supervisor_getWwwFileHack_Results{root.Struct()}, err
+	return Supervisor_getWwwFileHack_Results(root.Struct()), err
 }
 
 func (s Supervisor_getWwwFileHack_Results) String() string {
-	str, _ := text.Marshal(0x902651d6de458996, s.Struct)
+	str, _ := text.Marshal(0x902651d6de458996, capnp.Struct(s))
 	return str
 }
 
+func (s Supervisor_getWwwFileHack_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Supervisor_getWwwFileHack_Results) DecodeFromPtr(p capnp.Ptr) Supervisor_getWwwFileHack_Results {
+	return Supervisor_getWwwFileHack_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Supervisor_getWwwFileHack_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Supervisor_getWwwFileHack_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Supervisor_getWwwFileHack_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Supervisor_getWwwFileHack_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Supervisor_getWwwFileHack_Results) Status() Supervisor_WwwFileStatus {
-	return Supervisor_WwwFileStatus(s.Struct.Uint16(0))
+	return Supervisor_WwwFileStatus(capnp.Struct(s).Uint16(0))
 }
 
 func (s Supervisor_getWwwFileHack_Results) SetStatus(v Supervisor_WwwFileStatus) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 // Supervisor_getWwwFileHack_Results_List is a list of Supervisor_getWwwFileHack_Results.
-type Supervisor_getWwwFileHack_Results_List struct{ capnp.List }
+type Supervisor_getWwwFileHack_Results_List = capnp.StructList[Supervisor_getWwwFileHack_Results]
 
 // NewSupervisor_getWwwFileHack_Results creates a new list of Supervisor_getWwwFileHack_Results.
 func NewSupervisor_getWwwFileHack_Results_List(s *capnp.Segment, sz int32) (Supervisor_getWwwFileHack_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return Supervisor_getWwwFileHack_Results_List{l}, err
-}
-
-func (s Supervisor_getWwwFileHack_Results_List) At(i int) Supervisor_getWwwFileHack_Results {
-	return Supervisor_getWwwFileHack_Results{s.List.Struct(i)}
-}
-
-func (s Supervisor_getWwwFileHack_Results_List) Set(i int, v Supervisor_getWwwFileHack_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Supervisor_getWwwFileHack_Results_List) String() string {
-	str, _ := text.MarshalList(0x902651d6de458996, s.List)
-	return str
+	return capnp.StructList[Supervisor_getWwwFileHack_Results](l), err
 }
 
 // Supervisor_getWwwFileHack_Results_Future is a wrapper for a Supervisor_getWwwFileHack_Results promised by a client call.
@@ -1963,10 +2163,10 @@ type Supervisor_getWwwFileHack_Results_Future struct{ *capnp.Future }
 
 func (p Supervisor_getWwwFileHack_Results_Future) Struct() (Supervisor_getWwwFileHack_Results, error) {
 	s, err := p.Future.Struct()
-	return Supervisor_getWwwFileHack_Results{s}, err
+	return Supervisor_getWwwFileHack_Results(s), err
 }
 
-type SandstormCore struct{ Client *capnp.Client }
+type SandstormCore capnp.Client
 
 // SandstormCore_TypeID is the unique identifier for the type SandstormCore.
 const SandstormCore_TypeID = 0x9ba45778a294b60c
@@ -1982,9 +2182,9 @@ func (c SandstormCore) Restore(ctx context.Context, params func(SandstormCore_re
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_restore_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_restore_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_restore_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) MakeToken(ctx context.Context, params func(SandstormCore_makeToken_Params) error) (SandstormCore_makeToken_Results_Future, capnp.ReleaseFunc) {
@@ -1998,9 +2198,9 @@ func (c SandstormCore) MakeToken(ctx context.Context, params func(SandstormCore_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_makeToken_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_makeToken_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_makeToken_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) GetOwnerNotificationTarget(ctx context.Context, params func(SandstormCore_getOwnerNotificationTarget_Params) error) (SandstormCore_getOwnerNotificationTarget_Results_Future, capnp.ReleaseFunc) {
@@ -2014,9 +2214,9 @@ func (c SandstormCore) GetOwnerNotificationTarget(ctx context.Context, params fu
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_getOwnerNotificationTarget_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_getOwnerNotificationTarget_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_getOwnerNotificationTarget_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) Drop(ctx context.Context, params func(SandstormCore_drop_Params) error) (SandstormCore_drop_Results_Future, capnp.ReleaseFunc) {
@@ -2030,9 +2230,9 @@ func (c SandstormCore) Drop(ctx context.Context, params func(SandstormCore_drop_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_drop_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_drop_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_drop_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) ObsoleteCheckRequirements(ctx context.Context, params func(SandstormCore_obsoleteCheckRequirements_Params) error) (SandstormCore_obsoleteCheckRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -2046,9 +2246,9 @@ func (c SandstormCore) ObsoleteCheckRequirements(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_obsoleteCheckRequirements_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_obsoleteCheckRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_obsoleteCheckRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) MakeChildToken(ctx context.Context, params func(SandstormCore_makeChildToken_Params) error) (SandstormCore_makeChildToken_Results_Future, capnp.ReleaseFunc) {
@@ -2062,9 +2262,9 @@ func (c SandstormCore) MakeChildToken(ctx context.Context, params func(Sandstorm
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_makeChildToken_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_makeChildToken_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_makeChildToken_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) ClaimRequest(ctx context.Context, params func(SandstormCore_claimRequest_Params) error) (SandstormCore_claimRequest_Results_Future, capnp.ReleaseFunc) {
@@ -2078,9 +2278,9 @@ func (c SandstormCore) ClaimRequest(ctx context.Context, params func(SandstormCo
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_claimRequest_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_claimRequest_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_claimRequest_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) BackgroundActivity(ctx context.Context, params func(SandstormCore_backgroundActivity_Params) error) (SandstormCore_backgroundActivity_Results_Future, capnp.ReleaseFunc) {
@@ -2094,9 +2294,9 @@ func (c SandstormCore) BackgroundActivity(ctx context.Context, params func(Sands
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_backgroundActivity_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_backgroundActivity_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_backgroundActivity_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) ReportGrainSize(ctx context.Context, params func(SandstormCore_reportGrainSize_Params) error) (SandstormCore_reportGrainSize_Results_Future, capnp.ReleaseFunc) {
@@ -2110,9 +2310,9 @@ func (c SandstormCore) ReportGrainSize(ctx context.Context, params func(Sandstor
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_reportGrainSize_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_reportGrainSize_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_reportGrainSize_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) GetIdentityId(ctx context.Context, params func(SandstormCore_getIdentityId_Params) error) (SandstormCore_getIdentityId_Results_Future, capnp.ReleaseFunc) {
@@ -2126,9 +2326,9 @@ func (c SandstormCore) GetIdentityId(ctx context.Context, params func(SandstormC
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_getIdentityId_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SandstormCore_getIdentityId_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_getIdentityId_Results_Future{Future: ans.Future()}, release
 }
 func (c SandstormCore) Schedule(ctx context.Context, params func(grain.ScheduledJob) error) (SandstormCore_schedule_Results_Future, capnp.ReleaseFunc) {
@@ -2142,20 +2342,30 @@ func (c SandstormCore) Schedule(ctx context.Context, params func(grain.Scheduled
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 24, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.ScheduledJob{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.ScheduledJob(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SandstormCore_schedule_Results_Future{Future: ans.Future()}, release
 }
 
 func (c SandstormCore) AddRef() SandstormCore {
-	return SandstormCore{
-		Client: c.Client.AddRef(),
-	}
+	return SandstormCore(capnp.Client(c).AddRef())
 }
 
 func (c SandstormCore) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c SandstormCore) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (SandstormCore) DecodeFromPtr(p capnp.Ptr) SandstormCore {
+	return SandstormCore(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c SandstormCore) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A SandstormCore_Server is a SandstormCore with a local implementation.
@@ -2184,15 +2394,15 @@ type SandstormCore_Server interface {
 }
 
 // SandstormCore_NewServer creates a new Server from an implementation of SandstormCore_Server.
-func SandstormCore_NewServer(s SandstormCore_Server, policy *server.Policy) *server.Server {
+func SandstormCore_NewServer(s SandstormCore_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(SandstormCore_Methods(nil, s), s, c, policy)
+	return server.New(SandstormCore_Methods(nil, s), s, c)
 }
 
 // SandstormCore_ServerToClient creates a new Client from an implementation of SandstormCore_Server.
 // The caller is responsible for calling Release on the returned Client.
-func SandstormCore_ServerToClient(s SandstormCore_Server, policy *server.Policy) SandstormCore {
-	return SandstormCore{Client: capnp.NewClient(SandstormCore_NewServer(s, policy))}
+func SandstormCore_ServerToClient(s SandstormCore_Server) SandstormCore {
+	return SandstormCore(capnp.NewClient(SandstormCore_NewServer(s)))
 }
 
 // SandstormCore_Methods appends Methods to a slice that invoke the methods on s.
@@ -2345,13 +2555,13 @@ type SandstormCore_restore struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_restore) Args() SandstormCore_restore_Params {
-	return SandstormCore_restore_Params{Struct: c.Call.Args()}
+	return SandstormCore_restore_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_restore) AllocResults() (SandstormCore_restore_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_restore_Results{Struct: r}, err
+	return SandstormCore_restore_Results(r), err
 }
 
 // SandstormCore_makeToken holds the state for a server call to SandstormCore.makeToken.
@@ -2362,13 +2572,13 @@ type SandstormCore_makeToken struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_makeToken) Args() SandstormCore_makeToken_Params {
-	return SandstormCore_makeToken_Params{Struct: c.Call.Args()}
+	return SandstormCore_makeToken_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_makeToken) AllocResults() (SandstormCore_makeToken_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeToken_Results{Struct: r}, err
+	return SandstormCore_makeToken_Results(r), err
 }
 
 // SandstormCore_getOwnerNotificationTarget holds the state for a server call to SandstormCore.getOwnerNotificationTarget.
@@ -2379,13 +2589,13 @@ type SandstormCore_getOwnerNotificationTarget struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_getOwnerNotificationTarget) Args() SandstormCore_getOwnerNotificationTarget_Params {
-	return SandstormCore_getOwnerNotificationTarget_Params{Struct: c.Call.Args()}
+	return SandstormCore_getOwnerNotificationTarget_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_getOwnerNotificationTarget) AllocResults() (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getOwnerNotificationTarget_Results{Struct: r}, err
+	return SandstormCore_getOwnerNotificationTarget_Results(r), err
 }
 
 // SandstormCore_drop holds the state for a server call to SandstormCore.drop.
@@ -2396,13 +2606,13 @@ type SandstormCore_drop struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_drop) Args() SandstormCore_drop_Params {
-	return SandstormCore_drop_Params{Struct: c.Call.Args()}
+	return SandstormCore_drop_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_drop) AllocResults() (SandstormCore_drop_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_drop_Results{Struct: r}, err
+	return SandstormCore_drop_Results(r), err
 }
 
 // SandstormCore_obsoleteCheckRequirements holds the state for a server call to SandstormCore.obsoleteCheckRequirements.
@@ -2413,13 +2623,13 @@ type SandstormCore_obsoleteCheckRequirements struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_obsoleteCheckRequirements) Args() SandstormCore_obsoleteCheckRequirements_Params {
-	return SandstormCore_obsoleteCheckRequirements_Params{Struct: c.Call.Args()}
+	return SandstormCore_obsoleteCheckRequirements_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_obsoleteCheckRequirements) AllocResults() (SandstormCore_obsoleteCheckRequirements_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_obsoleteCheckRequirements_Results{Struct: r}, err
+	return SandstormCore_obsoleteCheckRequirements_Results(r), err
 }
 
 // SandstormCore_makeChildToken holds the state for a server call to SandstormCore.makeChildToken.
@@ -2430,13 +2640,13 @@ type SandstormCore_makeChildToken struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_makeChildToken) Args() SandstormCore_makeChildToken_Params {
-	return SandstormCore_makeChildToken_Params{Struct: c.Call.Args()}
+	return SandstormCore_makeChildToken_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_makeChildToken) AllocResults() (SandstormCore_makeChildToken_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeChildToken_Results{Struct: r}, err
+	return SandstormCore_makeChildToken_Results(r), err
 }
 
 // SandstormCore_claimRequest holds the state for a server call to SandstormCore.claimRequest.
@@ -2447,13 +2657,13 @@ type SandstormCore_claimRequest struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_claimRequest) Args() SandstormCore_claimRequest_Params {
-	return SandstormCore_claimRequest_Params{Struct: c.Call.Args()}
+	return SandstormCore_claimRequest_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_claimRequest) AllocResults() (SandstormCore_claimRequest_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_claimRequest_Results{Struct: r}, err
+	return SandstormCore_claimRequest_Results(r), err
 }
 
 // SandstormCore_backgroundActivity holds the state for a server call to SandstormCore.backgroundActivity.
@@ -2464,13 +2674,13 @@ type SandstormCore_backgroundActivity struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_backgroundActivity) Args() SandstormCore_backgroundActivity_Params {
-	return SandstormCore_backgroundActivity_Params{Struct: c.Call.Args()}
+	return SandstormCore_backgroundActivity_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_backgroundActivity) AllocResults() (SandstormCore_backgroundActivity_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_backgroundActivity_Results{Struct: r}, err
+	return SandstormCore_backgroundActivity_Results(r), err
 }
 
 // SandstormCore_reportGrainSize holds the state for a server call to SandstormCore.reportGrainSize.
@@ -2481,13 +2691,13 @@ type SandstormCore_reportGrainSize struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_reportGrainSize) Args() SandstormCore_reportGrainSize_Params {
-	return SandstormCore_reportGrainSize_Params{Struct: c.Call.Args()}
+	return SandstormCore_reportGrainSize_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_reportGrainSize) AllocResults() (SandstormCore_reportGrainSize_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_reportGrainSize_Results{Struct: r}, err
+	return SandstormCore_reportGrainSize_Results(r), err
 }
 
 // SandstormCore_getIdentityId holds the state for a server call to SandstormCore.getIdentityId.
@@ -2498,13 +2708,13 @@ type SandstormCore_getIdentityId struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_getIdentityId) Args() SandstormCore_getIdentityId_Params {
-	return SandstormCore_getIdentityId_Params{Struct: c.Call.Args()}
+	return SandstormCore_getIdentityId_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_getIdentityId) AllocResults() (SandstormCore_getIdentityId_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getIdentityId_Results{Struct: r}, err
+	return SandstormCore_getIdentityId_Results(r), err
 }
 
 // SandstormCore_schedule holds the state for a server call to SandstormCore.schedule.
@@ -2515,73 +2725,91 @@ type SandstormCore_schedule struct {
 
 // Args returns the call's arguments.
 func (c SandstormCore_schedule) Args() grain.ScheduledJob {
-	return grain.ScheduledJob{Struct: c.Call.Args()}
+	return grain.ScheduledJob(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SandstormCore_schedule) AllocResults() (SandstormCore_schedule_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_schedule_Results{Struct: r}, err
+	return SandstormCore_schedule_Results(r), err
 }
 
-type SandstormCore_restore_Params struct{ capnp.Struct }
+// SandstormCore_List is a list of SandstormCore.
+type SandstormCore_List = capnp.CapList[SandstormCore]
+
+// NewSandstormCore creates a new list of SandstormCore.
+func NewSandstormCore_List(s *capnp.Segment, sz int32) (SandstormCore_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[SandstormCore](l), err
+}
+
+type SandstormCore_restore_Params capnp.Struct
 
 // SandstormCore_restore_Params_TypeID is the unique identifier for the type SandstormCore_restore_Params.
 const SandstormCore_restore_Params_TypeID = 0xf839f92f21f00b08
 
 func NewSandstormCore_restore_Params(s *capnp.Segment) (SandstormCore_restore_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_restore_Params{st}, err
+	return SandstormCore_restore_Params(st), err
 }
 
 func NewRootSandstormCore_restore_Params(s *capnp.Segment) (SandstormCore_restore_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_restore_Params{st}, err
+	return SandstormCore_restore_Params(st), err
 }
 
 func ReadRootSandstormCore_restore_Params(msg *capnp.Message) (SandstormCore_restore_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_restore_Params{root.Struct()}, err
+	return SandstormCore_restore_Params(root.Struct()), err
 }
 
 func (s SandstormCore_restore_Params) String() string {
-	str, _ := text.Marshal(0xf839f92f21f00b08, s.Struct)
+	str, _ := text.Marshal(0xf839f92f21f00b08, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_restore_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_restore_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_restore_Params {
+	return SandstormCore_restore_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_restore_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_restore_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_restore_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_restore_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_restore_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_restore_Params) HasToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_restore_Params) SetToken(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // SandstormCore_restore_Params_List is a list of SandstormCore_restore_Params.
-type SandstormCore_restore_Params_List struct{ capnp.List }
+type SandstormCore_restore_Params_List = capnp.StructList[SandstormCore_restore_Params]
 
 // NewSandstormCore_restore_Params creates a new list of SandstormCore_restore_Params.
 func NewSandstormCore_restore_Params_List(s *capnp.Segment, sz int32) (SandstormCore_restore_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_restore_Params_List{l}, err
-}
-
-func (s SandstormCore_restore_Params_List) At(i int) SandstormCore_restore_Params {
-	return SandstormCore_restore_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_restore_Params_List) Set(i int, v SandstormCore_restore_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_restore_Params_List) String() string {
-	str, _ := text.MarshalList(0xf839f92f21f00b08, s.List)
-	return str
+	return capnp.StructList[SandstormCore_restore_Params](l), err
 }
 
 // SandstormCore_restore_Params_Future is a wrapper for a SandstormCore_restore_Params promised by a client call.
@@ -2589,66 +2817,81 @@ type SandstormCore_restore_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_restore_Params_Future) Struct() (SandstormCore_restore_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_restore_Params{s}, err
+	return SandstormCore_restore_Params(s), err
 }
 
-type SandstormCore_restore_Results struct{ capnp.Struct }
+type SandstormCore_restore_Results capnp.Struct
 
 // SandstormCore_restore_Results_TypeID is the unique identifier for the type SandstormCore_restore_Results.
 const SandstormCore_restore_Results_TypeID = 0x92e92771f2b6b2b7
 
 func NewSandstormCore_restore_Results(s *capnp.Segment) (SandstormCore_restore_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_restore_Results{st}, err
+	return SandstormCore_restore_Results(st), err
 }
 
 func NewRootSandstormCore_restore_Results(s *capnp.Segment) (SandstormCore_restore_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_restore_Results{st}, err
+	return SandstormCore_restore_Results(st), err
 }
 
 func ReadRootSandstormCore_restore_Results(msg *capnp.Message) (SandstormCore_restore_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_restore_Results{root.Struct()}, err
+	return SandstormCore_restore_Results(root.Struct()), err
 }
 
 func (s SandstormCore_restore_Results) String() string {
-	str, _ := text.Marshal(0x92e92771f2b6b2b7, s.Struct)
+	str, _ := text.Marshal(0x92e92771f2b6b2b7, capnp.Struct(s))
 	return str
 }
 
-func (s SandstormCore_restore_Results) Cap() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s SandstormCore_restore_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_restore_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_restore_Results {
+	return SandstormCore_restore_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_restore_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_restore_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_restore_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_restore_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SandstormCore_restore_Results) Cap() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s SandstormCore_restore_Results) HasCap() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s SandstormCore_restore_Results) SetCap(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s SandstormCore_restore_Results) SetCap(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_restore_Results_List is a list of SandstormCore_restore_Results.
-type SandstormCore_restore_Results_List struct{ capnp.List }
+type SandstormCore_restore_Results_List = capnp.StructList[SandstormCore_restore_Results]
 
 // NewSandstormCore_restore_Results creates a new list of SandstormCore_restore_Results.
 func NewSandstormCore_restore_Results_List(s *capnp.Segment, sz int32) (SandstormCore_restore_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_restore_Results_List{l}, err
-}
-
-func (s SandstormCore_restore_Results_List) At(i int) SandstormCore_restore_Results {
-	return SandstormCore_restore_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_restore_Results_List) Set(i int, v SandstormCore_restore_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_restore_Results_List) String() string {
-	str, _ := text.MarshalList(0x92e92771f2b6b2b7, s.List)
-	return str
+	return capnp.StructList[SandstormCore_restore_Results](l), err
 }
 
 // SandstormCore_restore_Results_Future is a wrapper for a SandstormCore_restore_Results promised by a client call.
@@ -2656,130 +2899,139 @@ type SandstormCore_restore_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_restore_Results_Future) Struct() (SandstormCore_restore_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_restore_Results{s}, err
+	return SandstormCore_restore_Results(s), err
 }
 
 func (p SandstormCore_restore_Results_Future) Cap() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type SandstormCore_makeToken_Params struct{ capnp.Struct }
+type SandstormCore_makeToken_Params capnp.Struct
 
 // SandstormCore_makeToken_Params_TypeID is the unique identifier for the type SandstormCore_makeToken_Params.
 const SandstormCore_makeToken_Params_TypeID = 0xf0e8359b121f97d2
 
 func NewSandstormCore_makeToken_Params(s *capnp.Segment) (SandstormCore_makeToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SandstormCore_makeToken_Params{st}, err
+	return SandstormCore_makeToken_Params(st), err
 }
 
 func NewRootSandstormCore_makeToken_Params(s *capnp.Segment) (SandstormCore_makeToken_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SandstormCore_makeToken_Params{st}, err
+	return SandstormCore_makeToken_Params(st), err
 }
 
 func ReadRootSandstormCore_makeToken_Params(msg *capnp.Message) (SandstormCore_makeToken_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_makeToken_Params{root.Struct()}, err
+	return SandstormCore_makeToken_Params(root.Struct()), err
 }
 
 func (s SandstormCore_makeToken_Params) String() string {
-	str, _ := text.Marshal(0xf0e8359b121f97d2, s.Struct)
+	str, _ := text.Marshal(0xf0e8359b121f97d2, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_makeToken_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_makeToken_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_makeToken_Params {
+	return SandstormCore_makeToken_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_makeToken_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_makeToken_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_makeToken_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_makeToken_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_makeToken_Params) Ref() (SupervisorObjectId, error) {
-	p, err := s.Struct.Ptr(0)
-	return SupervisorObjectId{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return SupervisorObjectId(p.Struct()), err
 }
 
 func (s SandstormCore_makeToken_Params) HasRef() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_makeToken_Params) SetRef(v SupervisorObjectId) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewRef sets the ref field to a newly
 // allocated SupervisorObjectId struct, preferring placement in s's segment.
 func (s SandstormCore_makeToken_Params) NewRef() (SupervisorObjectId, error) {
-	ss, err := NewSupervisorObjectId(s.Struct.Segment())
+	ss, err := NewSupervisorObjectId(capnp.Struct(s).Segment())
 	if err != nil {
 		return SupervisorObjectId{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeToken_Params) Owner() (ApiTokenOwner, error) {
-	p, err := s.Struct.Ptr(1)
-	return ApiTokenOwner{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return ApiTokenOwner(p.Struct()), err
 }
 
 func (s SandstormCore_makeToken_Params) HasOwner() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SandstormCore_makeToken_Params) SetOwner(v ApiTokenOwner) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewOwner sets the owner field to a newly
 // allocated ApiTokenOwner struct, preferring placement in s's segment.
 func (s SandstormCore_makeToken_Params) NewOwner() (ApiTokenOwner, error) {
-	ss, err := NewApiTokenOwner(s.Struct.Segment())
+	ss, err := NewApiTokenOwner(capnp.Struct(s).Segment())
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeToken_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return MembraneRequirement_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return MembraneRequirement_List(p.List()), err
 }
 
 func (s SandstormCore_makeToken_Params) HasRequirements() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s SandstormCore_makeToken_Params) SetRequirements(v MembraneRequirement_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewRequirements sets the requirements field to a newly
 // allocated MembraneRequirement_List, preferring placement in s's segment.
 func (s SandstormCore_makeToken_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
-	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	l, err := NewMembraneRequirement_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // SandstormCore_makeToken_Params_List is a list of SandstormCore_makeToken_Params.
-type SandstormCore_makeToken_Params_List struct{ capnp.List }
+type SandstormCore_makeToken_Params_List = capnp.StructList[SandstormCore_makeToken_Params]
 
 // NewSandstormCore_makeToken_Params creates a new list of SandstormCore_makeToken_Params.
 func NewSandstormCore_makeToken_Params_List(s *capnp.Segment, sz int32) (SandstormCore_makeToken_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return SandstormCore_makeToken_Params_List{l}, err
-}
-
-func (s SandstormCore_makeToken_Params_List) At(i int) SandstormCore_makeToken_Params {
-	return SandstormCore_makeToken_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_makeToken_Params_List) Set(i int, v SandstormCore_makeToken_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_makeToken_Params_List) String() string {
-	str, _ := text.MarshalList(0xf0e8359b121f97d2, s.List)
-	return str
+	return capnp.StructList[SandstormCore_makeToken_Params](l), err
 }
 
 // SandstormCore_makeToken_Params_Future is a wrapper for a SandstormCore_makeToken_Params promised by a client call.
@@ -2787,7 +3039,7 @@ type SandstormCore_makeToken_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_makeToken_Params_Future) Struct() (SandstormCore_makeToken_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_makeToken_Params{s}, err
+	return SandstormCore_makeToken_Params(s), err
 }
 
 func (p SandstormCore_makeToken_Params_Future) Ref() SupervisorObjectId_Future {
@@ -2798,64 +3050,73 @@ func (p SandstormCore_makeToken_Params_Future) Owner() ApiTokenOwner_Future {
 	return ApiTokenOwner_Future{Future: p.Future.Field(1, nil)}
 }
 
-type SandstormCore_makeToken_Results struct{ capnp.Struct }
+type SandstormCore_makeToken_Results capnp.Struct
 
 // SandstormCore_makeToken_Results_TypeID is the unique identifier for the type SandstormCore_makeToken_Results.
 const SandstormCore_makeToken_Results_TypeID = 0x9f96d4b948521f91
 
 func NewSandstormCore_makeToken_Results(s *capnp.Segment) (SandstormCore_makeToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeToken_Results{st}, err
+	return SandstormCore_makeToken_Results(st), err
 }
 
 func NewRootSandstormCore_makeToken_Results(s *capnp.Segment) (SandstormCore_makeToken_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeToken_Results{st}, err
+	return SandstormCore_makeToken_Results(st), err
 }
 
 func ReadRootSandstormCore_makeToken_Results(msg *capnp.Message) (SandstormCore_makeToken_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_makeToken_Results{root.Struct()}, err
+	return SandstormCore_makeToken_Results(root.Struct()), err
 }
 
 func (s SandstormCore_makeToken_Results) String() string {
-	str, _ := text.Marshal(0x9f96d4b948521f91, s.Struct)
+	str, _ := text.Marshal(0x9f96d4b948521f91, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_makeToken_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_makeToken_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_makeToken_Results {
+	return SandstormCore_makeToken_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_makeToken_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_makeToken_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_makeToken_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_makeToken_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_makeToken_Results) Token() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_makeToken_Results) HasToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_makeToken_Results) SetToken(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // SandstormCore_makeToken_Results_List is a list of SandstormCore_makeToken_Results.
-type SandstormCore_makeToken_Results_List struct{ capnp.List }
+type SandstormCore_makeToken_Results_List = capnp.StructList[SandstormCore_makeToken_Results]
 
 // NewSandstormCore_makeToken_Results creates a new list of SandstormCore_makeToken_Results.
 func NewSandstormCore_makeToken_Results_List(s *capnp.Segment, sz int32) (SandstormCore_makeToken_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_makeToken_Results_List{l}, err
-}
-
-func (s SandstormCore_makeToken_Results_List) At(i int) SandstormCore_makeToken_Results {
-	return SandstormCore_makeToken_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_makeToken_Results_List) Set(i int, v SandstormCore_makeToken_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_makeToken_Results_List) String() string {
-	str, _ := text.MarshalList(0x9f96d4b948521f91, s.List)
-	return str
+	return capnp.StructList[SandstormCore_makeToken_Results](l), err
 }
 
 // SandstormCore_makeToken_Results_Future is a wrapper for a SandstormCore_makeToken_Results promised by a client call.
@@ -2863,54 +3124,64 @@ type SandstormCore_makeToken_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_makeToken_Results_Future) Struct() (SandstormCore_makeToken_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_makeToken_Results{s}, err
+	return SandstormCore_makeToken_Results(s), err
 }
 
-type SandstormCore_getOwnerNotificationTarget_Params struct{ capnp.Struct }
+type SandstormCore_getOwnerNotificationTarget_Params capnp.Struct
 
 // SandstormCore_getOwnerNotificationTarget_Params_TypeID is the unique identifier for the type SandstormCore_getOwnerNotificationTarget_Params.
 const SandstormCore_getOwnerNotificationTarget_Params_TypeID = 0xaf72d693dbf4bf54
 
 func NewSandstormCore_getOwnerNotificationTarget_Params(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_getOwnerNotificationTarget_Params{st}, err
+	return SandstormCore_getOwnerNotificationTarget_Params(st), err
 }
 
 func NewRootSandstormCore_getOwnerNotificationTarget_Params(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_getOwnerNotificationTarget_Params{st}, err
+	return SandstormCore_getOwnerNotificationTarget_Params(st), err
 }
 
 func ReadRootSandstormCore_getOwnerNotificationTarget_Params(msg *capnp.Message) (SandstormCore_getOwnerNotificationTarget_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_getOwnerNotificationTarget_Params{root.Struct()}, err
+	return SandstormCore_getOwnerNotificationTarget_Params(root.Struct()), err
 }
 
 func (s SandstormCore_getOwnerNotificationTarget_Params) String() string {
-	str, _ := text.Marshal(0xaf72d693dbf4bf54, s.Struct)
+	str, _ := text.Marshal(0xaf72d693dbf4bf54, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_getOwnerNotificationTarget_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_getOwnerNotificationTarget_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_getOwnerNotificationTarget_Params {
+	return SandstormCore_getOwnerNotificationTarget_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_getOwnerNotificationTarget_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_getOwnerNotificationTarget_Params_List is a list of SandstormCore_getOwnerNotificationTarget_Params.
-type SandstormCore_getOwnerNotificationTarget_Params_List struct{ capnp.List }
+type SandstormCore_getOwnerNotificationTarget_Params_List = capnp.StructList[SandstormCore_getOwnerNotificationTarget_Params]
 
 // NewSandstormCore_getOwnerNotificationTarget_Params creates a new list of SandstormCore_getOwnerNotificationTarget_Params.
 func NewSandstormCore_getOwnerNotificationTarget_Params_List(s *capnp.Segment, sz int32) (SandstormCore_getOwnerNotificationTarget_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_getOwnerNotificationTarget_Params_List{l}, err
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Params_List) At(i int) SandstormCore_getOwnerNotificationTarget_Params {
-	return SandstormCore_getOwnerNotificationTarget_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Params_List) Set(i int, v SandstormCore_getOwnerNotificationTarget_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Params_List) String() string {
-	str, _ := text.MarshalList(0xaf72d693dbf4bf54, s.List)
-	return str
+	return capnp.StructList[SandstormCore_getOwnerNotificationTarget_Params](l), err
 }
 
 // SandstormCore_getOwnerNotificationTarget_Params_Future is a wrapper for a SandstormCore_getOwnerNotificationTarget_Params promised by a client call.
@@ -2918,72 +3189,81 @@ type SandstormCore_getOwnerNotificationTarget_Params_Future struct{ *capnp.Futur
 
 func (p SandstormCore_getOwnerNotificationTarget_Params_Future) Struct() (SandstormCore_getOwnerNotificationTarget_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_getOwnerNotificationTarget_Params{s}, err
+	return SandstormCore_getOwnerNotificationTarget_Params(s), err
 }
 
-type SandstormCore_getOwnerNotificationTarget_Results struct{ capnp.Struct }
+type SandstormCore_getOwnerNotificationTarget_Results capnp.Struct
 
 // SandstormCore_getOwnerNotificationTarget_Results_TypeID is the unique identifier for the type SandstormCore_getOwnerNotificationTarget_Results.
 const SandstormCore_getOwnerNotificationTarget_Results_TypeID = 0x888c6d95df2cc976
 
 func NewSandstormCore_getOwnerNotificationTarget_Results(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getOwnerNotificationTarget_Results{st}, err
+	return SandstormCore_getOwnerNotificationTarget_Results(st), err
 }
 
 func NewRootSandstormCore_getOwnerNotificationTarget_Results(s *capnp.Segment) (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getOwnerNotificationTarget_Results{st}, err
+	return SandstormCore_getOwnerNotificationTarget_Results(st), err
 }
 
 func ReadRootSandstormCore_getOwnerNotificationTarget_Results(msg *capnp.Message) (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_getOwnerNotificationTarget_Results{root.Struct()}, err
+	return SandstormCore_getOwnerNotificationTarget_Results(root.Struct()), err
 }
 
 func (s SandstormCore_getOwnerNotificationTarget_Results) String() string {
-	str, _ := text.Marshal(0x888c6d95df2cc976, s.Struct)
+	str, _ := text.Marshal(0x888c6d95df2cc976, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_getOwnerNotificationTarget_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_getOwnerNotificationTarget_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_getOwnerNotificationTarget_Results {
+	return SandstormCore_getOwnerNotificationTarget_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_getOwnerNotificationTarget_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_getOwnerNotificationTarget_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_getOwnerNotificationTarget_Results) Owner() activity.NotificationTarget {
-	p, _ := s.Struct.Ptr(0)
-	return activity.NotificationTarget{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return activity.NotificationTarget(p.Interface().Client())
 }
 
 func (s SandstormCore_getOwnerNotificationTarget_Results) HasOwner() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_getOwnerNotificationTarget_Results) SetOwner(v activity.NotificationTarget) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_getOwnerNotificationTarget_Results_List is a list of SandstormCore_getOwnerNotificationTarget_Results.
-type SandstormCore_getOwnerNotificationTarget_Results_List struct{ capnp.List }
+type SandstormCore_getOwnerNotificationTarget_Results_List = capnp.StructList[SandstormCore_getOwnerNotificationTarget_Results]
 
 // NewSandstormCore_getOwnerNotificationTarget_Results creates a new list of SandstormCore_getOwnerNotificationTarget_Results.
 func NewSandstormCore_getOwnerNotificationTarget_Results_List(s *capnp.Segment, sz int32) (SandstormCore_getOwnerNotificationTarget_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_getOwnerNotificationTarget_Results_List{l}, err
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Results_List) At(i int) SandstormCore_getOwnerNotificationTarget_Results {
-	return SandstormCore_getOwnerNotificationTarget_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Results_List) Set(i int, v SandstormCore_getOwnerNotificationTarget_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_getOwnerNotificationTarget_Results_List) String() string {
-	str, _ := text.MarshalList(0x888c6d95df2cc976, s.List)
-	return str
+	return capnp.StructList[SandstormCore_getOwnerNotificationTarget_Results](l), err
 }
 
 // SandstormCore_getOwnerNotificationTarget_Results_Future is a wrapper for a SandstormCore_getOwnerNotificationTarget_Results promised by a client call.
@@ -2991,71 +3271,80 @@ type SandstormCore_getOwnerNotificationTarget_Results_Future struct{ *capnp.Futu
 
 func (p SandstormCore_getOwnerNotificationTarget_Results_Future) Struct() (SandstormCore_getOwnerNotificationTarget_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_getOwnerNotificationTarget_Results{s}, err
+	return SandstormCore_getOwnerNotificationTarget_Results(s), err
 }
 
 func (p SandstormCore_getOwnerNotificationTarget_Results_Future) Owner() activity.NotificationTarget {
-	return activity.NotificationTarget{Client: p.Future.Field(0, nil).Client()}
+	return activity.NotificationTarget(p.Future.Field(0, nil).Client())
 }
 
-type SandstormCore_drop_Params struct{ capnp.Struct }
+type SandstormCore_drop_Params capnp.Struct
 
 // SandstormCore_drop_Params_TypeID is the unique identifier for the type SandstormCore_drop_Params.
 const SandstormCore_drop_Params_TypeID = 0xe03b8c8163d957c6
 
 func NewSandstormCore_drop_Params(s *capnp.Segment) (SandstormCore_drop_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_drop_Params{st}, err
+	return SandstormCore_drop_Params(st), err
 }
 
 func NewRootSandstormCore_drop_Params(s *capnp.Segment) (SandstormCore_drop_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_drop_Params{st}, err
+	return SandstormCore_drop_Params(st), err
 }
 
 func ReadRootSandstormCore_drop_Params(msg *capnp.Message) (SandstormCore_drop_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_drop_Params{root.Struct()}, err
+	return SandstormCore_drop_Params(root.Struct()), err
 }
 
 func (s SandstormCore_drop_Params) String() string {
-	str, _ := text.Marshal(0xe03b8c8163d957c6, s.Struct)
+	str, _ := text.Marshal(0xe03b8c8163d957c6, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_drop_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_drop_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_drop_Params {
+	return SandstormCore_drop_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_drop_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_drop_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_drop_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_drop_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_drop_Params) Token() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_drop_Params) HasToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_drop_Params) SetToken(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // SandstormCore_drop_Params_List is a list of SandstormCore_drop_Params.
-type SandstormCore_drop_Params_List struct{ capnp.List }
+type SandstormCore_drop_Params_List = capnp.StructList[SandstormCore_drop_Params]
 
 // NewSandstormCore_drop_Params creates a new list of SandstormCore_drop_Params.
 func NewSandstormCore_drop_Params_List(s *capnp.Segment, sz int32) (SandstormCore_drop_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_drop_Params_List{l}, err
-}
-
-func (s SandstormCore_drop_Params_List) At(i int) SandstormCore_drop_Params {
-	return SandstormCore_drop_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_drop_Params_List) Set(i int, v SandstormCore_drop_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_drop_Params_List) String() string {
-	str, _ := text.MarshalList(0xe03b8c8163d957c6, s.List)
-	return str
+	return capnp.StructList[SandstormCore_drop_Params](l), err
 }
 
 // SandstormCore_drop_Params_Future is a wrapper for a SandstormCore_drop_Params promised by a client call.
@@ -3063,54 +3352,64 @@ type SandstormCore_drop_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_drop_Params_Future) Struct() (SandstormCore_drop_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_drop_Params{s}, err
+	return SandstormCore_drop_Params(s), err
 }
 
-type SandstormCore_drop_Results struct{ capnp.Struct }
+type SandstormCore_drop_Results capnp.Struct
 
 // SandstormCore_drop_Results_TypeID is the unique identifier for the type SandstormCore_drop_Results.
 const SandstormCore_drop_Results_TypeID = 0xce435c92a97c1b97
 
 func NewSandstormCore_drop_Results(s *capnp.Segment) (SandstormCore_drop_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_drop_Results{st}, err
+	return SandstormCore_drop_Results(st), err
 }
 
 func NewRootSandstormCore_drop_Results(s *capnp.Segment) (SandstormCore_drop_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_drop_Results{st}, err
+	return SandstormCore_drop_Results(st), err
 }
 
 func ReadRootSandstormCore_drop_Results(msg *capnp.Message) (SandstormCore_drop_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_drop_Results{root.Struct()}, err
+	return SandstormCore_drop_Results(root.Struct()), err
 }
 
 func (s SandstormCore_drop_Results) String() string {
-	str, _ := text.Marshal(0xce435c92a97c1b97, s.Struct)
+	str, _ := text.Marshal(0xce435c92a97c1b97, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_drop_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_drop_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_drop_Results {
+	return SandstormCore_drop_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_drop_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_drop_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_drop_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_drop_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_drop_Results_List is a list of SandstormCore_drop_Results.
-type SandstormCore_drop_Results_List struct{ capnp.List }
+type SandstormCore_drop_Results_List = capnp.StructList[SandstormCore_drop_Results]
 
 // NewSandstormCore_drop_Results creates a new list of SandstormCore_drop_Results.
 func NewSandstormCore_drop_Results_List(s *capnp.Segment, sz int32) (SandstormCore_drop_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_drop_Results_List{l}, err
-}
-
-func (s SandstormCore_drop_Results_List) At(i int) SandstormCore_drop_Results {
-	return SandstormCore_drop_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_drop_Results_List) Set(i int, v SandstormCore_drop_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_drop_Results_List) String() string {
-	str, _ := text.MarshalList(0xce435c92a97c1b97, s.List)
-	return str
+	return capnp.StructList[SandstormCore_drop_Results](l), err
 }
 
 // SandstormCore_drop_Results_Future is a wrapper for a SandstormCore_drop_Results promised by a client call.
@@ -3118,54 +3417,64 @@ type SandstormCore_drop_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_drop_Results_Future) Struct() (SandstormCore_drop_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_drop_Results{s}, err
+	return SandstormCore_drop_Results(s), err
 }
 
-type SandstormCore_obsoleteCheckRequirements_Params struct{ capnp.Struct }
+type SandstormCore_obsoleteCheckRequirements_Params capnp.Struct
 
 // SandstormCore_obsoleteCheckRequirements_Params_TypeID is the unique identifier for the type SandstormCore_obsoleteCheckRequirements_Params.
 const SandstormCore_obsoleteCheckRequirements_Params_TypeID = 0x8867ef4f53bc45c3
 
 func NewSandstormCore_obsoleteCheckRequirements_Params(s *capnp.Segment) (SandstormCore_obsoleteCheckRequirements_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_obsoleteCheckRequirements_Params{st}, err
+	return SandstormCore_obsoleteCheckRequirements_Params(st), err
 }
 
 func NewRootSandstormCore_obsoleteCheckRequirements_Params(s *capnp.Segment) (SandstormCore_obsoleteCheckRequirements_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_obsoleteCheckRequirements_Params{st}, err
+	return SandstormCore_obsoleteCheckRequirements_Params(st), err
 }
 
 func ReadRootSandstormCore_obsoleteCheckRequirements_Params(msg *capnp.Message) (SandstormCore_obsoleteCheckRequirements_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_obsoleteCheckRequirements_Params{root.Struct()}, err
+	return SandstormCore_obsoleteCheckRequirements_Params(root.Struct()), err
 }
 
 func (s SandstormCore_obsoleteCheckRequirements_Params) String() string {
-	str, _ := text.Marshal(0x8867ef4f53bc45c3, s.Struct)
+	str, _ := text.Marshal(0x8867ef4f53bc45c3, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_obsoleteCheckRequirements_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_obsoleteCheckRequirements_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_obsoleteCheckRequirements_Params {
+	return SandstormCore_obsoleteCheckRequirements_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_obsoleteCheckRequirements_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_obsoleteCheckRequirements_Params_List is a list of SandstormCore_obsoleteCheckRequirements_Params.
-type SandstormCore_obsoleteCheckRequirements_Params_List struct{ capnp.List }
+type SandstormCore_obsoleteCheckRequirements_Params_List = capnp.StructList[SandstormCore_obsoleteCheckRequirements_Params]
 
 // NewSandstormCore_obsoleteCheckRequirements_Params creates a new list of SandstormCore_obsoleteCheckRequirements_Params.
 func NewSandstormCore_obsoleteCheckRequirements_Params_List(s *capnp.Segment, sz int32) (SandstormCore_obsoleteCheckRequirements_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_obsoleteCheckRequirements_Params_List{l}, err
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Params_List) At(i int) SandstormCore_obsoleteCheckRequirements_Params {
-	return SandstormCore_obsoleteCheckRequirements_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Params_List) Set(i int, v SandstormCore_obsoleteCheckRequirements_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Params_List) String() string {
-	str, _ := text.MarshalList(0x8867ef4f53bc45c3, s.List)
-	return str
+	return capnp.StructList[SandstormCore_obsoleteCheckRequirements_Params](l), err
 }
 
 // SandstormCore_obsoleteCheckRequirements_Params_Future is a wrapper for a SandstormCore_obsoleteCheckRequirements_Params promised by a client call.
@@ -3173,54 +3482,64 @@ type SandstormCore_obsoleteCheckRequirements_Params_Future struct{ *capnp.Future
 
 func (p SandstormCore_obsoleteCheckRequirements_Params_Future) Struct() (SandstormCore_obsoleteCheckRequirements_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_obsoleteCheckRequirements_Params{s}, err
+	return SandstormCore_obsoleteCheckRequirements_Params(s), err
 }
 
-type SandstormCore_obsoleteCheckRequirements_Results struct{ capnp.Struct }
+type SandstormCore_obsoleteCheckRequirements_Results capnp.Struct
 
 // SandstormCore_obsoleteCheckRequirements_Results_TypeID is the unique identifier for the type SandstormCore_obsoleteCheckRequirements_Results.
 const SandstormCore_obsoleteCheckRequirements_Results_TypeID = 0xca83e6f36908ed7f
 
 func NewSandstormCore_obsoleteCheckRequirements_Results(s *capnp.Segment) (SandstormCore_obsoleteCheckRequirements_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_obsoleteCheckRequirements_Results{st}, err
+	return SandstormCore_obsoleteCheckRequirements_Results(st), err
 }
 
 func NewRootSandstormCore_obsoleteCheckRequirements_Results(s *capnp.Segment) (SandstormCore_obsoleteCheckRequirements_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_obsoleteCheckRequirements_Results{st}, err
+	return SandstormCore_obsoleteCheckRequirements_Results(st), err
 }
 
 func ReadRootSandstormCore_obsoleteCheckRequirements_Results(msg *capnp.Message) (SandstormCore_obsoleteCheckRequirements_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_obsoleteCheckRequirements_Results{root.Struct()}, err
+	return SandstormCore_obsoleteCheckRequirements_Results(root.Struct()), err
 }
 
 func (s SandstormCore_obsoleteCheckRequirements_Results) String() string {
-	str, _ := text.Marshal(0xca83e6f36908ed7f, s.Struct)
+	str, _ := text.Marshal(0xca83e6f36908ed7f, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_obsoleteCheckRequirements_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_obsoleteCheckRequirements_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_obsoleteCheckRequirements_Results {
+	return SandstormCore_obsoleteCheckRequirements_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_obsoleteCheckRequirements_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_obsoleteCheckRequirements_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_obsoleteCheckRequirements_Results_List is a list of SandstormCore_obsoleteCheckRequirements_Results.
-type SandstormCore_obsoleteCheckRequirements_Results_List struct{ capnp.List }
+type SandstormCore_obsoleteCheckRequirements_Results_List = capnp.StructList[SandstormCore_obsoleteCheckRequirements_Results]
 
 // NewSandstormCore_obsoleteCheckRequirements_Results creates a new list of SandstormCore_obsoleteCheckRequirements_Results.
 func NewSandstormCore_obsoleteCheckRequirements_Results_List(s *capnp.Segment, sz int32) (SandstormCore_obsoleteCheckRequirements_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_obsoleteCheckRequirements_Results_List{l}, err
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Results_List) At(i int) SandstormCore_obsoleteCheckRequirements_Results {
-	return SandstormCore_obsoleteCheckRequirements_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Results_List) Set(i int, v SandstormCore_obsoleteCheckRequirements_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_obsoleteCheckRequirements_Results_List) String() string {
-	str, _ := text.MarshalList(0xca83e6f36908ed7f, s.List)
-	return str
+	return capnp.StructList[SandstormCore_obsoleteCheckRequirements_Results](l), err
 }
 
 // SandstormCore_obsoleteCheckRequirements_Results_Future is a wrapper for a SandstormCore_obsoleteCheckRequirements_Results promised by a client call.
@@ -3228,115 +3547,124 @@ type SandstormCore_obsoleteCheckRequirements_Results_Future struct{ *capnp.Futur
 
 func (p SandstormCore_obsoleteCheckRequirements_Results_Future) Struct() (SandstormCore_obsoleteCheckRequirements_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_obsoleteCheckRequirements_Results{s}, err
+	return SandstormCore_obsoleteCheckRequirements_Results(s), err
 }
 
-type SandstormCore_makeChildToken_Params struct{ capnp.Struct }
+type SandstormCore_makeChildToken_Params capnp.Struct
 
 // SandstormCore_makeChildToken_Params_TypeID is the unique identifier for the type SandstormCore_makeChildToken_Params.
 const SandstormCore_makeChildToken_Params_TypeID = 0x9b25c148edb2b020
 
 func NewSandstormCore_makeChildToken_Params(s *capnp.Segment) (SandstormCore_makeChildToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SandstormCore_makeChildToken_Params{st}, err
+	return SandstormCore_makeChildToken_Params(st), err
 }
 
 func NewRootSandstormCore_makeChildToken_Params(s *capnp.Segment) (SandstormCore_makeChildToken_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SandstormCore_makeChildToken_Params{st}, err
+	return SandstormCore_makeChildToken_Params(st), err
 }
 
 func ReadRootSandstormCore_makeChildToken_Params(msg *capnp.Message) (SandstormCore_makeChildToken_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_makeChildToken_Params{root.Struct()}, err
+	return SandstormCore_makeChildToken_Params(root.Struct()), err
 }
 
 func (s SandstormCore_makeChildToken_Params) String() string {
-	str, _ := text.Marshal(0x9b25c148edb2b020, s.Struct)
+	str, _ := text.Marshal(0x9b25c148edb2b020, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_makeChildToken_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_makeChildToken_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_makeChildToken_Params {
+	return SandstormCore_makeChildToken_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_makeChildToken_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_makeChildToken_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_makeChildToken_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_makeChildToken_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_makeChildToken_Params) Parent() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_makeChildToken_Params) HasParent() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_makeChildToken_Params) SetParent(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s SandstormCore_makeChildToken_Params) Owner() (ApiTokenOwner, error) {
-	p, err := s.Struct.Ptr(1)
-	return ApiTokenOwner{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return ApiTokenOwner(p.Struct()), err
 }
 
 func (s SandstormCore_makeChildToken_Params) HasOwner() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SandstormCore_makeChildToken_Params) SetOwner(v ApiTokenOwner) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewOwner sets the owner field to a newly
 // allocated ApiTokenOwner struct, preferring placement in s's segment.
 func (s SandstormCore_makeChildToken_Params) NewOwner() (ApiTokenOwner, error) {
-	ss, err := NewApiTokenOwner(s.Struct.Segment())
+	ss, err := NewApiTokenOwner(capnp.Struct(s).Segment())
 	if err != nil {
 		return ApiTokenOwner{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s SandstormCore_makeChildToken_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return MembraneRequirement_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return MembraneRequirement_List(p.List()), err
 }
 
 func (s SandstormCore_makeChildToken_Params) HasRequirements() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s SandstormCore_makeChildToken_Params) SetRequirements(v MembraneRequirement_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewRequirements sets the requirements field to a newly
 // allocated MembraneRequirement_List, preferring placement in s's segment.
 func (s SandstormCore_makeChildToken_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
-	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	l, err := NewMembraneRequirement_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // SandstormCore_makeChildToken_Params_List is a list of SandstormCore_makeChildToken_Params.
-type SandstormCore_makeChildToken_Params_List struct{ capnp.List }
+type SandstormCore_makeChildToken_Params_List = capnp.StructList[SandstormCore_makeChildToken_Params]
 
 // NewSandstormCore_makeChildToken_Params creates a new list of SandstormCore_makeChildToken_Params.
 func NewSandstormCore_makeChildToken_Params_List(s *capnp.Segment, sz int32) (SandstormCore_makeChildToken_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return SandstormCore_makeChildToken_Params_List{l}, err
-}
-
-func (s SandstormCore_makeChildToken_Params_List) At(i int) SandstormCore_makeChildToken_Params {
-	return SandstormCore_makeChildToken_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_makeChildToken_Params_List) Set(i int, v SandstormCore_makeChildToken_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_makeChildToken_Params_List) String() string {
-	str, _ := text.MarshalList(0x9b25c148edb2b020, s.List)
-	return str
+	return capnp.StructList[SandstormCore_makeChildToken_Params](l), err
 }
 
 // SandstormCore_makeChildToken_Params_Future is a wrapper for a SandstormCore_makeChildToken_Params promised by a client call.
@@ -3344,71 +3672,80 @@ type SandstormCore_makeChildToken_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_makeChildToken_Params_Future) Struct() (SandstormCore_makeChildToken_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_makeChildToken_Params{s}, err
+	return SandstormCore_makeChildToken_Params(s), err
 }
 
 func (p SandstormCore_makeChildToken_Params_Future) Owner() ApiTokenOwner_Future {
 	return ApiTokenOwner_Future{Future: p.Future.Field(1, nil)}
 }
 
-type SandstormCore_makeChildToken_Results struct{ capnp.Struct }
+type SandstormCore_makeChildToken_Results capnp.Struct
 
 // SandstormCore_makeChildToken_Results_TypeID is the unique identifier for the type SandstormCore_makeChildToken_Results.
 const SandstormCore_makeChildToken_Results_TypeID = 0x9ea56a46fc87138a
 
 func NewSandstormCore_makeChildToken_Results(s *capnp.Segment) (SandstormCore_makeChildToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeChildToken_Results{st}, err
+	return SandstormCore_makeChildToken_Results(st), err
 }
 
 func NewRootSandstormCore_makeChildToken_Results(s *capnp.Segment) (SandstormCore_makeChildToken_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_makeChildToken_Results{st}, err
+	return SandstormCore_makeChildToken_Results(st), err
 }
 
 func ReadRootSandstormCore_makeChildToken_Results(msg *capnp.Message) (SandstormCore_makeChildToken_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_makeChildToken_Results{root.Struct()}, err
+	return SandstormCore_makeChildToken_Results(root.Struct()), err
 }
 
 func (s SandstormCore_makeChildToken_Results) String() string {
-	str, _ := text.Marshal(0x9ea56a46fc87138a, s.Struct)
+	str, _ := text.Marshal(0x9ea56a46fc87138a, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_makeChildToken_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_makeChildToken_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_makeChildToken_Results {
+	return SandstormCore_makeChildToken_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_makeChildToken_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_makeChildToken_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_makeChildToken_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_makeChildToken_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_makeChildToken_Results) Token() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_makeChildToken_Results) HasToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_makeChildToken_Results) SetToken(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // SandstormCore_makeChildToken_Results_List is a list of SandstormCore_makeChildToken_Results.
-type SandstormCore_makeChildToken_Results_List struct{ capnp.List }
+type SandstormCore_makeChildToken_Results_List = capnp.StructList[SandstormCore_makeChildToken_Results]
 
 // NewSandstormCore_makeChildToken_Results creates a new list of SandstormCore_makeChildToken_Results.
 func NewSandstormCore_makeChildToken_Results_List(s *capnp.Segment, sz int32) (SandstormCore_makeChildToken_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_makeChildToken_Results_List{l}, err
-}
-
-func (s SandstormCore_makeChildToken_Results_List) At(i int) SandstormCore_makeChildToken_Results {
-	return SandstormCore_makeChildToken_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_makeChildToken_Results_List) Set(i int, v SandstormCore_makeChildToken_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_makeChildToken_Results_List) String() string {
-	str, _ := text.MarshalList(0x9ea56a46fc87138a, s.List)
-	return str
+	return capnp.StructList[SandstormCore_makeChildToken_Results](l), err
 }
 
 // SandstormCore_makeChildToken_Results_Future is a wrapper for a SandstormCore_makeChildToken_Results promised by a client call.
@@ -3416,96 +3753,105 @@ type SandstormCore_makeChildToken_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_makeChildToken_Results_Future) Struct() (SandstormCore_makeChildToken_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_makeChildToken_Results{s}, err
+	return SandstormCore_makeChildToken_Results(s), err
 }
 
-type SandstormCore_claimRequest_Params struct{ capnp.Struct }
+type SandstormCore_claimRequest_Params capnp.Struct
 
 // SandstormCore_claimRequest_Params_TypeID is the unique identifier for the type SandstormCore_claimRequest_Params.
 const SandstormCore_claimRequest_Params_TypeID = 0xeeaeb799e53e0b01
 
 func NewSandstormCore_claimRequest_Params(s *capnp.Segment) (SandstormCore_claimRequest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SandstormCore_claimRequest_Params{st}, err
+	return SandstormCore_claimRequest_Params(st), err
 }
 
 func NewRootSandstormCore_claimRequest_Params(s *capnp.Segment) (SandstormCore_claimRequest_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SandstormCore_claimRequest_Params{st}, err
+	return SandstormCore_claimRequest_Params(st), err
 }
 
 func ReadRootSandstormCore_claimRequest_Params(msg *capnp.Message) (SandstormCore_claimRequest_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_claimRequest_Params{root.Struct()}, err
+	return SandstormCore_claimRequest_Params(root.Struct()), err
 }
 
 func (s SandstormCore_claimRequest_Params) String() string {
-	str, _ := text.Marshal(0xeeaeb799e53e0b01, s.Struct)
+	str, _ := text.Marshal(0xeeaeb799e53e0b01, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_claimRequest_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_claimRequest_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_claimRequest_Params {
+	return SandstormCore_claimRequest_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_claimRequest_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_claimRequest_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_claimRequest_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_claimRequest_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_claimRequest_Params) RequestToken() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SandstormCore_claimRequest_Params) HasRequestToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_claimRequest_Params) RequestTokenBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SandstormCore_claimRequest_Params) SetRequestToken(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s SandstormCore_claimRequest_Params) RequiredPermissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(1)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return capnp.BitList(p.List()), err
 }
 
 func (s SandstormCore_claimRequest_Params) HasRequiredPermissions() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SandstormCore_claimRequest_Params) SetRequiredPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewRequiredPermissions sets the requiredPermissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s SandstormCore_claimRequest_Params) NewRequiredPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 // SandstormCore_claimRequest_Params_List is a list of SandstormCore_claimRequest_Params.
-type SandstormCore_claimRequest_Params_List struct{ capnp.List }
+type SandstormCore_claimRequest_Params_List = capnp.StructList[SandstormCore_claimRequest_Params]
 
 // NewSandstormCore_claimRequest_Params creates a new list of SandstormCore_claimRequest_Params.
 func NewSandstormCore_claimRequest_Params_List(s *capnp.Segment, sz int32) (SandstormCore_claimRequest_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return SandstormCore_claimRequest_Params_List{l}, err
-}
-
-func (s SandstormCore_claimRequest_Params_List) At(i int) SandstormCore_claimRequest_Params {
-	return SandstormCore_claimRequest_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_claimRequest_Params_List) Set(i int, v SandstormCore_claimRequest_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_claimRequest_Params_List) String() string {
-	str, _ := text.MarshalList(0xeeaeb799e53e0b01, s.List)
-	return str
+	return capnp.StructList[SandstormCore_claimRequest_Params](l), err
 }
 
 // SandstormCore_claimRequest_Params_Future is a wrapper for a SandstormCore_claimRequest_Params promised by a client call.
@@ -3513,66 +3859,81 @@ type SandstormCore_claimRequest_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_claimRequest_Params_Future) Struct() (SandstormCore_claimRequest_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_claimRequest_Params{s}, err
+	return SandstormCore_claimRequest_Params(s), err
 }
 
-type SandstormCore_claimRequest_Results struct{ capnp.Struct }
+type SandstormCore_claimRequest_Results capnp.Struct
 
 // SandstormCore_claimRequest_Results_TypeID is the unique identifier for the type SandstormCore_claimRequest_Results.
 const SandstormCore_claimRequest_Results_TypeID = 0xb91071e3d7b9ab13
 
 func NewSandstormCore_claimRequest_Results(s *capnp.Segment) (SandstormCore_claimRequest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_claimRequest_Results{st}, err
+	return SandstormCore_claimRequest_Results(st), err
 }
 
 func NewRootSandstormCore_claimRequest_Results(s *capnp.Segment) (SandstormCore_claimRequest_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_claimRequest_Results{st}, err
+	return SandstormCore_claimRequest_Results(st), err
 }
 
 func ReadRootSandstormCore_claimRequest_Results(msg *capnp.Message) (SandstormCore_claimRequest_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_claimRequest_Results{root.Struct()}, err
+	return SandstormCore_claimRequest_Results(root.Struct()), err
 }
 
 func (s SandstormCore_claimRequest_Results) String() string {
-	str, _ := text.Marshal(0xb91071e3d7b9ab13, s.Struct)
+	str, _ := text.Marshal(0xb91071e3d7b9ab13, capnp.Struct(s))
 	return str
 }
 
-func (s SandstormCore_claimRequest_Results) Cap() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s SandstormCore_claimRequest_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_claimRequest_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_claimRequest_Results {
+	return SandstormCore_claimRequest_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_claimRequest_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_claimRequest_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_claimRequest_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_claimRequest_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SandstormCore_claimRequest_Results) Cap() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s SandstormCore_claimRequest_Results) HasCap() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s SandstormCore_claimRequest_Results) SetCap(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s SandstormCore_claimRequest_Results) SetCap(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_claimRequest_Results_List is a list of SandstormCore_claimRequest_Results.
-type SandstormCore_claimRequest_Results_List struct{ capnp.List }
+type SandstormCore_claimRequest_Results_List = capnp.StructList[SandstormCore_claimRequest_Results]
 
 // NewSandstormCore_claimRequest_Results creates a new list of SandstormCore_claimRequest_Results.
 func NewSandstormCore_claimRequest_Results_List(s *capnp.Segment, sz int32) (SandstormCore_claimRequest_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_claimRequest_Results_List{l}, err
-}
-
-func (s SandstormCore_claimRequest_Results_List) At(i int) SandstormCore_claimRequest_Results {
-	return SandstormCore_claimRequest_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_claimRequest_Results_List) Set(i int, v SandstormCore_claimRequest_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_claimRequest_Results_List) String() string {
-	str, _ := text.MarshalList(0xb91071e3d7b9ab13, s.List)
-	return str
+	return capnp.StructList[SandstormCore_claimRequest_Results](l), err
 }
 
 // SandstormCore_claimRequest_Results_Future is a wrapper for a SandstormCore_claimRequest_Results promised by a client call.
@@ -3580,82 +3941,91 @@ type SandstormCore_claimRequest_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_claimRequest_Results_Future) Struct() (SandstormCore_claimRequest_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_claimRequest_Results{s}, err
+	return SandstormCore_claimRequest_Results(s), err
 }
 
 func (p SandstormCore_claimRequest_Results_Future) Cap() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
 
-type SandstormCore_backgroundActivity_Params struct{ capnp.Struct }
+type SandstormCore_backgroundActivity_Params capnp.Struct
 
 // SandstormCore_backgroundActivity_Params_TypeID is the unique identifier for the type SandstormCore_backgroundActivity_Params.
 const SandstormCore_backgroundActivity_Params_TypeID = 0x938e798cc0e3d6ac
 
 func NewSandstormCore_backgroundActivity_Params(s *capnp.Segment) (SandstormCore_backgroundActivity_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_backgroundActivity_Params{st}, err
+	return SandstormCore_backgroundActivity_Params(st), err
 }
 
 func NewRootSandstormCore_backgroundActivity_Params(s *capnp.Segment) (SandstormCore_backgroundActivity_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_backgroundActivity_Params{st}, err
+	return SandstormCore_backgroundActivity_Params(st), err
 }
 
 func ReadRootSandstormCore_backgroundActivity_Params(msg *capnp.Message) (SandstormCore_backgroundActivity_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_backgroundActivity_Params{root.Struct()}, err
+	return SandstormCore_backgroundActivity_Params(root.Struct()), err
 }
 
 func (s SandstormCore_backgroundActivity_Params) String() string {
-	str, _ := text.Marshal(0x938e798cc0e3d6ac, s.Struct)
+	str, _ := text.Marshal(0x938e798cc0e3d6ac, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_backgroundActivity_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_backgroundActivity_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_backgroundActivity_Params {
+	return SandstormCore_backgroundActivity_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_backgroundActivity_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_backgroundActivity_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_backgroundActivity_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_backgroundActivity_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_backgroundActivity_Params) Event() (activity.ActivityEvent, error) {
-	p, err := s.Struct.Ptr(0)
-	return activity.ActivityEvent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return activity.ActivityEvent(p.Struct()), err
 }
 
 func (s SandstormCore_backgroundActivity_Params) HasEvent() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_backgroundActivity_Params) SetEvent(v activity.ActivityEvent) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewEvent sets the event field to a newly
 // allocated activity.ActivityEvent struct, preferring placement in s's segment.
 func (s SandstormCore_backgroundActivity_Params) NewEvent() (activity.ActivityEvent, error) {
-	ss, err := activity.NewActivityEvent(s.Struct.Segment())
+	ss, err := activity.NewActivityEvent(capnp.Struct(s).Segment())
 	if err != nil {
 		return activity.ActivityEvent{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // SandstormCore_backgroundActivity_Params_List is a list of SandstormCore_backgroundActivity_Params.
-type SandstormCore_backgroundActivity_Params_List struct{ capnp.List }
+type SandstormCore_backgroundActivity_Params_List = capnp.StructList[SandstormCore_backgroundActivity_Params]
 
 // NewSandstormCore_backgroundActivity_Params creates a new list of SandstormCore_backgroundActivity_Params.
 func NewSandstormCore_backgroundActivity_Params_List(s *capnp.Segment, sz int32) (SandstormCore_backgroundActivity_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_backgroundActivity_Params_List{l}, err
-}
-
-func (s SandstormCore_backgroundActivity_Params_List) At(i int) SandstormCore_backgroundActivity_Params {
-	return SandstormCore_backgroundActivity_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_backgroundActivity_Params_List) Set(i int, v SandstormCore_backgroundActivity_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_backgroundActivity_Params_List) String() string {
-	str, _ := text.MarshalList(0x938e798cc0e3d6ac, s.List)
-	return str
+	return capnp.StructList[SandstormCore_backgroundActivity_Params](l), err
 }
 
 // SandstormCore_backgroundActivity_Params_Future is a wrapper for a SandstormCore_backgroundActivity_Params promised by a client call.
@@ -3663,58 +4033,68 @@ type SandstormCore_backgroundActivity_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_backgroundActivity_Params_Future) Struct() (SandstormCore_backgroundActivity_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_backgroundActivity_Params{s}, err
+	return SandstormCore_backgroundActivity_Params(s), err
 }
 
 func (p SandstormCore_backgroundActivity_Params_Future) Event() activity.ActivityEvent_Future {
 	return activity.ActivityEvent_Future{Future: p.Future.Field(0, nil)}
 }
 
-type SandstormCore_backgroundActivity_Results struct{ capnp.Struct }
+type SandstormCore_backgroundActivity_Results capnp.Struct
 
 // SandstormCore_backgroundActivity_Results_TypeID is the unique identifier for the type SandstormCore_backgroundActivity_Results.
 const SandstormCore_backgroundActivity_Results_TypeID = 0x9d87019c48640d21
 
 func NewSandstormCore_backgroundActivity_Results(s *capnp.Segment) (SandstormCore_backgroundActivity_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_backgroundActivity_Results{st}, err
+	return SandstormCore_backgroundActivity_Results(st), err
 }
 
 func NewRootSandstormCore_backgroundActivity_Results(s *capnp.Segment) (SandstormCore_backgroundActivity_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_backgroundActivity_Results{st}, err
+	return SandstormCore_backgroundActivity_Results(st), err
 }
 
 func ReadRootSandstormCore_backgroundActivity_Results(msg *capnp.Message) (SandstormCore_backgroundActivity_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_backgroundActivity_Results{root.Struct()}, err
+	return SandstormCore_backgroundActivity_Results(root.Struct()), err
 }
 
 func (s SandstormCore_backgroundActivity_Results) String() string {
-	str, _ := text.Marshal(0x9d87019c48640d21, s.Struct)
+	str, _ := text.Marshal(0x9d87019c48640d21, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_backgroundActivity_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_backgroundActivity_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_backgroundActivity_Results {
+	return SandstormCore_backgroundActivity_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_backgroundActivity_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_backgroundActivity_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_backgroundActivity_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_backgroundActivity_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_backgroundActivity_Results_List is a list of SandstormCore_backgroundActivity_Results.
-type SandstormCore_backgroundActivity_Results_List struct{ capnp.List }
+type SandstormCore_backgroundActivity_Results_List = capnp.StructList[SandstormCore_backgroundActivity_Results]
 
 // NewSandstormCore_backgroundActivity_Results creates a new list of SandstormCore_backgroundActivity_Results.
 func NewSandstormCore_backgroundActivity_Results_List(s *capnp.Segment, sz int32) (SandstormCore_backgroundActivity_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_backgroundActivity_Results_List{l}, err
-}
-
-func (s SandstormCore_backgroundActivity_Results_List) At(i int) SandstormCore_backgroundActivity_Results {
-	return SandstormCore_backgroundActivity_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_backgroundActivity_Results_List) Set(i int, v SandstormCore_backgroundActivity_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_backgroundActivity_Results_List) String() string {
-	str, _ := text.MarshalList(0x9d87019c48640d21, s.List)
-	return str
+	return capnp.StructList[SandstormCore_backgroundActivity_Results](l), err
 }
 
 // SandstormCore_backgroundActivity_Results_Future is a wrapper for a SandstormCore_backgroundActivity_Results promised by a client call.
@@ -3722,62 +4102,71 @@ type SandstormCore_backgroundActivity_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_backgroundActivity_Results_Future) Struct() (SandstormCore_backgroundActivity_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_backgroundActivity_Results{s}, err
+	return SandstormCore_backgroundActivity_Results(s), err
 }
 
-type SandstormCore_reportGrainSize_Params struct{ capnp.Struct }
+type SandstormCore_reportGrainSize_Params capnp.Struct
 
 // SandstormCore_reportGrainSize_Params_TypeID is the unique identifier for the type SandstormCore_reportGrainSize_Params.
 const SandstormCore_reportGrainSize_Params_TypeID = 0xaec15e35d479f4f3
 
 func NewSandstormCore_reportGrainSize_Params(s *capnp.Segment) (SandstormCore_reportGrainSize_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return SandstormCore_reportGrainSize_Params{st}, err
+	return SandstormCore_reportGrainSize_Params(st), err
 }
 
 func NewRootSandstormCore_reportGrainSize_Params(s *capnp.Segment) (SandstormCore_reportGrainSize_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return SandstormCore_reportGrainSize_Params{st}, err
+	return SandstormCore_reportGrainSize_Params(st), err
 }
 
 func ReadRootSandstormCore_reportGrainSize_Params(msg *capnp.Message) (SandstormCore_reportGrainSize_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_reportGrainSize_Params{root.Struct()}, err
+	return SandstormCore_reportGrainSize_Params(root.Struct()), err
 }
 
 func (s SandstormCore_reportGrainSize_Params) String() string {
-	str, _ := text.Marshal(0xaec15e35d479f4f3, s.Struct)
+	str, _ := text.Marshal(0xaec15e35d479f4f3, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_reportGrainSize_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_reportGrainSize_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_reportGrainSize_Params {
+	return SandstormCore_reportGrainSize_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_reportGrainSize_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_reportGrainSize_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_reportGrainSize_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_reportGrainSize_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_reportGrainSize_Params) Bytes() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s SandstormCore_reportGrainSize_Params) SetBytes(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // SandstormCore_reportGrainSize_Params_List is a list of SandstormCore_reportGrainSize_Params.
-type SandstormCore_reportGrainSize_Params_List struct{ capnp.List }
+type SandstormCore_reportGrainSize_Params_List = capnp.StructList[SandstormCore_reportGrainSize_Params]
 
 // NewSandstormCore_reportGrainSize_Params creates a new list of SandstormCore_reportGrainSize_Params.
 func NewSandstormCore_reportGrainSize_Params_List(s *capnp.Segment, sz int32) (SandstormCore_reportGrainSize_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return SandstormCore_reportGrainSize_Params_List{l}, err
-}
-
-func (s SandstormCore_reportGrainSize_Params_List) At(i int) SandstormCore_reportGrainSize_Params {
-	return SandstormCore_reportGrainSize_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_reportGrainSize_Params_List) Set(i int, v SandstormCore_reportGrainSize_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_reportGrainSize_Params_List) String() string {
-	str, _ := text.MarshalList(0xaec15e35d479f4f3, s.List)
-	return str
+	return capnp.StructList[SandstormCore_reportGrainSize_Params](l), err
 }
 
 // SandstormCore_reportGrainSize_Params_Future is a wrapper for a SandstormCore_reportGrainSize_Params promised by a client call.
@@ -3785,54 +4174,64 @@ type SandstormCore_reportGrainSize_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_reportGrainSize_Params_Future) Struct() (SandstormCore_reportGrainSize_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_reportGrainSize_Params{s}, err
+	return SandstormCore_reportGrainSize_Params(s), err
 }
 
-type SandstormCore_reportGrainSize_Results struct{ capnp.Struct }
+type SandstormCore_reportGrainSize_Results capnp.Struct
 
 // SandstormCore_reportGrainSize_Results_TypeID is the unique identifier for the type SandstormCore_reportGrainSize_Results.
 const SandstormCore_reportGrainSize_Results_TypeID = 0xc43d5a1430e113ca
 
 func NewSandstormCore_reportGrainSize_Results(s *capnp.Segment) (SandstormCore_reportGrainSize_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_reportGrainSize_Results{st}, err
+	return SandstormCore_reportGrainSize_Results(st), err
 }
 
 func NewRootSandstormCore_reportGrainSize_Results(s *capnp.Segment) (SandstormCore_reportGrainSize_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_reportGrainSize_Results{st}, err
+	return SandstormCore_reportGrainSize_Results(st), err
 }
 
 func ReadRootSandstormCore_reportGrainSize_Results(msg *capnp.Message) (SandstormCore_reportGrainSize_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_reportGrainSize_Results{root.Struct()}, err
+	return SandstormCore_reportGrainSize_Results(root.Struct()), err
 }
 
 func (s SandstormCore_reportGrainSize_Results) String() string {
-	str, _ := text.Marshal(0xc43d5a1430e113ca, s.Struct)
+	str, _ := text.Marshal(0xc43d5a1430e113ca, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_reportGrainSize_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_reportGrainSize_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_reportGrainSize_Results {
+	return SandstormCore_reportGrainSize_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_reportGrainSize_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_reportGrainSize_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_reportGrainSize_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_reportGrainSize_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_reportGrainSize_Results_List is a list of SandstormCore_reportGrainSize_Results.
-type SandstormCore_reportGrainSize_Results_List struct{ capnp.List }
+type SandstormCore_reportGrainSize_Results_List = capnp.StructList[SandstormCore_reportGrainSize_Results]
 
 // NewSandstormCore_reportGrainSize_Results creates a new list of SandstormCore_reportGrainSize_Results.
 func NewSandstormCore_reportGrainSize_Results_List(s *capnp.Segment, sz int32) (SandstormCore_reportGrainSize_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_reportGrainSize_Results_List{l}, err
-}
-
-func (s SandstormCore_reportGrainSize_Results_List) At(i int) SandstormCore_reportGrainSize_Results {
-	return SandstormCore_reportGrainSize_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_reportGrainSize_Results_List) Set(i int, v SandstormCore_reportGrainSize_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_reportGrainSize_Results_List) String() string {
-	str, _ := text.MarshalList(0xc43d5a1430e113ca, s.List)
-	return str
+	return capnp.StructList[SandstormCore_reportGrainSize_Results](l), err
 }
 
 // SandstormCore_reportGrainSize_Results_Future is a wrapper for a SandstormCore_reportGrainSize_Results promised by a client call.
@@ -3840,72 +4239,81 @@ type SandstormCore_reportGrainSize_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_reportGrainSize_Results_Future) Struct() (SandstormCore_reportGrainSize_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_reportGrainSize_Results{s}, err
+	return SandstormCore_reportGrainSize_Results(s), err
 }
 
-type SandstormCore_getIdentityId_Params struct{ capnp.Struct }
+type SandstormCore_getIdentityId_Params capnp.Struct
 
 // SandstormCore_getIdentityId_Params_TypeID is the unique identifier for the type SandstormCore_getIdentityId_Params.
 const SandstormCore_getIdentityId_Params_TypeID = 0xf59063f154adea97
 
 func NewSandstormCore_getIdentityId_Params(s *capnp.Segment) (SandstormCore_getIdentityId_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getIdentityId_Params{st}, err
+	return SandstormCore_getIdentityId_Params(st), err
 }
 
 func NewRootSandstormCore_getIdentityId_Params(s *capnp.Segment) (SandstormCore_getIdentityId_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getIdentityId_Params{st}, err
+	return SandstormCore_getIdentityId_Params(st), err
 }
 
 func ReadRootSandstormCore_getIdentityId_Params(msg *capnp.Message) (SandstormCore_getIdentityId_Params, error) {
 	root, err := msg.Root()
-	return SandstormCore_getIdentityId_Params{root.Struct()}, err
+	return SandstormCore_getIdentityId_Params(root.Struct()), err
 }
 
 func (s SandstormCore_getIdentityId_Params) String() string {
-	str, _ := text.Marshal(0xf59063f154adea97, s.Struct)
+	str, _ := text.Marshal(0xf59063f154adea97, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_getIdentityId_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_getIdentityId_Params) DecodeFromPtr(p capnp.Ptr) SandstormCore_getIdentityId_Params {
+	return SandstormCore_getIdentityId_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_getIdentityId_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_getIdentityId_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_getIdentityId_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_getIdentityId_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_getIdentityId_Params) Identity() identity.Identity {
-	p, _ := s.Struct.Ptr(0)
-	return identity.Identity{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return identity.Identity(p.Interface().Client())
 }
 
 func (s SandstormCore_getIdentityId_Params) HasIdentity() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_getIdentityId_Params) SetIdentity(v identity.Identity) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SandstormCore_getIdentityId_Params_List is a list of SandstormCore_getIdentityId_Params.
-type SandstormCore_getIdentityId_Params_List struct{ capnp.List }
+type SandstormCore_getIdentityId_Params_List = capnp.StructList[SandstormCore_getIdentityId_Params]
 
 // NewSandstormCore_getIdentityId_Params creates a new list of SandstormCore_getIdentityId_Params.
 func NewSandstormCore_getIdentityId_Params_List(s *capnp.Segment, sz int32) (SandstormCore_getIdentityId_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_getIdentityId_Params_List{l}, err
-}
-
-func (s SandstormCore_getIdentityId_Params_List) At(i int) SandstormCore_getIdentityId_Params {
-	return SandstormCore_getIdentityId_Params{s.List.Struct(i)}
-}
-
-func (s SandstormCore_getIdentityId_Params_List) Set(i int, v SandstormCore_getIdentityId_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_getIdentityId_Params_List) String() string {
-	str, _ := text.MarshalList(0xf59063f154adea97, s.List)
-	return str
+	return capnp.StructList[SandstormCore_getIdentityId_Params](l), err
 }
 
 // SandstormCore_getIdentityId_Params_Future is a wrapper for a SandstormCore_getIdentityId_Params promised by a client call.
@@ -3913,71 +4321,80 @@ type SandstormCore_getIdentityId_Params_Future struct{ *capnp.Future }
 
 func (p SandstormCore_getIdentityId_Params_Future) Struct() (SandstormCore_getIdentityId_Params, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_getIdentityId_Params{s}, err
+	return SandstormCore_getIdentityId_Params(s), err
 }
 
 func (p SandstormCore_getIdentityId_Params_Future) Identity() identity.Identity {
-	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
+	return identity.Identity(p.Future.Field(0, nil).Client())
 }
 
-type SandstormCore_getIdentityId_Results struct{ capnp.Struct }
+type SandstormCore_getIdentityId_Results capnp.Struct
 
 // SandstormCore_getIdentityId_Results_TypeID is the unique identifier for the type SandstormCore_getIdentityId_Results.
 const SandstormCore_getIdentityId_Results_TypeID = 0xcaa1479a3b9c719b
 
 func NewSandstormCore_getIdentityId_Results(s *capnp.Segment) (SandstormCore_getIdentityId_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getIdentityId_Results{st}, err
+	return SandstormCore_getIdentityId_Results(st), err
 }
 
 func NewRootSandstormCore_getIdentityId_Results(s *capnp.Segment) (SandstormCore_getIdentityId_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SandstormCore_getIdentityId_Results{st}, err
+	return SandstormCore_getIdentityId_Results(st), err
 }
 
 func ReadRootSandstormCore_getIdentityId_Results(msg *capnp.Message) (SandstormCore_getIdentityId_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_getIdentityId_Results{root.Struct()}, err
+	return SandstormCore_getIdentityId_Results(root.Struct()), err
 }
 
 func (s SandstormCore_getIdentityId_Results) String() string {
-	str, _ := text.Marshal(0xcaa1479a3b9c719b, s.Struct)
+	str, _ := text.Marshal(0xcaa1479a3b9c719b, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_getIdentityId_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_getIdentityId_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_getIdentityId_Results {
+	return SandstormCore_getIdentityId_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_getIdentityId_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_getIdentityId_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_getIdentityId_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_getIdentityId_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SandstormCore_getIdentityId_Results) Id() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s SandstormCore_getIdentityId_Results) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SandstormCore_getIdentityId_Results) SetId(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // SandstormCore_getIdentityId_Results_List is a list of SandstormCore_getIdentityId_Results.
-type SandstormCore_getIdentityId_Results_List struct{ capnp.List }
+type SandstormCore_getIdentityId_Results_List = capnp.StructList[SandstormCore_getIdentityId_Results]
 
 // NewSandstormCore_getIdentityId_Results creates a new list of SandstormCore_getIdentityId_Results.
 func NewSandstormCore_getIdentityId_Results_List(s *capnp.Segment, sz int32) (SandstormCore_getIdentityId_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SandstormCore_getIdentityId_Results_List{l}, err
-}
-
-func (s SandstormCore_getIdentityId_Results_List) At(i int) SandstormCore_getIdentityId_Results {
-	return SandstormCore_getIdentityId_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_getIdentityId_Results_List) Set(i int, v SandstormCore_getIdentityId_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_getIdentityId_Results_List) String() string {
-	str, _ := text.MarshalList(0xcaa1479a3b9c719b, s.List)
-	return str
+	return capnp.StructList[SandstormCore_getIdentityId_Results](l), err
 }
 
 // SandstormCore_getIdentityId_Results_Future is a wrapper for a SandstormCore_getIdentityId_Results promised by a client call.
@@ -3985,54 +4402,64 @@ type SandstormCore_getIdentityId_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_getIdentityId_Results_Future) Struct() (SandstormCore_getIdentityId_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_getIdentityId_Results{s}, err
+	return SandstormCore_getIdentityId_Results(s), err
 }
 
-type SandstormCore_schedule_Results struct{ capnp.Struct }
+type SandstormCore_schedule_Results capnp.Struct
 
 // SandstormCore_schedule_Results_TypeID is the unique identifier for the type SandstormCore_schedule_Results.
 const SandstormCore_schedule_Results_TypeID = 0xd8f35ba8c9898970
 
 func NewSandstormCore_schedule_Results(s *capnp.Segment) (SandstormCore_schedule_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_schedule_Results{st}, err
+	return SandstormCore_schedule_Results(st), err
 }
 
 func NewRootSandstormCore_schedule_Results(s *capnp.Segment) (SandstormCore_schedule_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SandstormCore_schedule_Results{st}, err
+	return SandstormCore_schedule_Results(st), err
 }
 
 func ReadRootSandstormCore_schedule_Results(msg *capnp.Message) (SandstormCore_schedule_Results, error) {
 	root, err := msg.Root()
-	return SandstormCore_schedule_Results{root.Struct()}, err
+	return SandstormCore_schedule_Results(root.Struct()), err
 }
 
 func (s SandstormCore_schedule_Results) String() string {
-	str, _ := text.Marshal(0xd8f35ba8c9898970, s.Struct)
+	str, _ := text.Marshal(0xd8f35ba8c9898970, capnp.Struct(s))
 	return str
 }
 
+func (s SandstormCore_schedule_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SandstormCore_schedule_Results) DecodeFromPtr(p capnp.Ptr) SandstormCore_schedule_Results {
+	return SandstormCore_schedule_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SandstormCore_schedule_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SandstormCore_schedule_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SandstormCore_schedule_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SandstormCore_schedule_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SandstormCore_schedule_Results_List is a list of SandstormCore_schedule_Results.
-type SandstormCore_schedule_Results_List struct{ capnp.List }
+type SandstormCore_schedule_Results_List = capnp.StructList[SandstormCore_schedule_Results]
 
 // NewSandstormCore_schedule_Results creates a new list of SandstormCore_schedule_Results.
 func NewSandstormCore_schedule_Results_List(s *capnp.Segment, sz int32) (SandstormCore_schedule_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SandstormCore_schedule_Results_List{l}, err
-}
-
-func (s SandstormCore_schedule_Results_List) At(i int) SandstormCore_schedule_Results {
-	return SandstormCore_schedule_Results{s.List.Struct(i)}
-}
-
-func (s SandstormCore_schedule_Results_List) Set(i int, v SandstormCore_schedule_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SandstormCore_schedule_Results_List) String() string {
-	str, _ := text.MarshalList(0xd8f35ba8c9898970, s.List)
-	return str
+	return capnp.StructList[SandstormCore_schedule_Results](l), err
 }
 
 // SandstormCore_schedule_Results_Future is a wrapper for a SandstormCore_schedule_Results promised by a client call.
@@ -4040,10 +4467,10 @@ type SandstormCore_schedule_Results_Future struct{ *capnp.Future }
 
 func (p SandstormCore_schedule_Results_Future) Struct() (SandstormCore_schedule_Results, error) {
 	s, err := p.Future.Struct()
-	return SandstormCore_schedule_Results{s}, err
+	return SandstormCore_schedule_Results(s), err
 }
 
-type MembraneRequirement struct{ capnp.Struct }
+type MembraneRequirement capnp.Struct
 type MembraneRequirement_permissionsHeld MembraneRequirement
 type MembraneRequirement_Which uint16
 
@@ -4091,50 +4518,73 @@ const MembraneRequirement_TypeID = 0x918db9a721f13886
 
 func NewMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return MembraneRequirement{st}, err
+	return MembraneRequirement(st), err
 }
 
 func NewRootMembraneRequirement(s *capnp.Segment) (MembraneRequirement, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return MembraneRequirement{st}, err
+	return MembraneRequirement(st), err
 }
 
 func ReadRootMembraneRequirement(msg *capnp.Message) (MembraneRequirement, error) {
 	root, err := msg.Root()
-	return MembraneRequirement{root.Struct()}, err
+	return MembraneRequirement(root.Struct()), err
 }
 
 func (s MembraneRequirement) String() string {
-	str, _ := text.Marshal(0x918db9a721f13886, s.Struct)
+	str, _ := text.Marshal(0x918db9a721f13886, capnp.Struct(s))
 	return str
 }
 
+func (s MembraneRequirement) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (MembraneRequirement) DecodeFromPtr(p capnp.Ptr) MembraneRequirement {
+	return MembraneRequirement(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s MembraneRequirement) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s MembraneRequirement) Which() MembraneRequirement_Which {
-	return MembraneRequirement_Which(s.Struct.Uint16(0))
+	return MembraneRequirement_Which(capnp.Struct(s).Uint16(0))
+}
+func (s MembraneRequirement) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s MembraneRequirement) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s MembraneRequirement) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s MembraneRequirement) TokenValid() (string, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != tokenValid")
 	}
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement) HasTokenValid() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s MembraneRequirement) TokenValidBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement) SetTokenValid(v string) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetText(0, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s MembraneRequirement) PermissionsHeld() MembraneRequirement_permissionsHeld {
@@ -4142,167 +4592,165 @@ func (s MembraneRequirement) PermissionsHeld() MembraneRequirement_permissionsHe
 }
 
 func (s MembraneRequirement) SetPermissionsHeld() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 }
 
 func (s MembraneRequirement_permissionsHeld) Which() MembraneRequirement_permissionsHeld_Which {
-	return MembraneRequirement_permissionsHeld_Which(s.Struct.Uint16(2))
+	return MembraneRequirement_permissionsHeld_Which(capnp.Struct(s).Uint16(2))
+}
+func (s MembraneRequirement_permissionsHeld) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s MembraneRequirement_permissionsHeld) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s MembraneRequirement_permissionsHeld) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s MembraneRequirement_permissionsHeld) AccountId() (string, error) {
-	if s.Struct.Uint16(2) != 0 {
+	if capnp.Struct(s).Uint16(2) != 0 {
 		panic("Which() != accountId")
 	}
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) HasAccountId() bool {
-	if s.Struct.Uint16(2) != 0 {
+	if capnp.Struct(s).Uint16(2) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s MembraneRequirement_permissionsHeld) AccountIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) SetAccountId(v string) error {
-	s.Struct.SetUint16(2, 0)
-	return s.Struct.SetText(3, v)
+	capnp.Struct(s).SetUint16(2, 0)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s MembraneRequirement_permissionsHeld) TokenId() (string, error) {
-	if s.Struct.Uint16(2) != 1 {
+	if capnp.Struct(s).Uint16(2) != 1 {
 		panic("Which() != tokenId")
 	}
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) HasTokenId() bool {
-	if s.Struct.Uint16(2) != 1 {
+	if capnp.Struct(s).Uint16(2) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s MembraneRequirement_permissionsHeld) TokenIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) SetTokenId(v string) error {
-	s.Struct.SetUint16(2, 1)
-	return s.Struct.SetText(3, v)
+	capnp.Struct(s).SetUint16(2, 1)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s MembraneRequirement_permissionsHeld) GrainId() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) HasGrainId() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s MembraneRequirement_permissionsHeld) GrainIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) SetGrainId(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s MembraneRequirement_permissionsHeld) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(2)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return capnp.BitList(p.List()), err
 }
 
 func (s MembraneRequirement_permissionsHeld) HasPermissions() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s MembraneRequirement_permissionsHeld) SetPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewPermissions sets the permissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s MembraneRequirement_permissionsHeld) NewPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s MembraneRequirement_permissionsHeld) UserId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) HasUserId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s MembraneRequirement_permissionsHeld) UserIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement_permissionsHeld) SetUserId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s MembraneRequirement) UserIsAdmin() (string, error) {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != userIsAdmin")
 	}
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s MembraneRequirement) HasUserIsAdmin() bool {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s MembraneRequirement) UserIsAdminBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s MembraneRequirement) SetUserIsAdmin(v string) error {
-	s.Struct.SetUint16(0, 2)
-	return s.Struct.SetText(0, v)
+	capnp.Struct(s).SetUint16(0, 2)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // MembraneRequirement_List is a list of MembraneRequirement.
-type MembraneRequirement_List struct{ capnp.List }
+type MembraneRequirement_List = capnp.StructList[MembraneRequirement]
 
 // NewMembraneRequirement creates a new list of MembraneRequirement.
 func NewMembraneRequirement_List(s *capnp.Segment, sz int32) (MembraneRequirement_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
-	return MembraneRequirement_List{l}, err
-}
-
-func (s MembraneRequirement_List) At(i int) MembraneRequirement {
-	return MembraneRequirement{s.List.Struct(i)}
-}
-
-func (s MembraneRequirement_List) Set(i int, v MembraneRequirement) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s MembraneRequirement_List) String() string {
-	str, _ := text.MarshalList(0x918db9a721f13886, s.List)
-	return str
+	return capnp.StructList[MembraneRequirement](l), err
 }
 
 // MembraneRequirement_Future is a wrapper for a MembraneRequirement promised by a client call.
@@ -4310,7 +4758,7 @@ type MembraneRequirement_Future struct{ *capnp.Future }
 
 func (p MembraneRequirement_Future) Struct() (MembraneRequirement, error) {
 	s, err := p.Future.Struct()
-	return MembraneRequirement{s}, err
+	return MembraneRequirement(s), err
 }
 
 func (p MembraneRequirement_Future) PermissionsHeld() MembraneRequirement_permissionsHeld_Future {
@@ -4322,10 +4770,10 @@ type MembraneRequirement_permissionsHeld_Future struct{ *capnp.Future }
 
 func (p MembraneRequirement_permissionsHeld_Future) Struct() (MembraneRequirement_permissionsHeld, error) {
 	s, err := p.Future.Struct()
-	return MembraneRequirement_permissionsHeld{s}, err
+	return MembraneRequirement_permissionsHeld(s), err
 }
 
-type SystemPersistent struct{ Client *capnp.Client }
+type SystemPersistent capnp.Client
 
 // SystemPersistent_TypeID is the unique identifier for the type SystemPersistent.
 const SystemPersistent_TypeID = 0xc38cedd77cbed5b4
@@ -4341,9 +4789,9 @@ func (c SystemPersistent) AddRequirements(ctx context.Context, params func(Syste
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c SystemPersistent) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -4357,20 +4805,30 @@ func (c SystemPersistent) Save(ctx context.Context, params func(persistent.Persi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c SystemPersistent) AddRef() SystemPersistent {
-	return SystemPersistent{
-		Client: c.Client.AddRef(),
-	}
+	return SystemPersistent(capnp.Client(c).AddRef())
 }
 
 func (c SystemPersistent) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c SystemPersistent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent) DecodeFromPtr(p capnp.Ptr) SystemPersistent {
+	return SystemPersistent(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c SystemPersistent) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A SystemPersistent_Server is a SystemPersistent with a local implementation.
@@ -4381,15 +4839,15 @@ type SystemPersistent_Server interface {
 }
 
 // SystemPersistent_NewServer creates a new Server from an implementation of SystemPersistent_Server.
-func SystemPersistent_NewServer(s SystemPersistent_Server, policy *server.Policy) *server.Server {
+func SystemPersistent_NewServer(s SystemPersistent_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(SystemPersistent_Methods(nil, s), s, c, policy)
+	return server.New(SystemPersistent_Methods(nil, s), s, c)
 }
 
 // SystemPersistent_ServerToClient creates a new Client from an implementation of SystemPersistent_Server.
 // The caller is responsible for calling Release on the returned Client.
-func SystemPersistent_ServerToClient(s SystemPersistent_Server, policy *server.Policy) SystemPersistent {
-	return SystemPersistent{Client: capnp.NewClient(SystemPersistent_NewServer(s, policy))}
+func SystemPersistent_ServerToClient(s SystemPersistent_Server) SystemPersistent {
+	return SystemPersistent(capnp.NewClient(SystemPersistent_NewServer(s)))
 }
 
 // SystemPersistent_Methods appends Methods to a slice that invoke the methods on s.
@@ -4434,16 +4892,25 @@ type SystemPersistent_addRequirements struct {
 
 // Args returns the call's arguments.
 func (c SystemPersistent_addRequirements) Args() SystemPersistent_addRequirements_Params {
-	return SystemPersistent_addRequirements_Params{Struct: c.Call.Args()}
+	return SystemPersistent_addRequirements_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SystemPersistent_addRequirements) AllocResults() (SystemPersistent_addRequirements_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SystemPersistent_addRequirements_Results{Struct: r}, err
+	return SystemPersistent_addRequirements_Results(r), err
 }
 
-type SystemPersistent_RevocationObserver struct{ Client *capnp.Client }
+// SystemPersistent_List is a list of SystemPersistent.
+type SystemPersistent_List = capnp.CapList[SystemPersistent]
+
+// NewSystemPersistent creates a new list of SystemPersistent.
+func NewSystemPersistent_List(s *capnp.Segment, sz int32) (SystemPersistent_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[SystemPersistent](l), err
+}
+
+type SystemPersistent_RevocationObserver capnp.Client
 
 // SystemPersistent_RevocationObserver_TypeID is the unique identifier for the type SystemPersistent_RevocationObserver.
 const SystemPersistent_RevocationObserver_TypeID = 0xcdda9d1436d7d206
@@ -4460,21 +4927,31 @@ func (c SystemPersistent_RevocationObserver) DropWhenRevoked(ctx context.Context
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
 		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(SystemPersistent_RevocationObserver_dropWhenRevoked_Params{Struct: s})
+			return params(SystemPersistent_RevocationObserver_dropWhenRevoked_Params(s))
 		}
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results_Future{Future: ans.Future()}, release
 }
 
 func (c SystemPersistent_RevocationObserver) AddRef() SystemPersistent_RevocationObserver {
-	return SystemPersistent_RevocationObserver{
-		Client: c.Client.AddRef(),
-	}
+	return SystemPersistent_RevocationObserver(capnp.Client(c).AddRef())
 }
 
 func (c SystemPersistent_RevocationObserver) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c SystemPersistent_RevocationObserver) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent_RevocationObserver) DecodeFromPtr(p capnp.Ptr) SystemPersistent_RevocationObserver {
+	return SystemPersistent_RevocationObserver(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c SystemPersistent_RevocationObserver) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A SystemPersistent_RevocationObserver_Server is a SystemPersistent_RevocationObserver with a local implementation.
@@ -4483,15 +4960,15 @@ type SystemPersistent_RevocationObserver_Server interface {
 }
 
 // SystemPersistent_RevocationObserver_NewServer creates a new Server from an implementation of SystemPersistent_RevocationObserver_Server.
-func SystemPersistent_RevocationObserver_NewServer(s SystemPersistent_RevocationObserver_Server, policy *server.Policy) *server.Server {
+func SystemPersistent_RevocationObserver_NewServer(s SystemPersistent_RevocationObserver_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(SystemPersistent_RevocationObserver_Methods(nil, s), s, c, policy)
+	return server.New(SystemPersistent_RevocationObserver_Methods(nil, s), s, c)
 }
 
 // SystemPersistent_RevocationObserver_ServerToClient creates a new Client from an implementation of SystemPersistent_RevocationObserver_Server.
 // The caller is responsible for calling Release on the returned Client.
-func SystemPersistent_RevocationObserver_ServerToClient(s SystemPersistent_RevocationObserver_Server, policy *server.Policy) SystemPersistent_RevocationObserver {
-	return SystemPersistent_RevocationObserver{Client: capnp.NewClient(SystemPersistent_RevocationObserver_NewServer(s, policy))}
+func SystemPersistent_RevocationObserver_ServerToClient(s SystemPersistent_RevocationObserver_Server) SystemPersistent_RevocationObserver {
+	return SystemPersistent_RevocationObserver(capnp.NewClient(SystemPersistent_RevocationObserver_NewServer(s)))
 }
 
 // SystemPersistent_RevocationObserver_Methods appends Methods to a slice that invoke the methods on s.
@@ -4524,78 +5001,96 @@ type SystemPersistent_RevocationObserver_dropWhenRevoked struct {
 
 // Args returns the call's arguments.
 func (c SystemPersistent_RevocationObserver_dropWhenRevoked) Args() SystemPersistent_RevocationObserver_dropWhenRevoked_Params {
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{Struct: c.Call.Args()}
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c SystemPersistent_RevocationObserver_dropWhenRevoked) AllocResults() (SystemPersistent_RevocationObserver_dropWhenRevoked_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{Struct: r}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(r), err
 }
 
-type SystemPersistent_RevocationObserver_dropWhenRevoked_Params struct{ capnp.Struct }
+// SystemPersistent_RevocationObserver_List is a list of SystemPersistent_RevocationObserver.
+type SystemPersistent_RevocationObserver_List = capnp.CapList[SystemPersistent_RevocationObserver]
+
+// NewSystemPersistent_RevocationObserver creates a new list of SystemPersistent_RevocationObserver.
+func NewSystemPersistent_RevocationObserver_List(s *capnp.Segment, sz int32) (SystemPersistent_RevocationObserver_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[SystemPersistent_RevocationObserver](l), err
+}
+
+type SystemPersistent_RevocationObserver_dropWhenRevoked_Params capnp.Struct
 
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Params_TypeID is the unique identifier for the type SystemPersistent_RevocationObserver_dropWhenRevoked_Params.
 const SystemPersistent_RevocationObserver_dropWhenRevoked_Params_TypeID = 0xb4e04839aff27c71
 
 func NewSystemPersistent_RevocationObserver_dropWhenRevoked_Params(s *capnp.Segment) (SystemPersistent_RevocationObserver_dropWhenRevoked_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{st}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(st), err
 }
 
 func NewRootSystemPersistent_RevocationObserver_dropWhenRevoked_Params(s *capnp.Segment) (SystemPersistent_RevocationObserver_dropWhenRevoked_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{st}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(st), err
 }
 
 func ReadRootSystemPersistent_RevocationObserver_dropWhenRevoked_Params(msg *capnp.Message) (SystemPersistent_RevocationObserver_dropWhenRevoked_Params, error) {
 	root, err := msg.Root()
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{root.Struct()}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(root.Struct()), err
 }
 
 func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) String() string {
-	str, _ := text.Marshal(0xb4e04839aff27c71, s.Struct)
+	str, _ := text.Marshal(0xb4e04839aff27c71, capnp.Struct(s))
 	return str
 }
 
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent_RevocationObserver_dropWhenRevoked_Params) DecodeFromPtr(p capnp.Ptr) SystemPersistent_RevocationObserver_dropWhenRevoked_Params {
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List is a list of SystemPersistent_RevocationObserver_dropWhenRevoked_Params.
-type SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List struct{ capnp.List }
+type SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List = capnp.StructList[SystemPersistent_RevocationObserver_dropWhenRevoked_Params]
 
 // NewSystemPersistent_RevocationObserver_dropWhenRevoked_Params creates a new list of SystemPersistent_RevocationObserver_dropWhenRevoked_Params.
 func NewSystemPersistent_RevocationObserver_dropWhenRevoked_Params_List(s *capnp.Segment, sz int32) (SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List{l}, err
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List) At(i int) SystemPersistent_RevocationObserver_dropWhenRevoked_Params {
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{s.List.Struct(i)}
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List) Set(i int, v SystemPersistent_RevocationObserver_dropWhenRevoked_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Params_List) String() string {
-	str, _ := text.MarshalList(0xb4e04839aff27c71, s.List)
-	return str
+	return capnp.StructList[SystemPersistent_RevocationObserver_dropWhenRevoked_Params](l), err
 }
 
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Params_Future is a wrapper for a SystemPersistent_RevocationObserver_dropWhenRevoked_Params promised by a client call.
@@ -4603,58 +5098,68 @@ type SystemPersistent_RevocationObserver_dropWhenRevoked_Params_Future struct{ *
 
 func (p SystemPersistent_RevocationObserver_dropWhenRevoked_Params_Future) Struct() (SystemPersistent_RevocationObserver_dropWhenRevoked_Params, error) {
 	s, err := p.Future.Struct()
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params{s}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Params(s), err
 }
 
 func (p SystemPersistent_RevocationObserver_dropWhenRevoked_Params_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
-type SystemPersistent_RevocationObserver_dropWhenRevoked_Results struct{ capnp.Struct }
+type SystemPersistent_RevocationObserver_dropWhenRevoked_Results capnp.Struct
 
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Results_TypeID is the unique identifier for the type SystemPersistent_RevocationObserver_dropWhenRevoked_Results.
 const SystemPersistent_RevocationObserver_dropWhenRevoked_Results_TypeID = 0xfab3d7d326e64716
 
 func NewSystemPersistent_RevocationObserver_dropWhenRevoked_Results(s *capnp.Segment) (SystemPersistent_RevocationObserver_dropWhenRevoked_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{st}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(st), err
 }
 
 func NewRootSystemPersistent_RevocationObserver_dropWhenRevoked_Results(s *capnp.Segment) (SystemPersistent_RevocationObserver_dropWhenRevoked_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{st}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(st), err
 }
 
 func ReadRootSystemPersistent_RevocationObserver_dropWhenRevoked_Results(msg *capnp.Message) (SystemPersistent_RevocationObserver_dropWhenRevoked_Results, error) {
 	root, err := msg.Root()
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{root.Struct()}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(root.Struct()), err
 }
 
 func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) String() string {
-	str, _ := text.Marshal(0xfab3d7d326e64716, s.Struct)
+	str, _ := text.Marshal(0xfab3d7d326e64716, capnp.Struct(s))
 	return str
 }
 
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent_RevocationObserver_dropWhenRevoked_Results) DecodeFromPtr(p capnp.Ptr) SystemPersistent_RevocationObserver_dropWhenRevoked_Results {
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List is a list of SystemPersistent_RevocationObserver_dropWhenRevoked_Results.
-type SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List struct{ capnp.List }
+type SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List = capnp.StructList[SystemPersistent_RevocationObserver_dropWhenRevoked_Results]
 
 // NewSystemPersistent_RevocationObserver_dropWhenRevoked_Results creates a new list of SystemPersistent_RevocationObserver_dropWhenRevoked_Results.
 func NewSystemPersistent_RevocationObserver_dropWhenRevoked_Results_List(s *capnp.Segment, sz int32) (SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List{l}, err
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List) At(i int) SystemPersistent_RevocationObserver_dropWhenRevoked_Results {
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{s.List.Struct(i)}
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List) Set(i int, v SystemPersistent_RevocationObserver_dropWhenRevoked_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SystemPersistent_RevocationObserver_dropWhenRevoked_Results_List) String() string {
-	str, _ := text.MarshalList(0xfab3d7d326e64716, s.List)
-	return str
+	return capnp.StructList[SystemPersistent_RevocationObserver_dropWhenRevoked_Results](l), err
 }
 
 // SystemPersistent_RevocationObserver_dropWhenRevoked_Results_Future is a wrapper for a SystemPersistent_RevocationObserver_dropWhenRevoked_Results promised by a client call.
@@ -4662,96 +5167,105 @@ type SystemPersistent_RevocationObserver_dropWhenRevoked_Results_Future struct{ 
 
 func (p SystemPersistent_RevocationObserver_dropWhenRevoked_Results_Future) Struct() (SystemPersistent_RevocationObserver_dropWhenRevoked_Results, error) {
 	s, err := p.Future.Struct()
-	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results{s}, err
+	return SystemPersistent_RevocationObserver_dropWhenRevoked_Results(s), err
 }
 
-type SystemPersistent_addRequirements_Params struct{ capnp.Struct }
+type SystemPersistent_addRequirements_Params capnp.Struct
 
 // SystemPersistent_addRequirements_Params_TypeID is the unique identifier for the type SystemPersistent_addRequirements_Params.
 const SystemPersistent_addRequirements_Params_TypeID = 0xbb5eb0bde1481587
 
 func NewSystemPersistent_addRequirements_Params(s *capnp.Segment) (SystemPersistent_addRequirements_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SystemPersistent_addRequirements_Params{st}, err
+	return SystemPersistent_addRequirements_Params(st), err
 }
 
 func NewRootSystemPersistent_addRequirements_Params(s *capnp.Segment) (SystemPersistent_addRequirements_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return SystemPersistent_addRequirements_Params{st}, err
+	return SystemPersistent_addRequirements_Params(st), err
 }
 
 func ReadRootSystemPersistent_addRequirements_Params(msg *capnp.Message) (SystemPersistent_addRequirements_Params, error) {
 	root, err := msg.Root()
-	return SystemPersistent_addRequirements_Params{root.Struct()}, err
+	return SystemPersistent_addRequirements_Params(root.Struct()), err
 }
 
 func (s SystemPersistent_addRequirements_Params) String() string {
-	str, _ := text.Marshal(0xbb5eb0bde1481587, s.Struct)
+	str, _ := text.Marshal(0xbb5eb0bde1481587, capnp.Struct(s))
 	return str
 }
 
+func (s SystemPersistent_addRequirements_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent_addRequirements_Params) DecodeFromPtr(p capnp.Ptr) SystemPersistent_addRequirements_Params {
+	return SystemPersistent_addRequirements_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SystemPersistent_addRequirements_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SystemPersistent_addRequirements_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SystemPersistent_addRequirements_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SystemPersistent_addRequirements_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SystemPersistent_addRequirements_Params) Requirements() (MembraneRequirement_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return MembraneRequirement_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return MembraneRequirement_List(p.List()), err
 }
 
 func (s SystemPersistent_addRequirements_Params) HasRequirements() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SystemPersistent_addRequirements_Params) SetRequirements(v MembraneRequirement_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewRequirements sets the requirements field to a newly
 // allocated MembraneRequirement_List, preferring placement in s's segment.
 func (s SystemPersistent_addRequirements_Params) NewRequirements(n int32) (MembraneRequirement_List, error) {
-	l, err := NewMembraneRequirement_List(s.Struct.Segment(), n)
+	l, err := NewMembraneRequirement_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return MembraneRequirement_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s SystemPersistent_addRequirements_Params) Observer() SystemPersistent_RevocationObserver {
-	p, _ := s.Struct.Ptr(1)
-	return SystemPersistent_RevocationObserver{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return SystemPersistent_RevocationObserver(p.Interface().Client())
 }
 
 func (s SystemPersistent_addRequirements_Params) HasObserver() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SystemPersistent_addRequirements_Params) SetObserver(v SystemPersistent_RevocationObserver) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // SystemPersistent_addRequirements_Params_List is a list of SystemPersistent_addRequirements_Params.
-type SystemPersistent_addRequirements_Params_List struct{ capnp.List }
+type SystemPersistent_addRequirements_Params_List = capnp.StructList[SystemPersistent_addRequirements_Params]
 
 // NewSystemPersistent_addRequirements_Params creates a new list of SystemPersistent_addRequirements_Params.
 func NewSystemPersistent_addRequirements_Params_List(s *capnp.Segment, sz int32) (SystemPersistent_addRequirements_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return SystemPersistent_addRequirements_Params_List{l}, err
-}
-
-func (s SystemPersistent_addRequirements_Params_List) At(i int) SystemPersistent_addRequirements_Params {
-	return SystemPersistent_addRequirements_Params{s.List.Struct(i)}
-}
-
-func (s SystemPersistent_addRequirements_Params_List) Set(i int, v SystemPersistent_addRequirements_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SystemPersistent_addRequirements_Params_List) String() string {
-	str, _ := text.MarshalList(0xbb5eb0bde1481587, s.List)
-	return str
+	return capnp.StructList[SystemPersistent_addRequirements_Params](l), err
 }
 
 // SystemPersistent_addRequirements_Params_Future is a wrapper for a SystemPersistent_addRequirements_Params promised by a client call.
@@ -4759,76 +5273,85 @@ type SystemPersistent_addRequirements_Params_Future struct{ *capnp.Future }
 
 func (p SystemPersistent_addRequirements_Params_Future) Struct() (SystemPersistent_addRequirements_Params, error) {
 	s, err := p.Future.Struct()
-	return SystemPersistent_addRequirements_Params{s}, err
+	return SystemPersistent_addRequirements_Params(s), err
 }
 
 func (p SystemPersistent_addRequirements_Params_Future) Observer() SystemPersistent_RevocationObserver {
-	return SystemPersistent_RevocationObserver{Client: p.Future.Field(1, nil).Client()}
+	return SystemPersistent_RevocationObserver(p.Future.Field(1, nil).Client())
 }
 
-type SystemPersistent_addRequirements_Results struct{ capnp.Struct }
+type SystemPersistent_addRequirements_Results capnp.Struct
 
 // SystemPersistent_addRequirements_Results_TypeID is the unique identifier for the type SystemPersistent_addRequirements_Results.
 const SystemPersistent_addRequirements_Results_TypeID = 0x8488d5d569f6cffe
 
 func NewSystemPersistent_addRequirements_Results(s *capnp.Segment) (SystemPersistent_addRequirements_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SystemPersistent_addRequirements_Results{st}, err
+	return SystemPersistent_addRequirements_Results(st), err
 }
 
 func NewRootSystemPersistent_addRequirements_Results(s *capnp.Segment) (SystemPersistent_addRequirements_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SystemPersistent_addRequirements_Results{st}, err
+	return SystemPersistent_addRequirements_Results(st), err
 }
 
 func ReadRootSystemPersistent_addRequirements_Results(msg *capnp.Message) (SystemPersistent_addRequirements_Results, error) {
 	root, err := msg.Root()
-	return SystemPersistent_addRequirements_Results{root.Struct()}, err
+	return SystemPersistent_addRequirements_Results(root.Struct()), err
 }
 
 func (s SystemPersistent_addRequirements_Results) String() string {
-	str, _ := text.Marshal(0x8488d5d569f6cffe, s.Struct)
+	str, _ := text.Marshal(0x8488d5d569f6cffe, capnp.Struct(s))
 	return str
 }
 
+func (s SystemPersistent_addRequirements_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SystemPersistent_addRequirements_Results) DecodeFromPtr(p capnp.Ptr) SystemPersistent_addRequirements_Results {
+	return SystemPersistent_addRequirements_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SystemPersistent_addRequirements_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SystemPersistent_addRequirements_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SystemPersistent_addRequirements_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SystemPersistent_addRequirements_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SystemPersistent_addRequirements_Results) Cap() SystemPersistent {
-	p, _ := s.Struct.Ptr(0)
-	return SystemPersistent{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return SystemPersistent(p.Interface().Client())
 }
 
 func (s SystemPersistent_addRequirements_Results) HasCap() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SystemPersistent_addRequirements_Results) SetCap(v SystemPersistent) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // SystemPersistent_addRequirements_Results_List is a list of SystemPersistent_addRequirements_Results.
-type SystemPersistent_addRequirements_Results_List struct{ capnp.List }
+type SystemPersistent_addRequirements_Results_List = capnp.StructList[SystemPersistent_addRequirements_Results]
 
 // NewSystemPersistent_addRequirements_Results creates a new list of SystemPersistent_addRequirements_Results.
 func NewSystemPersistent_addRequirements_Results_List(s *capnp.Segment, sz int32) (SystemPersistent_addRequirements_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SystemPersistent_addRequirements_Results_List{l}, err
-}
-
-func (s SystemPersistent_addRequirements_Results_List) At(i int) SystemPersistent_addRequirements_Results {
-	return SystemPersistent_addRequirements_Results{s.List.Struct(i)}
-}
-
-func (s SystemPersistent_addRequirements_Results_List) Set(i int, v SystemPersistent_addRequirements_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SystemPersistent_addRequirements_Results_List) String() string {
-	str, _ := text.MarshalList(0x8488d5d569f6cffe, s.List)
-	return str
+	return capnp.StructList[SystemPersistent_addRequirements_Results](l), err
 }
 
 // SystemPersistent_addRequirements_Results_Future is a wrapper for a SystemPersistent_addRequirements_Results promised by a client call.
@@ -4836,14 +5359,14 @@ type SystemPersistent_addRequirements_Results_Future struct{ *capnp.Future }
 
 func (p SystemPersistent_addRequirements_Results_Future) Struct() (SystemPersistent_addRequirements_Results, error) {
 	s, err := p.Future.Struct()
-	return SystemPersistent_addRequirements_Results{s}, err
+	return SystemPersistent_addRequirements_Results(s), err
 }
 
 func (p SystemPersistent_addRequirements_Results_Future) Cap() SystemPersistent {
-	return SystemPersistent{Client: p.Future.Field(0, nil).Client()}
+	return SystemPersistent(p.Future.Field(0, nil).Client())
 }
 
-type PersistentHandle struct{ Client *capnp.Client }
+type PersistentHandle capnp.Client
 
 // PersistentHandle_TypeID is the unique identifier for the type PersistentHandle.
 const PersistentHandle_TypeID = 0xc22ce229c18c0a02
@@ -4859,9 +5382,9 @@ func (c PersistentHandle) AddRequirements(ctx context.Context, params func(Syste
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentHandle) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -4875,9 +5398,9 @@ func (c PersistentHandle) Save(ctx context.Context, params func(persistent.Persi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 func (c PersistentHandle) Ping(ctx context.Context, params func(util.Handle_ping_Params) error) (util.Handle_ping_Results_Future, capnp.ReleaseFunc) {
@@ -4891,20 +5414,30 @@ func (c PersistentHandle) Ping(ctx context.Context, params func(util.Handle_ping
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(util.Handle_ping_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.Handle_ping_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return util.Handle_ping_Results_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentHandle) AddRef() PersistentHandle {
-	return PersistentHandle{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentHandle(capnp.Client(c).AddRef())
 }
 
 func (c PersistentHandle) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentHandle) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentHandle) DecodeFromPtr(p capnp.Ptr) PersistentHandle {
+	return PersistentHandle(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentHandle) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentHandle_Server is a PersistentHandle with a local implementation.
@@ -4917,15 +5450,15 @@ type PersistentHandle_Server interface {
 }
 
 // PersistentHandle_NewServer creates a new Server from an implementation of PersistentHandle_Server.
-func PersistentHandle_NewServer(s PersistentHandle_Server, policy *server.Policy) *server.Server {
+func PersistentHandle_NewServer(s PersistentHandle_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentHandle_Methods(nil, s), s, c, policy)
+	return server.New(PersistentHandle_Methods(nil, s), s, c)
 }
 
 // PersistentHandle_ServerToClient creates a new Client from an implementation of PersistentHandle_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentHandle_ServerToClient(s PersistentHandle_Server, policy *server.Policy) PersistentHandle {
-	return PersistentHandle{Client: capnp.NewClient(PersistentHandle_NewServer(s, policy))}
+func PersistentHandle_ServerToClient(s PersistentHandle_Server) PersistentHandle {
+	return PersistentHandle(capnp.NewClient(PersistentHandle_NewServer(s)))
 }
 
 // PersistentHandle_Methods appends Methods to a slice that invoke the methods on s.
@@ -4974,7 +5507,16 @@ func PersistentHandle_Methods(methods []server.Method, s PersistentHandle_Server
 	return methods
 }
 
-type PersistentOngoingNotification struct{ Client *capnp.Client }
+// PersistentHandle_List is a list of PersistentHandle.
+type PersistentHandle_List = capnp.CapList[PersistentHandle]
+
+// NewPersistentHandle creates a new list of PersistentHandle.
+func NewPersistentHandle_List(s *capnp.Segment, sz int32) (PersistentHandle_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentHandle](l), err
+}
+
+type PersistentOngoingNotification capnp.Client
 
 // PersistentOngoingNotification_TypeID is the unique identifier for the type PersistentOngoingNotification.
 const PersistentOngoingNotification_TypeID = 0xdbbdcec8587dd355
@@ -4990,9 +5532,9 @@ func (c PersistentOngoingNotification) AddRequirements(ctx context.Context, para
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentOngoingNotification) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -5006,9 +5548,9 @@ func (c PersistentOngoingNotification) Save(ctx context.Context, params func(per
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 func (c PersistentOngoingNotification) Cancel(ctx context.Context, params func(activity.OngoingNotification_cancel_Params) error) (activity.OngoingNotification_cancel_Results_Future, capnp.ReleaseFunc) {
@@ -5022,20 +5564,30 @@ func (c PersistentOngoingNotification) Cancel(ctx context.Context, params func(a
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(activity.OngoingNotification_cancel_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(activity.OngoingNotification_cancel_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return activity.OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentOngoingNotification) AddRef() PersistentOngoingNotification {
-	return PersistentOngoingNotification{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentOngoingNotification(capnp.Client(c).AddRef())
 }
 
 func (c PersistentOngoingNotification) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentOngoingNotification) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentOngoingNotification) DecodeFromPtr(p capnp.Ptr) PersistentOngoingNotification {
+	return PersistentOngoingNotification(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentOngoingNotification) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentOngoingNotification_Server is a PersistentOngoingNotification with a local implementation.
@@ -5048,15 +5600,15 @@ type PersistentOngoingNotification_Server interface {
 }
 
 // PersistentOngoingNotification_NewServer creates a new Server from an implementation of PersistentOngoingNotification_Server.
-func PersistentOngoingNotification_NewServer(s PersistentOngoingNotification_Server, policy *server.Policy) *server.Server {
+func PersistentOngoingNotification_NewServer(s PersistentOngoingNotification_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentOngoingNotification_Methods(nil, s), s, c, policy)
+	return server.New(PersistentOngoingNotification_Methods(nil, s), s, c)
 }
 
 // PersistentOngoingNotification_ServerToClient creates a new Client from an implementation of PersistentOngoingNotification_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentOngoingNotification_ServerToClient(s PersistentOngoingNotification_Server, policy *server.Policy) PersistentOngoingNotification {
-	return PersistentOngoingNotification{Client: capnp.NewClient(PersistentOngoingNotification_NewServer(s, policy))}
+func PersistentOngoingNotification_ServerToClient(s PersistentOngoingNotification_Server) PersistentOngoingNotification {
+	return PersistentOngoingNotification(capnp.NewClient(PersistentOngoingNotification_NewServer(s)))
 }
 
 // PersistentOngoingNotification_Methods appends Methods to a slice that invoke the methods on s.
@@ -5105,7 +5657,16 @@ func PersistentOngoingNotification_Methods(methods []server.Method, s Persistent
 	return methods
 }
 
-type DenormalizedGrainMetadata struct{ capnp.Struct }
+// PersistentOngoingNotification_List is a list of PersistentOngoingNotification.
+type PersistentOngoingNotification_List = capnp.CapList[PersistentOngoingNotification]
+
+// NewPersistentOngoingNotification creates a new list of PersistentOngoingNotification.
+func NewPersistentOngoingNotification_List(s *capnp.Segment, sz int32) (PersistentOngoingNotification_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentOngoingNotification](l), err
+}
+
+type DenormalizedGrainMetadata capnp.Struct
 type DenormalizedGrainMetadata_icon DenormalizedGrainMetadata
 type DenormalizedGrainMetadata_Which uint16
 
@@ -5131,48 +5692,71 @@ const DenormalizedGrainMetadata_TypeID = 0xbdd9bea5585df6c5
 
 func NewDenormalizedGrainMetadata(s *capnp.Segment) (DenormalizedGrainMetadata, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return DenormalizedGrainMetadata{st}, err
+	return DenormalizedGrainMetadata(st), err
 }
 
 func NewRootDenormalizedGrainMetadata(s *capnp.Segment) (DenormalizedGrainMetadata, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return DenormalizedGrainMetadata{st}, err
+	return DenormalizedGrainMetadata(st), err
 }
 
 func ReadRootDenormalizedGrainMetadata(msg *capnp.Message) (DenormalizedGrainMetadata, error) {
 	root, err := msg.Root()
-	return DenormalizedGrainMetadata{root.Struct()}, err
+	return DenormalizedGrainMetadata(root.Struct()), err
 }
 
 func (s DenormalizedGrainMetadata) String() string {
-	str, _ := text.Marshal(0xbdd9bea5585df6c5, s.Struct)
+	str, _ := text.Marshal(0xbdd9bea5585df6c5, capnp.Struct(s))
 	return str
 }
 
+func (s DenormalizedGrainMetadata) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (DenormalizedGrainMetadata) DecodeFromPtr(p capnp.Ptr) DenormalizedGrainMetadata {
+	return DenormalizedGrainMetadata(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s DenormalizedGrainMetadata) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s DenormalizedGrainMetadata) Which() DenormalizedGrainMetadata_Which {
-	return DenormalizedGrainMetadata_Which(s.Struct.Uint16(0))
+	return DenormalizedGrainMetadata_Which(capnp.Struct(s).Uint16(0))
+}
+func (s DenormalizedGrainMetadata) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s DenormalizedGrainMetadata) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s DenormalizedGrainMetadata) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s DenormalizedGrainMetadata) AppTitle() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s DenormalizedGrainMetadata) HasAppTitle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s DenormalizedGrainMetadata) SetAppTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewAppTitle sets the appTitle field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s DenormalizedGrainMetadata) NewAppTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -5181,108 +5765,106 @@ func (s DenormalizedGrainMetadata) Icon() DenormalizedGrainMetadata_icon {
 }
 
 func (s DenormalizedGrainMetadata) SetIcon() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 }
 
+func (s DenormalizedGrainMetadata_icon) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s DenormalizedGrainMetadata_icon) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s DenormalizedGrainMetadata_icon) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s DenormalizedGrainMetadata_icon) Format() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) HasFormat() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s DenormalizedGrainMetadata_icon) FormatBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) SetFormat(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s DenormalizedGrainMetadata_icon) AssetId() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) HasAssetId() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s DenormalizedGrainMetadata_icon) AssetIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) SetAssetId(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s DenormalizedGrainMetadata_icon) AssetId2xDpi() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) HasAssetId2xDpi() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s DenormalizedGrainMetadata_icon) AssetId2xDpiBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s DenormalizedGrainMetadata_icon) SetAssetId2xDpi(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s DenormalizedGrainMetadata) AppId() (string, error) {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != appId")
 	}
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s DenormalizedGrainMetadata) HasAppId() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s DenormalizedGrainMetadata) AppIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s DenormalizedGrainMetadata) SetAppId(v string) error {
-	s.Struct.SetUint16(0, 1)
-	return s.Struct.SetText(1, v)
+	capnp.Struct(s).SetUint16(0, 1)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 // DenormalizedGrainMetadata_List is a list of DenormalizedGrainMetadata.
-type DenormalizedGrainMetadata_List struct{ capnp.List }
+type DenormalizedGrainMetadata_List = capnp.StructList[DenormalizedGrainMetadata]
 
 // NewDenormalizedGrainMetadata creates a new list of DenormalizedGrainMetadata.
 func NewDenormalizedGrainMetadata_List(s *capnp.Segment, sz int32) (DenormalizedGrainMetadata_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
-	return DenormalizedGrainMetadata_List{l}, err
-}
-
-func (s DenormalizedGrainMetadata_List) At(i int) DenormalizedGrainMetadata {
-	return DenormalizedGrainMetadata{s.List.Struct(i)}
-}
-
-func (s DenormalizedGrainMetadata_List) Set(i int, v DenormalizedGrainMetadata) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s DenormalizedGrainMetadata_List) String() string {
-	str, _ := text.MarshalList(0xbdd9bea5585df6c5, s.List)
-	return str
+	return capnp.StructList[DenormalizedGrainMetadata](l), err
 }
 
 // DenormalizedGrainMetadata_Future is a wrapper for a DenormalizedGrainMetadata promised by a client call.
@@ -5290,7 +5872,7 @@ type DenormalizedGrainMetadata_Future struct{ *capnp.Future }
 
 func (p DenormalizedGrainMetadata_Future) Struct() (DenormalizedGrainMetadata, error) {
 	s, err := p.Future.Struct()
-	return DenormalizedGrainMetadata{s}, err
+	return DenormalizedGrainMetadata(s), err
 }
 
 func (p DenormalizedGrainMetadata_Future) AppTitle() util.LocalizedText_Future {
@@ -5306,10 +5888,10 @@ type DenormalizedGrainMetadata_icon_Future struct{ *capnp.Future }
 
 func (p DenormalizedGrainMetadata_icon_Future) Struct() (DenormalizedGrainMetadata_icon, error) {
 	s, err := p.Future.Struct()
-	return DenormalizedGrainMetadata_icon{s}, err
+	return DenormalizedGrainMetadata_icon(s), err
 }
 
-type ApiTokenOwner struct{ capnp.Struct }
+type ApiTokenOwner capnp.Struct
 type ApiTokenOwner_grain ApiTokenOwner
 type ApiTokenOwner_clientPowerboxRequest ApiTokenOwner
 type ApiTokenOwner_clientPowerboxOffer ApiTokenOwner
@@ -5353,114 +5935,148 @@ const ApiTokenOwner_TypeID = 0xda970537e2a8a9a9
 
 func NewApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return ApiTokenOwner{st}, err
+	return ApiTokenOwner(st), err
 }
 
 func NewRootApiTokenOwner(s *capnp.Segment) (ApiTokenOwner, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return ApiTokenOwner{st}, err
+	return ApiTokenOwner(st), err
 }
 
 func ReadRootApiTokenOwner(msg *capnp.Message) (ApiTokenOwner, error) {
 	root, err := msg.Root()
-	return ApiTokenOwner{root.Struct()}, err
+	return ApiTokenOwner(root.Struct()), err
 }
 
 func (s ApiTokenOwner) String() string {
-	str, _ := text.Marshal(0xda970537e2a8a9a9, s.Struct)
+	str, _ := text.Marshal(0xda970537e2a8a9a9, capnp.Struct(s))
 	return str
 }
 
+func (s ApiTokenOwner) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ApiTokenOwner) DecodeFromPtr(p capnp.Ptr) ApiTokenOwner {
+	return ApiTokenOwner(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ApiTokenOwner) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s ApiTokenOwner) Which() ApiTokenOwner_Which {
-	return ApiTokenOwner_Which(s.Struct.Uint16(0))
+	return ApiTokenOwner_Which(capnp.Struct(s).Uint16(0))
+}
+func (s ApiTokenOwner) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiTokenOwner) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiTokenOwner) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s ApiTokenOwner) SetWebkey() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s ApiTokenOwner) Grain() ApiTokenOwner_grain { return ApiTokenOwner_grain(s) }
 
 func (s ApiTokenOwner) SetGrain() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 }
 
+func (s ApiTokenOwner_grain) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiTokenOwner_grain) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiTokenOwner_grain) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiTokenOwner_grain) GrainId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_grain) HasGrainId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiTokenOwner_grain) GrainIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_grain) SetGrainId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ApiTokenOwner_grain) SaveLabel() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(1)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s ApiTokenOwner_grain) HasSaveLabel() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ApiTokenOwner_grain) SetSaveLabel(v util.LocalizedText) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewSaveLabel sets the saveLabel field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s ApiTokenOwner_grain) NewSaveLabel() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s ApiTokenOwner_grain) IntroducerIdentity() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_grain) HasIntroducerIdentity() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s ApiTokenOwner_grain) IntroducerIdentityBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_grain) SetIntroducerIdentity(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s ApiTokenOwner_grain) IntroducerUser() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_grain) HasIntroducerUser() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ApiTokenOwner_grain) IntroducerUserBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_grain) SetIntroducerUser(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s ApiTokenOwner) ClientPowerboxRequest() ApiTokenOwner_clientPowerboxRequest {
@@ -5468,61 +6084,72 @@ func (s ApiTokenOwner) ClientPowerboxRequest() ApiTokenOwner_clientPowerboxReque
 }
 
 func (s ApiTokenOwner) SetClientPowerboxRequest() {
-	s.Struct.SetUint16(0, 5)
+	capnp.Struct(s).SetUint16(0, 5)
 }
 
+func (s ApiTokenOwner_clientPowerboxRequest) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiTokenOwner_clientPowerboxRequest) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiTokenOwner_clientPowerboxRequest) SessionId() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) HasSessionId() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) SessionIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) SetSessionId(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) GrainId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) HasGrainId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) GrainIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) SetGrainId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) IntroducerIdentity() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) HasIntroducerIdentity() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) IntroducerIdentityBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxRequest) SetIntroducerIdentity(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s ApiTokenOwner) ClientPowerboxOffer() ApiTokenOwner_clientPowerboxOffer {
@@ -5530,203 +6157,216 @@ func (s ApiTokenOwner) ClientPowerboxOffer() ApiTokenOwner_clientPowerboxOffer {
 }
 
 func (s ApiTokenOwner) SetClientPowerboxOffer() {
-	s.Struct.SetUint16(0, 6)
+	capnp.Struct(s).SetUint16(0, 6)
 }
 
+func (s ApiTokenOwner_clientPowerboxOffer) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiTokenOwner_clientPowerboxOffer) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiTokenOwner_clientPowerboxOffer) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiTokenOwner_clientPowerboxOffer) SessionId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxOffer) HasSessionId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiTokenOwner_clientPowerboxOffer) SessionIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_clientPowerboxOffer) SetSessionId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ApiTokenOwner) Internet() (capnp.Ptr, error) {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != internet")
 	}
-	return s.Struct.Ptr(0)
+	return capnp.Struct(s).Ptr(0)
 }
 
 func (s ApiTokenOwner) HasInternet() bool {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiTokenOwner) SetInternet(v capnp.Ptr) error {
-	s.Struct.SetUint16(0, 2)
-	return s.Struct.SetPtr(0, v)
+	capnp.Struct(s).SetUint16(0, 2)
+	return capnp.Struct(s).SetPtr(0, v)
 }
 
 func (s ApiTokenOwner) SetFrontend() {
-	s.Struct.SetUint16(0, 3)
+	capnp.Struct(s).SetUint16(0, 3)
 
 }
 
 func (s ApiTokenOwner) User() ApiTokenOwner_user { return ApiTokenOwner_user(s) }
 
 func (s ApiTokenOwner) SetUser() {
-	s.Struct.SetUint16(0, 4)
+	capnp.Struct(s).SetUint16(0, 4)
 }
 
+func (s ApiTokenOwner_user) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ApiTokenOwner_user) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ApiTokenOwner_user) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ApiTokenOwner_user) AccountId() (string, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_user) HasAccountId() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s ApiTokenOwner_user) AccountIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_user) SetAccountId(v string) error {
-	return s.Struct.SetText(5, v)
+	return capnp.Struct(s).SetText(5, v)
 }
 
 func (s ApiTokenOwner_user) IdentityId() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_user) HasIdentityId() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s ApiTokenOwner_user) IdentityIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_user) SetIdentityId(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s ApiTokenOwner_user) Title() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_user) HasTitle() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ApiTokenOwner_user) TitleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_user) SetTitle(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s ApiTokenOwner_user) DenormalizedGrainMetadata() (DenormalizedGrainMetadata, error) {
-	p, err := s.Struct.Ptr(2)
-	return DenormalizedGrainMetadata{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return DenormalizedGrainMetadata(p.Struct()), err
 }
 
 func (s ApiTokenOwner_user) HasDenormalizedGrainMetadata() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ApiTokenOwner_user) SetDenormalizedGrainMetadata(v DenormalizedGrainMetadata) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewDenormalizedGrainMetadata sets the denormalizedGrainMetadata field to a newly
 // allocated DenormalizedGrainMetadata struct, preferring placement in s's segment.
 func (s ApiTokenOwner_user) NewDenormalizedGrainMetadata() (DenormalizedGrainMetadata, error) {
-	ss, err := NewDenormalizedGrainMetadata(s.Struct.Segment())
+	ss, err := NewDenormalizedGrainMetadata(capnp.Struct(s).Segment())
 	if err != nil {
 		return DenormalizedGrainMetadata{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s ApiTokenOwner_user) UserId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_user) HasUserId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ApiTokenOwner_user) UserIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_user) SetUserId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ApiTokenOwner_user) UpstreamTitle() (string, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.Text(), err
 }
 
 func (s ApiTokenOwner_user) HasUpstreamTitle() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s ApiTokenOwner_user) UpstreamTitleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.TextBytes(), err
 }
 
 func (s ApiTokenOwner_user) SetUpstreamTitle(v string) error {
-	return s.Struct.SetText(4, v)
+	return capnp.Struct(s).SetText(4, v)
 }
 
 func (s ApiTokenOwner_user) Renamed() bool {
-	return s.Struct.Bit(16)
+	return capnp.Struct(s).Bit(16)
 }
 
 func (s ApiTokenOwner_user) SetRenamed(v bool) {
-	s.Struct.SetBit(16, v)
+	capnp.Struct(s).SetBit(16, v)
 }
 
 func (s ApiTokenOwner_user) SeenAllActivity() bool {
-	return s.Struct.Bit(17)
+	return capnp.Struct(s).Bit(17)
 }
 
 func (s ApiTokenOwner_user) SetSeenAllActivity(v bool) {
-	s.Struct.SetBit(17, v)
+	capnp.Struct(s).SetBit(17, v)
 }
 
 // ApiTokenOwner_List is a list of ApiTokenOwner.
-type ApiTokenOwner_List struct{ capnp.List }
+type ApiTokenOwner_List = capnp.StructList[ApiTokenOwner]
 
 // NewApiTokenOwner creates a new list of ApiTokenOwner.
 func NewApiTokenOwner_List(s *capnp.Segment, sz int32) (ApiTokenOwner_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6}, sz)
-	return ApiTokenOwner_List{l}, err
-}
-
-func (s ApiTokenOwner_List) At(i int) ApiTokenOwner { return ApiTokenOwner{s.List.Struct(i)} }
-
-func (s ApiTokenOwner_List) Set(i int, v ApiTokenOwner) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s ApiTokenOwner_List) String() string {
-	str, _ := text.MarshalList(0xda970537e2a8a9a9, s.List)
-	return str
+	return capnp.StructList[ApiTokenOwner](l), err
 }
 
 // ApiTokenOwner_Future is a wrapper for a ApiTokenOwner promised by a client call.
@@ -5734,7 +6374,7 @@ type ApiTokenOwner_Future struct{ *capnp.Future }
 
 func (p ApiTokenOwner_Future) Struct() (ApiTokenOwner, error) {
 	s, err := p.Future.Struct()
-	return ApiTokenOwner{s}, err
+	return ApiTokenOwner(s), err
 }
 
 func (p ApiTokenOwner_Future) Grain() ApiTokenOwner_grain_Future {
@@ -5746,7 +6386,7 @@ type ApiTokenOwner_grain_Future struct{ *capnp.Future }
 
 func (p ApiTokenOwner_grain_Future) Struct() (ApiTokenOwner_grain, error) {
 	s, err := p.Future.Struct()
-	return ApiTokenOwner_grain{s}, err
+	return ApiTokenOwner_grain(s), err
 }
 
 func (p ApiTokenOwner_grain_Future) SaveLabel() util.LocalizedText_Future {
@@ -5762,7 +6402,7 @@ type ApiTokenOwner_clientPowerboxRequest_Future struct{ *capnp.Future }
 
 func (p ApiTokenOwner_clientPowerboxRequest_Future) Struct() (ApiTokenOwner_clientPowerboxRequest, error) {
 	s, err := p.Future.Struct()
-	return ApiTokenOwner_clientPowerboxRequest{s}, err
+	return ApiTokenOwner_clientPowerboxRequest(s), err
 }
 
 func (p ApiTokenOwner_Future) ClientPowerboxOffer() ApiTokenOwner_clientPowerboxOffer_Future {
@@ -5774,7 +6414,7 @@ type ApiTokenOwner_clientPowerboxOffer_Future struct{ *capnp.Future }
 
 func (p ApiTokenOwner_clientPowerboxOffer_Future) Struct() (ApiTokenOwner_clientPowerboxOffer, error) {
 	s, err := p.Future.Struct()
-	return ApiTokenOwner_clientPowerboxOffer{s}, err
+	return ApiTokenOwner_clientPowerboxOffer(s), err
 }
 
 func (p ApiTokenOwner_Future) Internet() *capnp.Future {
@@ -5790,14 +6430,14 @@ type ApiTokenOwner_user_Future struct{ *capnp.Future }
 
 func (p ApiTokenOwner_user_Future) Struct() (ApiTokenOwner_user, error) {
 	s, err := p.Future.Struct()
-	return ApiTokenOwner_user{s}, err
+	return ApiTokenOwner_user(s), err
 }
 
 func (p ApiTokenOwner_user_Future) DenormalizedGrainMetadata() DenormalizedGrainMetadata_Future {
 	return DenormalizedGrainMetadata_Future{Future: p.Future.Field(2, nil)}
 }
 
-type SupervisorObjectId struct{ capnp.Struct }
+type SupervisorObjectId capnp.Struct
 type SupervisorObjectId_Which uint16
 
 const (
@@ -5822,78 +6462,88 @@ const SupervisorObjectId_TypeID = 0x8e74650737dbb840
 
 func NewSupervisorObjectId(s *capnp.Segment) (SupervisorObjectId, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return SupervisorObjectId{st}, err
+	return SupervisorObjectId(st), err
 }
 
 func NewRootSupervisorObjectId(s *capnp.Segment) (SupervisorObjectId, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return SupervisorObjectId{st}, err
+	return SupervisorObjectId(st), err
 }
 
 func ReadRootSupervisorObjectId(msg *capnp.Message) (SupervisorObjectId, error) {
 	root, err := msg.Root()
-	return SupervisorObjectId{root.Struct()}, err
+	return SupervisorObjectId(root.Struct()), err
 }
 
 func (s SupervisorObjectId) String() string {
-	str, _ := text.Marshal(0x8e74650737dbb840, s.Struct)
+	str, _ := text.Marshal(0x8e74650737dbb840, capnp.Struct(s))
 	return str
 }
 
+func (s SupervisorObjectId) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SupervisorObjectId) DecodeFromPtr(p capnp.Ptr) SupervisorObjectId {
+	return SupervisorObjectId(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SupervisorObjectId) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s SupervisorObjectId) Which() SupervisorObjectId_Which {
-	return SupervisorObjectId_Which(s.Struct.Uint16(0))
+	return SupervisorObjectId_Which(capnp.Struct(s).Uint16(0))
+}
+func (s SupervisorObjectId) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SupervisorObjectId) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SupervisorObjectId) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s SupervisorObjectId) AppRef() (capnp.Ptr, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != appRef")
 	}
-	return s.Struct.Ptr(0)
+	return capnp.Struct(s).Ptr(0)
 }
 
 func (s SupervisorObjectId) HasAppRef() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SupervisorObjectId) SetAppRef(v capnp.Ptr) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetPtr(0, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetPtr(0, v)
 }
 
 func (s SupervisorObjectId) WakeLockNotification() uint32 {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != wakeLockNotification")
 	}
-	return s.Struct.Uint32(4)
+	return capnp.Struct(s).Uint32(4)
 }
 
 func (s SupervisorObjectId) SetWakeLockNotification(v uint32) {
-	s.Struct.SetUint16(0, 1)
-	s.Struct.SetUint32(4, v)
+	capnp.Struct(s).SetUint16(0, 1)
+	capnp.Struct(s).SetUint32(4, v)
 }
 
 // SupervisorObjectId_List is a list of SupervisorObjectId.
-type SupervisorObjectId_List struct{ capnp.List }
+type SupervisorObjectId_List = capnp.StructList[SupervisorObjectId]
 
 // NewSupervisorObjectId creates a new list of SupervisorObjectId.
 func NewSupervisorObjectId_List(s *capnp.Segment, sz int32) (SupervisorObjectId_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return SupervisorObjectId_List{l}, err
-}
-
-func (s SupervisorObjectId_List) At(i int) SupervisorObjectId {
-	return SupervisorObjectId{s.List.Struct(i)}
-}
-
-func (s SupervisorObjectId_List) Set(i int, v SupervisorObjectId) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SupervisorObjectId_List) String() string {
-	str, _ := text.MarshalList(0x8e74650737dbb840, s.List)
-	return str
+	return capnp.StructList[SupervisorObjectId](l), err
 }
 
 // SupervisorObjectId_Future is a wrapper for a SupervisorObjectId promised by a client call.
@@ -5901,7 +6551,7 @@ type SupervisorObjectId_Future struct{ *capnp.Future }
 
 func (p SupervisorObjectId_Future) Struct() (SupervisorObjectId, error) {
 	s, err := p.Future.Struct()
-	return SupervisorObjectId{s}, err
+	return SupervisorObjectId(s), err
 }
 
 func (p SupervisorObjectId_Future) AppRef() *capnp.Future {
@@ -5915,264 +6565,264 @@ const schema_c7205d6d32c7b040 = "x\xda\xacZ\x0ft\x15\xe5\x95\xbf\xf7\x9b\x97L\xd
 	"\x81\xac\x7f*\xab\xe0\x1f\x94E-\xddbE\xab\x88J" +
 	"UZ\xa4Hm\x05\xd7Z<K\x8bE=\xa2\xc0\xec" +
 	"\xb93\xf3\xcd\x1b\x92\xf7\x08T\x8f\xe7x\xe0\xcd7\xf7" +
-	"\xfb\xee\xfd~\xf7w\x7f\xf7\x0e5,\\\xc7\xc6\xe5E" +
-	"&\x03\xccy\x90\xe5\xe5\xdb\x0f\xfdu\xf7#\xdb\x7f\xf9" +
-	"\xc1\xf7A\x19\x8a\x00!\x19`\xc2'Cg \x84\xec" +
-	"\x93\xaf\x7f\x1a\xdf\xb3g\xe5M\xa0\x8c@\x80<\xa4G" +
-	"\x07\x86\xeeF@\xf5\x93\xa1\xb5\x80\xf6=G6\xfd*" +
-	"r\xf4\xb5\x15\xa0\x0cev\xcd\xbcI\xd1\xe1\xdb\xb5\xbb" +
-	"\x01p\xc2\x90\xd2fT+Ke\x00\xb5\xbct6\xa0" +
-	"\xfdB\xc3/\xe6\xcc\xfek\xdbJP\"b\x93\xfaR" +
-	"\xc6 dk\xd6+\x7f8\xfe\xec\xf2\x95\xa0E\x10\xed" +
-	"\x0d\x1b\x1e>81\xef\xce\xb7aH\xbe\x8c\x00\x13." +
-	".]C\xdb5\x94\xd2v\x8bv\x8e\xfe\xe3\xed\x9d\xab" +
-	"<#\xeey\xe2\xa5\x83\x19\xa0z\xa3\xb3 <\xe5\xa5" +
-	"\xeb/\xda\xff\xc8J\xd7\x15w\xc1\xfd\xa5\xcb\xc9\xc2c" +
-	"\xce\x82\xba\x9f\xed\x9f(s\xebG\xa0)\x88v\xdd\x13" +
-	";\xc6w^{\xe1\x0eh@\x99\x15\xe3\x84]\xa5#" +
-	"P}\xc79\xf5\xbe\xd2n\x00u\xde\xb0\xb0}Go" +
-	"\xc3\x1f\xde\xd2F\xfe\x18\xb4\xa1(\x8e>k\x98s\xaa" +
-	"k\x87\x91\xcd\x7f\x9f\xf4\xd1\xf0\x87\xb6\xde\xb2\xba\xaf\xcd" +
-	"\x90,\x01LX:\xac\x0a\xd5[\x86\x91\xcd\xdea\x9b" +
-	"\x00\xedg6?\xfd\xb7\x85\x15\x87n\x0b:\xa1D\x96" +
-	"\x90\xbd\xd2\x08\xd9{\xf4\xad\xf7\x9e[\xd5\xf3\xa3\x9f\x04" +
-	"\x17L\x89\xbcB\x0b4g\xc1\xbd\xdf\xb9\xf0\xbd}c" +
-	"\xbf\xb8#\xe8\xe5\xc2H\x0b-X\xea,\xe8\xfd\xaf\xb1" +
-	"\xdb'\xd6\xe4\xdd\x15\\\xb0.\xb2\x80\x16lp\x16\xf8" +
-	"W\xa5(R\xe6\xc4\x80\xea\xce\xc8AuO\xe4\xebt" +
-	"\xcf\x91\x9b\x99z\xffp\x19\xc0\xbe\xf0\x89\xcd\x87\xa7o" +
-	"/_\xeb\x1dH\"s\xbd\xc37\x92\xb9\xbb\x87\x93K" +
-	"\x85O\xff\xc7\x03\x8b\xe7?\xb8\xb6\x9f\xb9\x86\x11\x9f\xab" +
-	"\xda\x08'b#v0uJ\x19\x99\x1b^\x14\x9b~" +
-	"\x0f\xde\xbc.\x00\x85\xf2\xb2\xdd\x84\xb7\x1f\xa87\x1f\xbf" +
-	"r\xc1\xfa\xff\x0cz~~\xd9f\xda\xa8\xb2\x8c\xce\xbd" +
-	":\xd2<}\xebo\xef\xb87\xb8\xa0\xb1\xec\x07\xb4\xe0" +
-	";\xce\x82\xee\xcb\xe6\x7f\xbf\xa9`\xcb}\x01,\xf7\x94" +
-	"\x19d\xfb\x91\xeb\x92\x936\xcf|\x7f\xa3\x17\x13\xc7\x09" +
-	"^v\x0d\xbd\xba\xb0\x8c\x9c8\xfaq\xcfo/\xfe\xde" +
-	"\xf6\xc7\x1d\x1cz\xef\x0e/w6\x1fWN\xb6/]" +
-	"\xb5x\xed\xcc\xa2om\x0aFU+\x9f\xeal\xee," +
-	"\x98\xfb\xcb\x8f\xf7\xff\xe4-cS\xc0\xb1\x9e\xf2s\x08" +
-	"\xe3\x0bo\xf8\xdb\xa6K\xa6\xbf\xbb\x05\x94\x8b37V" +
-	"\xdeB\xc0\xbd\xc5yU}d\xeb\xde\xf7\x16\x16o\x0d" +
-	":\xf6X\xf9\x03d{\x9b\xb3`\xc4\xe6\xbf\x946\x9e" +
-	"8\xff\xe7\x01\xc7\xde)_B\x8eI\xdf\xac\x9f\xbc\xec" +
-	"\xde\x1f\x06\x9f\xec,_NOn\x1e2\xfd\xc0\xb6'" +
-	"\xbe\xf7?^\xfa2z\xf4T\xb9\x03\xa4\x9d\xe5\xdd\x80" +
-	"\xf6\x8b\x9f^{\xf5\xfag\xf7m\xeb\x8f\\F\x98\x1b" +
-	"y\x0d\xaa\xdaHB\xee\xac\x91\x14\xa1\xbc\xf3\xbe\xd8\xf2" +
-	"\xe13\xb7>\x17\xcc\x84]#\xab\xc8\x8b\xf7G\xd2!" +
-	"\xcf)\xdcb)\x8f4o\xf7\x16\xb8n\xe4U8\xc8" +
-	"T*hGv\xce\xaa\xed\x95\x07G?\xdf\x17)\x13" +
-	"\x16V\x0cF\xf5\xc6\x0a\xdali\x85\xac.\xad\xa8\x00" +
-	"\xb0\xb7\xecy\xf6\x86\xbd\x87W\xbd\xd0ou\x17\xad^" +
-	"Q\xf1u\x00\xf5\xf6\x8ai\xeav\xfa\x93\xfd\x8az\xa0" +
-	"\xa6\xe4\x9a)\xbf\x0a\x84\xffX\xc5\xcf)\x10\x8f6\x1c" +
-	"]z}/\xdf\x91\x9db\x0eU8P>VA>" +
-	".;\\\x10?\xfa\xa7\x7f{%`d\xdd(\xe7\x0e" +
-	"\xd7.\xbc\xe7\xd25\xd3\xee\x7f%xE\xb7\x8fr^" +
-	"]?\x8a\xbc\x1f\x1e\xcbo\xdf\x112_\xcd\xbe\xcb\x8b" +
-	"\xa3\xaah\xe9\xaeQ\x1f\x00\xda\xe9\xe4\xae\xf8\xe7\xef\xfe" +
-	"\xeb\xab\x81;{\xb2r\x01\x1d5\xb4v\xe3\x17\xcf\xe7" +
-	"\x1fx-\x18\xe3u\x95\xe3)\xc6OU\xd2.\xf9\xbb" +
-	"\xf7\xfec\xc9\xba\xb7w\x812B\xca\x04\x08p\xc2\x9e" +
-	"\xca\x8d\xa8\x1e\xae\xa4\x08\x1e\xaa\x9c\xa6\x0e\xa9\xa2\\\xbb" +
-	"\xf3\x82\x1b6\xdc\xf6\xdd\xcb\x7f\x1dp\xe7De\x0bm" +
-	"\xf4FG\xd3\x1b\xaf\xdfz\xd9\xeb\x81#\x1c\xaat\x00" +
-	"\xf5\xc7\x17O\xae\xdc\xfb\xf2\x9d{\x02O\xf6\xb8\xef\xa4" +
-	"{{w>\xfc\xcfG\x7f\x17\xb0\xb6\xbd\xd2\x81\xdaO" +
-	"\xb7\x0d.h\xbf\xeb\x82}\xa0\xfd\x03\x06p5$\xe4" +
-	"\xf8\xfeX\xa5C\xc1[+)\xc2S\xde\x9av\xb0\xeb" +
-	"\x85\xd9\xfb\xb2\x87i^\xd5\x08\x04\x9cpm\xd5\x0e\x84" +
-	"\xc0\xd3>\x00\xcd\x97\xc9\xcd)\xa3?W\x1bG\xd3)" +
-	"\x1aF\xdfJ\xcb\xe7\xfdf\xe9\xd5/\xffz\xdb\xfe\xfe" +
-	"x\x19\xb3\x04\xd5\xde1\xf4\xd2\x8a1\xb2\xbab\x0c\xa1" +
-	"\xeb\xdbk\xc6\xee\xbe@^\xf4\xfb`\xa8\x97\x8eq\xd2" +
-	"c\xf5\x18\x0a\xf5K\xf3\xf7Eo\\u\xe9\xbb\xc1\x1b" +
-	"\x7fr\x8cC\x19\xdb\x9c\x05\x13\xa76|\xd8\xf4\xe9\x83" +
-	"\xff\x1bd\x84w\xc68<{\xc8Y\x80\xe7^\xf6\xfe" +
-	"\xdd\xcf<\xfe\x17\xcf\x82\x93\x81\x83\xaa\x9d\xdaq~5" +
-	"\xe5\xc3\xee;#\x83\xd7^\xfc\xe7#Aj]]\xed" +
-	"Dk]\xf5&\xc0\x93\xa6\xf2\xf8\xd7V\x1d:\x9a\xb9" +
-	"\x8a\xc6\xb1\xcfS\xc0\xef\xfc\xf0\xb1\xb9\x1fE\x7f\xfcI" +
-	"\xf0l\x97\x8cu\x08\xa3q\xacC\xf1\xcf\xd6.8<" +
-	"z\xd0g\xa0\x95c\xa0F\xcd\x0b\xc9\xc8\x10't\x8e" +
-	"%\xe4NX:6B\x81+8\xf7\xc8\xf0\xb1\xc7." +
-	"\xf9,hm}\x8dA\xd6\x9e\xac!kU\x9b\x8f\xbf" +
-	"\xd5\xf2\xdeK\xc7<O\x1dG\xde\xac\xb9\x8d\x16\x1c\xa8" +
-	"!G\xbe6\xedO#\x7f\xb3\xf7\xbf?w\x19\xce9" +
-	"\xe9\x94q\x0b\x18\xd8\xde\x7f\xebl\xb3+\xcd\x8dEq" +
-	"3\x942\xaa\xa3z:\x99\x9e<\xc7\xfb%eT\xc7" +
-	"\x8cT\xba\xac\x99\x9b]\x09\xcb\x04\xf0\xd7\xe6g\xd6\xf6" +
-	"\x98\x16\xefl\xe2\x86\x197-\x9e\xb4\xaa\xf5X\xac\x99" +
-	"/\xec\x8a\x1b\xbc\x93'-\xd3{\x19M-$\x85\x00" +
-	"B\x08\xa0\x14\x8d\x00\xd0\x0a$\xd4J\x18\xcaQ=\x8d" +
-	"J0aP\x01<\xfd\xa1\xe6ww_\x19O\xf09" +
-	"\x96nu\xa1\xd9\x84\xa8\x15\"\x03PJ\xab\x9c\xd7\x87" +
-	"4\x03 S\x94\x19\x00\xe1\xd6x\x82\xdb\xb1\xb8\xc1\xa3" +
-	"V\xca\x00\xec\xb1\x93)\xeb\xcaTW2\x06\x01o\x8a" +
-	"2\x9b\xe8\xc9\x98i\xa5\x8c\xce\xcbS\x06\xafN\xb5\x98" +
-	"\xa9\x04\xb7\xf8\xe5\xed<\xdaq\x8aSM\xba\xa1w\x9a" +
-	"`f\xce\xe4\xbe_\x9f\x8e\xcfMu\xf0\xe4\xec\xee$" +
-	"7\xaa\xa3\x898OZM\xa9nn\xb4\xa4\x16\xcfn" +
-	"m\x95\xb8\xe1\x86\xa1\x04\x15\x8aC3\x80V(\xa1\xf6" +
-	"\x0d\x86\xb6\xc9M3\x9eJ6\x02\xc6\xb0\x10\x18\x16\x06" +
-	"\xa2 \xe78`\x1b\xb7\x9c\x9d\xfe)e\xc5[\xe3Q" +
-	"\xdd\x8a\xa7\x92su\xa3\x8d[Y\xc3>>\x13\xf6H" +
-	"\x8a\xdeC\xc5>ra\xcd\xde\x89\xe6gG\xfa\x06>" +
-	"/[\xe0\xdb\xb85K\x8f'\xaf\x8a\xf3n\x1f\x14\xc1" +
-	"\x0d\xaa2\x1b\x84\x17\xc5y7*\xf6\x07\x07\xdb>\xbc" +
-	"k\xef\x96\xfd}\xedKY\xec\xcfnY\xc0\xa3\xb2\xd5" +
-	"\x18\xa3+-\x90B\x85\xb6\xed\xd8\xad\x9c\x0c\xa0\x95I" +
-	"\xa8\xd50,\xc5\x936\x96\x10/(c6\x02h5" +
-	"\x12j\xdfbX\xab\xa7\xd3\xcd\xbc\x15\x07c@K\x02" +
-	"\xe0`\xd2\x1ez\x07\x9f\x99\x8av\xa0\x08S\x98\xe2\x84" +
-	"\x05\xc0\xb0\x00\xb0>\x84\x0a\xb6\xd8\xf5\xe9\xb4\xb3=\xd0" +
-	"\xfe\x03F\xc1C\xe0t=\xda\xe1\x06B\xb2N\x89\xf4" +
-	"\xe4L jM\x82\xa9\x89\xe1\x8c(\x07\xc4p\xd6P" +
-	"\xcc\xe2\x9d-\x86\x9e\xe4\x1e\xd6\xc2\x046\x07\xde\x99X" +
-	"4\\\x03\xa0]!\xa1\xd6\xc4\xb0\x88b\x11`\x14e" +
-	"\xd6r`E\xec\x84]\x82!\x00\xe5\x92\x16\x00m\x92" +
-	"\x84\xda\x15\x0cm\x8b`y\x95\x9e\x00)\x9e\xc1W\x9a" +
-	"\x1b\x9dq\xd3\x8c\xb3T\xd2\x9c\xce\x131\xe82\xb9\xd1" +
-	"h\xd6\xc7\xe4\xcex\xb2\x1f\x0aC9Php\xfa3" +
-	"/k\xaeu!q\xbaL\x1f\x1c\x92\x00\x9d[\xc9B" +
-	"%\xa7Xm\xd1\xa3\x1dm\x06\xa5j}\xd4\x8a/\x8a" +
-	"[=\"\xeb \x17\xa6\xf9\"\x9e\xb4\xb0\xd8\xfevb" +
-	"\xd5\x86\x0f\x9f~\xee!\x0at\xf1@d\xe2\x9f\x9e\x9b" +
-	"]\xf2Y\x9f>\xab\xc9n\xdd\x8a\xb6\xcfL\xb5\x91\xcd" +
-	"p\xdf\x88\x04\xa1\xd1\xae'c\x09\x8e\x8a\xfd\xee\xd4\xeb" +
-	"\xae{\xb4\xec\xe3\xbb\xfaf\x09\xebk^6S\x86\x16" +
-	"\xc2`\x87\x87\x86-\x08\x11\"\x0e\xd6\xb4QR\x1e\x80" +
-	"/MQt_\xea8l\x01\xa6V\xa2\x8c\x99\x1a\x89" +
-	"B\x9a\xab\xa5\xd8\x0cL\x1d\x822J\xbe\xd6@\xa1\x88" +
-	"\xd4A8\x03\x98\x8a(cH\x14\xbfL\xa5V>\xd9" +
-	"\x08L\xf9H\xc6<_\x8c\xa2PL\xe3\xde\x1f\x8c\xc0" +
-	"\x94C2\xe6\xfbb\x1fE\xab\xa4\xbc3\x15\x98\xf2\xa6" +
-	"\x8c\xb2/\xe3Q\xf4\xbd\xca\x8bU\xc0\x94\xad2\x16\xf8" +
-	"\x02\x16E\x07\xa5<6\x03\x98\xb2^F\xe6\x0b&\x14" +
-	"\x82[\xb9\xbb\x05\x98\xb2Z\xc6A~yD\xd1,*" +
-	"+\x96\x00S\x96\xca\xb6\xa02\x90\xe3\xbc\xbb\x0e\xed\x0e" +
-	"\xce\xd3\xf5\x89\xf8\"@^\x87\xb6\xd9\xdee\xc5R\xdd" +
-	"I\x00\xa8C[\xd4\x01\x9c\xc6\xadi\x86\x1eO\x86\xe7" +
-	"\xc4\x97\xf0\xc0\x03I<\xa0\xdf\xe7\xb7\xf3\xe4\x15\xf1\xd6" +
-	"Vn\xf0$Zu\xb8\xccCX\x1d\x86\xa9\x9a\xd6\x11" +
-	"!\xb9\xf8p\xad\x9b=\xc9\xe8\x1c\xaaN\xb2\xdeFF" +
-	"\x05\xbd@\xadK0u\xd8\x84Yy\xf9\x94t\xe9\xd4" +
-	";\xf8\xe5\xed\xf1D\xcc\xa9?eMz\x98r\x85\x98" +
-	"\xc3\x03^\x03\x01\xafNBm&C\x05=\x0am\x1c" +
-	"\x9fa\x13\x85\xb1\x12\xa7\x8c\xceZ\x00\xa0\xcd\x94Pk" +
-	"gX\x9b\xd6\x0dJ\xaa\"`X\x04\xa2l\x14g\x04" +
-	"\xa0\x97b\x86W\x1d!L\xf5\x11\xcf\x03l\x92\x10\x8b" +
-	"3\xfa\x06\x90~\xcc\x06l\xd7\x8dZ\xd7\x0fb\xbb\xd1" +
-	"\x0ez\x85\xf4A\xd1\x97\xab\x1aN\x05\xa668\xf8\x14" +
-	"\xfa\x0cE\xe7\xa9^\xe2\xa0w\x1c\x12\x06E\xc3\x87b" +
-	"0\xa1\x96\xe3\xdb\xc0\xd4r$\xc0\x08\xf9\x88B\x84\xab" +
-	"\xe7c\x150\xb5\x08\x09\xa2b \x82\xa2\xe3P\x11w" +
-	"\x0b\xe4\xfb-7\x8a\x96X\xf9\x84\x00u\x982J\x88" +
-	"J\x14M\xa3r`\x010e\x1f\x81[\xcc\x0eP4" +
-	"\xd9\xca\xae5\xc0\x94\x9d\x04n\xd1\xe0\xa2h\x94\x94m" +
-	"\xcb\x81)O\x11\x80\x85\x9cD\xd1\xe5(\x1b\x0c`\xca" +
-	"\xfd2\x9ec[\xeb^*;Y8\xfb\xa7(\xe4\xbf" +
-	"r;%\xc5-r\x06q6\xc1\x82\x10\x01\x98t\xa1" +
-	"\xe5\xe8\x05\xd6W0H\xdc\xca\xc0S\xa0\x9a\xf5\xd5=" +
-	"hz\x16\x09hP\xebB\xad\x0e\xedhB\x8fw6" +
-	"\xf3\x85\x10\xee\xe2\xa6U\x87\xb6\xe0n\x14\xe4-Y=" +
-	"u\x04\x92t\xca\xb0\xa6\x19\xe8e\x0a\xb8Gj\x8c\xf1" +
-	"\xa4\x05\x91\xb8\xd5\xd3\x18\xa3|\x88\xb6\xf3XW\x82;" +
-	"\xd9\x11\x84\xfeYT\x0a\xa1~\xce6m\x9ay\xa4_" +
-	"\x09\x0bV\x18\xa7\x8a\x8ad8#\xe3\xc2\xae\xa7\xa0\xcf" +
-	"\xcep\xd6\xea\"\x98\x8a\xfb\xa7=\xb3\x02G\xd5S:" +
-	"\x95\x12Fd\xa3\x84\x19\x00\xdat\x09\xb5X\x80\x12t" +
-	"\x92\x12\xd7I\xa8%\x18\xca\x06o\xc5\xe2\x80\xcar\x19" +
-	"@\xa0\x86TW\xce\xf4w\xd9dn\x0a\xe4\xb3\x89\xa3" +
-	"\xc0\x8d\x07\x9b\xb2\xa6\x88#\x04r\xc5\xb2\xa5\xc7\xe2&" +
-	"\x0e\x02\x86\x83\x06\x8a\xa5\xd3\xdex\xb2\"W\xe1\xcf\xee" +
-	"\xee\x97\x90\xe6B\xc6\xf86\x0arwS\xcd|Q\xca" +
-	"}yv\x8b\xc9\x8dE\xdc=3\xd5\x18z\xd4\xc1c" +
-	"dN\xee\x13\x8d\xb3\xd2\x18\xb9\xa2.\xb2\x9ar\xfa\xab" +
-	"TG\xc1&\xa2\xd6\x8d\x85\xffBa\xb6\x17D\x81\xd4" +
-	"\xdb\xb8\x9fH\xfd:\xaf\x01\xfbP_<\x16\xf8\x1eT" +
-	"R\xa1\x1b\xe5\x0ad\x1f\xff\xf532Iq\xc6e-" +
-	"\xe5]\x0e\x81_\xc9\x8c\x82r6\xb3W\xf0d\xca\xe8" +
-	"\xd4\x13\xf1%<\xe6\xe0z\x16\xb7\xf4\x98.Y\xba'" +
-	"\xf7E\x86\xce\x08\xaa}\x9b\xd4\xbe?\xd1QfU\x01" +
-	"+eN;Dr\xff\xe2\xf1\x99v\xc8\xd6\xd3\xe9\xb9" +
-	"q\xcb!Q,\xb6\x1b\x0f^?\xd1x\xe6\xda\x1fz" +
-	"\xe0\x0d\xc7\xa3\xa9dDO\xa7\x1bO\xdbjfB," +
-	"r;\x97\xcc\xb1|\xbd\x11\x80\xc7\xd4\x0c<\x96\xa5\x12" +
-	"1z\xe7\xcc\x92\xd2\x97\xcf\x02\xd9\x81\x1b3\xbc\x1b\xbb" +
-	"\x88\xa1\xb8\xb0q\x84\xf6\xd1\x12j\x93\x98[y\x12\xa9" +
-	"\xb6z\x88t\xa6\xba\x92\x96\xd8\xb0\xd6\xb4\x0c\xaew\xa2" +
-	"b\xff\xcb{\xafWvO\x9a\xbf+w?\x9a\xc1\xd0" +
-	"tJ\x1d$M\xd2$\xe5i\x05\x88\x811\x05\x04\xf2" +
-	"\x09\xb2u\xb5\xa7\xe2\x11-G\xb5g\x86\x84\xb8\xc6\x16" +
-	"\xb9\x8d\"\xb9\xdd\xf1\x00\x89\x1f1!F\xf1\xa5GQ" +
-	"H\x12\x0c\x92m\x01k\xf4p\x0du\xe8X^}\xd5" +
-	"\xbd\xbb\xc6\x0e\x7f\xf5e\xa8C\x05#Z\x88\x05~\x02" +
-	"P\xb0\x82\xce\xef\xb4\xd5\xf4\xffb\x09\x1d\xf6=E\xc8" +
-	"\x9d5\x0f\x8b\x86/\xcb\x8b\xa7\x1b\x844\xf3\x85\x8eP" +
-	" \x9c\xd3%\x16\x11\xd0\xa7\x06J\x11\xc3\x12<\x8fJ" +
-	"\xd1\x1aO\x88^\xcd\xb0\x98\x95`\x18@\x99\xd7\x0c\xa0" +
-	"\xcd\x95P\xbb\x8e\xe1\xb26:J\x00\xc4\xf1\xa4e\xa4" +
-	"b]Q\xe4\x86#*Hwd\x10\xfew\x0cXr" +
-	"O\x80\xfa\xcf\xc4\xf2rW\x02\xf70\xa4o\xb2\xb6\x84" +
-	"\xdf\xccd\x0au\xe7}\xcb\xa2\x94#\xaamar_" +
-	"+v\x07JdI\xa7(~\xd7U\xee\x0e\xa1Q\xed" +
-	"\xe6\x14\xb1\x98\x84Z\x9a\xa1\"\xb1\x12\xcc\x03P:\x97" +
-	"\x00h\x09\x09\xb5\xc5\x14o\xa9\x04\x07\x01(]\x14\xef" +
-	"\xc5\x12j7e\x89\xad\xa9/\xe23\xf5\x16\x0e\x98\xe8" +
-	"\xcf(~\xe4\xa1\x96\x1b\xf3Ln\x9c\xe1\x95\x9c\x8e\x06" +
-	"D\x0f\xe6\x87\xec\xcbrT6q\x17\x9cX\x99\xd9\x18" +
-	"*\xefLks\x98\xf8\x9f\xd8\xdb\xcd`\xf1e\x09\xc5" +
-	"\x00\xd6\xcf`Q\xbf\xd1+\xe0}Tn\xae)\x8b?" +
-	"\x89\x95\x07T|\xc1\x82\xd9\xb7\xc2\x9e>\xd4\x1e\xe3\xfa" +
-	"\xab\xcf\xcdq\x18\xa1\xd1s\xd7\xe3\x1c\x15\xce\xd2\xab\xa9" +
-	"\xf8\x00\xe5~\xb1G\xe0\xa7v\xa6\x9e\xe2l\x9c\x1a\xec" +
-	"L\xa5\x12\x94\x82\x9d\xe9\xd5\x0ck[\xc9\xbe%\xb0\xb4" +
-	"L7MJ4\x1f[\xde\xdf\xc7Cx\xf1\x15\xe9x" +
-	"?\xc8\xe5J\xaa.\xd9\xe4\x86v\xa1\x14\xc2P\x09\xe6" +
-	"\x03(o\xd2\xe9^\x93P\xfb\x9d\xc7L2\x80\xb2\x87" +
-	"j\xed\x1b\x12j\xbf\xf7r\xaa\x00@\xd9\xb7\x1b@{" +
-	"WB\xed\xff\xc8\x0f\xa9\x04\xcf\x01P\x0e]\x03\xa0\xfd" +
-	"YB\xedc\x86J^\xa8\x04\xcf\x05P>\xa22v" +
-	"DB\xed8C%\xbf\xb8\x04\x0b\x01\x94c\xe4\xf1\xc7" +
-	"\x126#CEVJ\xb0\x18@9\xb1\x1c@;." +
-	"\xe1\x9c\x02dX\x9cW\x82\x83\x01\xd4<l\x06\x98\x13" +
-	"B\x09\xe7\x14#\xc3Zgj\xe7{\x1e\xb1\xa8\xf0\xfb" +
-	"\x0e\xc7\xbc\x8b`}o\x02u,\xce|\x11\x12y\xec" +
-	"1\x15H\x81Pv\xa5\xdd\xf2\x09\x91\xb9A\xd3\xcb\x0c" +
-	"\x9e\xd4;y\x0c\x11\x18\xa2\xc3\xb0<Y\x9fH\xd4\xa3" +
-	"\xd7\x86\x81\xffD\x8fF\xa9\x1cg\xe5^\xd6\xf7&j" +
-	"\xdd\xab\xa0\\\x1a\x9a\x19|>E\xf7\xf0\x84\x84\xda/" +
-	"\xfc\xc1\xa7\xffaO\xd9:\x1eXQ\xe8\x84\xed\xc2\xe4" +
-	"~RM\xf7I\xa8=\xca\xb0(\xef\xb87\x0e\xdd@" +
-	"\xbf>,\xa1\xb6\x85aQ\xfe\x17d\xc0\xff\xe4\xa5<" +
-	"Y\x05\xac\x88}N?\xfa\x1f%\x95\xbb7\x03+\x92" +
-	"\x8e\xd1\x8f\xfe?\x86Pz\x1f\x00V\xdb\xcd[:x" +
-	"\x0f\xe4G\x1c\x96$\x92\xe3F\x92[\xee\xc4\x999\x1a" +
-	"\xb8\xd5H%-\x9e\x8c\x01\xc8a\xba [\x14A\x14" +
-	"U0\xe2H\xeb\xbe\xbf\xcfn\x95[\xb9\x91%_3" +
-	"\xcc3;\xd9\x96\x8a'\xdb\xdc\xd6\xa2\xd6\xa5\xa0\x1c\"" +
-	"eW]\xef\xcf\xf6\x97\xae8\x09\xd9?\xde\x9c\x9e>" +
-	"\xb3\xb7\xad\x03R\xe6i\x19Lt\xa1_e\x1f\x9cE" +
-	"|\x06\x0f\x19M\x19\xd4\xff\xf8\xff\x18\xe2\xef\xe9\x7f\xc4" +
-	"\xb1\xb34\x0f\x17\x05\x9a\x87q\x0f\x00h\x17\xb9\xac\xe5" +
-	"4\x0f\xdc\xb4\xe6B\xd8qJ\xe0\xde\xeb)b\xd8\xe4" +
-	"M\xdf\xe5T\xd2o-(a\xce;\xab\xd1\x82\xe8^" +
-	"\x07j\xeb\x07\x9a\xf4e\xefs\xbf\xb2\x81_\xe1\x19\x83" +
-	".\xd7\xb7\xb5\xd3\xa9\xaa,=\xf0\x8c\xc0\xb75\x9f\xd5" +
-	"\x9c\xf6\xec\x1b\xefh\x1b\x96\xdcu\xd3s\xb9\x81\xd0\xe7" +
-	";\x0c)\xbej\xf1\xad$\x954\xc3\xd3y\"\xa6\x95" +
-	"\xb85\x826[:9#\x9c\x9c\x1aA\xc1\xbd\x91\xf8" +
-	"\xfc\x06\x09\xb5\x95^\x8d jZ\xd1\x02\xa0\xdd$\xa1" +
-	"v\x1f\xc3\xa1\xb6-\xb9jl\x1dI\xb4{$\xd4\x1e" +
-	"v?pIn\xe9Y?5\xc3c}H\xbe\x9f<" +
-	"\x13\xc7\x83lh\xcaB\xbf\xcb\x9cL\xcb\xd2\x00\x0e\xf4" +
-	"\x95g\x80\xe1\xcb\x80\x13\xb2\x9c\xdf\xd1\x9c{\xc7SR" +
-	"\xac*\xf3\xdd\xcf\x07\xf2\x98\xc9\x99\xbc\x0b\xa7u\xab]" +
-	"x0p\x8f\xf7\xe5\xe6,B\x86\xfe\x7f\x00\x00\x00\xff" +
-	"\xffHR\xe5\xe5"
+	"\xfb\xee\xfd~\xf7w\x7f\xf7\x0e5\xa1p]h\\Q" +
+	"d2\xb09\x0f\xb2\xbc|\xfb\xa1\xbf\xee~d\xfb/" +
+	"?\xf8>(C\x11 $\x03L\xf8d\xe8\x0c\x84\x90" +
+	"}\xf2\xf5O\xe3{\xf6\xac\xbc\x09\x94\x11\x08\x90\x87\xf4" +
+	"\xe8\xc0\xd0\xdd\x08\xa8~2\xb4\x16\xd0\xbe\xe7\xc8\xa6_" +
+	"E\x8e\xbe\xb6\x02\x94\xa1\xcc\xae\x997):|\xbbv" +
+	"7\x00N\x18R\xda\x8cje\xa9\x0c\xa0\x96\x97\xce\x06" +
+	"\xb4_h\xf8\xc5\x9c\xd9\x7fm[\x09JDlR_" +
+	"\xca\x18\x84l\xcdz\xe5\x0f\xc7\x9f]\xbe\x12\xb4\x08\xa2" +
+	"\xbda\xc3\xc3\x07'\xe6\xdd\xf96\x0c\xc9\x97\x11`\xc2" +
+	"\xc5\xa5kh\xbb\x86R\xdan\xd1\xce\xd1\x7f\xbc\xbds" +
+	"\x95g\xc4=O\xbct0\x03Tot\x16\x84\xa7\xbc" +
+	"t\xfdE\xfb\x1fY\xe9\xba\xe2.\xb8\xbft9Yx" +
+	"\xccYP\xf7\xb3\xfd\x13en\xfd\x084\x05\xd1\xae{" +
+	"b\xc7\xf8\xcek/\xdc\x01\x0d(\xb3b\x9c\xb0\xabt" +
+	"\x04\xaa\xef8\xa7\xdeW\xda\x0d\xa0\xce\x1b\x16\xb6\xef\xe8" +
+	"m\xf8\xc3[\xda\xc8\x1f\x836\x14\xc5\xd1g\x0dsN" +
+	"u\xed0\xb2\xf9\xef\x93>\x1a\xfe\xd0\xd6[V\xf7\xb5" +
+	"\x19\x92%\x80\x09K\x87U\xa1z\xcb0\xb2\xd9;l" +
+	"\x13\xa0\xfd\xcc\xe6\xa7\xff\xb6\xb0\xe2\xd0mA'\x94\xc8" +
+	"\x12\xb2W\x1a!{\x8f\xbe\xf5\xdes\xabz~\xf4\x93" +
+	"\xe0\x82)\x91Wh\x81\xe6,\xb8\xf7;\x17\xbe\xb7o" +
+	"\xec\x17w\x04\xbd\\\x18i\xa1\x05K\x9d\x05\xbd\xff5" +
+	"v\xfb\xc4\x9a\xbc\xbb\x82\x0b\xd6E\x16\xd0\x82\x0d\xce\x02" +
+	"\xff\xaa\x14E\xca\x9c\x18P\xdd\x199\xa8\xee\x89|\x9d" +
+	"\xee9r3S\xef\x1f.\x03\xd8\x17>\xb1\xf9\xf0\xf4" +
+	"\xed\xe5k\xbd\x03Id\xaew\xf8F2w\xf7pr" +
+	"\xa9\xf0\xe9\xffx`\xf1\xfc\x07\xd7\xf63\xd70\xe2s" +
+	"U\x1b\xe1Dl\xc4\x0e\xa6N)#s\xc3\x8bb\xd3" +
+	"\xef\xc1\x9b\xd7\x05\xa0P^\xb6\x9b\xf0\xf6\x03\xf5\xe6\xe3" +
+	"W.X\xff\x9fA\xcf\xcf/\xdbL\x1bU\x96\xd1\xb9" +
+	"WG\x9a\xa7o\xfd\xed\x1d\xf7\x06\x174\x96\xfd\x80\x16" +
+	"|\xc7Y\xd0}\xd9\xfc\xef7\x15l\xb9/\x80\xe5\x9e" +
+	"2\x83l?r]r\xd2\xe6\x99\xefo\xf4b\xe28" +
+	"\xc1\xcb\xae\xa1W\x17\x96\x91\x13G?\xee\xf9\xed\xc5\xdf" +
+	"\xdb\xfe\xb8\x83C\xef\xdd\xe1\xe5\xce\xe6\xe3\xca\xc9\xf6\xa5" +
+	"\xab\x16\xaf\x9dY\xf4\xadM\xc1\xa8j\xe5S\x9d\xcd\x9d" +
+	"\x05s\x7f\xf9\xf1\xfe\x9f\xbcel\x0a8\xd6S~\x0e" +
+	"a|\xe1\x0d\x7f\xdbt\xc9\xf4w\xb7\x80rq\xe6\xc6" +
+	"\xca[\x08\xb8\xb78\xaf\xaa\x8fl\xdd\xfb\xde\xc2\xe2\xad" +
+	"A\xc7\x1e+\x7f\x80los\x16\x8c\xd8\xfc\x97\xd2\xc6" +
+	"\x13\xe7\xff<\xe0\xd8;\xe5K\xc81\xe9\x9b\xf5\x93\x97" +
+	"\xdd\xfb\xc3\xe0\x93\x9d\xe5\xcb\xe9\xc9\xcdC\xa6\x1f\xd8\xf6" +
+	"\xc4\xf7\xfe\xc7K_F\x8f\x9e*w\x80\xb4\xb3\xbc\x1b" +
+	"\xd0~\xf1\xd3k\xaf^\xff\xec\xbem\xfd\x91\xcb\x08s" +
+	"#\xafAU\x1bI\xc8\x9d5\x92\"\x94w\xde\x17[" +
+	">|\xe6\xd6\xe7\x82\x99\xb0kd\x15y\xf1\xfeH:" +
+	"\xe49\x85[,\xe5\x91\xe6\xed\xde\x02\xd7\x8d\xbc\x0a\x07" +
+	"\x99J\x05\xed\xc8\xceY\xb5\xbd\xf2\xe0\xe8\xe7\xfb\"e" +
+	"\xc2\xc2\x8a\xc1\xa8\xdeXA\x9b-\xad\x90\xd5\xa5\x15\x15" +
+	"\x00\xf6\x96=\xcf\xde\xb0\xf7\xf0\xaa\x17\xfa\xad\xee\xa2\xd5" +
+	"+*\xbe\x0e\xa0\xde^1M\xddN\x7f\xb2_Q\x0f" +
+	"\xd4\x94\\3\xe5W\x81\xf0\x1f\xab\xf89\x05\xe2\xd1\x86" +
+	"\xa3K\xaf\xef\xe5;\xb2S\xcc\xa1\x0a\x07\xca\xc7*\xc8" +
+	"\xc7e\x87\x0b\xe2G\xff\xf4o\xaf\x04\x8c\xac\x1b\xe5\xdc" +
+	"\xe1\xda\x85\xf7\\\xbaf\xda\xfd\xaf\x04\xaf\xe8\xf6Q\xce" +
+	"\xab\xebG\x91\xf7\xc3c\xf9\xed;B\xe6\xab\xd9wy" +
+	"qT\x15-\xdd5\xea\x03@;\x9d\xdc\x15\xff\xfc\xdd" +
+	"\x7f}5pgOV.\xa0\xa3\x86\xd6n\xfc\xe2\xf9" +
+	"\xfc\x03\xaf\x05c\xbc\xaer<\xc5\xf8\xa9J\xda%\x7f" +
+	"\xf7\xde\x7f,Y\xf7\xf6.PFH\x99\x00\x01N\xd8" +
+	"S\xb9\x11\xd5\xc3\x95\x14\xc1C\x95\xd3\xd4!U\x94k" +
+	"w^p\xc3\x86\xdb\xbe{\xf9\xaf\x03\xee\x9c\xa8l\xa1" +
+	"\x8d\xde\xe8hz\xe3\xf5[/{=p\x84C\x95\x0e" +
+	"\xa0\xfe\xf8\xe2\xc9\x95{_\xbesO\xe0\xc9\x1e\xf7\x9d" +
+	"to\xef\xce\x87\xff\xf9\xe8\xef\x02\xd6\xb6W:P\xfb" +
+	"\xe9\xb6\xc1\x05\xedw]\xb0\x0f\xb4\x7f\xc0\x00\xae\x86\x84" +
+	"\x1c\xdf\x1f\xabt(xk%Ex\xca[\xd3\x0ev" +
+	"\xbd0{_\xf60\xcd\xab\x1a\x81\x80\x13\xae\xad\xda\x81" +
+	"\x10x\xda\x07\xa0\xf92\xb99e\xf4\xe7j\xe3h:" +
+	"E\xc3\xe8[i\xf9\xbc\xdf,\xbd\xfa\xe5_o\xdb\xdf" +
+	"\x1f/c\x96\xa0\xda;\x86^Z1FVW\x8c!" +
+	"t}{\xcd\xd8\xdd\x17\xc8\x8b~\x1f\x0c\xf5\xd21N" +
+	"z\xac\x1eC\xa1~i\xfe\xbe\xe8\x8d\xab.}7x" +
+	"\xe3O\x8eq(c\x9b\xb3`\xe2\xd4\x86\x0f\x9b>}" +
+	"\xf0\x7f\x83\x8c\xf0\xce\x18\x87g\x0f9\x0b\xf0\xdc\xcb\xde" +
+	"\xbf\xfb\x99\xc7\xff\xe2Yp2pP\xb5S;\xce\xaf" +
+	"\xa6|\xd8}gd\xf0\xda\x8b\xff|$H\xad\xab\xab" +
+	"\x9dh\xad\xab\xde\x04x\xd2T\x1e\xff\xda\xaaCG3" +
+	"W\xd18\xf6y\x0a\xf8\x9d\x1f>6\xf7\xa3\xe8\x8f?" +
+	"\x09\x9e\xed\x92\xb1\x0ea4\x8eu(\xfe\xd9\xda\x05\x87" +
+	"G\x0f\xfa\x0c\xb4r\x0c\xd4\xa8y!\x19\x19\xe2\x84\xce" +
+	"\xb1\x84\xdc\x09K\xc7F(p\x05\xe7\x1e\x19>\xf6\xd8" +
+	"%\x9f\x05\xad\xad\xaf1\xc8\xda\x935d\xadj\xf3\xf1" +
+	"\xb7Z\xde{\xe9\x98\xe7\xa9\xe3\xc8\x9b5\xb7\xd1\x82\x03" +
+	"5\xe4\xc8\xd7\xa6\xfdi\xe4o\xf6\xfe\xf7\xe7.\xc39" +
+	"'\x9d2n\x01\x03\xdb\xfbo\x9dmv\xa5\xb9\xb1(" +
+	"n\x86RFuTO'\xd3\x93\xe7x\xbf\xa4\x8c\xea" +
+	"\x98\x91J\x975s\xb3+a\x99\x00\xfe\xda\xfc\xcc\xda" +
+	"\x1e\xd3\xe2\x9dM\xdc0\xe3\xa6\xc5\x93V\xb5\x1e\x8b5" +
+	"\xf3\x85]q\x83w\xf2\xa4ez/\xa3\xa9\x85\xa4\x10" +
+	"@\x08\x01\x94\xa2\x11\x00Z\x81\x84Z\x09C9\xaa\xa7" +
+	"Q\x09&\x0c*\x80\xa7?\xd4\xfc\xee\xee+\xe3\x09>" +
+	"\xc7\xd2\xad.4\x9b\x10\xb5Bd\x00Ji\x95\xf3\xfa" +
+	"\x90f\x00d\x8a2\x03 \xdc\x1aOp;\x167x" +
+	"\xd4J\x19\x80=v2e]\x99\xeaJ\xc6 \xe0M" +
+	"Qf\x13=\x193\xad\x94\xd1yy\xca\xe0\xd5\xa9\x16" +
+	"3\x95\xe0\x16\xbf\xbc\x9dG;Nq\xaaI7\xf4N" +
+	"\x13\xcc\xcc\x99\xdc\xf7\xeb\xd3\xf1\xb9\xa9\x0e\x9e\x9c\xdd\x9d" +
+	"\xe4Fu4\x11\xe7I\xab)\xd5\xcd\x8d\x96\xd4\xe2\xd9" +
+	"\xad\xad\x127\xdc0\x94\xa0Bqh\x06\xd0\x0a%\xd4" +
+	"\xbe\xc1\xd06\xb9i\xc6S\xc9F\xc0\x18\x16\x02\xc3\xc2" +
+	"@\x14\xe4\x1c\x07l\xe3\x96\xb3\xd3?\xa5\xacxk<" +
+	"\xaa[\xf1Tr\xaen\xb4q+k\xd8\xc7g\xc2\x1e" +
+	"I\xd1{\xa8\xd8G.\xac\xd9;\xd1\xfc\xecH\xdf\xc0" +
+	"\xe7e\x0b|\x1b\xb7f\xe9\xf1\xe4Uq\xde\xed\x83\"" +
+	"\xb8AUf\x83\xf0\xa28\xefF\xc5\xfe\xe0`\xdb\x87" +
+	"w\xed\xdd\xb2\xbf\xaf})\x8b\xfd\xd9-\x0bxT\xb6" +
+	"\x1act\xa5\x05R\xa8\xd0\xb6\x1d\xbb\x95\x93\x01\xb42" +
+	"\x09\xb5\x1a\x86\xa5x\xd2\xc6\x12\xe2\x05e\xccF\x00\xad" +
+	"FB\xed[\x0ck\xf5t\xba\x99\xb7\xe2`\x0chI" +
+	"\x00\x1cL\xdaC\xef\xe03S\xd1\x0e\x14a\x0aS\x9c" +
+	"\xb0\x00\x18\x16\x00\xd6\x87P\xc1\x16\xbb>\x9dv\xb6\x07" +
+	"\xda\x7f\xc0(x\x08\x9c\xaeG;\xdc@H\xd6)\x91" +
+	"\x9e\x9c\x09D\xadI051\x9c\x11\xe5\x80\x18\xce\x1a" +
+	"\x8aY\xbc\xb3\xc5\xd0\x93\xdc\xc3Z\x98\xc0\xe6\xc0;\x13" +
+	"\x8b\x86k\x00\xb4+$\xd4\x9a\x18\x16Q,\x02\x8c\xa2" +
+	"\xccZ\x0e\xac\x88\x9d\xb0K0\x04\xa0\\\xd2\x02\xa0M" +
+	"\x92P\xbb\x82\xa1m\x11,\xaf\xd2\x13 \xc53\xf8J" +
+	"s\xa33n\x9aq\x96J\x9a\xd3y\"\x06]&7" +
+	"\x1a\xcd\xfa\x98\xdc\x19O\xf6Ca(\x07\x0a\x0dN\x7f" +
+	"\xe6e\xcd\xb5.$N\x97\xe9\x83C\x12\xa0s+Y" +
+	"\xa8\xe4\x14\xab-z\xb4\xa3\xcd\xa0T\xad\x8fZ\xf1E" +
+	"q\xabGd\x1d\xe4\xc24_\xc4\x93\x16\x16\xdb\xdfN" +
+	"\xac\xda\xf0\xe1\xd3\xcf=D\x81.\x1e\x88L\xfc\xd3s" +
+	"\xb3K>\xeb\xd3g5\xd9\xad[\xd1\xf6\x99\xa96\xb2" +
+	"\x19\xee\x1b\x91 4\xda\xf5d,\xc1Q\xb1\xdf\x9dz" +
+	"\xddu\x8f\x96}|W\xdf,a}\xcd\xcbf\xca\xd0" +
+	"B\x18\xec\xf0\xd0\xb0\x05!B\xc4\xc1\x9a6J\xca\x03" +
+	"\xf0\xa5)\x8a\xeeK\x1d\x87-\xc0\xd4J\x941S#" +
+	"QHs\xb5\x14\x9b\x81\xa9CPF\xc9\xd7\x1a(\x14" +
+	"\x91:\x08g\x00S\x11e\x0c\x89\xe2\x97\xa9\xd4\xca'" +
+	"\x1b\x81)\x1f\xc9\x98\xe7\x8bQ\x14\x8ai\xdc\xfb\x83\x11" +
+	"\x98rH\xc6|_\xec\xa3h\x95\x94w\xa6\x02S\xde" +
+	"\x94Q\xf6e<\x8a\xbeWy\xb1\x0a\x98\xb2U\xc6\x02" +
+	"_\xc0\xa2\xe8\xa0\x94\xc7f\x00S\xd6\xcb\xc8|\xc1\x84" +
+	"Bp+w\xb7\x00SV\xcb8\xc8/\x8f(\x9aE" +
+	"e\xc5\x12`\xcaR\xd9\x16T\x06r\x9cw\xd7\xa1\xdd" +
+	"\xc1y\xba>\x11_\x04\xc8\xeb\xd06\xdb\xbb\xacX\xaa" +
+	";\x09\x00uh\x8b:\x80\xd3\xb85\xcd\xd0\xe3\xc9\xf0" +
+	"\x9c\xf8\x12\x1ex \x89\x07\xf4\xfb\xfcv\x9e\xbc\"\xde" +
+	"\xda\xca\x0d\x9eD\xab\x0e\x97y\x08\xab\xc30U\xd3:" +
+	"\"$\x17\x1f\xaeu\xb3'\x19\x9dC\xd5I\xd6\xdb\xc8" +
+	"\xa8\xa0\x17\xa8u\x09\xa6\x0e\x9b0+/\x9f\x92.\x9d" +
+	"z\x07\xbf\xbc=\x9e\x889\xf5\xa7\xacI\x0fS\xae\x10" +
+	"sx\xc0k \xe0\xd5I\xa8\xcdd\xa8\xa0G\xa1\x8d" +
+	"\xe33l\xa20V\xe2\x94\xd1Y\x0b\x00\xb4\x99\x12j" +
+	"\xed\x0ck\xd3\xbaAIU\x04\x0c\x8b@\x94\x8d\xe2\x8c" +
+	"\x00\xf4R\xcc\xf0\xaa#\x84\xa9>\xe2y\x80M\x12b" +
+	"qF\xdf\x00\xd2\x8f\xd9\x80\xed\xbaQ\xeb\xfaAl7" +
+	"\xdaA\xaf\x90>(\xfarU\xc3\xa9\xc0\xd4\x06\x07\x9f" +
+	"B\x9f\xa1\xe8<\xd5K\x1c\xf4\x8eC\xc2\xa0h\xf8P" +
+	"\x0c&\xd4r|\x1b\x98Z\x8e\x04\x18!\x1fQ\x88p" +
+	"\xf5|\xac\x02\xa6\x16!AT\x0cDPt\x1c*\xe2" +
+	"n\x81|\xbf\xe5F\xd1\x12+\x9f\x10\xa0\x0eSF\x09" +
+	"Q\x89\xa2iT\x0e,\x00\xa6\xec#p\x8b\xd9\x01\x8a" +
+	"&[\xd9\xb5\x06\x98\xb2\x93\xc0-\x1a\\\x14\x8d\x92\xb2" +
+	"m90\xe5)\x02\xb0\x90\x93(\xba\x1ce\x83\x01L" +
+	"\xb9_\xc6slk\xddKe'\x0bg\xff\x14\x85\xfc" +
+	"Wn\xa7\xa4\xb8E\xce \xce&X\x10\"\x00\x93." +
+	"\xb4\x1c\xbd\xc0\xfa\x0a\x06\x89[\x19x\x0aT\xb3\xbe\xba" +
+	"\x07M\xcf\"\x01\x0dj]\xa8\xd5\xa1\x1dM\xe8\xf1\xce" +
+	"f\xbe\x10\xc2]\xdc\xb4\xea\xd0\x16\xdc\x8d\x82\xbc%\xab" +
+	"\xa7\x8e@\x92N\x19\xd64\x03\xbdL\x01\xf7H\x8d1" +
+	"\x9e\xb4 \x12\xb7z\x1ac\x94\x0f\xd1v\x1e\xebJp" +
+	"';\x82\xd0?\x8bJ!\xd4\xcf\xd9\xa6M3\x8f\xf4" +
+	"+a\xc1\x0a\xe3TQ\x91\x0cgd\\\xd8\xf5\x14\xf4" +
+	"\xd9\x19\xceZ]\x04Sq\xff\xb4gV\xe0\xa8zJ" +
+	"\xa7R\xc2\x88l\x940\x03@\x9b.\xa1\x16\x0bP\x82" +
+	"NR\xe2:\x09\xb5\x04C\xd9\xe0\xadX\x1cPY." +
+	"\x03\x08\xd4\x90\xea\xca\x99\xfe.\x9b\xccM\x81|6q" +
+	"\x14\xb8\xf1`S\xd6\x14q\x84@\xaeX\xb6\xf4X\xdc" +
+	"\xc4A\xc0p\xd0@\xb1t\xda\x1bOV\xe4*\xfc\xd9" +
+	"\xdd\xfd\x12\xd2\\\xc8\x18\xdfFA\xeen\xaa\x99/J" +
+	"\xb9/\xcfn1\xb9\xb1\x88\xbbg\xa6\x1aC\x8f:x" +
+	"\x8c\xcc\xc9}\xa2qV\x1a#W\xd4EVSN\x7f" +
+	"\x95\xea(\xd8D\xd4\xba\xb1\xf0_(\xcc\xf6\x82(\x90" +
+	"z\x1b\xf7\x13\xa9_\xe75`\x1f\xea\x8b\xc7\x02\xdf\x83" +
+	"J*t\xa3\\\x81\xec\xe3\xbf~F&)\xce\xb8\xac" +
+	"\xa5\xbc\xcb!\xf0+\x99QP\xcef\xf6\x0a\x9eL\x19" +
+	"\x9dz\"\xbe\x84\xc7\x1c\\\xcf\xe2\x96\x1e\xd3%K\xf7" +
+	"\xe4\xbe\xc8\xd0\x19A\xb5o\x93\xda\xf7':\xca\xac*" +
+	"`\xa5\xcci\x87H\xee_<>\xd3\x0e\xd9z:=" +
+	"7n9$\x8a\xc5v\xe3\xc1\xeb'\x1a\xcf\\\xfbC" +
+	"\x0f\xbc\xe1x4\x95\x8c\xe8\xe9t\xe3i[\xcdL\x88" +
+	"En\xe7\x929\x96\xaf7\x02\xf0\x98\x9a\x81\xc7\xb2T" +
+	"\"F\xef\x9cYR\xfa\xf2Y ;pc\x86wc" +
+	"\x171\x14\x176\x8e\xd0>ZBm\x12s+O\"" +
+	"\xd5V\x0f\x91\xceTW\xd2\x12\x1b\xd6\x9a\x96\xc1\xf5N" +
+	"T\xec\x7fy\xef\xf5\xca\xeeI\xf3w\xe5\xeeG3\x18" +
+	"\x9aN\xa9\x83\xa4I\x9a\xa4<\xad\x0010\xa6\x80@" +
+	">A\xb6\xae\xf6T<\xa2\xe5\xa8\xf6\xcc\x90\x10\xd7\xd8" +
+	"\"\xb7Q$\xb7;\x1e \xf1#&\xc4(\xbe\xf4(" +
+	"\x0aI\x82A\xb2-`\x8d\x1e\xae\xa1\x0e\x1d\xcb\xab\xaf" +
+	"\xbaw\xd7\xd8\xe1\xaf\xbe\x0cu\xa8`D\x0b\xb1\xc0O" +
+	"\x00\x0aV\xd0\xf9\x9d\xb6\x9a\xfe_,\xa1\xc3\xbe\xa7\x08" +
+	"\xb9\xb3\xe6a\xd1\xf0ey\xf1t\x83\x90f\xbe\xd0\x11" +
+	"\x0a\x84s\xba\xc4\"\x02\xfa\xd4@)bX\x82\xe7Q" +
+	")Z\xe3\x09\xd1\xab\x19\x16\xb3\x12\x0c\x03(\xf3\x9a\x01" +
+	"\xb4\xb9\x12j\xd71\\\xd6FG\x09\x808\x9e\xb4\x8c" +
+	"T\xac+\x8a\xdcpD\x05\xe9\x8e\x0c\xc2\xff\x8e\x01K" +
+	"\xee\x09P\xff\x99X^\xeeJ\xe0\x1e\x86\xf4M\xd6\x96" +
+	"\xf0\x9b\x99L\xa1\xee\xbcoY\x94rD\xb5-L\xee" +
+	"k\xc5\xee@\x89,\xe9\x14\xc5\xef\xba\xca\xdd!4\xaa" +
+	"\xdd\x9c\"\x16\x93PK3T$V\x82y\x00J\xe7" +
+	"\x12\x00-!\xa1\xb6\x98\xe2-\x95\xe0 \x00\xa5\x8b\xe2" +
+	"\xbdXB\xed\xa6,\xb15\xf5E|\xa6\xde\xc2\x01\x13" +
+	"\xfd\x19\xc5\x8f<\xd4rc\x9e\xc9\x8d3\xbc\x92\xd3\xd1" +
+	"\x80\xe8\xc1\xfc\x90}Y\x8e\xca&\xee\x82\x13+3\x1b" +
+	"C\xe5\x9dim\x0e\x13\xff\x13{\xbb\x19,\xbe,\xa1" +
+	"\x18\xc0\xfa\x19,\xea7z\x05\xbc\x8f\xca\xcd5e\xf1" +
+	"'\xb1\xf2\x80\x8a/X0\xfbV\xd8\xd3\x87\xdac\\" +
+	"\x7f\xf5\xb99\x0e#4z\xeez\x9c\xa3\xc2Yz5" +
+	"\x15\x1f\xa0\xdc/\xf6\x08\xfc\xd4\xce\xd4S\x9c\x8dS\x83" +
+	"\x9d\xa9T\x82R\xb03\xbd\x9aam+\xd9\xb7\x04\x96" +
+	"\x96\xe9\xa6I\x89\xe6c\xcb\xfb\xfbx\x08/\xbe\"\x1d" +
+	"\xef\x07\xb9\\I\xd5%\x9b\xdc\xd0.\x94B\x18*\xc1" +
+	"|\x00\xe5M:\xddk\x12j\xbf\xf3\x98I\x06P\xf6" +
+	"P\xad}CB\xed\xf7^N\x15\x00(\xfbv\x03h" +
+	"\xefJ\xa8\xfd\x1f\xf9!\x95\xe09\x00\xca\xa1k\x00\xb4" +
+	"?K\xa8}\xccP\xc9\x0b\x95\xe0\xb9\x00\xcaGT\xc6" +
+	"\x8eH\xa8\x1dg\xa8\xe4\x17\x97`!\x80r\x8c<\xfe" +
+	"X\xc2fd\xa8\xc8J\x09\x16\x03('\x96\x03h\xc7" +
+	"%\x9cS\x80\x0c\x8b\xf3Jp0\x80\x9a\x87\xcd\x00s" +
+	"B(\xe1\x9cbdX\xebL\xed|\xcf#\x16\x15~" +
+	"\xdf\xe1\x98w\x11\xac\xefM\xa0\x8e\xc5\x99/B\"\x8f" +
+	"=\xa6\x02)\x10\xca\xae\xb4[>!27hz\x99" +
+	"\xc1\x93z'\x8f!\x02Ct\x18\x96'\xeb\x13\x89z" +
+	"\xf4\xda0\xf0\x9f\xe8\xd1(\x95\xe3\xac\xdc\xcb\xfa\xdeD" +
+	"\xad{\x15\x94KC3\x83\xcf\xa7\xe8\x1e\x9e\x90P\xfb" +
+	"\x85?\xf8\xf4?\xec)[\xc7\x03+\x0a\x9d\xb0]\x98" +
+	"\xdcO\xaa\xe9>\x09\xb5G\x19\x16\xe5\x1d\xf7\xc6\xa1\x1b" +
+	"\xe8\xd7\x87%\xd4\xb60,\xca\xff\x82\x0c\xf8\x9f\xbc\x94" +
+	"'\xab\x80\x15\xb1\xcf\xe9G\xff\xa3\xa4r\xf7f`E" +
+	"\xd21\xfa\xd1\xff\xc7\x10J\xef\x03\xc0j\xbbyK\x07" +
+	"\xef\x81\xfc\x88\xc3\x92Dr\xdcHr\xcb\x9d83G" +
+	"\x03\xb7\x1a\xa9\xa4\xc5\x931\x009L\x17d\x8b\"\x88" +
+	"\xa2\x0aF\x1ci\xdd\xf7\xf7\xd9\xadr+7\xb2\xe4k" +
+	"\x86yf'\xdbR\xf1d\x9b\xdbZ\xd4\xba\x14\x94C" +
+	"\xa4\xec\xaa\xeb\xfd\xd9\xfe\xd2\x15'!\xfb\xc7\x9b\xd3\xd3" +
+	"g\xf6\xb6u@\xca<-\x83\x89.\xf4\xab\xec\x83\xb3" +
+	"\x88\xcf\xe0!\xa3)\x83\xfa\x1f\xff\x1fC\xfc=\xfd\x8f" +
+	"8v\x96\xe6\xe1\xa2@\xf30\xee\x01\x00\xed\"\x97\xb5" +
+	"\x9c\xe6\x81\x9b\xd6\\\x08;N\x09\xdc{=E\x0c\x9b" +
+	"\xbc\xe9\xbb\x9cJ\xfa\xad\x05%\xccyg5Z\x10\xdd" +
+	"\xeb@m\xfd@\x93\xbe\xec}\xeeW6\xf0+<c" +
+	"\xd0\xe5\xfa\xb6v:U\x95\xa5\x07\x9e\x11\xf8\xb6\xe6\xb3" +
+	"\x9a\xd3\x9e}\xe3\x1dm\xc3\x92\xbbnz.7\x10\xfa" +
+	"|\x87!\xc5W-\xbe\x95\xa4\x92fx:O\xc4\xb4" +
+	"\x12\xb7F\xd0fK'g\x84\x93S#(\xb87\x12" +
+	"\x9f\xdf \xa1\xb6\xd2\xab\x11DM+Z\x00\xb4\x9b$" +
+	"\xd4\xeec8\xd4\xb6%W\x8d\xad#\x89v\x8f\x84\xda" +
+	"\xc3\xee\x07.\xc9-=\xeb\xa7fx\xac\x0f\xc9\xf7\x93" +
+	"g\xe2x\x90\x0dMY\xe8w\x99\x93iY\x1a\xc0\x81" +
+	"\xbe\xf2\x0c0|\x19pB\x96\xf3;\x9as\xefxJ" +
+	"\x8aUe\xbe\xfb\xf9@\x1e39\x93w\xe1\xb4n\xb5" +
+	"\x0b\x0f\x06\xee\xf1\xbe\xdc\x9cE\xc8\xd0\xff\x0f\x00\x00\xff" +
+	"\xffsR\xe5\xf3"
 
 func init() {
 	schemas.Register(schema_c7205d6d32c7b040,

@@ -5,8 +5,6 @@ import (
 	"io"
 
 	"zenhack.net/go/sandstorm/capnp/util"
-
-	"capnproto.org/go/capnp/v3/server"
 )
 
 // Pipe() is like io.Pipe(), except that the write end is a ByteStream.
@@ -17,9 +15,9 @@ import (
 //
 // If all references to the ByteStream are dropped before Done is called,
 // further reads will return io.ErrUnexpectedEOF.
-func Pipe(policy *server.Policy) (r *io.PipeReader, w util.ByteStream) {
+func Pipe() (r *io.PipeReader, w util.ByteStream) {
 	r, wServer := PipeServer()
-	return r, util.ByteStream_ServerToClient(wServer, policy)
+	return r, util.ByteStream_ServerToClient(wServer)
 }
 
 // PipeServer() is like Pipe(), except that it returns a (ByteStream) server,

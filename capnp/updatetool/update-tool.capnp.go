@@ -10,84 +10,95 @@ import (
 
 // Constants defined in update-tool.capnp.
 var (
-	UpdatePublicKeys = PublicSigningKey_List{List: capnp.MustUnmarshalRoot(x_96c3fff3f4beb8fe[0:56]).List()}
+	UpdatePublicKeys = PublicSigningKey_List(capnp.MustUnmarshalRoot(x_96c3fff3f4beb8fe[0:56]).List())
 )
 
-type PublicSigningKey struct{ capnp.Struct }
+type PublicSigningKey capnp.Struct
 
 // PublicSigningKey_TypeID is the unique identifier for the type PublicSigningKey.
 const PublicSigningKey_TypeID = 0x9b54bbec5de99f09
 
 func NewPublicSigningKey(s *capnp.Segment) (PublicSigningKey, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0})
-	return PublicSigningKey{st}, err
+	return PublicSigningKey(st), err
 }
 
 func NewRootPublicSigningKey(s *capnp.Segment) (PublicSigningKey, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0})
-	return PublicSigningKey{st}, err
+	return PublicSigningKey(st), err
 }
 
 func ReadRootPublicSigningKey(msg *capnp.Message) (PublicSigningKey, error) {
 	root, err := msg.Root()
-	return PublicSigningKey{root.Struct()}, err
+	return PublicSigningKey(root.Struct()), err
 }
 
 func (s PublicSigningKey) String() string {
-	str, _ := text.Marshal(0x9b54bbec5de99f09, s.Struct)
+	str, _ := text.Marshal(0x9b54bbec5de99f09, capnp.Struct(s))
 	return str
 }
 
+func (s PublicSigningKey) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PublicSigningKey) DecodeFromPtr(p capnp.Ptr) PublicSigningKey {
+	return PublicSigningKey(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PublicSigningKey) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PublicSigningKey) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PublicSigningKey) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PublicSigningKey) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PublicSigningKey) Key0() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s PublicSigningKey) SetKey0(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s PublicSigningKey) Key1() uint64 {
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s PublicSigningKey) SetKey1(v uint64) {
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 func (s PublicSigningKey) Key2() uint64 {
-	return s.Struct.Uint64(16)
+	return capnp.Struct(s).Uint64(16)
 }
 
 func (s PublicSigningKey) SetKey2(v uint64) {
-	s.Struct.SetUint64(16, v)
+	capnp.Struct(s).SetUint64(16, v)
 }
 
 func (s PublicSigningKey) Key3() uint64 {
-	return s.Struct.Uint64(24)
+	return capnp.Struct(s).Uint64(24)
 }
 
 func (s PublicSigningKey) SetKey3(v uint64) {
-	s.Struct.SetUint64(24, v)
+	capnp.Struct(s).SetUint64(24, v)
 }
 
 // PublicSigningKey_List is a list of PublicSigningKey.
-type PublicSigningKey_List struct{ capnp.List }
+type PublicSigningKey_List = capnp.StructList[PublicSigningKey]
 
 // NewPublicSigningKey creates a new list of PublicSigningKey.
 func NewPublicSigningKey_List(s *capnp.Segment, sz int32) (PublicSigningKey_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0}, sz)
-	return PublicSigningKey_List{l}, err
-}
-
-func (s PublicSigningKey_List) At(i int) PublicSigningKey { return PublicSigningKey{s.List.Struct(i)} }
-
-func (s PublicSigningKey_List) Set(i int, v PublicSigningKey) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PublicSigningKey_List) String() string {
-	str, _ := text.MarshalList(0x9b54bbec5de99f09, s.List)
-	return str
+	return capnp.StructList[PublicSigningKey](l), err
 }
 
 // PublicSigningKey_Future is a wrapper for a PublicSigningKey promised by a client call.
@@ -95,114 +106,127 @@ type PublicSigningKey_Future struct{ *capnp.Future }
 
 func (p PublicSigningKey_Future) Struct() (PublicSigningKey, error) {
 	s, err := p.Future.Struct()
-	return PublicSigningKey{s}, err
+	return PublicSigningKey(s), err
 }
 
-type Signature struct{ capnp.Struct }
+type Signature capnp.Struct
 
 // Signature_TypeID is the unique identifier for the type Signature.
 const Signature_TypeID = 0xc4d0558d33210637
 
 func NewSignature(s *capnp.Segment) (Signature, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 64, PointerCount: 0})
-	return Signature{st}, err
+	return Signature(st), err
 }
 
 func NewRootSignature(s *capnp.Segment) (Signature, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 64, PointerCount: 0})
-	return Signature{st}, err
+	return Signature(st), err
 }
 
 func ReadRootSignature(msg *capnp.Message) (Signature, error) {
 	root, err := msg.Root()
-	return Signature{root.Struct()}, err
+	return Signature(root.Struct()), err
 }
 
 func (s Signature) String() string {
-	str, _ := text.Marshal(0xc4d0558d33210637, s.Struct)
+	str, _ := text.Marshal(0xc4d0558d33210637, capnp.Struct(s))
 	return str
 }
 
+func (s Signature) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Signature) DecodeFromPtr(p capnp.Ptr) Signature {
+	return Signature(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Signature) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Signature) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Signature) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Signature) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Signature) Sig0() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s Signature) SetSig0(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s Signature) Sig1() uint64 {
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s Signature) SetSig1(v uint64) {
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 func (s Signature) Sig2() uint64 {
-	return s.Struct.Uint64(16)
+	return capnp.Struct(s).Uint64(16)
 }
 
 func (s Signature) SetSig2(v uint64) {
-	s.Struct.SetUint64(16, v)
+	capnp.Struct(s).SetUint64(16, v)
 }
 
 func (s Signature) Sig3() uint64 {
-	return s.Struct.Uint64(24)
+	return capnp.Struct(s).Uint64(24)
 }
 
 func (s Signature) SetSig3(v uint64) {
-	s.Struct.SetUint64(24, v)
+	capnp.Struct(s).SetUint64(24, v)
 }
 
 func (s Signature) Sig4() uint64 {
-	return s.Struct.Uint64(32)
+	return capnp.Struct(s).Uint64(32)
 }
 
 func (s Signature) SetSig4(v uint64) {
-	s.Struct.SetUint64(32, v)
+	capnp.Struct(s).SetUint64(32, v)
 }
 
 func (s Signature) Sig5() uint64 {
-	return s.Struct.Uint64(40)
+	return capnp.Struct(s).Uint64(40)
 }
 
 func (s Signature) SetSig5(v uint64) {
-	s.Struct.SetUint64(40, v)
+	capnp.Struct(s).SetUint64(40, v)
 }
 
 func (s Signature) Sig6() uint64 {
-	return s.Struct.Uint64(48)
+	return capnp.Struct(s).Uint64(48)
 }
 
 func (s Signature) SetSig6(v uint64) {
-	s.Struct.SetUint64(48, v)
+	capnp.Struct(s).SetUint64(48, v)
 }
 
 func (s Signature) Sig7() uint64 {
-	return s.Struct.Uint64(56)
+	return capnp.Struct(s).Uint64(56)
 }
 
 func (s Signature) SetSig7(v uint64) {
-	s.Struct.SetUint64(56, v)
+	capnp.Struct(s).SetUint64(56, v)
 }
 
 // Signature_List is a list of Signature.
-type Signature_List struct{ capnp.List }
+type Signature_List = capnp.StructList[Signature]
 
 // NewSignature creates a new list of Signature.
 func NewSignature_List(s *capnp.Segment, sz int32) (Signature_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 64, PointerCount: 0}, sz)
-	return Signature_List{l}, err
-}
-
-func (s Signature_List) At(i int) Signature { return Signature{s.List.Struct(i)} }
-
-func (s Signature_List) Set(i int, v Signature) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Signature_List) String() string {
-	str, _ := text.MarshalList(0xc4d0558d33210637, s.List)
-	return str
+	return capnp.StructList[Signature](l), err
 }
 
 // Signature_Future is a wrapper for a Signature promised by a client call.
@@ -210,76 +234,87 @@ type Signature_Future struct{ *capnp.Future }
 
 func (p Signature_Future) Struct() (Signature, error) {
 	s, err := p.Future.Struct()
-	return Signature{s}, err
+	return Signature(s), err
 }
 
-type UpdateSignature struct{ capnp.Struct }
+type UpdateSignature capnp.Struct
 
 // UpdateSignature_TypeID is the unique identifier for the type UpdateSignature.
 const UpdateSignature_TypeID = 0x9c805f76ef46e6c0
 
 func NewUpdateSignature(s *capnp.Segment) (UpdateSignature, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return UpdateSignature{st}, err
+	return UpdateSignature(st), err
 }
 
 func NewRootUpdateSignature(s *capnp.Segment) (UpdateSignature, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return UpdateSignature{st}, err
+	return UpdateSignature(st), err
 }
 
 func ReadRootUpdateSignature(msg *capnp.Message) (UpdateSignature, error) {
 	root, err := msg.Root()
-	return UpdateSignature{root.Struct()}, err
+	return UpdateSignature(root.Struct()), err
 }
 
 func (s UpdateSignature) String() string {
-	str, _ := text.Marshal(0x9c805f76ef46e6c0, s.Struct)
+	str, _ := text.Marshal(0x9c805f76ef46e6c0, capnp.Struct(s))
 	return str
 }
 
+func (s UpdateSignature) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (UpdateSignature) DecodeFromPtr(p capnp.Ptr) UpdateSignature {
+	return UpdateSignature(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s UpdateSignature) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s UpdateSignature) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s UpdateSignature) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s UpdateSignature) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s UpdateSignature) Signatures() (Signature_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return Signature_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return Signature_List(p.List()), err
 }
 
 func (s UpdateSignature) HasSignatures() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s UpdateSignature) SetSignatures(v Signature_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewSignatures sets the signatures field to a newly
 // allocated Signature_List, preferring placement in s's segment.
 func (s UpdateSignature) NewSignatures(n int32) (Signature_List, error) {
-	l, err := NewSignature_List(s.Struct.Segment(), n)
+	l, err := NewSignature_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Signature_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // UpdateSignature_List is a list of UpdateSignature.
-type UpdateSignature_List struct{ capnp.List }
+type UpdateSignature_List = capnp.StructList[UpdateSignature]
 
 // NewUpdateSignature creates a new list of UpdateSignature.
 func NewUpdateSignature_List(s *capnp.Segment, sz int32) (UpdateSignature_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return UpdateSignature_List{l}, err
-}
-
-func (s UpdateSignature_List) At(i int) UpdateSignature { return UpdateSignature{s.List.Struct(i)} }
-
-func (s UpdateSignature_List) Set(i int, v UpdateSignature) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s UpdateSignature_List) String() string {
-	str, _ := text.MarshalList(0x9c805f76ef46e6c0, s.List)
-	return str
+	return capnp.StructList[UpdateSignature](l), err
 }
 
 // UpdateSignature_Future is a wrapper for a UpdateSignature promised by a client call.
@@ -287,44 +322,44 @@ type UpdateSignature_Future struct{ *capnp.Future }
 
 func (p UpdateSignature_Future) Struct() (UpdateSignature, error) {
 	s, err := p.Future.Struct()
-	return UpdateSignature{s}, err
+	return UpdateSignature(s), err
 }
 
-const schema_96c3fff3f4beb8fe = "x\xda|\x93OH\x14Q\x1c\xc7\x7f\xdf\xf7{\xb3\xab" +
-	"P\xe9\xdb\x99K\x9e\xec\x94\x04\x86:\x95\xd0\xa5?\x87" +
-	".^\xf6a^\xa4\xc8M\xa7u\xc8tpv\x13\x09" +
+const schema_96c3fff3f4beb8fe = "x\xda|\x93OH\x14Q\x1c\xc7\x7f\xdf\xf7{\xbb\xab" +
+	"\x90\xe9\xdb\x99K\x9e\xec\x94\x04\x86:\x95\xd0\xa5?\x87" +
+	".^\xf6a^\xa4\xc8M\xc7u\xc8tpv\x13\x09" +
 	"\"\xe9\x9aA\x97(\xfaG\x97\xa0C\x87\xa0C\x91H" +
-	"\x91\x10\x81\x95A\x81\x91\x91\x89\x96\x82R\x94\xb7\xa0\x89" +
-	"\xb7[\xbb/\x88\x8e\x9f\x0f\xbf\xf9\xbd\xef|\xe7MK" +
-	"\x1f\xf6\x8aVg\x84\x89t\x93\x93Jjo\xac\x1c^" +
-	"}x\xf0\x0a\xe9\x0cd\xf2\xf3\xfe\xe4\xfa\xf7\xe4\xc9E" +
-	"\x92i\"\xff&\x1a\xe0\xdeE\x9a\xc8\xbd\x83\xcf\x84\xe4" +
-	"\xd1\xa7\x03_N\x1e9s\x95T\x06\xd5Y\xc7L\xf8" +
-	"c\"\x03\xf7\x820\xc3\xe3b\x0f!iOm\xf1\xc7" +
-	"\xbbf\xa6\xcc\xe6\x9a\xbf7\xbb\x8f\xc5\x82\xfb\xdc\xcc\xfa" +
-	"\xcf\xc4S\x10\x92\x1f\xe7{\x96&\x1a\x1f|#\x95\xb1" +
-	"R\x10\xfcq\xd9\x00\xf7\x9ay\xa8\xf3\x92dt\xde\x93" +
-	"\x02\xb4?)F}\xb9B\xd0\\\xe0\xa1\xa1\x81\xed\xbd" +
-	"\xb9h0\xda\x9d-\x1e\x1d\x08{;\xc3\xfc`8\x98" +
-	"\xef\xe0`4\x0b\xe8z\x96D\x12D*\xb7\x8dH\x1f" +
-	"b\xe8~\x01\x05x020\xb2\x87\xa1\x07\x04\x94\x10" +
-	"\x1e\x04\x91\x0a\x8d\xecc\xe8H@1{`\"u\xc2" +
-	"\xc8~\x86.\x08\xd4\x1d\x0fF[PK\x02\xb5T\x82" +
-	"V\x1b\xdal\xf0\xff\xc0\xbf\x12w\x95\x94I\x9c+\x14" +
-	"\x87\x11\x98\xc0\xb2\x12xc7\x91\xde\xc0\xd0M\x02I" +
-	"\xfc{\x888\x88\xb1\x89\x90e\xa0\xbeZ1\xc1\xc8\xca" +
-	"\x19\xa2zFy{\xba8\\\xda\xdeX\xd9\xfe\xca\xbc" +
-	"\xcf4C\xcfZu\xbc1r\x86\xa1\xe7\xac:\xde\x1a" +
-	"\xf9\x9a\xa1\xe7\xad:\xde\x1b9\xcb\xd0\x8b\x02JJ\x0f" +
-	"\x92H}4r\x8e\xa1\x97\x05\x94\xe3xp\x88\xd4\x92" +
-	"\x91\xf3\x0c\xbd*\xa0R)\x0f)\"\xb5b\xe4\"C" +
-	"\x7f\x15P\xe9\xb4gn\x90Z3r\x99\xa1\xd7\x05\xea" +
-	"\xe20_\xad8\x0e\xf3\xad6\xb4\xd9\xe0\xdb\xb0\xc3\x86" +
-	"\x9d6\xec\xb2\xa1\xfd\x7f\x9f\xa5\xac\xca\xd7\xa9#\xe0\xd1" +
-	"8\x0bT;\xaf\xfc0\xa5\xceIa\xab\x922\x19\xb9" +
-	"}j\xf8\xfa\xe5\xe6n\xee}y.\x9a\xbf\xf5\xe2\xec" +
-	"\xc4\xe6\xc9\xa9\xb5\xe9\xe8\xc3\xb1x\xdf\xbb\x85\xd35c" +
-	"\xbf\x02\x00\x00\xff\xffZ\x94\xdd\x02"
+	"\x91\x10\x81\x95A\x81\x91\xd1&Z\x0aJQ\xde\x82&" +
+	"\xden\xed\xbe :~>\xfc\xe6\xf7\xbe\xf3\x9d7\xad" +
+	"\x03\xd8'\xdb\xea\xc6\x98\x84nN$\xe3\xda\x1b\xabG" +
+	"\xd6\x1e\x1e\xbaB:\x0d\x19\xff\xbc?\xbd\xf1=~r" +
+	"\x91d\x8a\xc8\xbb\x89F8w\x91\"r\xee\xe03!" +
+	"~\xf4\xe9\xe0\x97\x93G\xcf\\%\x95Fu6a&" +
+	"\xbc\x09\x91\x86sA\x98\xe1I\xb1\x97\x10w$\xb7z" +
+	"\x93\xdds3fs\xcd\xdf\x9b\x9d\xc7b\xd1ynf" +
+	"\xbdg\xe2)\x08\xf1\x8f\xf3\xbd\xcbSM\x0f\xbe\x91J" +
+	"[)\x08\xde\xa4l\x84s\xcd<\xd4uI2\xba\xee" +
+	"I\x01:\x10\x17\xc2\xfel\xdeo\xc9\xf3\xc8\xc8\xd0\x8e" +
+	"\xbel8\x1c\xee\xc9\x14\x8e\x0d\x05}]An8\x18" +
+	"\xceu\xb2?\x9e\x01t\x03K\"\x09\"\x95\xddN\xa4" +
+	"\x0f3\xf4\xa0\x80\x02\\\x18\xe9\x1b\xd9\xcb\xd0C\x02J" +
+	"\x08\x17\x82H\x05F\xf63t(\xa0\x98]0\x91:" +
+	"a\xe4 C\xe7\x05\xea\x8f\xfb\xe3\xad\xa8%\x81Z*" +
+	"A\x9b\x0d\xed6x\x7f\xe0_\x89\xbbK\xca$\xce\xe6" +
+	"\x0b\xa3\xf0M`Y\x09\\\xd7C\xa471t\xb3@" +
+	"\x1c\xfd\x1e\"\xf6#l&d\x18h\xa8VL0\xb2" +
+	"r\x86\xa8\x9eQ\xde\x9e*\x8c\x96\xb67U\xb6\xbf2" +
+	"\xef3\xcb\xd0\xf3V\x1do\x8c\x9cc\xe8\x05\xab\x8e\xb7" +
+	"F\xbef\xe8\xa2U\xc7{#\xe7\x19zI@I\xe9" +
+	"B\x12\xa9\x8fF.0\xf4\x8a\x80J$\\$\x88\xd4" +
+	"\xb2\x91E\x86^\x13P\xc9\xa4\x8b$\x91Z5r\x89" +
+	"\xa1\xbf\x0a\xa8T\xca57H\xad\x1b\xb9\xc2\xd0\x1b\x02" +
+	"\xf5Q\x90\xabV\x1c\x05\xb96\x1b\xdam\xf0l\xd8i" +
+	"\xc3.\x1bv\xdb\xd0\xf1\xbf\xcfRV\xe5\xeb\xd4\xe9\xf3" +
+	"x\x94\x01\xaa\x9dW~\x98R\xe7\xa4\xb0MI\x19\x8f" +
+	"\xdd>5z\xfdrK\x0f\xf7\xbd<\x17\x16o\xbd8" +
+	";\xb5ezf}6\xfc0\x10\xed\x7f\xb7x\xbaf" +
+	"\xe2W\x00\x00\x00\xff\xff\x8a\xd6\xdd\x10"
 
 func init() {
 	schemas.Register(schema_96c3fff3f4beb8fe,

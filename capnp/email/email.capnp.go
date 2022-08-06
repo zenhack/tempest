@@ -11,83 +11,96 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type EmailAddress struct{ capnp.Struct }
+type EmailAddress capnp.Struct
 
 // EmailAddress_TypeID is the unique identifier for the type EmailAddress.
 const EmailAddress_TypeID = 0xacaddcee86563ee1
 
 func NewEmailAddress(s *capnp.Segment) (EmailAddress, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailAddress{st}, err
+	return EmailAddress(st), err
 }
 
 func NewRootEmailAddress(s *capnp.Segment) (EmailAddress, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailAddress{st}, err
+	return EmailAddress(st), err
 }
 
 func ReadRootEmailAddress(msg *capnp.Message) (EmailAddress, error) {
 	root, err := msg.Root()
-	return EmailAddress{root.Struct()}, err
+	return EmailAddress(root.Struct()), err
 }
 
 func (s EmailAddress) String() string {
-	str, _ := text.Marshal(0xacaddcee86563ee1, s.Struct)
+	str, _ := text.Marshal(0xacaddcee86563ee1, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAddress) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAddress) DecodeFromPtr(p capnp.Ptr) EmailAddress {
+	return EmailAddress(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAddress) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAddress) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAddress) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAddress) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailAddress) Address() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s EmailAddress) HasAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailAddress) AddressBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s EmailAddress) SetAddress(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s EmailAddress) Name() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s EmailAddress) HasName() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s EmailAddress) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s EmailAddress) SetName(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 // EmailAddress_List is a list of EmailAddress.
-type EmailAddress_List struct{ capnp.List }
+type EmailAddress_List = capnp.StructList[EmailAddress]
 
 // NewEmailAddress creates a new list of EmailAddress.
 func NewEmailAddress_List(s *capnp.Segment, sz int32) (EmailAddress_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return EmailAddress_List{l}, err
-}
-
-func (s EmailAddress_List) At(i int) EmailAddress { return EmailAddress{s.List.Struct(i)} }
-
-func (s EmailAddress_List) Set(i int, v EmailAddress) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s EmailAddress_List) String() string {
-	str, _ := text.MarshalList(0xacaddcee86563ee1, s.List)
-	return str
+	return capnp.StructList[EmailAddress](l), err
 }
 
 // EmailAddress_Future is a wrapper for a EmailAddress promised by a client call.
@@ -95,119 +108,130 @@ type EmailAddress_Future struct{ *capnp.Future }
 
 func (p EmailAddress_Future) Struct() (EmailAddress, error) {
 	s, err := p.Future.Struct()
-	return EmailAddress{s}, err
+	return EmailAddress(s), err
 }
 
-type EmailAttachment struct{ capnp.Struct }
+type EmailAttachment capnp.Struct
 
 // EmailAttachment_TypeID is the unique identifier for the type EmailAttachment.
 const EmailAttachment_TypeID = 0xb309c51a9d28244f
 
 func NewEmailAttachment(s *capnp.Segment) (EmailAttachment, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return EmailAttachment{st}, err
+	return EmailAttachment(st), err
 }
 
 func NewRootEmailAttachment(s *capnp.Segment) (EmailAttachment, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return EmailAttachment{st}, err
+	return EmailAttachment(st), err
 }
 
 func ReadRootEmailAttachment(msg *capnp.Message) (EmailAttachment, error) {
 	root, err := msg.Root()
-	return EmailAttachment{root.Struct()}, err
+	return EmailAttachment(root.Struct()), err
 }
 
 func (s EmailAttachment) String() string {
-	str, _ := text.Marshal(0xb309c51a9d28244f, s.Struct)
+	str, _ := text.Marshal(0xb309c51a9d28244f, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAttachment) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAttachment) DecodeFromPtr(p capnp.Ptr) EmailAttachment {
+	return EmailAttachment(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAttachment) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAttachment) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAttachment) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAttachment) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailAttachment) ContentType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s EmailAttachment) HasContentType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailAttachment) ContentTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s EmailAttachment) SetContentType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s EmailAttachment) ContentDisposition() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s EmailAttachment) HasContentDisposition() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s EmailAttachment) ContentDispositionBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s EmailAttachment) SetContentDisposition(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s EmailAttachment) ContentId() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s EmailAttachment) HasContentId() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s EmailAttachment) ContentIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s EmailAttachment) SetContentId(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s EmailAttachment) Content() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return []byte(p.Data()), err
 }
 
 func (s EmailAttachment) HasContent() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s EmailAttachment) SetContent(v []byte) error {
-	return s.Struct.SetData(3, v)
+	return capnp.Struct(s).SetData(3, v)
 }
 
 // EmailAttachment_List is a list of EmailAttachment.
-type EmailAttachment_List struct{ capnp.List }
+type EmailAttachment_List = capnp.StructList[EmailAttachment]
 
 // NewEmailAttachment creates a new list of EmailAttachment.
 func NewEmailAttachment_List(s *capnp.Segment, sz int32) (EmailAttachment_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return EmailAttachment_List{l}, err
-}
-
-func (s EmailAttachment_List) At(i int) EmailAttachment { return EmailAttachment{s.List.Struct(i)} }
-
-func (s EmailAttachment_List) Set(i int, v EmailAttachment) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailAttachment_List) String() string {
-	str, _ := text.MarshalList(0xb309c51a9d28244f, s.List)
-	return str
+	return capnp.StructList[EmailAttachment](l), err
 }
 
 // EmailAttachment_Future is a wrapper for a EmailAttachment promised by a client call.
@@ -215,322 +239,335 @@ type EmailAttachment_Future struct{ *capnp.Future }
 
 func (p EmailAttachment_Future) Struct() (EmailAttachment, error) {
 	s, err := p.Future.Struct()
-	return EmailAttachment{s}, err
+	return EmailAttachment(s), err
 }
 
-type EmailMessage struct{ capnp.Struct }
+type EmailMessage capnp.Struct
 
 // EmailMessage_TypeID is the unique identifier for the type EmailMessage.
 const EmailMessage_TypeID = 0xcff459e769562d2f
 
 func NewEmailMessage(s *capnp.Segment) (EmailMessage, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 12})
-	return EmailMessage{st}, err
+	return EmailMessage(st), err
 }
 
 func NewRootEmailMessage(s *capnp.Segment) (EmailMessage, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 12})
-	return EmailMessage{st}, err
+	return EmailMessage(st), err
 }
 
 func ReadRootEmailMessage(msg *capnp.Message) (EmailMessage, error) {
 	root, err := msg.Root()
-	return EmailMessage{root.Struct()}, err
+	return EmailMessage(root.Struct()), err
 }
 
 func (s EmailMessage) String() string {
-	str, _ := text.Marshal(0xcff459e769562d2f, s.Struct)
+	str, _ := text.Marshal(0xcff459e769562d2f, capnp.Struct(s))
 	return str
 }
 
+func (s EmailMessage) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailMessage) DecodeFromPtr(p capnp.Ptr) EmailMessage {
+	return EmailMessage(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailMessage) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailMessage) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailMessage) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailMessage) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailMessage) Date() int64 {
-	return int64(s.Struct.Uint64(0))
+	return int64(capnp.Struct(s).Uint64(0))
 }
 
 func (s EmailMessage) SetDate(v int64) {
-	s.Struct.SetUint64(0, uint64(v))
+	capnp.Struct(s).SetUint64(0, uint64(v))
 }
 
 func (s EmailMessage) From() (EmailAddress, error) {
-	p, err := s.Struct.Ptr(0)
-	return EmailAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return EmailAddress(p.Struct()), err
 }
 
 func (s EmailMessage) HasFrom() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailMessage) SetFrom(v EmailAddress) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewFrom sets the from field to a newly
 // allocated EmailAddress struct, preferring placement in s's segment.
 func (s EmailMessage) NewFrom() (EmailAddress, error) {
-	ss, err := NewEmailAddress(s.Struct.Segment())
+	ss, err := NewEmailAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailAddress{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s EmailMessage) To() (EmailAddress_List, error) {
-	p, err := s.Struct.Ptr(1)
-	return EmailAddress_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return EmailAddress_List(p.List()), err
 }
 
 func (s EmailMessage) HasTo() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s EmailMessage) SetTo(v EmailAddress_List) error {
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewTo sets the to field to a newly
 // allocated EmailAddress_List, preferring placement in s's segment.
 func (s EmailMessage) NewTo(n int32) (EmailAddress_List, error) {
-	l, err := NewEmailAddress_List(s.Struct.Segment(), n)
+	l, err := NewEmailAddress_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return EmailAddress_List{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 func (s EmailMessage) Cc() (EmailAddress_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return EmailAddress_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return EmailAddress_List(p.List()), err
 }
 
 func (s EmailMessage) HasCc() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s EmailMessage) SetCc(v EmailAddress_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewCc sets the cc field to a newly
 // allocated EmailAddress_List, preferring placement in s's segment.
 func (s EmailMessage) NewCc(n int32) (EmailAddress_List, error) {
-	l, err := NewEmailAddress_List(s.Struct.Segment(), n)
+	l, err := NewEmailAddress_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return EmailAddress_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s EmailMessage) Bcc() (EmailAddress_List, error) {
-	p, err := s.Struct.Ptr(3)
-	return EmailAddress_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return EmailAddress_List(p.List()), err
 }
 
 func (s EmailMessage) HasBcc() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s EmailMessage) SetBcc(v EmailAddress_List) error {
-	return s.Struct.SetPtr(3, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(3, v.ToPtr())
 }
 
 // NewBcc sets the bcc field to a newly
 // allocated EmailAddress_List, preferring placement in s's segment.
 func (s EmailMessage) NewBcc(n int32) (EmailAddress_List, error) {
-	l, err := NewEmailAddress_List(s.Struct.Segment(), n)
+	l, err := NewEmailAddress_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return EmailAddress_List{}, err
 	}
-	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
 	return l, err
 }
 
 func (s EmailMessage) ReplyTo() (EmailAddress, error) {
-	p, err := s.Struct.Ptr(4)
-	return EmailAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return EmailAddress(p.Struct()), err
 }
 
 func (s EmailMessage) HasReplyTo() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s EmailMessage) SetReplyTo(v EmailAddress) error {
-	return s.Struct.SetPtr(4, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(4, capnp.Struct(v).ToPtr())
 }
 
 // NewReplyTo sets the replyTo field to a newly
 // allocated EmailAddress struct, preferring placement in s's segment.
 func (s EmailMessage) NewReplyTo() (EmailAddress, error) {
-	ss, err := NewEmailAddress(s.Struct.Segment())
+	ss, err := NewEmailAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailAddress{}, err
 	}
-	err = s.Struct.SetPtr(4, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s EmailMessage) MessageId() (string, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.Text(), err
 }
 
 func (s EmailMessage) HasMessageId() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s EmailMessage) MessageIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.TextBytes(), err
 }
 
 func (s EmailMessage) SetMessageId(v string) error {
-	return s.Struct.SetText(5, v)
+	return capnp.Struct(s).SetText(5, v)
 }
 
 func (s EmailMessage) References() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(6)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(6)
+	return capnp.TextList(p.List()), err
 }
 
 func (s EmailMessage) HasReferences() bool {
-	return s.Struct.HasPtr(6)
+	return capnp.Struct(s).HasPtr(6)
 }
 
 func (s EmailMessage) SetReferences(v capnp.TextList) error {
-	return s.Struct.SetPtr(6, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(6, v.ToPtr())
 }
 
 // NewReferences sets the references field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s EmailMessage) NewReferences(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(6, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(6, l.ToPtr())
 	return l, err
 }
 
 func (s EmailMessage) InReplyTo() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(7)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(7)
+	return capnp.TextList(p.List()), err
 }
 
 func (s EmailMessage) HasInReplyTo() bool {
-	return s.Struct.HasPtr(7)
+	return capnp.Struct(s).HasPtr(7)
 }
 
 func (s EmailMessage) SetInReplyTo(v capnp.TextList) error {
-	return s.Struct.SetPtr(7, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(7, v.ToPtr())
 }
 
 // NewInReplyTo sets the inReplyTo field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s EmailMessage) NewInReplyTo(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(7, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(7, l.ToPtr())
 	return l, err
 }
 
 func (s EmailMessage) Subject() (string, error) {
-	p, err := s.Struct.Ptr(8)
+	p, err := capnp.Struct(s).Ptr(8)
 	return p.Text(), err
 }
 
 func (s EmailMessage) HasSubject() bool {
-	return s.Struct.HasPtr(8)
+	return capnp.Struct(s).HasPtr(8)
 }
 
 func (s EmailMessage) SubjectBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(8)
+	p, err := capnp.Struct(s).Ptr(8)
 	return p.TextBytes(), err
 }
 
 func (s EmailMessage) SetSubject(v string) error {
-	return s.Struct.SetText(8, v)
+	return capnp.Struct(s).SetText(8, v)
 }
 
 func (s EmailMessage) Text() (string, error) {
-	p, err := s.Struct.Ptr(9)
+	p, err := capnp.Struct(s).Ptr(9)
 	return p.Text(), err
 }
 
 func (s EmailMessage) HasText() bool {
-	return s.Struct.HasPtr(9)
+	return capnp.Struct(s).HasPtr(9)
 }
 
 func (s EmailMessage) TextBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(9)
+	p, err := capnp.Struct(s).Ptr(9)
 	return p.TextBytes(), err
 }
 
 func (s EmailMessage) SetText(v string) error {
-	return s.Struct.SetText(9, v)
+	return capnp.Struct(s).SetText(9, v)
 }
 
 func (s EmailMessage) Html() (string, error) {
-	p, err := s.Struct.Ptr(10)
+	p, err := capnp.Struct(s).Ptr(10)
 	return p.Text(), err
 }
 
 func (s EmailMessage) HasHtml() bool {
-	return s.Struct.HasPtr(10)
+	return capnp.Struct(s).HasPtr(10)
 }
 
 func (s EmailMessage) HtmlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(10)
+	p, err := capnp.Struct(s).Ptr(10)
 	return p.TextBytes(), err
 }
 
 func (s EmailMessage) SetHtml(v string) error {
-	return s.Struct.SetText(10, v)
+	return capnp.Struct(s).SetText(10, v)
 }
 
 func (s EmailMessage) Attachments() (EmailAttachment_List, error) {
-	p, err := s.Struct.Ptr(11)
-	return EmailAttachment_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(11)
+	return EmailAttachment_List(p.List()), err
 }
 
 func (s EmailMessage) HasAttachments() bool {
-	return s.Struct.HasPtr(11)
+	return capnp.Struct(s).HasPtr(11)
 }
 
 func (s EmailMessage) SetAttachments(v EmailAttachment_List) error {
-	return s.Struct.SetPtr(11, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(11, v.ToPtr())
 }
 
 // NewAttachments sets the attachments field to a newly
 // allocated EmailAttachment_List, preferring placement in s's segment.
 func (s EmailMessage) NewAttachments(n int32) (EmailAttachment_List, error) {
-	l, err := NewEmailAttachment_List(s.Struct.Segment(), n)
+	l, err := NewEmailAttachment_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return EmailAttachment_List{}, err
 	}
-	err = s.Struct.SetPtr(11, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(11, l.ToPtr())
 	return l, err
 }
 
 // EmailMessage_List is a list of EmailMessage.
-type EmailMessage_List struct{ capnp.List }
+type EmailMessage_List = capnp.StructList[EmailMessage]
 
 // NewEmailMessage creates a new list of EmailMessage.
 func NewEmailMessage_List(s *capnp.Segment, sz int32) (EmailMessage_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 12}, sz)
-	return EmailMessage_List{l}, err
-}
-
-func (s EmailMessage_List) At(i int) EmailMessage { return EmailMessage{s.List.Struct(i)} }
-
-func (s EmailMessage_List) Set(i int, v EmailMessage) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s EmailMessage_List) String() string {
-	str, _ := text.MarshalList(0xcff459e769562d2f, s.List)
-	return str
+	return capnp.StructList[EmailMessage](l), err
 }
 
 // EmailMessage_Future is a wrapper for a EmailMessage promised by a client call.
@@ -538,7 +575,7 @@ type EmailMessage_Future struct{ *capnp.Future }
 
 func (p EmailMessage_Future) Struct() (EmailMessage, error) {
 	s, err := p.Future.Struct()
-	return EmailMessage{s}, err
+	return EmailMessage(s), err
 }
 
 func (p EmailMessage_Future) From() EmailAddress_Future {
@@ -549,7 +586,7 @@ func (p EmailMessage_Future) ReplyTo() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(4, nil)}
 }
 
-type EmailSendPort struct{ Client *capnp.Client }
+type EmailSendPort capnp.Client
 
 // EmailSendPort_TypeID is the unique identifier for the type EmailSendPort.
 const EmailSendPort_TypeID = 0xec831dbf4cc9bcca
@@ -565,9 +602,9 @@ func (c EmailSendPort) Send(ctx context.Context, params func(EmailSendPort_send_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
 func (c EmailSendPort) HintAddress(ctx context.Context, params func(EmailSendPort_hintAddress_Params) error) (EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
@@ -581,20 +618,30 @@ func (c EmailSendPort) HintAddress(ctx context.Context, params func(EmailSendPor
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_hintAddress_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
 func (c EmailSendPort) AddRef() EmailSendPort {
-	return EmailSendPort{
-		Client: c.Client.AddRef(),
-	}
+	return EmailSendPort(capnp.Client(c).AddRef())
 }
 
 func (c EmailSendPort) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c EmailSendPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort) DecodeFromPtr(p capnp.Ptr) EmailSendPort {
+	return EmailSendPort(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c EmailSendPort) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A EmailSendPort_Server is a EmailSendPort with a local implementation.
@@ -605,15 +652,15 @@ type EmailSendPort_Server interface {
 }
 
 // EmailSendPort_NewServer creates a new Server from an implementation of EmailSendPort_Server.
-func EmailSendPort_NewServer(s EmailSendPort_Server, policy *server.Policy) *server.Server {
+func EmailSendPort_NewServer(s EmailSendPort_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(EmailSendPort_Methods(nil, s), s, c, policy)
+	return server.New(EmailSendPort_Methods(nil, s), s, c)
 }
 
 // EmailSendPort_ServerToClient creates a new Client from an implementation of EmailSendPort_Server.
 // The caller is responsible for calling Release on the returned Client.
-func EmailSendPort_ServerToClient(s EmailSendPort_Server, policy *server.Policy) EmailSendPort {
-	return EmailSendPort{Client: capnp.NewClient(EmailSendPort_NewServer(s, policy))}
+func EmailSendPort_ServerToClient(s EmailSendPort_Server) EmailSendPort {
+	return EmailSendPort(capnp.NewClient(EmailSendPort_NewServer(s)))
 }
 
 // EmailSendPort_Methods appends Methods to a slice that invoke the methods on s.
@@ -658,13 +705,13 @@ type EmailSendPort_send struct {
 
 // Args returns the call's arguments.
 func (c EmailSendPort_send) Args() EmailSendPort_send_Params {
-	return EmailSendPort_send_Params{Struct: c.Call.Args()}
+	return EmailSendPort_send_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailSendPort_send) AllocResults() (EmailSendPort_send_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_send_Results{Struct: r}, err
+	return EmailSendPort_send_Results(r), err
 }
 
 // EmailSendPort_hintAddress holds the state for a server call to EmailSendPort.hintAddress.
@@ -675,102 +722,120 @@ type EmailSendPort_hintAddress struct {
 
 // Args returns the call's arguments.
 func (c EmailSendPort_hintAddress) Args() EmailSendPort_hintAddress_Params {
-	return EmailSendPort_hintAddress_Params{Struct: c.Call.Args()}
+	return EmailSendPort_hintAddress_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailSendPort_hintAddress) AllocResults() (EmailSendPort_hintAddress_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_hintAddress_Results{Struct: r}, err
+	return EmailSendPort_hintAddress_Results(r), err
 }
 
-type EmailSendPort_PowerboxTag struct{ capnp.Struct }
+// EmailSendPort_List is a list of EmailSendPort.
+type EmailSendPort_List = capnp.CapList[EmailSendPort]
+
+// NewEmailSendPort creates a new list of EmailSendPort.
+func NewEmailSendPort_List(s *capnp.Segment, sz int32) (EmailSendPort_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[EmailSendPort](l), err
+}
+
+type EmailSendPort_PowerboxTag capnp.Struct
 
 // EmailSendPort_PowerboxTag_TypeID is the unique identifier for the type EmailSendPort_PowerboxTag.
 const EmailSendPort_PowerboxTag_TypeID = 0x90790c61fc899dd3
 
 func NewEmailSendPort_PowerboxTag(s *capnp.Segment) (EmailSendPort_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailSendPort_PowerboxTag{st}, err
+	return EmailSendPort_PowerboxTag(st), err
 }
 
 func NewRootEmailSendPort_PowerboxTag(s *capnp.Segment) (EmailSendPort_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailSendPort_PowerboxTag{st}, err
+	return EmailSendPort_PowerboxTag(st), err
 }
 
 func ReadRootEmailSendPort_PowerboxTag(msg *capnp.Message) (EmailSendPort_PowerboxTag, error) {
 	root, err := msg.Root()
-	return EmailSendPort_PowerboxTag{root.Struct()}, err
+	return EmailSendPort_PowerboxTag(root.Struct()), err
 }
 
 func (s EmailSendPort_PowerboxTag) String() string {
-	str, _ := text.Marshal(0x90790c61fc899dd3, s.Struct)
+	str, _ := text.Marshal(0x90790c61fc899dd3, capnp.Struct(s))
 	return str
 }
 
+func (s EmailSendPort_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort_PowerboxTag) DecodeFromPtr(p capnp.Ptr) EmailSendPort_PowerboxTag {
+	return EmailSendPort_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailSendPort_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailSendPort_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailSendPort_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailSendPort_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailSendPort_PowerboxTag) FromHint() (EmailAddress, error) {
-	p, err := s.Struct.Ptr(0)
-	return EmailAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return EmailAddress(p.Struct()), err
 }
 
 func (s EmailSendPort_PowerboxTag) HasFromHint() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailSendPort_PowerboxTag) SetFromHint(v EmailAddress) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewFromHint sets the fromHint field to a newly
 // allocated EmailAddress struct, preferring placement in s's segment.
 func (s EmailSendPort_PowerboxTag) NewFromHint() (EmailAddress, error) {
-	ss, err := NewEmailAddress(s.Struct.Segment())
+	ss, err := NewEmailAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailAddress{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s EmailSendPort_PowerboxTag) ListIdHint() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s EmailSendPort_PowerboxTag) HasListIdHint() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s EmailSendPort_PowerboxTag) ListIdHintBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s EmailSendPort_PowerboxTag) SetListIdHint(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 // EmailSendPort_PowerboxTag_List is a list of EmailSendPort_PowerboxTag.
-type EmailSendPort_PowerboxTag_List struct{ capnp.List }
+type EmailSendPort_PowerboxTag_List = capnp.StructList[EmailSendPort_PowerboxTag]
 
 // NewEmailSendPort_PowerboxTag creates a new list of EmailSendPort_PowerboxTag.
 func NewEmailSendPort_PowerboxTag_List(s *capnp.Segment, sz int32) (EmailSendPort_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return EmailSendPort_PowerboxTag_List{l}, err
-}
-
-func (s EmailSendPort_PowerboxTag_List) At(i int) EmailSendPort_PowerboxTag {
-	return EmailSendPort_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s EmailSendPort_PowerboxTag_List) Set(i int, v EmailSendPort_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailSendPort_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0x90790c61fc899dd3, s.List)
-	return str
+	return capnp.StructList[EmailSendPort_PowerboxTag](l), err
 }
 
 // EmailSendPort_PowerboxTag_Future is a wrapper for a EmailSendPort_PowerboxTag promised by a client call.
@@ -778,82 +843,91 @@ type EmailSendPort_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p EmailSendPort_PowerboxTag_Future) Struct() (EmailSendPort_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return EmailSendPort_PowerboxTag{s}, err
+	return EmailSendPort_PowerboxTag(s), err
 }
 
 func (p EmailSendPort_PowerboxTag_Future) FromHint() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(0, nil)}
 }
 
-type EmailSendPort_send_Params struct{ capnp.Struct }
+type EmailSendPort_send_Params capnp.Struct
 
 // EmailSendPort_send_Params_TypeID is the unique identifier for the type EmailSendPort_send_Params.
 const EmailSendPort_send_Params_TypeID = 0xa5adb72b4ccc59ee
 
 func NewEmailSendPort_send_Params(s *capnp.Segment) (EmailSendPort_send_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailSendPort_send_Params{st}, err
+	return EmailSendPort_send_Params(st), err
 }
 
 func NewRootEmailSendPort_send_Params(s *capnp.Segment) (EmailSendPort_send_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailSendPort_send_Params{st}, err
+	return EmailSendPort_send_Params(st), err
 }
 
 func ReadRootEmailSendPort_send_Params(msg *capnp.Message) (EmailSendPort_send_Params, error) {
 	root, err := msg.Root()
-	return EmailSendPort_send_Params{root.Struct()}, err
+	return EmailSendPort_send_Params(root.Struct()), err
 }
 
 func (s EmailSendPort_send_Params) String() string {
-	str, _ := text.Marshal(0xa5adb72b4ccc59ee, s.Struct)
+	str, _ := text.Marshal(0xa5adb72b4ccc59ee, capnp.Struct(s))
 	return str
 }
 
+func (s EmailSendPort_send_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort_send_Params) DecodeFromPtr(p capnp.Ptr) EmailSendPort_send_Params {
+	return EmailSendPort_send_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailSendPort_send_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailSendPort_send_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailSendPort_send_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailSendPort_send_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailSendPort_send_Params) Email() (EmailMessage, error) {
-	p, err := s.Struct.Ptr(0)
-	return EmailMessage{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return EmailMessage(p.Struct()), err
 }
 
 func (s EmailSendPort_send_Params) HasEmail() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailSendPort_send_Params) SetEmail(v EmailMessage) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewEmail sets the email field to a newly
 // allocated EmailMessage struct, preferring placement in s's segment.
 func (s EmailSendPort_send_Params) NewEmail() (EmailMessage, error) {
-	ss, err := NewEmailMessage(s.Struct.Segment())
+	ss, err := NewEmailMessage(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailMessage{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // EmailSendPort_send_Params_List is a list of EmailSendPort_send_Params.
-type EmailSendPort_send_Params_List struct{ capnp.List }
+type EmailSendPort_send_Params_List = capnp.StructList[EmailSendPort_send_Params]
 
 // NewEmailSendPort_send_Params creates a new list of EmailSendPort_send_Params.
 func NewEmailSendPort_send_Params_List(s *capnp.Segment, sz int32) (EmailSendPort_send_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailSendPort_send_Params_List{l}, err
-}
-
-func (s EmailSendPort_send_Params_List) At(i int) EmailSendPort_send_Params {
-	return EmailSendPort_send_Params{s.List.Struct(i)}
-}
-
-func (s EmailSendPort_send_Params_List) Set(i int, v EmailSendPort_send_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailSendPort_send_Params_List) String() string {
-	str, _ := text.MarshalList(0xa5adb72b4ccc59ee, s.List)
-	return str
+	return capnp.StructList[EmailSendPort_send_Params](l), err
 }
 
 // EmailSendPort_send_Params_Future is a wrapper for a EmailSendPort_send_Params promised by a client call.
@@ -861,58 +935,68 @@ type EmailSendPort_send_Params_Future struct{ *capnp.Future }
 
 func (p EmailSendPort_send_Params_Future) Struct() (EmailSendPort_send_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailSendPort_send_Params{s}, err
+	return EmailSendPort_send_Params(s), err
 }
 
 func (p EmailSendPort_send_Params_Future) Email() EmailMessage_Future {
 	return EmailMessage_Future{Future: p.Future.Field(0, nil)}
 }
 
-type EmailSendPort_send_Results struct{ capnp.Struct }
+type EmailSendPort_send_Results capnp.Struct
 
 // EmailSendPort_send_Results_TypeID is the unique identifier for the type EmailSendPort_send_Results.
 const EmailSendPort_send_Results_TypeID = 0xd063b4e6c91bf8d8
 
 func NewEmailSendPort_send_Results(s *capnp.Segment) (EmailSendPort_send_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_send_Results{st}, err
+	return EmailSendPort_send_Results(st), err
 }
 
 func NewRootEmailSendPort_send_Results(s *capnp.Segment) (EmailSendPort_send_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_send_Results{st}, err
+	return EmailSendPort_send_Results(st), err
 }
 
 func ReadRootEmailSendPort_send_Results(msg *capnp.Message) (EmailSendPort_send_Results, error) {
 	root, err := msg.Root()
-	return EmailSendPort_send_Results{root.Struct()}, err
+	return EmailSendPort_send_Results(root.Struct()), err
 }
 
 func (s EmailSendPort_send_Results) String() string {
-	str, _ := text.Marshal(0xd063b4e6c91bf8d8, s.Struct)
+	str, _ := text.Marshal(0xd063b4e6c91bf8d8, capnp.Struct(s))
 	return str
 }
 
+func (s EmailSendPort_send_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort_send_Results) DecodeFromPtr(p capnp.Ptr) EmailSendPort_send_Results {
+	return EmailSendPort_send_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailSendPort_send_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailSendPort_send_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailSendPort_send_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailSendPort_send_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // EmailSendPort_send_Results_List is a list of EmailSendPort_send_Results.
-type EmailSendPort_send_Results_List struct{ capnp.List }
+type EmailSendPort_send_Results_List = capnp.StructList[EmailSendPort_send_Results]
 
 // NewEmailSendPort_send_Results creates a new list of EmailSendPort_send_Results.
 func NewEmailSendPort_send_Results_List(s *capnp.Segment, sz int32) (EmailSendPort_send_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return EmailSendPort_send_Results_List{l}, err
-}
-
-func (s EmailSendPort_send_Results_List) At(i int) EmailSendPort_send_Results {
-	return EmailSendPort_send_Results{s.List.Struct(i)}
-}
-
-func (s EmailSendPort_send_Results_List) Set(i int, v EmailSendPort_send_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailSendPort_send_Results_List) String() string {
-	str, _ := text.MarshalList(0xd063b4e6c91bf8d8, s.List)
-	return str
+	return capnp.StructList[EmailSendPort_send_Results](l), err
 }
 
 // EmailSendPort_send_Results_Future is a wrapper for a EmailSendPort_send_Results promised by a client call.
@@ -920,78 +1004,87 @@ type EmailSendPort_send_Results_Future struct{ *capnp.Future }
 
 func (p EmailSendPort_send_Results_Future) Struct() (EmailSendPort_send_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailSendPort_send_Results{s}, err
+	return EmailSendPort_send_Results(s), err
 }
 
-type EmailSendPort_hintAddress_Params struct{ capnp.Struct }
+type EmailSendPort_hintAddress_Params capnp.Struct
 
 // EmailSendPort_hintAddress_Params_TypeID is the unique identifier for the type EmailSendPort_hintAddress_Params.
 const EmailSendPort_hintAddress_Params_TypeID = 0x9c78c3c5de56e4d4
 
 func NewEmailSendPort_hintAddress_Params(s *capnp.Segment) (EmailSendPort_hintAddress_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailSendPort_hintAddress_Params{st}, err
+	return EmailSendPort_hintAddress_Params(st), err
 }
 
 func NewRootEmailSendPort_hintAddress_Params(s *capnp.Segment) (EmailSendPort_hintAddress_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailSendPort_hintAddress_Params{st}, err
+	return EmailSendPort_hintAddress_Params(st), err
 }
 
 func ReadRootEmailSendPort_hintAddress_Params(msg *capnp.Message) (EmailSendPort_hintAddress_Params, error) {
 	root, err := msg.Root()
-	return EmailSendPort_hintAddress_Params{root.Struct()}, err
+	return EmailSendPort_hintAddress_Params(root.Struct()), err
 }
 
 func (s EmailSendPort_hintAddress_Params) String() string {
-	str, _ := text.Marshal(0x9c78c3c5de56e4d4, s.Struct)
+	str, _ := text.Marshal(0x9c78c3c5de56e4d4, capnp.Struct(s))
 	return str
 }
 
+func (s EmailSendPort_hintAddress_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort_hintAddress_Params) DecodeFromPtr(p capnp.Ptr) EmailSendPort_hintAddress_Params {
+	return EmailSendPort_hintAddress_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailSendPort_hintAddress_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailSendPort_hintAddress_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailSendPort_hintAddress_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailSendPort_hintAddress_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailSendPort_hintAddress_Params) Address() (EmailAddress, error) {
-	p, err := s.Struct.Ptr(0)
-	return EmailAddress{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return EmailAddress(p.Struct()), err
 }
 
 func (s EmailSendPort_hintAddress_Params) HasAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailSendPort_hintAddress_Params) SetAddress(v EmailAddress) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewAddress sets the address field to a newly
 // allocated EmailAddress struct, preferring placement in s's segment.
 func (s EmailSendPort_hintAddress_Params) NewAddress() (EmailAddress, error) {
-	ss, err := NewEmailAddress(s.Struct.Segment())
+	ss, err := NewEmailAddress(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailAddress{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // EmailSendPort_hintAddress_Params_List is a list of EmailSendPort_hintAddress_Params.
-type EmailSendPort_hintAddress_Params_List struct{ capnp.List }
+type EmailSendPort_hintAddress_Params_List = capnp.StructList[EmailSendPort_hintAddress_Params]
 
 // NewEmailSendPort_hintAddress_Params creates a new list of EmailSendPort_hintAddress_Params.
 func NewEmailSendPort_hintAddress_Params_List(s *capnp.Segment, sz int32) (EmailSendPort_hintAddress_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailSendPort_hintAddress_Params_List{l}, err
-}
-
-func (s EmailSendPort_hintAddress_Params_List) At(i int) EmailSendPort_hintAddress_Params {
-	return EmailSendPort_hintAddress_Params{s.List.Struct(i)}
-}
-
-func (s EmailSendPort_hintAddress_Params_List) Set(i int, v EmailSendPort_hintAddress_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailSendPort_hintAddress_Params_List) String() string {
-	str, _ := text.MarshalList(0x9c78c3c5de56e4d4, s.List)
-	return str
+	return capnp.StructList[EmailSendPort_hintAddress_Params](l), err
 }
 
 // EmailSendPort_hintAddress_Params_Future is a wrapper for a EmailSendPort_hintAddress_Params promised by a client call.
@@ -999,58 +1092,68 @@ type EmailSendPort_hintAddress_Params_Future struct{ *capnp.Future }
 
 func (p EmailSendPort_hintAddress_Params_Future) Struct() (EmailSendPort_hintAddress_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailSendPort_hintAddress_Params{s}, err
+	return EmailSendPort_hintAddress_Params(s), err
 }
 
 func (p EmailSendPort_hintAddress_Params_Future) Address() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(0, nil)}
 }
 
-type EmailSendPort_hintAddress_Results struct{ capnp.Struct }
+type EmailSendPort_hintAddress_Results capnp.Struct
 
 // EmailSendPort_hintAddress_Results_TypeID is the unique identifier for the type EmailSendPort_hintAddress_Results.
 const EmailSendPort_hintAddress_Results_TypeID = 0xbd727a009329aabc
 
 func NewEmailSendPort_hintAddress_Results(s *capnp.Segment) (EmailSendPort_hintAddress_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_hintAddress_Results{st}, err
+	return EmailSendPort_hintAddress_Results(st), err
 }
 
 func NewRootEmailSendPort_hintAddress_Results(s *capnp.Segment) (EmailSendPort_hintAddress_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailSendPort_hintAddress_Results{st}, err
+	return EmailSendPort_hintAddress_Results(st), err
 }
 
 func ReadRootEmailSendPort_hintAddress_Results(msg *capnp.Message) (EmailSendPort_hintAddress_Results, error) {
 	root, err := msg.Root()
-	return EmailSendPort_hintAddress_Results{root.Struct()}, err
+	return EmailSendPort_hintAddress_Results(root.Struct()), err
 }
 
 func (s EmailSendPort_hintAddress_Results) String() string {
-	str, _ := text.Marshal(0xbd727a009329aabc, s.Struct)
+	str, _ := text.Marshal(0xbd727a009329aabc, capnp.Struct(s))
 	return str
 }
 
+func (s EmailSendPort_hintAddress_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailSendPort_hintAddress_Results) DecodeFromPtr(p capnp.Ptr) EmailSendPort_hintAddress_Results {
+	return EmailSendPort_hintAddress_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailSendPort_hintAddress_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailSendPort_hintAddress_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailSendPort_hintAddress_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailSendPort_hintAddress_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // EmailSendPort_hintAddress_Results_List is a list of EmailSendPort_hintAddress_Results.
-type EmailSendPort_hintAddress_Results_List struct{ capnp.List }
+type EmailSendPort_hintAddress_Results_List = capnp.StructList[EmailSendPort_hintAddress_Results]
 
 // NewEmailSendPort_hintAddress_Results creates a new list of EmailSendPort_hintAddress_Results.
 func NewEmailSendPort_hintAddress_Results_List(s *capnp.Segment, sz int32) (EmailSendPort_hintAddress_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return EmailSendPort_hintAddress_Results_List{l}, err
-}
-
-func (s EmailSendPort_hintAddress_Results_List) At(i int) EmailSendPort_hintAddress_Results {
-	return EmailSendPort_hintAddress_Results{s.List.Struct(i)}
-}
-
-func (s EmailSendPort_hintAddress_Results_List) Set(i int, v EmailSendPort_hintAddress_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailSendPort_hintAddress_Results_List) String() string {
-	str, _ := text.MarshalList(0xbd727a009329aabc, s.List)
-	return str
+	return capnp.StructList[EmailSendPort_hintAddress_Results](l), err
 }
 
 // EmailSendPort_hintAddress_Results_Future is a wrapper for a EmailSendPort_hintAddress_Results promised by a client call.
@@ -1058,22 +1161,32 @@ type EmailSendPort_hintAddress_Results_Future struct{ *capnp.Future }
 
 func (p EmailSendPort_hintAddress_Results_Future) Struct() (EmailSendPort_hintAddress_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailSendPort_hintAddress_Results{s}, err
+	return EmailSendPort_hintAddress_Results(s), err
 }
 
-type VerifiedEmail struct{ Client *capnp.Client }
+type VerifiedEmail capnp.Client
 
 // VerifiedEmail_TypeID is the unique identifier for the type VerifiedEmail.
 const VerifiedEmail_TypeID = 0xf88bf102464dfa5a
 
 func (c VerifiedEmail) AddRef() VerifiedEmail {
-	return VerifiedEmail{
-		Client: c.Client.AddRef(),
-	}
+	return VerifiedEmail(capnp.Client(c).AddRef())
 }
 
 func (c VerifiedEmail) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c VerifiedEmail) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (VerifiedEmail) DecodeFromPtr(p capnp.Ptr) VerifiedEmail {
+	return VerifiedEmail(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c VerifiedEmail) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A VerifiedEmail_Server is a VerifiedEmail with a local implementation.
@@ -1081,15 +1194,15 @@ type VerifiedEmail_Server interface {
 }
 
 // VerifiedEmail_NewServer creates a new Server from an implementation of VerifiedEmail_Server.
-func VerifiedEmail_NewServer(s VerifiedEmail_Server, policy *server.Policy) *server.Server {
+func VerifiedEmail_NewServer(s VerifiedEmail_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(VerifiedEmail_Methods(nil, s), s, c, policy)
+	return server.New(VerifiedEmail_Methods(nil, s), s, c)
 }
 
 // VerifiedEmail_ServerToClient creates a new Client from an implementation of VerifiedEmail_Server.
 // The caller is responsible for calling Release on the returned Client.
-func VerifiedEmail_ServerToClient(s VerifiedEmail_Server, policy *server.Policy) VerifiedEmail {
-	return VerifiedEmail{Client: capnp.NewClient(VerifiedEmail_NewServer(s, policy))}
+func VerifiedEmail_ServerToClient(s VerifiedEmail_Server) VerifiedEmail {
+	return VerifiedEmail(capnp.NewClient(VerifiedEmail_NewServer(s)))
 }
 
 // VerifiedEmail_Methods appends Methods to a slice that invoke the methods on s.
@@ -1102,100 +1215,118 @@ func VerifiedEmail_Methods(methods []server.Method, s VerifiedEmail_Server) []se
 	return methods
 }
 
-type VerifiedEmail_PowerboxTag struct{ capnp.Struct }
+// VerifiedEmail_List is a list of VerifiedEmail.
+type VerifiedEmail_List = capnp.CapList[VerifiedEmail]
+
+// NewVerifiedEmail creates a new list of VerifiedEmail.
+func NewVerifiedEmail_List(s *capnp.Segment, sz int32) (VerifiedEmail_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[VerifiedEmail](l), err
+}
+
+type VerifiedEmail_PowerboxTag capnp.Struct
 
 // VerifiedEmail_PowerboxTag_TypeID is the unique identifier for the type VerifiedEmail_PowerboxTag.
 const VerifiedEmail_PowerboxTag_TypeID = 0x97469291ac5bb892
 
 func NewVerifiedEmail_PowerboxTag(s *capnp.Segment) (VerifiedEmail_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return VerifiedEmail_PowerboxTag{st}, err
+	return VerifiedEmail_PowerboxTag(st), err
 }
 
 func NewRootVerifiedEmail_PowerboxTag(s *capnp.Segment) (VerifiedEmail_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return VerifiedEmail_PowerboxTag{st}, err
+	return VerifiedEmail_PowerboxTag(st), err
 }
 
 func ReadRootVerifiedEmail_PowerboxTag(msg *capnp.Message) (VerifiedEmail_PowerboxTag, error) {
 	root, err := msg.Root()
-	return VerifiedEmail_PowerboxTag{root.Struct()}, err
+	return VerifiedEmail_PowerboxTag(root.Struct()), err
 }
 
 func (s VerifiedEmail_PowerboxTag) String() string {
-	str, _ := text.Marshal(0x97469291ac5bb892, s.Struct)
+	str, _ := text.Marshal(0x97469291ac5bb892, capnp.Struct(s))
 	return str
 }
 
+func (s VerifiedEmail_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (VerifiedEmail_PowerboxTag) DecodeFromPtr(p capnp.Ptr) VerifiedEmail_PowerboxTag {
+	return VerifiedEmail_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s VerifiedEmail_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s VerifiedEmail_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s VerifiedEmail_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s VerifiedEmail_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s VerifiedEmail_PowerboxTag) VerifierId() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s VerifiedEmail_PowerboxTag) HasVerifierId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s VerifiedEmail_PowerboxTag) SetVerifierId(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s VerifiedEmail_PowerboxTag) Address() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s VerifiedEmail_PowerboxTag) HasAddress() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s VerifiedEmail_PowerboxTag) AddressBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s VerifiedEmail_PowerboxTag) SetAddress(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s VerifiedEmail_PowerboxTag) Domain() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s VerifiedEmail_PowerboxTag) HasDomain() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s VerifiedEmail_PowerboxTag) DomainBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s VerifiedEmail_PowerboxTag) SetDomain(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // VerifiedEmail_PowerboxTag_List is a list of VerifiedEmail_PowerboxTag.
-type VerifiedEmail_PowerboxTag_List struct{ capnp.List }
+type VerifiedEmail_PowerboxTag_List = capnp.StructList[VerifiedEmail_PowerboxTag]
 
 // NewVerifiedEmail_PowerboxTag creates a new list of VerifiedEmail_PowerboxTag.
 func NewVerifiedEmail_PowerboxTag_List(s *capnp.Segment, sz int32) (VerifiedEmail_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return VerifiedEmail_PowerboxTag_List{l}, err
-}
-
-func (s VerifiedEmail_PowerboxTag_List) At(i int) VerifiedEmail_PowerboxTag {
-	return VerifiedEmail_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s VerifiedEmail_PowerboxTag_List) Set(i int, v VerifiedEmail_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s VerifiedEmail_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0x97469291ac5bb892, s.List)
-	return str
+	return capnp.StructList[VerifiedEmail_PowerboxTag](l), err
 }
 
 // VerifiedEmail_PowerboxTag_Future is a wrapper for a VerifiedEmail_PowerboxTag promised by a client call.
@@ -1203,10 +1334,10 @@ type VerifiedEmail_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p VerifiedEmail_PowerboxTag_Future) Struct() (VerifiedEmail_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return VerifiedEmail_PowerboxTag{s}, err
+	return VerifiedEmail_PowerboxTag(s), err
 }
 
-type VerifiedEmailSendPort struct{ Client *capnp.Client }
+type VerifiedEmailSendPort capnp.Client
 
 // VerifiedEmailSendPort_TypeID is the unique identifier for the type VerifiedEmailSendPort.
 const VerifiedEmailSendPort_TypeID = 0xa3cc885445aed8e9
@@ -1222,9 +1353,9 @@ func (c VerifiedEmailSendPort) Send(ctx context.Context, params func(EmailSendPo
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
 func (c VerifiedEmailSendPort) HintAddress(ctx context.Context, params func(EmailSendPort_hintAddress_Params) error) (EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
@@ -1238,20 +1369,30 @@ func (c VerifiedEmailSendPort) HintAddress(ctx context.Context, params func(Emai
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailSendPort_hintAddress_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
 func (c VerifiedEmailSendPort) AddRef() VerifiedEmailSendPort {
-	return VerifiedEmailSendPort{
-		Client: c.Client.AddRef(),
-	}
+	return VerifiedEmailSendPort(capnp.Client(c).AddRef())
 }
 
 func (c VerifiedEmailSendPort) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c VerifiedEmailSendPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (VerifiedEmailSendPort) DecodeFromPtr(p capnp.Ptr) VerifiedEmailSendPort {
+	return VerifiedEmailSendPort(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c VerifiedEmailSendPort) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A VerifiedEmailSendPort_Server is a VerifiedEmailSendPort with a local implementation.
@@ -1262,15 +1403,15 @@ type VerifiedEmailSendPort_Server interface {
 }
 
 // VerifiedEmailSendPort_NewServer creates a new Server from an implementation of VerifiedEmailSendPort_Server.
-func VerifiedEmailSendPort_NewServer(s VerifiedEmailSendPort_Server, policy *server.Policy) *server.Server {
+func VerifiedEmailSendPort_NewServer(s VerifiedEmailSendPort_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(VerifiedEmailSendPort_Methods(nil, s), s, c, policy)
+	return server.New(VerifiedEmailSendPort_Methods(nil, s), s, c)
 }
 
 // VerifiedEmailSendPort_ServerToClient creates a new Client from an implementation of VerifiedEmailSendPort_Server.
 // The caller is responsible for calling Release on the returned Client.
-func VerifiedEmailSendPort_ServerToClient(s VerifiedEmailSendPort_Server, policy *server.Policy) VerifiedEmailSendPort {
-	return VerifiedEmailSendPort{Client: capnp.NewClient(VerifiedEmailSendPort_NewServer(s, policy))}
+func VerifiedEmailSendPort_ServerToClient(s VerifiedEmailSendPort_Server) VerifiedEmailSendPort {
+	return VerifiedEmailSendPort(capnp.NewClient(VerifiedEmailSendPort_NewServer(s)))
 }
 
 // VerifiedEmailSendPort_Methods appends Methods to a slice that invoke the methods on s.
@@ -1307,99 +1448,117 @@ func VerifiedEmailSendPort_Methods(methods []server.Method, s VerifiedEmailSendP
 	return methods
 }
 
-type VerifiedEmailSendPort_PowerboxTag struct{ capnp.Struct }
+// VerifiedEmailSendPort_List is a list of VerifiedEmailSendPort.
+type VerifiedEmailSendPort_List = capnp.CapList[VerifiedEmailSendPort]
+
+// NewVerifiedEmailSendPort creates a new list of VerifiedEmailSendPort.
+func NewVerifiedEmailSendPort_List(s *capnp.Segment, sz int32) (VerifiedEmailSendPort_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[VerifiedEmailSendPort](l), err
+}
+
+type VerifiedEmailSendPort_PowerboxTag capnp.Struct
 
 // VerifiedEmailSendPort_PowerboxTag_TypeID is the unique identifier for the type VerifiedEmailSendPort_PowerboxTag.
 const VerifiedEmailSendPort_PowerboxTag_TypeID = 0x8f555bd4141fbb3b
 
 func NewVerifiedEmailSendPort_PowerboxTag(s *capnp.Segment) (VerifiedEmailSendPort_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return VerifiedEmailSendPort_PowerboxTag{st}, err
+	return VerifiedEmailSendPort_PowerboxTag(st), err
 }
 
 func NewRootVerifiedEmailSendPort_PowerboxTag(s *capnp.Segment) (VerifiedEmailSendPort_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return VerifiedEmailSendPort_PowerboxTag{st}, err
+	return VerifiedEmailSendPort_PowerboxTag(st), err
 }
 
 func ReadRootVerifiedEmailSendPort_PowerboxTag(msg *capnp.Message) (VerifiedEmailSendPort_PowerboxTag, error) {
 	root, err := msg.Root()
-	return VerifiedEmailSendPort_PowerboxTag{root.Struct()}, err
+	return VerifiedEmailSendPort_PowerboxTag(root.Struct()), err
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) String() string {
-	str, _ := text.Marshal(0x8f555bd4141fbb3b, s.Struct)
+	str, _ := text.Marshal(0x8f555bd4141fbb3b, capnp.Struct(s))
 	return str
 }
 
+func (s VerifiedEmailSendPort_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (VerifiedEmailSendPort_PowerboxTag) DecodeFromPtr(p capnp.Ptr) VerifiedEmailSendPort_PowerboxTag {
+	return VerifiedEmailSendPort_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s VerifiedEmailSendPort_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s VerifiedEmailSendPort_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s VerifiedEmailSendPort_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s VerifiedEmailSendPort_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s VerifiedEmailSendPort_PowerboxTag) Verification() (VerifiedEmail_PowerboxTag, error) {
-	p, err := s.Struct.Ptr(0)
-	return VerifiedEmail_PowerboxTag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return VerifiedEmail_PowerboxTag(p.Struct()), err
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) HasVerification() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) SetVerification(v VerifiedEmail_PowerboxTag) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewVerification sets the verification field to a newly
 // allocated VerifiedEmail_PowerboxTag struct, preferring placement in s's segment.
 func (s VerifiedEmailSendPort_PowerboxTag) NewVerification() (VerifiedEmail_PowerboxTag, error) {
-	ss, err := NewVerifiedEmail_PowerboxTag(s.Struct.Segment())
+	ss, err := NewVerifiedEmail_PowerboxTag(capnp.Struct(s).Segment())
 	if err != nil {
 		return VerifiedEmail_PowerboxTag{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) Port() (EmailSendPort_PowerboxTag, error) {
-	p, err := s.Struct.Ptr(1)
-	return EmailSendPort_PowerboxTag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return EmailSendPort_PowerboxTag(p.Struct()), err
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) HasPort() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s VerifiedEmailSendPort_PowerboxTag) SetPort(v EmailSendPort_PowerboxTag) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewPort sets the port field to a newly
 // allocated EmailSendPort_PowerboxTag struct, preferring placement in s's segment.
 func (s VerifiedEmailSendPort_PowerboxTag) NewPort() (EmailSendPort_PowerboxTag, error) {
-	ss, err := NewEmailSendPort_PowerboxTag(s.Struct.Segment())
+	ss, err := NewEmailSendPort_PowerboxTag(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailSendPort_PowerboxTag{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // VerifiedEmailSendPort_PowerboxTag_List is a list of VerifiedEmailSendPort_PowerboxTag.
-type VerifiedEmailSendPort_PowerboxTag_List struct{ capnp.List }
+type VerifiedEmailSendPort_PowerboxTag_List = capnp.StructList[VerifiedEmailSendPort_PowerboxTag]
 
 // NewVerifiedEmailSendPort_PowerboxTag creates a new list of VerifiedEmailSendPort_PowerboxTag.
 func NewVerifiedEmailSendPort_PowerboxTag_List(s *capnp.Segment, sz int32) (VerifiedEmailSendPort_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return VerifiedEmailSendPort_PowerboxTag_List{l}, err
-}
-
-func (s VerifiedEmailSendPort_PowerboxTag_List) At(i int) VerifiedEmailSendPort_PowerboxTag {
-	return VerifiedEmailSendPort_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s VerifiedEmailSendPort_PowerboxTag_List) Set(i int, v VerifiedEmailSendPort_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s VerifiedEmailSendPort_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0x8f555bd4141fbb3b, s.List)
-	return str
+	return capnp.StructList[VerifiedEmailSendPort_PowerboxTag](l), err
 }
 
 // VerifiedEmailSendPort_PowerboxTag_Future is a wrapper for a VerifiedEmailSendPort_PowerboxTag promised by a client call.
@@ -1407,7 +1566,7 @@ type VerifiedEmailSendPort_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p VerifiedEmailSendPort_PowerboxTag_Future) Struct() (VerifiedEmailSendPort_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return VerifiedEmailSendPort_PowerboxTag{s}, err
+	return VerifiedEmailSendPort_PowerboxTag(s), err
 }
 
 func (p VerifiedEmailSendPort_PowerboxTag_Future) Verification() VerifiedEmail_PowerboxTag_Future {
@@ -1418,7 +1577,7 @@ func (p VerifiedEmailSendPort_PowerboxTag_Future) Port() EmailSendPort_PowerboxT
 	return EmailSendPort_PowerboxTag_Future{Future: p.Future.Field(1, nil)}
 }
 
-type EmailVerifier struct{ Client *capnp.Client }
+type EmailVerifier capnp.Client
 
 // EmailVerifier_TypeID is the unique identifier for the type EmailVerifier.
 const EmailVerifier_TypeID = 0xd458f7ca9d1ba9ff
@@ -1434,9 +1593,9 @@ func (c EmailVerifier) GetId(ctx context.Context, params func(EmailVerifier_getI
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailVerifier_getId_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailVerifier_getId_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailVerifier_getId_Results_Future{Future: ans.Future()}, release
 }
 func (c EmailVerifier) VerifyEmail(ctx context.Context, params func(EmailVerifier_verifyEmail_Params) error) (EmailVerifier_verifyEmail_Results_Future, capnp.ReleaseFunc) {
@@ -1450,20 +1609,30 @@ func (c EmailVerifier) VerifyEmail(ctx context.Context, params func(EmailVerifie
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailVerifier_verifyEmail_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailVerifier_verifyEmail_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailVerifier_verifyEmail_Results_Future{Future: ans.Future()}, release
 }
 
 func (c EmailVerifier) AddRef() EmailVerifier {
-	return EmailVerifier{
-		Client: c.Client.AddRef(),
-	}
+	return EmailVerifier(capnp.Client(c).AddRef())
 }
 
 func (c EmailVerifier) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c EmailVerifier) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (EmailVerifier) DecodeFromPtr(p capnp.Ptr) EmailVerifier {
+	return EmailVerifier(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c EmailVerifier) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A EmailVerifier_Server is a EmailVerifier with a local implementation.
@@ -1474,15 +1643,15 @@ type EmailVerifier_Server interface {
 }
 
 // EmailVerifier_NewServer creates a new Server from an implementation of EmailVerifier_Server.
-func EmailVerifier_NewServer(s EmailVerifier_Server, policy *server.Policy) *server.Server {
+func EmailVerifier_NewServer(s EmailVerifier_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(EmailVerifier_Methods(nil, s), s, c, policy)
+	return server.New(EmailVerifier_Methods(nil, s), s, c)
 }
 
 // EmailVerifier_ServerToClient creates a new Client from an implementation of EmailVerifier_Server.
 // The caller is responsible for calling Release on the returned Client.
-func EmailVerifier_ServerToClient(s EmailVerifier_Server, policy *server.Policy) EmailVerifier {
-	return EmailVerifier{Client: capnp.NewClient(EmailVerifier_NewServer(s, policy))}
+func EmailVerifier_ServerToClient(s EmailVerifier_Server) EmailVerifier {
+	return EmailVerifier(capnp.NewClient(EmailVerifier_NewServer(s)))
 }
 
 // EmailVerifier_Methods appends Methods to a slice that invoke the methods on s.
@@ -1527,13 +1696,13 @@ type EmailVerifier_getId struct {
 
 // Args returns the call's arguments.
 func (c EmailVerifier_getId) Args() EmailVerifier_getId_Params {
-	return EmailVerifier_getId_Params{Struct: c.Call.Args()}
+	return EmailVerifier_getId_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailVerifier_getId) AllocResults() (EmailVerifier_getId_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_getId_Results{Struct: r}, err
+	return EmailVerifier_getId_Results(r), err
 }
 
 // EmailVerifier_verifyEmail holds the state for a server call to EmailVerifier.verifyEmail.
@@ -1544,60 +1713,79 @@ type EmailVerifier_verifyEmail struct {
 
 // Args returns the call's arguments.
 func (c EmailVerifier_verifyEmail) Args() EmailVerifier_verifyEmail_Params {
-	return EmailVerifier_verifyEmail_Params{Struct: c.Call.Args()}
+	return EmailVerifier_verifyEmail_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailVerifier_verifyEmail) AllocResults() (EmailVerifier_verifyEmail_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_verifyEmail_Results{Struct: r}, err
+	return EmailVerifier_verifyEmail_Results(r), err
 }
 
-type EmailVerifier_getId_Params struct{ capnp.Struct }
+// EmailVerifier_List is a list of EmailVerifier.
+type EmailVerifier_List = capnp.CapList[EmailVerifier]
+
+// NewEmailVerifier creates a new list of EmailVerifier.
+func NewEmailVerifier_List(s *capnp.Segment, sz int32) (EmailVerifier_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[EmailVerifier](l), err
+}
+
+type EmailVerifier_getId_Params capnp.Struct
 
 // EmailVerifier_getId_Params_TypeID is the unique identifier for the type EmailVerifier_getId_Params.
 const EmailVerifier_getId_Params_TypeID = 0xe5927352f65eba5c
 
 func NewEmailVerifier_getId_Params(s *capnp.Segment) (EmailVerifier_getId_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailVerifier_getId_Params{st}, err
+	return EmailVerifier_getId_Params(st), err
 }
 
 func NewRootEmailVerifier_getId_Params(s *capnp.Segment) (EmailVerifier_getId_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailVerifier_getId_Params{st}, err
+	return EmailVerifier_getId_Params(st), err
 }
 
 func ReadRootEmailVerifier_getId_Params(msg *capnp.Message) (EmailVerifier_getId_Params, error) {
 	root, err := msg.Root()
-	return EmailVerifier_getId_Params{root.Struct()}, err
+	return EmailVerifier_getId_Params(root.Struct()), err
 }
 
 func (s EmailVerifier_getId_Params) String() string {
-	str, _ := text.Marshal(0xe5927352f65eba5c, s.Struct)
+	str, _ := text.Marshal(0xe5927352f65eba5c, capnp.Struct(s))
 	return str
 }
 
+func (s EmailVerifier_getId_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailVerifier_getId_Params) DecodeFromPtr(p capnp.Ptr) EmailVerifier_getId_Params {
+	return EmailVerifier_getId_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailVerifier_getId_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailVerifier_getId_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailVerifier_getId_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailVerifier_getId_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // EmailVerifier_getId_Params_List is a list of EmailVerifier_getId_Params.
-type EmailVerifier_getId_Params_List struct{ capnp.List }
+type EmailVerifier_getId_Params_List = capnp.StructList[EmailVerifier_getId_Params]
 
 // NewEmailVerifier_getId_Params creates a new list of EmailVerifier_getId_Params.
 func NewEmailVerifier_getId_Params_List(s *capnp.Segment, sz int32) (EmailVerifier_getId_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return EmailVerifier_getId_Params_List{l}, err
-}
-
-func (s EmailVerifier_getId_Params_List) At(i int) EmailVerifier_getId_Params {
-	return EmailVerifier_getId_Params{s.List.Struct(i)}
-}
-
-func (s EmailVerifier_getId_Params_List) Set(i int, v EmailVerifier_getId_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailVerifier_getId_Params_List) String() string {
-	str, _ := text.MarshalList(0xe5927352f65eba5c, s.List)
-	return str
+	return capnp.StructList[EmailVerifier_getId_Params](l), err
 }
 
 // EmailVerifier_getId_Params_Future is a wrapper for a EmailVerifier_getId_Params promised by a client call.
@@ -1605,67 +1793,76 @@ type EmailVerifier_getId_Params_Future struct{ *capnp.Future }
 
 func (p EmailVerifier_getId_Params_Future) Struct() (EmailVerifier_getId_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailVerifier_getId_Params{s}, err
+	return EmailVerifier_getId_Params(s), err
 }
 
-type EmailVerifier_getId_Results struct{ capnp.Struct }
+type EmailVerifier_getId_Results capnp.Struct
 
 // EmailVerifier_getId_Results_TypeID is the unique identifier for the type EmailVerifier_getId_Results.
 const EmailVerifier_getId_Results_TypeID = 0xc7e287c5d3518c34
 
 func NewEmailVerifier_getId_Results(s *capnp.Segment) (EmailVerifier_getId_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_getId_Results{st}, err
+	return EmailVerifier_getId_Results(st), err
 }
 
 func NewRootEmailVerifier_getId_Results(s *capnp.Segment) (EmailVerifier_getId_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_getId_Results{st}, err
+	return EmailVerifier_getId_Results(st), err
 }
 
 func ReadRootEmailVerifier_getId_Results(msg *capnp.Message) (EmailVerifier_getId_Results, error) {
 	root, err := msg.Root()
-	return EmailVerifier_getId_Results{root.Struct()}, err
+	return EmailVerifier_getId_Results(root.Struct()), err
 }
 
 func (s EmailVerifier_getId_Results) String() string {
-	str, _ := text.Marshal(0xc7e287c5d3518c34, s.Struct)
+	str, _ := text.Marshal(0xc7e287c5d3518c34, capnp.Struct(s))
 	return str
 }
 
+func (s EmailVerifier_getId_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailVerifier_getId_Results) DecodeFromPtr(p capnp.Ptr) EmailVerifier_getId_Results {
+	return EmailVerifier_getId_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailVerifier_getId_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailVerifier_getId_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailVerifier_getId_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailVerifier_getId_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailVerifier_getId_Results) Id() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s EmailVerifier_getId_Results) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailVerifier_getId_Results) SetId(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // EmailVerifier_getId_Results_List is a list of EmailVerifier_getId_Results.
-type EmailVerifier_getId_Results_List struct{ capnp.List }
+type EmailVerifier_getId_Results_List = capnp.StructList[EmailVerifier_getId_Results]
 
 // NewEmailVerifier_getId_Results creates a new list of EmailVerifier_getId_Results.
 func NewEmailVerifier_getId_Results_List(s *capnp.Segment, sz int32) (EmailVerifier_getId_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailVerifier_getId_Results_List{l}, err
-}
-
-func (s EmailVerifier_getId_Results_List) At(i int) EmailVerifier_getId_Results {
-	return EmailVerifier_getId_Results{s.List.Struct(i)}
-}
-
-func (s EmailVerifier_getId_Results_List) Set(i int, v EmailVerifier_getId_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailVerifier_getId_Results_List) String() string {
-	str, _ := text.MarshalList(0xc7e287c5d3518c34, s.List)
-	return str
+	return capnp.StructList[EmailVerifier_getId_Results](l), err
 }
 
 // EmailVerifier_getId_Results_Future is a wrapper for a EmailVerifier_getId_Results promised by a client call.
@@ -1673,85 +1870,94 @@ type EmailVerifier_getId_Results_Future struct{ *capnp.Future }
 
 func (p EmailVerifier_getId_Results_Future) Struct() (EmailVerifier_getId_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailVerifier_getId_Results{s}, err
+	return EmailVerifier_getId_Results(s), err
 }
 
-type EmailVerifier_verifyEmail_Params struct{ capnp.Struct }
+type EmailVerifier_verifyEmail_Params capnp.Struct
 
 // EmailVerifier_verifyEmail_Params_TypeID is the unique identifier for the type EmailVerifier_verifyEmail_Params.
 const EmailVerifier_verifyEmail_Params_TypeID = 0x93ee926bb1bd4eea
 
 func NewEmailVerifier_verifyEmail_Params(s *capnp.Segment) (EmailVerifier_verifyEmail_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailVerifier_verifyEmail_Params{st}, err
+	return EmailVerifier_verifyEmail_Params(st), err
 }
 
 func NewRootEmailVerifier_verifyEmail_Params(s *capnp.Segment) (EmailVerifier_verifyEmail_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return EmailVerifier_verifyEmail_Params{st}, err
+	return EmailVerifier_verifyEmail_Params(st), err
 }
 
 func ReadRootEmailVerifier_verifyEmail_Params(msg *capnp.Message) (EmailVerifier_verifyEmail_Params, error) {
 	root, err := msg.Root()
-	return EmailVerifier_verifyEmail_Params{root.Struct()}, err
+	return EmailVerifier_verifyEmail_Params(root.Struct()), err
 }
 
 func (s EmailVerifier_verifyEmail_Params) String() string {
-	str, _ := text.Marshal(0x93ee926bb1bd4eea, s.Struct)
+	str, _ := text.Marshal(0x93ee926bb1bd4eea, capnp.Struct(s))
 	return str
 }
 
+func (s EmailVerifier_verifyEmail_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailVerifier_verifyEmail_Params) DecodeFromPtr(p capnp.Ptr) EmailVerifier_verifyEmail_Params {
+	return EmailVerifier_verifyEmail_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailVerifier_verifyEmail_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailVerifier_verifyEmail_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailVerifier_verifyEmail_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailVerifier_verifyEmail_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailVerifier_verifyEmail_Params) TabId() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s EmailVerifier_verifyEmail_Params) HasTabId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailVerifier_verifyEmail_Params) SetTabId(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s EmailVerifier_verifyEmail_Params) Verification() VerifiedEmail {
-	p, _ := s.Struct.Ptr(1)
-	return VerifiedEmail{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return VerifiedEmail(p.Interface().Client())
 }
 
 func (s EmailVerifier_verifyEmail_Params) HasVerification() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s EmailVerifier_verifyEmail_Params) SetVerification(v VerifiedEmail) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // EmailVerifier_verifyEmail_Params_List is a list of EmailVerifier_verifyEmail_Params.
-type EmailVerifier_verifyEmail_Params_List struct{ capnp.List }
+type EmailVerifier_verifyEmail_Params_List = capnp.StructList[EmailVerifier_verifyEmail_Params]
 
 // NewEmailVerifier_verifyEmail_Params creates a new list of EmailVerifier_verifyEmail_Params.
 func NewEmailVerifier_verifyEmail_Params_List(s *capnp.Segment, sz int32) (EmailVerifier_verifyEmail_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return EmailVerifier_verifyEmail_Params_List{l}, err
-}
-
-func (s EmailVerifier_verifyEmail_Params_List) At(i int) EmailVerifier_verifyEmail_Params {
-	return EmailVerifier_verifyEmail_Params{s.List.Struct(i)}
-}
-
-func (s EmailVerifier_verifyEmail_Params_List) Set(i int, v EmailVerifier_verifyEmail_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailVerifier_verifyEmail_Params_List) String() string {
-	str, _ := text.MarshalList(0x93ee926bb1bd4eea, s.List)
-	return str
+	return capnp.StructList[EmailVerifier_verifyEmail_Params](l), err
 }
 
 // EmailVerifier_verifyEmail_Params_Future is a wrapper for a EmailVerifier_verifyEmail_Params promised by a client call.
@@ -1759,76 +1965,85 @@ type EmailVerifier_verifyEmail_Params_Future struct{ *capnp.Future }
 
 func (p EmailVerifier_verifyEmail_Params_Future) Struct() (EmailVerifier_verifyEmail_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailVerifier_verifyEmail_Params{s}, err
+	return EmailVerifier_verifyEmail_Params(s), err
 }
 
 func (p EmailVerifier_verifyEmail_Params_Future) Verification() VerifiedEmail {
-	return VerifiedEmail{Client: p.Future.Field(1, nil).Client()}
+	return VerifiedEmail(p.Future.Field(1, nil).Client())
 }
 
-type EmailVerifier_verifyEmail_Results struct{ capnp.Struct }
+type EmailVerifier_verifyEmail_Results capnp.Struct
 
 // EmailVerifier_verifyEmail_Results_TypeID is the unique identifier for the type EmailVerifier_verifyEmail_Results.
 const EmailVerifier_verifyEmail_Results_TypeID = 0xcc99614322e49040
 
 func NewEmailVerifier_verifyEmail_Results(s *capnp.Segment) (EmailVerifier_verifyEmail_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_verifyEmail_Results{st}, err
+	return EmailVerifier_verifyEmail_Results(st), err
 }
 
 func NewRootEmailVerifier_verifyEmail_Results(s *capnp.Segment) (EmailVerifier_verifyEmail_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailVerifier_verifyEmail_Results{st}, err
+	return EmailVerifier_verifyEmail_Results(st), err
 }
 
 func ReadRootEmailVerifier_verifyEmail_Results(msg *capnp.Message) (EmailVerifier_verifyEmail_Results, error) {
 	root, err := msg.Root()
-	return EmailVerifier_verifyEmail_Results{root.Struct()}, err
+	return EmailVerifier_verifyEmail_Results(root.Struct()), err
 }
 
 func (s EmailVerifier_verifyEmail_Results) String() string {
-	str, _ := text.Marshal(0xcc99614322e49040, s.Struct)
+	str, _ := text.Marshal(0xcc99614322e49040, capnp.Struct(s))
 	return str
 }
 
+func (s EmailVerifier_verifyEmail_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailVerifier_verifyEmail_Results) DecodeFromPtr(p capnp.Ptr) EmailVerifier_verifyEmail_Results {
+	return EmailVerifier_verifyEmail_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailVerifier_verifyEmail_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailVerifier_verifyEmail_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailVerifier_verifyEmail_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailVerifier_verifyEmail_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailVerifier_verifyEmail_Results) Address() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s EmailVerifier_verifyEmail_Results) HasAddress() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailVerifier_verifyEmail_Results) AddressBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s EmailVerifier_verifyEmail_Results) SetAddress(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // EmailVerifier_verifyEmail_Results_List is a list of EmailVerifier_verifyEmail_Results.
-type EmailVerifier_verifyEmail_Results_List struct{ capnp.List }
+type EmailVerifier_verifyEmail_Results_List = capnp.StructList[EmailVerifier_verifyEmail_Results]
 
 // NewEmailVerifier_verifyEmail_Results creates a new list of EmailVerifier_verifyEmail_Results.
 func NewEmailVerifier_verifyEmail_Results_List(s *capnp.Segment, sz int32) (EmailVerifier_verifyEmail_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailVerifier_verifyEmail_Results_List{l}, err
-}
-
-func (s EmailVerifier_verifyEmail_Results_List) At(i int) EmailVerifier_verifyEmail_Results {
-	return EmailVerifier_verifyEmail_Results{s.List.Struct(i)}
-}
-
-func (s EmailVerifier_verifyEmail_Results_List) Set(i int, v EmailVerifier_verifyEmail_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailVerifier_verifyEmail_Results_List) String() string {
-	str, _ := text.MarshalList(0xcc99614322e49040, s.List)
-	return str
+	return capnp.StructList[EmailVerifier_verifyEmail_Results](l), err
 }
 
 // EmailVerifier_verifyEmail_Results_Future is a wrapper for a EmailVerifier_verifyEmail_Results promised by a client call.
@@ -1836,10 +2051,10 @@ type EmailVerifier_verifyEmail_Results_Future struct{ *capnp.Future }
 
 func (p EmailVerifier_verifyEmail_Results_Future) Struct() (EmailVerifier_verifyEmail_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailVerifier_verifyEmail_Results{s}, err
+	return EmailVerifier_verifyEmail_Results(s), err
 }
 
-type EmailAgent struct{ Client *capnp.Client }
+type EmailAgent capnp.Client
 
 // EmailAgent_TypeID is the unique identifier for the type EmailAgent.
 const EmailAgent_TypeID = 0x8b6f158d70cbc773
@@ -1855,9 +2070,9 @@ func (c EmailAgent) Send(ctx context.Context, params func(EmailAgent_send_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailAgent_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailAgent_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailAgent_send_Results_Future{Future: ans.Future()}, release
 }
 func (c EmailAgent) AddReceiver(ctx context.Context, params func(EmailAgent_addReceiver_Params) error) (EmailAgent_addReceiver_Results_Future, capnp.ReleaseFunc) {
@@ -1871,20 +2086,30 @@ func (c EmailAgent) AddReceiver(ctx context.Context, params func(EmailAgent_addR
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailAgent_addReceiver_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(EmailAgent_addReceiver_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return EmailAgent_addReceiver_Results_Future{Future: ans.Future()}, release
 }
 
 func (c EmailAgent) AddRef() EmailAgent {
-	return EmailAgent{
-		Client: c.Client.AddRef(),
-	}
+	return EmailAgent(capnp.Client(c).AddRef())
 }
 
 func (c EmailAgent) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c EmailAgent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (EmailAgent) DecodeFromPtr(p capnp.Ptr) EmailAgent {
+	return EmailAgent(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c EmailAgent) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A EmailAgent_Server is a EmailAgent with a local implementation.
@@ -1895,15 +2120,15 @@ type EmailAgent_Server interface {
 }
 
 // EmailAgent_NewServer creates a new Server from an implementation of EmailAgent_Server.
-func EmailAgent_NewServer(s EmailAgent_Server, policy *server.Policy) *server.Server {
+func EmailAgent_NewServer(s EmailAgent_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(EmailAgent_Methods(nil, s), s, c, policy)
+	return server.New(EmailAgent_Methods(nil, s), s, c)
 }
 
 // EmailAgent_ServerToClient creates a new Client from an implementation of EmailAgent_Server.
 // The caller is responsible for calling Release on the returned Client.
-func EmailAgent_ServerToClient(s EmailAgent_Server, policy *server.Policy) EmailAgent {
-	return EmailAgent{Client: capnp.NewClient(EmailAgent_NewServer(s, policy))}
+func EmailAgent_ServerToClient(s EmailAgent_Server) EmailAgent {
+	return EmailAgent(capnp.NewClient(EmailAgent_NewServer(s)))
 }
 
 // EmailAgent_Methods appends Methods to a slice that invoke the methods on s.
@@ -1948,13 +2173,13 @@ type EmailAgent_send struct {
 
 // Args returns the call's arguments.
 func (c EmailAgent_send) Args() EmailAgent_send_Params {
-	return EmailAgent_send_Params{Struct: c.Call.Args()}
+	return EmailAgent_send_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailAgent_send) AllocResults() (EmailAgent_send_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailAgent_send_Results{Struct: r}, err
+	return EmailAgent_send_Results(r), err
 }
 
 // EmailAgent_addReceiver holds the state for a server call to EmailAgent.addReceiver.
@@ -1965,84 +2190,102 @@ type EmailAgent_addReceiver struct {
 
 // Args returns the call's arguments.
 func (c EmailAgent_addReceiver) Args() EmailAgent_addReceiver_Params {
-	return EmailAgent_addReceiver_Params{Struct: c.Call.Args()}
+	return EmailAgent_addReceiver_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c EmailAgent_addReceiver) AllocResults() (EmailAgent_addReceiver_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_addReceiver_Results{Struct: r}, err
+	return EmailAgent_addReceiver_Results(r), err
 }
 
-type EmailAgent_send_Params struct{ capnp.Struct }
+// EmailAgent_List is a list of EmailAgent.
+type EmailAgent_List = capnp.CapList[EmailAgent]
+
+// NewEmailAgent creates a new list of EmailAgent.
+func NewEmailAgent_List(s *capnp.Segment, sz int32) (EmailAgent_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[EmailAgent](l), err
+}
+
+type EmailAgent_send_Params capnp.Struct
 
 // EmailAgent_send_Params_TypeID is the unique identifier for the type EmailAgent_send_Params.
 const EmailAgent_send_Params_TypeID = 0xa8eb16da45ad8f97
 
 func NewEmailAgent_send_Params(s *capnp.Segment) (EmailAgent_send_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_send_Params{st}, err
+	return EmailAgent_send_Params(st), err
 }
 
 func NewRootEmailAgent_send_Params(s *capnp.Segment) (EmailAgent_send_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_send_Params{st}, err
+	return EmailAgent_send_Params(st), err
 }
 
 func ReadRootEmailAgent_send_Params(msg *capnp.Message) (EmailAgent_send_Params, error) {
 	root, err := msg.Root()
-	return EmailAgent_send_Params{root.Struct()}, err
+	return EmailAgent_send_Params(root.Struct()), err
 }
 
 func (s EmailAgent_send_Params) String() string {
-	str, _ := text.Marshal(0xa8eb16da45ad8f97, s.Struct)
+	str, _ := text.Marshal(0xa8eb16da45ad8f97, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAgent_send_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAgent_send_Params) DecodeFromPtr(p capnp.Ptr) EmailAgent_send_Params {
+	return EmailAgent_send_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAgent_send_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAgent_send_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAgent_send_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAgent_send_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailAgent_send_Params) Email() (EmailMessage, error) {
-	p, err := s.Struct.Ptr(0)
-	return EmailMessage{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return EmailMessage(p.Struct()), err
 }
 
 func (s EmailAgent_send_Params) HasEmail() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailAgent_send_Params) SetEmail(v EmailMessage) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewEmail sets the email field to a newly
 // allocated EmailMessage struct, preferring placement in s's segment.
 func (s EmailAgent_send_Params) NewEmail() (EmailMessage, error) {
-	ss, err := NewEmailMessage(s.Struct.Segment())
+	ss, err := NewEmailMessage(capnp.Struct(s).Segment())
 	if err != nil {
 		return EmailMessage{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // EmailAgent_send_Params_List is a list of EmailAgent_send_Params.
-type EmailAgent_send_Params_List struct{ capnp.List }
+type EmailAgent_send_Params_List = capnp.StructList[EmailAgent_send_Params]
 
 // NewEmailAgent_send_Params creates a new list of EmailAgent_send_Params.
 func NewEmailAgent_send_Params_List(s *capnp.Segment, sz int32) (EmailAgent_send_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailAgent_send_Params_List{l}, err
-}
-
-func (s EmailAgent_send_Params_List) At(i int) EmailAgent_send_Params {
-	return EmailAgent_send_Params{s.List.Struct(i)}
-}
-
-func (s EmailAgent_send_Params_List) Set(i int, v EmailAgent_send_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailAgent_send_Params_List) String() string {
-	str, _ := text.MarshalList(0xa8eb16da45ad8f97, s.List)
-	return str
+	return capnp.StructList[EmailAgent_send_Params](l), err
 }
 
 // EmailAgent_send_Params_Future is a wrapper for a EmailAgent_send_Params promised by a client call.
@@ -2050,58 +2293,68 @@ type EmailAgent_send_Params_Future struct{ *capnp.Future }
 
 func (p EmailAgent_send_Params_Future) Struct() (EmailAgent_send_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailAgent_send_Params{s}, err
+	return EmailAgent_send_Params(s), err
 }
 
 func (p EmailAgent_send_Params_Future) Email() EmailMessage_Future {
 	return EmailMessage_Future{Future: p.Future.Field(0, nil)}
 }
 
-type EmailAgent_send_Results struct{ capnp.Struct }
+type EmailAgent_send_Results capnp.Struct
 
 // EmailAgent_send_Results_TypeID is the unique identifier for the type EmailAgent_send_Results.
 const EmailAgent_send_Results_TypeID = 0x81f33f1803485545
 
 func NewEmailAgent_send_Results(s *capnp.Segment) (EmailAgent_send_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailAgent_send_Results{st}, err
+	return EmailAgent_send_Results(st), err
 }
 
 func NewRootEmailAgent_send_Results(s *capnp.Segment) (EmailAgent_send_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return EmailAgent_send_Results{st}, err
+	return EmailAgent_send_Results(st), err
 }
 
 func ReadRootEmailAgent_send_Results(msg *capnp.Message) (EmailAgent_send_Results, error) {
 	root, err := msg.Root()
-	return EmailAgent_send_Results{root.Struct()}, err
+	return EmailAgent_send_Results(root.Struct()), err
 }
 
 func (s EmailAgent_send_Results) String() string {
-	str, _ := text.Marshal(0x81f33f1803485545, s.Struct)
+	str, _ := text.Marshal(0x81f33f1803485545, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAgent_send_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAgent_send_Results) DecodeFromPtr(p capnp.Ptr) EmailAgent_send_Results {
+	return EmailAgent_send_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAgent_send_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAgent_send_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAgent_send_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAgent_send_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // EmailAgent_send_Results_List is a list of EmailAgent_send_Results.
-type EmailAgent_send_Results_List struct{ capnp.List }
+type EmailAgent_send_Results_List = capnp.StructList[EmailAgent_send_Results]
 
 // NewEmailAgent_send_Results creates a new list of EmailAgent_send_Results.
 func NewEmailAgent_send_Results_List(s *capnp.Segment, sz int32) (EmailAgent_send_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return EmailAgent_send_Results_List{l}, err
-}
-
-func (s EmailAgent_send_Results_List) At(i int) EmailAgent_send_Results {
-	return EmailAgent_send_Results{s.List.Struct(i)}
-}
-
-func (s EmailAgent_send_Results_List) Set(i int, v EmailAgent_send_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailAgent_send_Results_List) String() string {
-	str, _ := text.MarshalList(0x81f33f1803485545, s.List)
-	return str
+	return capnp.StructList[EmailAgent_send_Results](l), err
 }
 
 // EmailAgent_send_Results_Future is a wrapper for a EmailAgent_send_Results promised by a client call.
@@ -2109,72 +2362,81 @@ type EmailAgent_send_Results_Future struct{ *capnp.Future }
 
 func (p EmailAgent_send_Results_Future) Struct() (EmailAgent_send_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailAgent_send_Results{s}, err
+	return EmailAgent_send_Results(s), err
 }
 
-type EmailAgent_addReceiver_Params struct{ capnp.Struct }
+type EmailAgent_addReceiver_Params capnp.Struct
 
 // EmailAgent_addReceiver_Params_TypeID is the unique identifier for the type EmailAgent_addReceiver_Params.
 const EmailAgent_addReceiver_Params_TypeID = 0xfacf412b11767e9e
 
 func NewEmailAgent_addReceiver_Params(s *capnp.Segment) (EmailAgent_addReceiver_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_addReceiver_Params{st}, err
+	return EmailAgent_addReceiver_Params(st), err
 }
 
 func NewRootEmailAgent_addReceiver_Params(s *capnp.Segment) (EmailAgent_addReceiver_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_addReceiver_Params{st}, err
+	return EmailAgent_addReceiver_Params(st), err
 }
 
 func ReadRootEmailAgent_addReceiver_Params(msg *capnp.Message) (EmailAgent_addReceiver_Params, error) {
 	root, err := msg.Root()
-	return EmailAgent_addReceiver_Params{root.Struct()}, err
+	return EmailAgent_addReceiver_Params(root.Struct()), err
 }
 
 func (s EmailAgent_addReceiver_Params) String() string {
-	str, _ := text.Marshal(0xfacf412b11767e9e, s.Struct)
+	str, _ := text.Marshal(0xfacf412b11767e9e, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAgent_addReceiver_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAgent_addReceiver_Params) DecodeFromPtr(p capnp.Ptr) EmailAgent_addReceiver_Params {
+	return EmailAgent_addReceiver_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAgent_addReceiver_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAgent_addReceiver_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAgent_addReceiver_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAgent_addReceiver_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailAgent_addReceiver_Params) Port() EmailSendPort {
-	p, _ := s.Struct.Ptr(0)
-	return EmailSendPort{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return EmailSendPort(p.Interface().Client())
 }
 
 func (s EmailAgent_addReceiver_Params) HasPort() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailAgent_addReceiver_Params) SetPort(v EmailSendPort) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // EmailAgent_addReceiver_Params_List is a list of EmailAgent_addReceiver_Params.
-type EmailAgent_addReceiver_Params_List struct{ capnp.List }
+type EmailAgent_addReceiver_Params_List = capnp.StructList[EmailAgent_addReceiver_Params]
 
 // NewEmailAgent_addReceiver_Params creates a new list of EmailAgent_addReceiver_Params.
 func NewEmailAgent_addReceiver_Params_List(s *capnp.Segment, sz int32) (EmailAgent_addReceiver_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailAgent_addReceiver_Params_List{l}, err
-}
-
-func (s EmailAgent_addReceiver_Params_List) At(i int) EmailAgent_addReceiver_Params {
-	return EmailAgent_addReceiver_Params{s.List.Struct(i)}
-}
-
-func (s EmailAgent_addReceiver_Params_List) Set(i int, v EmailAgent_addReceiver_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailAgent_addReceiver_Params_List) String() string {
-	str, _ := text.MarshalList(0xfacf412b11767e9e, s.List)
-	return str
+	return capnp.StructList[EmailAgent_addReceiver_Params](l), err
 }
 
 // EmailAgent_addReceiver_Params_Future is a wrapper for a EmailAgent_addReceiver_Params promised by a client call.
@@ -2182,76 +2444,85 @@ type EmailAgent_addReceiver_Params_Future struct{ *capnp.Future }
 
 func (p EmailAgent_addReceiver_Params_Future) Struct() (EmailAgent_addReceiver_Params, error) {
 	s, err := p.Future.Struct()
-	return EmailAgent_addReceiver_Params{s}, err
+	return EmailAgent_addReceiver_Params(s), err
 }
 
 func (p EmailAgent_addReceiver_Params_Future) Port() EmailSendPort {
-	return EmailSendPort{Client: p.Future.Field(0, nil).Client()}
+	return EmailSendPort(p.Future.Field(0, nil).Client())
 }
 
-type EmailAgent_addReceiver_Results struct{ capnp.Struct }
+type EmailAgent_addReceiver_Results capnp.Struct
 
 // EmailAgent_addReceiver_Results_TypeID is the unique identifier for the type EmailAgent_addReceiver_Results.
 const EmailAgent_addReceiver_Results_TypeID = 0x8e8e3d68615d430c
 
 func NewEmailAgent_addReceiver_Results(s *capnp.Segment) (EmailAgent_addReceiver_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_addReceiver_Results{st}, err
+	return EmailAgent_addReceiver_Results(st), err
 }
 
 func NewRootEmailAgent_addReceiver_Results(s *capnp.Segment) (EmailAgent_addReceiver_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return EmailAgent_addReceiver_Results{st}, err
+	return EmailAgent_addReceiver_Results(st), err
 }
 
 func ReadRootEmailAgent_addReceiver_Results(msg *capnp.Message) (EmailAgent_addReceiver_Results, error) {
 	root, err := msg.Root()
-	return EmailAgent_addReceiver_Results{root.Struct()}, err
+	return EmailAgent_addReceiver_Results(root.Struct()), err
 }
 
 func (s EmailAgent_addReceiver_Results) String() string {
-	str, _ := text.Marshal(0x8e8e3d68615d430c, s.Struct)
+	str, _ := text.Marshal(0x8e8e3d68615d430c, capnp.Struct(s))
 	return str
 }
 
+func (s EmailAgent_addReceiver_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (EmailAgent_addReceiver_Results) DecodeFromPtr(p capnp.Ptr) EmailAgent_addReceiver_Results {
+	return EmailAgent_addReceiver_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s EmailAgent_addReceiver_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s EmailAgent_addReceiver_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s EmailAgent_addReceiver_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s EmailAgent_addReceiver_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s EmailAgent_addReceiver_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s EmailAgent_addReceiver_Results) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s EmailAgent_addReceiver_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // EmailAgent_addReceiver_Results_List is a list of EmailAgent_addReceiver_Results.
-type EmailAgent_addReceiver_Results_List struct{ capnp.List }
+type EmailAgent_addReceiver_Results_List = capnp.StructList[EmailAgent_addReceiver_Results]
 
 // NewEmailAgent_addReceiver_Results creates a new list of EmailAgent_addReceiver_Results.
 func NewEmailAgent_addReceiver_Results_List(s *capnp.Segment, sz int32) (EmailAgent_addReceiver_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return EmailAgent_addReceiver_Results_List{l}, err
-}
-
-func (s EmailAgent_addReceiver_Results_List) At(i int) EmailAgent_addReceiver_Results {
-	return EmailAgent_addReceiver_Results{s.List.Struct(i)}
-}
-
-func (s EmailAgent_addReceiver_Results_List) Set(i int, v EmailAgent_addReceiver_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s EmailAgent_addReceiver_Results_List) String() string {
-	str, _ := text.MarshalList(0x8e8e3d68615d430c, s.List)
-	return str
+	return capnp.StructList[EmailAgent_addReceiver_Results](l), err
 }
 
 // EmailAgent_addReceiver_Results_Future is a wrapper for a EmailAgent_addReceiver_Results promised by a client call.
@@ -2259,122 +2530,122 @@ type EmailAgent_addReceiver_Results_Future struct{ *capnp.Future }
 
 func (p EmailAgent_addReceiver_Results_Future) Struct() (EmailAgent_addReceiver_Results, error) {
 	s, err := p.Future.Struct()
-	return EmailAgent_addReceiver_Results{s}, err
+	return EmailAgent_addReceiver_Results(s), err
 }
 
 func (p EmailAgent_addReceiver_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
 const schema_dd10df585a82c6d8 = "x\xda\x9cW}\x8c\x1ce\x19\x7f\x9eywvf\xaf" +
 	"\xbb\xdd\x1b\xdfU\xe4\x08\xb9\xa4\xb9F8\xa4\xb6GM" +
 	"L\xfd\xd8\xeb\xc1\x92\xd6\xf4tg\xf7\xda\xb4\x07hg" +
-	"w\xdf\xf6\xa6\xee\xce\\f\xe6\xca\xad\x11+J-\x06" +
+	"w\xdf\xf6\xa6\xee\xce\\f\xe6\xca\xad\x11+\x0a\x1e\x06" +
 	"\x81\xb6\xc4\xa0\x86\x9a\x18!\xa1\xa6U\x89&\x1a\xa4\xf1" +
-	"\x0f\xad\xd8Z\x82\x94\x92\xb4\x86\x93BZ\xe1\x94\xd4\x18" +
-	"\x89\"\x91\x8cy\xdf\xdd\xf9\xb8\xb9\xbd\xa3\xe1\xbf\xdd\xdf" +
-	"<\xf3{~\xef\xf3\xf5>\xb3v\x7fjTZ'\x7f" +
-	"q\x05\x80~\x9f\x9c\xf6K[7\x91\x0f\x17\xffu/" +
-	"h\xd7 @J\x01\xb8\xe5;\xf2*\x84\x94\xef>\xfb" +
-	"\xc7\xe9\x07?h?\x00Z\x96\xf8\xe7\x7f\xff\xf5\xc9\xed" +
-	"\xaf\xf4\xcf\x01 \xbdG~\x9a\xee\x97\x15\x00z\xaf|" +
-	"\x80\xbe\xc4\x7f\xf9\xd9[\xef2\xa6>\xfd\xd0C\x1d\x1a" +
-	"\x199\xcf\x09y\x12\x01\xe9)\xb9\x08\xe8\x7f\xf2\xd7\x83" +
-	"\x85swl}\x18\xb4U\xe8\xcf\x9f\xffIi\xe2\xfe" +
-	"3?\x02Y\xe2\x86\xf3\xb2\x83\xf4]\xc1\xf8_\xf9n" +
-	"@\xff\xc5#\xdf\xfa\x9f\x91m\x1f\x04m\x00\xfd\xd3\xcf" +
-	"\x9c\xda\xf2\x9b\xeb\xbf\xf1f\xd7xGz\x04\xa9\x99\xe6" +
-	"\xc6,\xcd\x8d\xff\xf6\xb9\x13O}\xe9\xf0\x95G\xb81" +
-	"t\x8dN\xa5\xf7p\xd7/\x09\x83\xc3\xbf\xba\xe3\xd8\xa1" +
-	"\xc3\xb7?*\xd8&\xdf\x19\xbf]\xfa\xe7\x03o\x83L" +
-	"\xb8\xe1\xc7\x95\x11\xa4%\x85\xb3mT~\x0a\xe8\x9f\xbb" +
-	"\xb4\xed/'\x7f;\xfbX\x97M\x1cdN\x11l\xf3" +
-	"\x0a?H\xa8=\x11\x96[2\xea\x07\x90^\xab^\x03" +
-	"@W\xab\x0a]\xad~\x04\xc0\xbf\xb2\xe3\xcc\x96\x9b~" +
-	"y\xfc\x898\xdd\xf5\xea\x08\xa7[\xadr\xbaG\x1f>" +
-	"^\xfa\xf3\x87\xfe\xfed<p%u\x80\x1b\x8c\x0b\x83" +
-	"W?\xb3\xed\x9bW^>~\x0c\xb4,F\xfe\xc41" +
-	"iK=M\xdb*\xff5\xa3\xf2\x93~~\xe8\x86#" +
-	"\x03'3?O\xd8\xf2\xac\xd2\x17\xd4\xd7\xe8\x9c\xb0\xbd" +
-	"\xa0\xbe\x0e\xf8\x8fg~|\xe3#_vN\x08]\"" +
-	"\xed'2\x0eO\xfb\xfao\xeb/\x9e<\xf0\xda\xb3q" +
-	"\xc5G3c\\\xd0S\x19.h\xf4\xe0\xa5U\xb7\x1a" +
-	"\xdf;\x137x\x81\xbf\x8btN\x18|\xec\xe6m\xe6" +
-	"\xeb;\xdez\x1e\xf4,\xc6ed\xb9\xf3w3\xa7i" +
-	"\xa6\x8f\xbf#\xf7\xbd\"\x01\xfa\xe7\xdf\xbe\xee\xd4_\x7f" +
-	"Q\xff\x13DJXn\x03W\xe2\x1f\xbd\xee\xc8\xe9\xff" +
-	"l?\xb7\xa8\x00\xc7sg\xe9\x8e\x1cg\xdb\x9a;@" +
-	"\x8f\xf2_\xfe\x9dO\x7f\xe1\xdf\x15\xf7\xf0\xe5\x18\xcd\xa1" +
-	"\x0eMX?I\x9av\xee,\xdd\x9f\xe3\xf9:\x94;" +
-	"@/\x0b\x9a\xb0<\x92\xc6\xcf\xe5\xce\xd2\x0b\xc2\xf8r" +
-	"N\xe9\x1a\xff\xe0\xab{\xb5\x9b6>\xffN<w\xcf" +
-	"\xe5*<\x12\x17rE\xb0}\xd62\xcc\xe6\x9a\xbaA" +
-	"\xa6\xad\xe9\x0d%\xfeg\xe3nfyk\\f5\x86" +
-	"*\xcc\x9dQ\x9a\x9e\x1bZa`U\xec\x98\x95\x11u" +
-	"\x95\xc8\x00a\x91`\xd0\xad\xda\xbaa\x90\xb4\xd5\x0ab" +
-	"(\x02\x83\x16\xd4\xae\xad\x81\xa4iJ\x9e{\x19E\xdf" +
-	"h4*\xac\xceLP\xf62g\x14\xcb\x88\xa1\xc7T" +
-	"BW`\xba\x979B^\x93x\xae\x9e\")\x80\x14" +
-	"\x02h\xb9\x0d\x00\xbaJP/HX\x9c2\xacF\x93" +
-	"\xa1\xe6_\x1c\xdb\xb9\xf3\xd8\xd0[\xdf\x05@\xd4 A" +
-	"\xbe\x8d9\xe6.\x935\x84\x93*\xb3\x1ae\xdb\xf1\xd6" +
-	"\x94\xed\xbb\x99S\x1b\xb4g'\x8c\xdd\x9dS\x06.n" +
-	"\xdc\x03\xa0\xdf@P_/\xa1\x86X@\x0e\xae\x1b\x06" +
-	"\xd0?JP\xff\x84\x84\xfe^\xc1X7 \xef\x99\xb6" +
-	"\x85\xfdQ{\x03b?`~\xdav<\xec\x8ffH" +
-	"\x07\xee\x91\x8b\xab\x91\xf3\xd9^r&\x01\xf4\xb5\x04\xf5" +
-	"OI\xe8\xefr\xec\xd6&\xd3\xf2\x00\x00\xfb\xa3f\xed" +
-	":m\x9a\xae\xb7\xb9\xb1\xc9\x04by\x98\x05\x09\xb3\xd0" +
-	"+\xfa\xdd(9k\xc4\xe1\xda\x02\x1b*\x1by\xc7h" +
-	"\xb9q5#\x00\xfa\x10A}mL\xcd\xcd{\xa2\xe0" +
-	"\x0czFms\x03s a\x0e\x16\x85J\x8b\xaa;" +
-	"\x91*\xb2(U\x8bb\x92\x0dU\x94\xf8\xf1o#\xa8" +
-	"\x97c*\xc6\xc7\x00\xf4M\x04\xf5\x09\x095I*\xa0" +
-	"\x04\xa0\xe9\xbc^\xb6\x10\xd4\xb7\x87yc\x0e\x90H\xe1" +
-	">\xa3\xd1p\x98\xeb\x06\xa1)6\xec\x96aZ\xcbD" +
-	"*\xcc\xd9\x94iy\x1b;o\x87\x91\x8aU\xeaXT" +
-	"\xa9\xa1\x93\xc5\xe9Y\xfa\xfc]?\xe8\xe9)\x8c_^" +
-	"X\xf3;\x91\xb1gA\xe1\xa1!\xb2\xaeb\xecZ\x01" +
-	"\x88\x06\x0e\xc0rU'\x86@y\xd0HJ\x1f\x89\xa4" +
-	"\x0f\x8a\xd7\xb1?\x1a\xa9K\x16sl\xb0\x94\x0d\xc7 " +
-	"\xef\x9fS\x8a8;\x81\x03H4\xc5X\xaf2\x1c\x8e" +
-	":%\x99\xd6\xbce\xb4\xd8\xa2\xa4\xc6\xfcx\x9eQ\x9f" +
-	"j)\xdd\x99\xd7\x1fz2j\x00\xfaN\x82z3\xe6" +
-	"\xc9\xfc>\x80\xde$\xa8\xcf\xc6Jm\xa6\x02\xa0{\x04" +
-	"\xf5\xafI\xa8\x11R@\x02\xa0\xdd\xc3\x85\xce\x12\xd4\xef" +
-	"\x93\xd0\xaf\xdb\x96\xc7,o\x02\x94\xf6t$\xa6\x8b\xde" +
-	"\x86\xa6;m\xbb\xa6g\x12\xdbJ>\xdc\x0c\xd8\x08\xb0" +
-	"}],\xec\xb1\xab,\xd1\x0a\x1btg\xe2\xc3\xbeG" +
-	"\xf3\xeff\xde\xe6\xce\xb5\xd0\xf4\\\x88\xa7o J\x1f" +
-	"1\x1b\xcb\xf8\xee9H\x02\xdf\xef\xd5\x1fK'h\x9c" +
-	"\xb9\xae\xb1\x9bu\x0aa}\xc0B\xef\xc2a\x80\xeav" +
-	"$Xm\xa0\x84\xdd\x04QC\xc0wrx\x0ay\x8e" +
-	"P\xe4\x882\x1c\x00\xa8\xee\xe4\xf8W8N$\x91&" +
-	"\xda\x16\xb8\xc7\xf1\x83\x1cO\x91\x02\xa6\x00\xe8\x83\xb8\x0a" +
-	"\xa0z?\xc7\x1f\xe7\xb8\x9c*\xa0\x0c@\x7f\x88c\x00" +
-	"\xd5\xc78\xfe$\xc7\xd3r\x01\xd3\x00\xf4\x09\xac\x00T" +
-	"\x1f\xe7\xf8\xcf8\xae\xa4\x0b\xfcJ\xa6\xc7q\x12\xa0z" +
-	"\x8c\xe3\x7f\xe0\xb8\xaa\x14P\x05\xa0'\x85\xfd\xef8~" +
-	"\x91\xe3\x19\xb5\x80\x19\x00:'\xf8\xcfs\xfc\x12\xc7\xfb" +
-	"2\x05\xec\x03\xa0\xaf\x8as\xbd\xcc\xf178\xbe\xa2\xaf" +
-	"\x80+\xf8B \xf0\x8b\x1c\x7f\x93\xe3\xd9\x15\x05\xcc\x02" +
-	"\xd0y\xac\x01T\xdf\xe0xJ\x920\xdf0<\x862" +
-	"H(\x03\xe6\xf9\xbd\xb1x\"\x11\xcf\xc6\x95\x80e\x82" +
-	"\x89g+\x01I\xbd\xbe\xe43\xa5\xb6\xcc\xc3}\x0e\x9b" +
-	"n\xb6'\xec\x1e\x03\xb0\xd5Il\xbc\xc2}\x87\xedb" +
-	"\x0e\xb3\xea@\x98\x1bp\xf2g+\x01}\xd3\xaa\x08." +
-	"@;\xf1h\x9f;S\xdb\xc3\xea\xe1-\x97\xf7\xd8l" +
-	"\xf4g\xcak5C\x07F\xa7\xdd\x19(\x96\xe7F\xaa" +
-	"\xc3\xe5\xb5\xa3\xfa=Gg\xa5\xc8\x16\xb6\x94\x94l\x03" +
-	"t\xa2\x15*\xd8\x0f1\xd8o\xb5u#\xc1\x0a\x15|" +
-	"A`\xb0\xda\x06+\xd4\xa0h\xc9\xd1\xee\xe5\xd5.\xb5" +
-	"@1\xcc\xe6\xc2\x1d\x8a,\xd5\xc8\xc5\xb2\x18\xed=\xe4" +
-	"-\xbc\\\xa2\x8f\x9d\xe4\xe5\xd2\x95\x1e|C`\xb0*" +
-	"\xc7\xb6\xbf\xe0s\x05\xf9:\x0f|\x9fOl\x7f\xc1\x10" +
-	"\x02\x85\xb9\xeeB\xe5R\xf2\xd6\xc3\xa6\x10\x14}/\xf5" +
-	"\xb8\xed\xaev}\x14\x87\xc7\x053g8\x9a9\x9d%" +
-	"M\x8b]\x95b!\xf9\x7f\x00\x00\x00\xff\xff\x9c\x8a\xf4" +
-	"8"
+	"\x0f\xad\xd8Z\x82\x94\x92\xb4\x86\x93BZ\xa1Jj\x8c" +
+	"D\x91H\xc6\xbc\xef\xee|\xdc\xdc\xde\xb5\xe1\xbf\xdd\xdf" +
+	"<\xf3{~\xef\xf3\xf5>\xb3v.5\x9aZ\x97\xfb" +
+	"\xe2\x0a\x90\xf4\xfb\xe4\xb4_\xda\xba\x89|\xb8\xf8\xaf{" +
+	"A\xbb\x06\x01R\x0a\xc0-\xdf\x91W!\xa4|\xf7\xb9" +
+	"?N?\xf4A\xfbA\xd0\xb2\xc4?\xfb\xfb\xafOn" +
+	"\x7f\xb5\x7f\x1e\x00\xe9=\xf23\xf4~Y\x01\xa0\xf7\xca" +
+	"s\xf4e\xfe\xcb\xcf\xdez\x971\xf5\xe9\x87\x1f\xee\xd0" +
+	"\xc8\xc8y\x8e\xc9\x93\x08HO\xc8E@\xff\x93\xbf\x1e" +
+	",\x9c\xb9c\xeb#\xa0\xadB\xff\xd2\xd9\x9f\x94&\x1e" +
+	"8\xf5#\x90%nxIv\x90\xbe'\x18\xff+\xdf" +
+	"\x0d\xe8\xbft\xe8[\xff3\xb2\xed\xfd\xa0\x0d\xa0\x7f\xf2" +
+	"\xd9\x13[~s\xfd7\xde\xea\x1a\xefH\x8f 5\xd3" +
+	"\xdc\x98\xa5\xb9\xf1\xdf>w\xec\xe9/\x1d\xbc\xfc(7" +
+	"\x86\xae\xd1\x89\xf4\x1e\xee\xfaeap\xf0Ww\x1c9" +
+	"p\xf0\xf6\xc7\x04\xdb\xe4\xbb\xe3\xb7K\xff|\xf0\x1d\x90" +
+	"\x097\xfc\xb82\x82\xb4\xa4p\xb6\x8d\xcaO\x01\xfd3" +
+	"\x17\xb6\xfd\xe5\xf8og\x1f\xef\xb2\x89\x83\xcc+\x82\xed" +
+	"\x92\xc2\x0f\x12jO\x84\xe5\x96\x8c\xfa\x01\xa4\xd7\xaa\xd7" +
+	"\x00\xd0\xd5\xaaBW\xab\x1f\x01\xf0/\xef8\xb5\xe5\xa6" +
+	"_\x1e}2Nw\xbd:\xc2\xe9V\xab\x9c\xee\xb1G" +
+	"\x8e\x96\xfe\xfc\xa1\xbf?\x15\x0f\\I\x1d\xe0\x06\xe3\xc2" +
+	"\xe0\xb5\xcfl\xfb\xe6\xe5W\x8e\x1e\x01-\x8b\x91?q" +
+	"L\xdaRO\xd2\xb6\xca\x7f\xcd\xa8\xfc\xa4\x9f\x1f\xba\xe1" +
+	"\xd0\xc0\xf1\xcc\xcf\x13\xb6<\xab\xf4E\xf5u:/l" +
+	"\xcf\xa9o\x00\xfe\xe3\xd9\x1f\xdf\xf8\xe8\x97\x9dcB\x97" +
+	"H\xfb\xb1\x8c\xc3\xd3\xbe\xfe\xdb\xfaK\xc7\xe7^\x7f." +
+	"\xae\xf8pf\x8c\x0bz:\xc3\x05\x8d\xee\xbf\xb0\xeaV" +
+	"\xe3{\xa7\xe2\x06/\xf2w\x91\xce\x0b\x83\x8f\xdd\xbc\xcd" +
+	"|c\xc7\xdb/\x80\x9e\xc5\xb8\x8c,w\xfe^\xe6$" +
+	"\xcd\xf4\xf1w\xe4\xbeW%@\xff\xec;\xd7\x9d\xf8\xeb" +
+	"/\xea\x7f\x82H\x09\xcbm\xe0J\xfc\xc3\xd7\x1d:\xf9" +
+	"\x9f\xedg\x16\x15\xe0x\xee4\xdd\x91\xe3l[ss" +
+	"\xf40\xff\xe5\xdf\xf9\xcc\x17\xfe]q\x0f^\x8c\xd1\x1c" +
+	"\xe8\xd0\x84\xf5\x93\xa4i\xe7N\xd3\xfbs<_\x07r" +
+	"s\xf4\xa2\xa0\x09\xcb#i\xfc|\xee4='\x8c/" +
+	"\xe6\x94\xae\xf1\x0f\xbe\xbaW\xbbi\xe3\x0b\xef\xc6s\xf7" +
+	"|\xae\xc2#q.W\x04\xdbg-\xc3l\xae\xa9\x1b" +
+	"d\xda\x9a\xdeP\xe2\x7f6\xeef\x96\xb7\xc6eVc" +
+	"\xa8\xc2\xdc\x19\xa5\xe9\xb9\xa1\x15\x06V\xc5\x8eY\x19Q" +
+	"W\x89\x0c\x10\x16\x09\x06\xdd\xaa\xad\x1b\x06I[\xad " +
+	"\x86\"0hA\xed\xda\x1aH\x9a\xa6\xe4\xb9\x97Q\xf4" +
+	"\x8dF\xa3\xc2\xea\xcc\x04e/sF\xb1\x8c\x18zL" +
+	"%t\x05\xa6{\x99#\xe45\x89\xe7\xea)\x92\x02H" +
+	"!\x80\x96\xdb\x00\xa0\xab\x04\xf5\x82\x84\xc5)\xc3j4" +
+	"\x19j\xfe\xf9\xb1\x9d;\x8f\x0c\xbd\xfd]\x00D\x0d\x12" +
+	"\xe4\xdb\x98c\xee2YC8\xa92\xabQ\xb6\x1do" +
+	"M\xd9\xbe\x9b9\xb5A{v\xc2\xd8\xdd9e\xe0\xe2" +
+	"\xc6=\x00\xfa\x0d\x04\xf5\xf5\x12j\x88\x05\xe4\xe0\xbaa" +
+	"\x00\xfd\xa3\x04\xf5OH\xe8\xef\x15\x8cu\x03\xf2\x9ei" +
+	"[\xd8\x1f\xb57 \xf6\x03\xe6\xa7m\xc7\xc3\xfeh\x86" +
+	"t\xe0\x1e\xb9\xb8\x1a9\x9f\xed%g\x12@_KP" +
+	"\xff\x94\x84\xfe.\xc7nm2-\x0f\x00\xb0?j\xd6" +
+	"\xae\xd3\xa6\xe9z\x9b\x1b\x9bL \x96\x87Y\x900\x0b" +
+	"\xbd\xa2\xdf\x8d\x92\xb3F\x1c\xae-\xb0\xa1\xb2\x91w\x8c" +
+	"\x96\x1bW3\x02\xa0\x0f\x11\xd4\xd7\xc6\xd4\xdc\xbc'\x0a" +
+	"\xce\xa0g\xd4670\x07\x12\xe6`Q\xa8\xb4\xa8\xba" +
+	"\x13\xa9\"\x8bR\xb5(&\xd9PE\x89\x1f\xff6\x82" +
+	"z9\xa6b|\x0c@\xdfDP\x9f\x90P\x93\xa4\x02" +
+	"J\x00\x9a\xce\xebe\x0bA}{\x987\xe6\x00\x89\x14" +
+	"\xee3\x1a\x0d\x87\xb9n\x10\x9ab\xc3n\x19\xa6\xb5L" +
+	"\xa4\xc2\x9cM\x99\x96\xb7\xb1\xf3v\x18\xa9X\xa5\x8eE" +
+	"\x95\x1a:Y\x9c\x9e\xa5\xcf\xdf\xf5\x83\x9e\x9e\xc2\xf8\xe5" +
+	"\x855\xbf\x13\x19{\x16\x14\x1e\x1a\"\xeb*\xc6\xae\x15" +
+	"\x80h\xe0\x00,Wub\x08\x94\x07\x8d\xa4\xf4\x91H" +
+	"\xfa\xa0x\x1d\xfb\xa3\x91\xbad1\xc7\x06K\xd9p\x0c" +
+	"\xf2\xfe9\xa5\x88\xb3\x138\x80DS\x8c\xf5*\xc3\xe1" +
+	"\xa8S\x92i\xcd[F\x8b-Jj\xcc\x8f\xe7\x19\xf5" +
+	"\xa9\x96\xd2\x9dy\xfd\xa1'\xa3\x06\xa0\xef$\xa87c" +
+	"\x9e\xcc\xef\x03\xe8M\x82\xfal\xac\xd4f*\x00\xbaG" +
+	"P\xff\x9a\x84\x1a!\x05$\x00\xda=\\\xe8,A\xfd" +
+	">\x09\xfd\xbamy\xcc\xf2&@iOGb\xba\xe8" +
+	"mh\xba\xd3\xb6kz&\xb1\xad\xe4\xc3\xcd\x80\x8d\x00" +
+	"\xdb\xd7\xc5\xc2\x1e\xbb\xca\x12\xad\xb0Aw&>\xec{" +
+	"4\xffn\xe6m\xee\\\x0bM\xcf\x85x\xfa\x06\xa2\xf4" +
+	"\x11\xb3\xb1\x8c\xef\x9e\x83$\xf0}\xa5\xfeX:A\xe3" +
+	"\xccu\x8d\xdd\xacS\x08\xeb\x03\x16z\x17\x0e\x03T\xb7" +
+	"#\xc1j\x03%\xec&\x88\x1a\x02\xbe\x93\xc3S\xc8s" +
+	"\x84\"G\x94\xe1\x00@u'\xc7\xbf\xc2q\"\x894" +
+	"\xd1\xb6\xc0=\x8e\xef\xe7x\x8a\x140\x05@\x1f\xc2U" +
+	"\x00\xd5\x078\xfe\x04\xc7\xe5T\x01e\x00\xfaC\x1c\x03" +
+	"\xa8>\xce\xf1\xa78\x9e\x96\x0b\x98\x06\xa0Ob\x05\xa0" +
+	"\xfa\x04\xc7\x7f\xc6q%]\xe0W2=\x8a\x93\x00\xd5" +
+	"#\x1c\xff\x03\xc7U\xa5\x80*\x00=.\xec\x7f\xc7\xf1" +
+	"\xf3\x1c\xcf\xa8\x05\xcc\x00\xd0y\xc1\x7f\x96\xe3\x178\xde" +
+	"\x97)`\x1f\x00}M\x9c\xeb\x15\x8e\xbf\xc9\xf1\x15}" +
+	"\x05\\\xc1\x17\x02\x81\x9f\xe7\xf8[\x1c\xcf\xae(`\x16" +
+	"\x80^\xc2\x1a@\xf5M\x8e\xa7$\x09\xf3\x0d\xc3c(" +
+	"\x83\x842`\x9e\xdf\x1b\x8b'\x12\xf1l\\\x09X&" +
+	"\x98x\xb6\x12\x90\xd4\xebK>Sj\xcb<\xdc\xe7\xb0" +
+	"\xe9f{\xc2\xee1\x00[\x9d\xc4\xc6+\xdcw\xd8." +
+	"\xe60\xab\x0e\x84\xb9\x01'\x7f\xb6\x12\xd07\xad\x8a\xe0" +
+	"\x02\xb4\x13\x8f\xf6\xb93\xb5=\xac\x1e\xdery\x8f\xcd" +
+	"F\x7f\xa6\xbcV3t`t\xda\x9d\x81byn\xa4" +
+	":\\^;\xaa\xaf8:+E\xb6\xb0\xa5\xa4d\x1b" +
+	"\xa0\x13\xadP\xc1~\x88\xc1~\xab\xad\x1b\x09V\xa8\xe0" +
+	"\x0b\x02\x83\xd56X\xa1\x06EK\x8ev/\xafv\xa9" +
+	"\x05\x8aa6\x17\xeePd\xa9F.\x96\xc5h\xef!" +
+	"o\xe1\xe5\x12}\xec$/\x97\xae\xf4\xe0\x1b\x02\x83U" +
+	"9\xb6\xfd\x05\x9f+\xc8\xd7y\xe0\xfb|b\xfb\x0b\x86" +
+	"\x10(\xccu\x17*\x97\x92\xb7\x1e6\x85\xa0\xe8{\xa9" +
+	"\xc7mw\xb5\xeb\xa38<.\x989\xc3\xd1\xcc\xe9," +
+	"iZ\xec\xaa\x14\x0b\xc9\xff\x03\x00\x00\xff\xffh\xe1\xf4" +
+	"F"
 
 func init() {
 	schemas.Register(schema_dd10df585a82c6d8,

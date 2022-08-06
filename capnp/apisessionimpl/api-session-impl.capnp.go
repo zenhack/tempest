@@ -12,7 +12,7 @@ import (
 	websession "zenhack.net/go/sandstorm/capnp/websession"
 )
 
-type PersistentApiSession struct{ Client *capnp.Client }
+type PersistentApiSession capnp.Client
 
 // PersistentApiSession_TypeID is the unique identifier for the type PersistentApiSession.
 const PersistentApiSession_TypeID = 0xaca1efb8eb6cd18a
@@ -28,9 +28,9 @@ func (c PersistentApiSession) Get(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Post(ctx context.Context, params func(websession.WebSession_post_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -44,9 +44,9 @@ func (c PersistentApiSession) Post(ctx context.Context, params func(websession.W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) OpenWebSocket(ctx context.Context, params func(websession.WebSession_openWebSocket_Params) error) (websession.WebSession_openWebSocket_Results_Future, capnp.ReleaseFunc) {
@@ -60,9 +60,9 @@ func (c PersistentApiSession) OpenWebSocket(ctx context.Context, params func(web
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_openWebSocket_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Put(ctx context.Context, params func(websession.WebSession_put_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -76,9 +76,9 @@ func (c PersistentApiSession) Put(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Delete(ctx context.Context, params func(websession.WebSession_delete_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -92,9 +92,9 @@ func (c PersistentApiSession) Delete(ctx context.Context, params func(websession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) PostStreaming(ctx context.Context, params func(websession.WebSession_postStreaming_Params) error) (websession.WebSession_postStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -108,9 +108,9 @@ func (c PersistentApiSession) PostStreaming(ctx context.Context, params func(web
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_postStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) PutStreaming(ctx context.Context, params func(websession.WebSession_putStreaming_Params) error) (websession.WebSession_putStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -124,9 +124,9 @@ func (c PersistentApiSession) PutStreaming(ctx context.Context, params func(webs
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_putStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Propfind(ctx context.Context, params func(websession.WebSession_propfind_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -140,9 +140,9 @@ func (c PersistentApiSession) Propfind(ctx context.Context, params func(websessi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Proppatch(ctx context.Context, params func(websession.WebSession_proppatch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -156,9 +156,9 @@ func (c PersistentApiSession) Proppatch(ctx context.Context, params func(websess
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Mkcol(ctx context.Context, params func(websession.WebSession_mkcol_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -172,9 +172,9 @@ func (c PersistentApiSession) Mkcol(ctx context.Context, params func(websession.
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Copy(ctx context.Context, params func(websession.WebSession_copy_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -188,9 +188,9 @@ func (c PersistentApiSession) Copy(ctx context.Context, params func(websession.W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Move(ctx context.Context, params func(websession.WebSession_move_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -204,9 +204,9 @@ func (c PersistentApiSession) Move(ctx context.Context, params func(websession.W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Lock(ctx context.Context, params func(websession.WebSession_lock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -220,9 +220,9 @@ func (c PersistentApiSession) Lock(ctx context.Context, params func(websession.W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Unlock(ctx context.Context, params func(websession.WebSession_unlock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -236,9 +236,9 @@ func (c PersistentApiSession) Unlock(ctx context.Context, params func(websession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Acl(ctx context.Context, params func(websession.WebSession_acl_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -252,9 +252,9 @@ func (c PersistentApiSession) Acl(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Report(ctx context.Context, params func(websession.WebSession_report_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -268,9 +268,9 @@ func (c PersistentApiSession) Report(ctx context.Context, params func(websession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Options(ctx context.Context, params func(websession.WebSession_options_Params) error) (websession.WebSession_Options_Future, capnp.ReleaseFunc) {
@@ -284,9 +284,9 @@ func (c PersistentApiSession) Options(ctx context.Context, params func(websessio
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Options_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Patch(ctx context.Context, params func(websession.WebSession_patch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -300,9 +300,9 @@ func (c PersistentApiSession) Patch(ctx context.Context, params func(websession.
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -316,11 +316,9 @@ func (c PersistentApiSession) AddRequirements(ctx context.Context, params func(s
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentApiSession) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -334,20 +332,30 @@ func (c PersistentApiSession) Save(ctx context.Context, params func(persistent.P
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentApiSession) AddRef() PersistentApiSession {
-	return PersistentApiSession{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentApiSession(capnp.Client(c).AddRef())
 }
 
 func (c PersistentApiSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentApiSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentApiSession) DecodeFromPtr(p capnp.Ptr) PersistentApiSession {
+	return PersistentApiSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentApiSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentApiSession_Server is a PersistentApiSession with a local implementation.
@@ -394,15 +402,15 @@ type PersistentApiSession_Server interface {
 }
 
 // PersistentApiSession_NewServer creates a new Server from an implementation of PersistentApiSession_Server.
-func PersistentApiSession_NewServer(s PersistentApiSession_Server, policy *server.Policy) *server.Server {
+func PersistentApiSession_NewServer(s PersistentApiSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentApiSession_Methods(nil, s), s, c, policy)
+	return server.New(PersistentApiSession_Methods(nil, s), s, c)
 }
 
 // PersistentApiSession_ServerToClient creates a new Client from an implementation of PersistentApiSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentApiSession_ServerToClient(s PersistentApiSession_Server, policy *server.Policy) PersistentApiSession {
-	return PersistentApiSession{Client: capnp.NewClient(PersistentApiSession_NewServer(s, policy))}
+func PersistentApiSession_ServerToClient(s PersistentApiSession_Server) PersistentApiSession {
+	return PersistentApiSession(capnp.NewClient(PersistentApiSession_NewServer(s)))
 }
 
 // PersistentApiSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -655,17 +663,26 @@ func PersistentApiSession_Methods(methods []server.Method, s PersistentApiSessio
 	return methods
 }
 
-const schema_a949cfa7be07085b = "x\xda2\xa8cq`2d\xcdWf`\x08\x9e\xc3" +
-	"\xc8\xca\xf6\xbf\xebb\xce\xeb\x1d\xef\x17\xaea\x10\x14g" +
-	"\xfe\x1f\xcd\xc1\xbeo\xf9y\xcf\x95\x0c\x0c\x8c\xc6s\x05" +
-	"\x93\x18\x857\x0a\xb230\x08\xaf\x15d\x17^+\xa8" +
-	"\xce\xf0\x1f\x0a\x93\xfe'\x16d\xea\x16\xa7\x16\x17\xb3d" +
-	"\xe6\xe7\xe9f\xe6\x16\xe4\xe8%'\x16\xe4\x15X\x05\xa4" +
-	"\x16\x15g\x16\x97\xa4\xe6\x958\x16d\x06\xa7\x16\x17\xb3" +
-	"g\xe6\xe7\x0502\x060\xb3\x06r02\xfe?~" +
-	"V\xf5X\xe5\xe3\xca\x13\x0c\x0c\x0c\xff\xb7\\\xddWs" +
-	"\xfdm\xcfa\x06\x06\x06@\x00\x00\x00\xff\xff\xf9\x1c6" +
-	"X"
+// PersistentApiSession_List is a list of PersistentApiSession.
+type PersistentApiSession_List = capnp.CapList[PersistentApiSession]
+
+// NewPersistentApiSession creates a new list of PersistentApiSession.
+func NewPersistentApiSession_List(s *capnp.Segment, sz int32) (PersistentApiSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentApiSession](l), err
+}
+
+const schema_a949cfa7be07085b = "x\xda2\xe8fq`1\xe4=\xae\xcc\xc0\x14\xbc\x80" +
+	"\x91\x95\xed\x7f\xd7\xc5\x9c\xd7;\xde/\\\xc3 (\xce" +
+	"\xfc?\x9a\x83}\xdf\xf2\xf3\x9e+\x19\x18\x18\x8dO\x0a" +
+	"&1\x0a\xdf\x15dg`\x10\xbe)\xc8.|SP" +
+	"\x9d\xe1?\x14\xe6\xfeO,\xc8\xd4-N-.f\xc9" +
+	"\xcc\xcf\xd3\xcd\xcc-\xc8\xd1KN,\xc8+\xb0\x0aH" +
+	"-*\xce,.I\xcd+q,\xc8\x0cN-.f" +
+	"\xcf\xcc\xcf\x0b`d\x0c`f\x0d\xe4`d\xfc\x7f\xfc" +
+	"\xac\xea\xb1\xca\xc7\x95'\x18\x18\x18\xfeo\xb9\xba\xaf\xe6" +
+	"\xfa\xdb\x9e\xc3\x0c\x0c\x0c\x80\x00\x00\x00\xff\xff\x83/7" +
+	"\x88"
 
 func init() {
 	schemas.Register(schema_a949cfa7be07085b,

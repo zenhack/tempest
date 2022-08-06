@@ -159,7 +159,7 @@ interface TcpPort @0xeab20e1af07806b4 {
 interface UdpPort @0xc6212e1217d001ce {
   # Like `TcpPort` but for datagrams.
 
-  send @0 (message :Data, returnPort :UdpPort);
+  send @0 (message :Data $Go.name("msg"), returnPort :UdpPort);
   # Send a datagram.
   #
   # As always with UDP, successful return does not indicate successful delivery. On the receiving

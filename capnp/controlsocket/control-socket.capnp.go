@@ -16,7 +16,7 @@ const (
 	Controller_socketPath = "/var/sandstorm/socket/control"
 )
 
-type Controller struct{ Client *capnp.Client }
+type Controller capnp.Client
 
 // Controller_TypeID is the unique identifier for the type Controller.
 const Controller_TypeID = 0xd2279138704f4cad
@@ -32,9 +32,9 @@ func (c Controller) DevShell(ctx context.Context, params func(Controller_devShel
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Controller_devShell_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Controller_devShell_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Controller_devShell_Results_Future{Future: ans.Future()}, release
 }
 func (c Controller) Dev(ctx context.Context, params func(Controller_dev_Params) error) (Controller_dev_Results_Future, capnp.ReleaseFunc) {
@@ -48,20 +48,30 @@ func (c Controller) Dev(ctx context.Context, params func(Controller_dev_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Controller_dev_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Controller_dev_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Controller_dev_Results_Future{Future: ans.Future()}, release
 }
 
 func (c Controller) AddRef() Controller {
-	return Controller{
-		Client: c.Client.AddRef(),
-	}
+	return Controller(capnp.Client(c).AddRef())
 }
 
 func (c Controller) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c Controller) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (Controller) DecodeFromPtr(p capnp.Ptr) Controller {
+	return Controller(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c Controller) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A Controller_Server is a Controller with a local implementation.
@@ -72,15 +82,15 @@ type Controller_Server interface {
 }
 
 // Controller_NewServer creates a new Server from an implementation of Controller_Server.
-func Controller_NewServer(s Controller_Server, policy *server.Policy) *server.Server {
+func Controller_NewServer(s Controller_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(Controller_Methods(nil, s), s, c, policy)
+	return server.New(Controller_Methods(nil, s), s, c)
 }
 
 // Controller_ServerToClient creates a new Client from an implementation of Controller_Server.
 // The caller is responsible for calling Release on the returned Client.
-func Controller_ServerToClient(s Controller_Server, policy *server.Policy) Controller {
-	return Controller{Client: capnp.NewClient(Controller_NewServer(s, policy))}
+func Controller_ServerToClient(s Controller_Server) Controller {
+	return Controller(capnp.NewClient(Controller_NewServer(s)))
 }
 
 // Controller_Methods appends Methods to a slice that invoke the methods on s.
@@ -125,13 +135,13 @@ type Controller_devShell struct {
 
 // Args returns the call's arguments.
 func (c Controller_devShell) Args() Controller_devShell_Params {
-	return Controller_devShell_Params{Struct: c.Call.Args()}
+	return Controller_devShell_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Controller_devShell) AllocResults() (Controller_devShell_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_devShell_Results{Struct: r}, err
+	return Controller_devShell_Results(r), err
 }
 
 // Controller_dev holds the state for a server call to Controller.dev.
@@ -142,60 +152,79 @@ type Controller_dev struct {
 
 // Args returns the call's arguments.
 func (c Controller_dev) Args() Controller_dev_Params {
-	return Controller_dev_Params{Struct: c.Call.Args()}
+	return Controller_dev_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Controller_dev) AllocResults() (Controller_dev_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_dev_Results{Struct: r}, err
+	return Controller_dev_Results(r), err
 }
 
-type Controller_devShell_Params struct{ capnp.Struct }
+// Controller_List is a list of Controller.
+type Controller_List = capnp.CapList[Controller]
+
+// NewController creates a new list of Controller.
+func NewController_List(s *capnp.Segment, sz int32) (Controller_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[Controller](l), err
+}
+
+type Controller_devShell_Params capnp.Struct
 
 // Controller_devShell_Params_TypeID is the unique identifier for the type Controller_devShell_Params.
 const Controller_devShell_Params_TypeID = 0x9780c0aba70a923b
 
 func NewController_devShell_Params(s *capnp.Segment) (Controller_devShell_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Controller_devShell_Params{st}, err
+	return Controller_devShell_Params(st), err
 }
 
 func NewRootController_devShell_Params(s *capnp.Segment) (Controller_devShell_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Controller_devShell_Params{st}, err
+	return Controller_devShell_Params(st), err
 }
 
 func ReadRootController_devShell_Params(msg *capnp.Message) (Controller_devShell_Params, error) {
 	root, err := msg.Root()
-	return Controller_devShell_Params{root.Struct()}, err
+	return Controller_devShell_Params(root.Struct()), err
 }
 
 func (s Controller_devShell_Params) String() string {
-	str, _ := text.Marshal(0x9780c0aba70a923b, s.Struct)
+	str, _ := text.Marshal(0x9780c0aba70a923b, capnp.Struct(s))
 	return str
 }
 
+func (s Controller_devShell_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Controller_devShell_Params) DecodeFromPtr(p capnp.Ptr) Controller_devShell_Params {
+	return Controller_devShell_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Controller_devShell_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Controller_devShell_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Controller_devShell_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Controller_devShell_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Controller_devShell_Params_List is a list of Controller_devShell_Params.
-type Controller_devShell_Params_List struct{ capnp.List }
+type Controller_devShell_Params_List = capnp.StructList[Controller_devShell_Params]
 
 // NewController_devShell_Params creates a new list of Controller_devShell_Params.
 func NewController_devShell_Params_List(s *capnp.Segment, sz int32) (Controller_devShell_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Controller_devShell_Params_List{l}, err
-}
-
-func (s Controller_devShell_Params_List) At(i int) Controller_devShell_Params {
-	return Controller_devShell_Params{s.List.Struct(i)}
-}
-
-func (s Controller_devShell_Params_List) Set(i int, v Controller_devShell_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Controller_devShell_Params_List) String() string {
-	str, _ := text.MarshalList(0x9780c0aba70a923b, s.List)
-	return str
+	return capnp.StructList[Controller_devShell_Params](l), err
 }
 
 // Controller_devShell_Params_Future is a wrapper for a Controller_devShell_Params promised by a client call.
@@ -203,96 +232,105 @@ type Controller_devShell_Params_Future struct{ *capnp.Future }
 
 func (p Controller_devShell_Params_Future) Struct() (Controller_devShell_Params, error) {
 	s, err := p.Future.Struct()
-	return Controller_devShell_Params{s}, err
+	return Controller_devShell_Params(s), err
 }
 
-type Controller_devShell_Results struct{ capnp.Struct }
+type Controller_devShell_Results capnp.Struct
 
 // Controller_devShell_Results_TypeID is the unique identifier for the type Controller_devShell_Results.
 const Controller_devShell_Results_TypeID = 0xc98eacc122f91e21
 
 func NewController_devShell_Results(s *capnp.Segment) (Controller_devShell_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_devShell_Results{st}, err
+	return Controller_devShell_Results(st), err
 }
 
 func NewRootController_devShell_Results(s *capnp.Segment) (Controller_devShell_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_devShell_Results{st}, err
+	return Controller_devShell_Results(st), err
 }
 
 func ReadRootController_devShell_Results(msg *capnp.Message) (Controller_devShell_Results, error) {
 	root, err := msg.Root()
-	return Controller_devShell_Results{root.Struct()}, err
+	return Controller_devShell_Results(root.Struct()), err
 }
 
 func (s Controller_devShell_Results) String() string {
-	str, _ := text.Marshal(0xc98eacc122f91e21, s.Struct)
+	str, _ := text.Marshal(0xc98eacc122f91e21, capnp.Struct(s))
 	return str
 }
 
+func (s Controller_devShell_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Controller_devShell_Results) DecodeFromPtr(p capnp.Ptr) Controller_devShell_Results {
+	return Controller_devShell_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Controller_devShell_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Controller_devShell_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Controller_devShell_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Controller_devShell_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Controller_devShell_Results) ShellFds() (ShellFDs, error) {
-	p, err := s.Struct.Ptr(0)
-	return ShellFDs{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return ShellFDs(p.Struct()), err
 }
 
 func (s Controller_devShell_Results) HasShellFds() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Controller_devShell_Results) SetShellFds(v ShellFDs) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewShellFds sets the shellFds field to a newly
 // allocated ShellFDs struct, preferring placement in s's segment.
 func (s Controller_devShell_Results) NewShellFds() (ShellFDs, error) {
-	ss, err := NewShellFDs(s.Struct.Segment())
+	ss, err := NewShellFDs(capnp.Struct(s).Segment())
 	if err != nil {
 		return ShellFDs{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Controller_devShell_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(1)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s Controller_devShell_Results) HasHandle() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Controller_devShell_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // Controller_devShell_Results_List is a list of Controller_devShell_Results.
-type Controller_devShell_Results_List struct{ capnp.List }
+type Controller_devShell_Results_List = capnp.StructList[Controller_devShell_Results]
 
 // NewController_devShell_Results creates a new list of Controller_devShell_Results.
 func NewController_devShell_Results_List(s *capnp.Segment, sz int32) (Controller_devShell_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return Controller_devShell_Results_List{l}, err
-}
-
-func (s Controller_devShell_Results_List) At(i int) Controller_devShell_Results {
-	return Controller_devShell_Results{s.List.Struct(i)}
-}
-
-func (s Controller_devShell_Results_List) Set(i int, v Controller_devShell_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Controller_devShell_Results_List) String() string {
-	str, _ := text.MarshalList(0xc98eacc122f91e21, s.List)
-	return str
+	return capnp.StructList[Controller_devShell_Results](l), err
 }
 
 // Controller_devShell_Results_Future is a wrapper for a Controller_devShell_Results promised by a client call.
@@ -300,7 +338,7 @@ type Controller_devShell_Results_Future struct{ *capnp.Future }
 
 func (p Controller_devShell_Results_Future) Struct() (Controller_devShell_Results, error) {
 	s, err := p.Future.Struct()
-	return Controller_devShell_Results{s}, err
+	return Controller_devShell_Results(s), err
 }
 
 func (p Controller_devShell_Results_Future) ShellFds() ShellFDs_Future {
@@ -308,72 +346,81 @@ func (p Controller_devShell_Results_Future) ShellFds() ShellFDs_Future {
 }
 
 func (p Controller_devShell_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(1, nil).Client()}
+	return util.Handle(p.Future.Field(1, nil).Client())
 }
 
-type Controller_dev_Params struct{ capnp.Struct }
+type Controller_dev_Params capnp.Struct
 
 // Controller_dev_Params_TypeID is the unique identifier for the type Controller_dev_Params.
 const Controller_dev_Params_TypeID = 0xaf8f237f68a73560
 
 func NewController_dev_Params(s *capnp.Segment) (Controller_dev_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Controller_dev_Params{st}, err
+	return Controller_dev_Params(st), err
 }
 
 func NewRootController_dev_Params(s *capnp.Segment) (Controller_dev_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Controller_dev_Params{st}, err
+	return Controller_dev_Params(st), err
 }
 
 func ReadRootController_dev_Params(msg *capnp.Message) (Controller_dev_Params, error) {
 	root, err := msg.Root()
-	return Controller_dev_Params{root.Struct()}, err
+	return Controller_dev_Params(root.Struct()), err
 }
 
 func (s Controller_dev_Params) String() string {
-	str, _ := text.Marshal(0xaf8f237f68a73560, s.Struct)
+	str, _ := text.Marshal(0xaf8f237f68a73560, capnp.Struct(s))
 	return str
 }
 
+func (s Controller_dev_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Controller_dev_Params) DecodeFromPtr(p capnp.Ptr) Controller_dev_Params {
+	return Controller_dev_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Controller_dev_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Controller_dev_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Controller_dev_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Controller_dev_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Controller_dev_Params) AppId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s Controller_dev_Params) HasAppId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Controller_dev_Params) AppIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s Controller_dev_Params) SetAppId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // Controller_dev_Params_List is a list of Controller_dev_Params.
-type Controller_dev_Params_List struct{ capnp.List }
+type Controller_dev_Params_List = capnp.StructList[Controller_dev_Params]
 
 // NewController_dev_Params creates a new list of Controller_dev_Params.
 func NewController_dev_Params_List(s *capnp.Segment, sz int32) (Controller_dev_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Controller_dev_Params_List{l}, err
-}
-
-func (s Controller_dev_Params_List) At(i int) Controller_dev_Params {
-	return Controller_dev_Params{s.List.Struct(i)}
-}
-
-func (s Controller_dev_Params_List) Set(i int, v Controller_dev_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Controller_dev_Params_List) String() string {
-	str, _ := text.MarshalList(0xaf8f237f68a73560, s.List)
-	return str
+	return capnp.StructList[Controller_dev_Params](l), err
 }
 
 // Controller_dev_Params_Future is a wrapper for a Controller_dev_Params promised by a client call.
@@ -381,90 +428,99 @@ type Controller_dev_Params_Future struct{ *capnp.Future }
 
 func (p Controller_dev_Params_Future) Struct() (Controller_dev_Params, error) {
 	s, err := p.Future.Struct()
-	return Controller_dev_Params{s}, err
+	return Controller_dev_Params(s), err
 }
 
-type Controller_dev_Results struct{ capnp.Struct }
+type Controller_dev_Results capnp.Struct
 
 // Controller_dev_Results_TypeID is the unique identifier for the type Controller_dev_Results.
 const Controller_dev_Results_TypeID = 0xd4a47427f5ca501b
 
 func NewController_dev_Results(s *capnp.Segment) (Controller_dev_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_dev_Results{st}, err
+	return Controller_dev_Results(st), err
 }
 
 func NewRootController_dev_Results(s *capnp.Segment) (Controller_dev_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Controller_dev_Results{st}, err
+	return Controller_dev_Results(st), err
 }
 
 func ReadRootController_dev_Results(msg *capnp.Message) (Controller_dev_Results, error) {
 	root, err := msg.Root()
-	return Controller_dev_Results{root.Struct()}, err
+	return Controller_dev_Results(root.Struct()), err
 }
 
 func (s Controller_dev_Results) String() string {
-	str, _ := text.Marshal(0xd4a47427f5ca501b, s.Struct)
+	str, _ := text.Marshal(0xd4a47427f5ca501b, capnp.Struct(s))
 	return str
 }
 
+func (s Controller_dev_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Controller_dev_Results) DecodeFromPtr(p capnp.Ptr) Controller_dev_Results {
+	return Controller_dev_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Controller_dev_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Controller_dev_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Controller_dev_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Controller_dev_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Controller_dev_Results) FuseFd() FileDescriptor {
-	p, _ := s.Struct.Ptr(0)
-	return FileDescriptor{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return FileDescriptor(p.Interface().Client())
 }
 
 func (s Controller_dev_Results) HasFuseFd() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Controller_dev_Results) SetFuseFd(v FileDescriptor) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s Controller_dev_Results) Session() DevSession {
-	p, _ := s.Struct.Ptr(1)
-	return DevSession{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return DevSession(p.Interface().Client())
 }
 
 func (s Controller_dev_Results) HasSession() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Controller_dev_Results) SetSession(v DevSession) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // Controller_dev_Results_List is a list of Controller_dev_Results.
-type Controller_dev_Results_List struct{ capnp.List }
+type Controller_dev_Results_List = capnp.StructList[Controller_dev_Results]
 
 // NewController_dev_Results creates a new list of Controller_dev_Results.
 func NewController_dev_Results_List(s *capnp.Segment, sz int32) (Controller_dev_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return Controller_dev_Results_List{l}, err
-}
-
-func (s Controller_dev_Results_List) At(i int) Controller_dev_Results {
-	return Controller_dev_Results{s.List.Struct(i)}
-}
-
-func (s Controller_dev_Results_List) Set(i int, v Controller_dev_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Controller_dev_Results_List) String() string {
-	str, _ := text.MarshalList(0xd4a47427f5ca501b, s.List)
-	return str
+	return capnp.StructList[Controller_dev_Results](l), err
 }
 
 // Controller_dev_Results_Future is a wrapper for a Controller_dev_Results promised by a client call.
@@ -472,112 +528,125 @@ type Controller_dev_Results_Future struct{ *capnp.Future }
 
 func (p Controller_dev_Results_Future) Struct() (Controller_dev_Results, error) {
 	s, err := p.Future.Struct()
-	return Controller_dev_Results{s}, err
+	return Controller_dev_Results(s), err
 }
 
 func (p Controller_dev_Results_Future) FuseFd() FileDescriptor {
-	return FileDescriptor{Client: p.Future.Field(0, nil).Client()}
+	return FileDescriptor(p.Future.Field(0, nil).Client())
 }
 
 func (p Controller_dev_Results_Future) Session() DevSession {
-	return DevSession{Client: p.Future.Field(1, nil).Client()}
+	return DevSession(p.Future.Field(1, nil).Client())
 }
 
-type ShellFDs struct{ capnp.Struct }
+type ShellFDs capnp.Struct
 
 // ShellFDs_TypeID is the unique identifier for the type ShellFDs.
 const ShellFDs_TypeID = 0xa58abe200abe0444
 
 func NewShellFDs(s *capnp.Segment) (ShellFDs, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return ShellFDs{st}, err
+	return ShellFDs(st), err
 }
 
 func NewRootShellFDs(s *capnp.Segment) (ShellFDs, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return ShellFDs{st}, err
+	return ShellFDs(st), err
 }
 
 func ReadRootShellFDs(msg *capnp.Message) (ShellFDs, error) {
 	root, err := msg.Root()
-	return ShellFDs{root.Struct()}, err
+	return ShellFDs(root.Struct()), err
 }
 
 func (s ShellFDs) String() string {
-	str, _ := text.Marshal(0xa58abe200abe0444, s.Struct)
+	str, _ := text.Marshal(0xa58abe200abe0444, capnp.Struct(s))
 	return str
 }
 
+func (s ShellFDs) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ShellFDs) DecodeFromPtr(p capnp.Ptr) ShellFDs {
+	return ShellFDs(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ShellFDs) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ShellFDs) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ShellFDs) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ShellFDs) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ShellFDs) AcceptHttp() FileDescriptor {
-	p, _ := s.Struct.Ptr(0)
-	return FileDescriptor{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return FileDescriptor(p.Interface().Client())
 }
 
 func (s ShellFDs) HasAcceptHttp() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ShellFDs) SetAcceptHttp(v FileDescriptor) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s ShellFDs) AcceptSmtp() FileDescriptor {
-	p, _ := s.Struct.Ptr(1)
-	return FileDescriptor{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return FileDescriptor(p.Interface().Client())
 }
 
 func (s ShellFDs) HasAcceptSmtp() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ShellFDs) SetAcceptSmtp(v FileDescriptor) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 func (s ShellFDs) ConnectBackend() FileDescriptor {
-	p, _ := s.Struct.Ptr(2)
-	return FileDescriptor{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(2)
+	return FileDescriptor(p.Interface().Client())
 }
 
 func (s ShellFDs) HasConnectBackend() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ShellFDs) SetConnectBackend(v FileDescriptor) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(2, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(2, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(2, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(2, in.ToPtr())
 }
 
 // ShellFDs_List is a list of ShellFDs.
-type ShellFDs_List struct{ capnp.List }
+type ShellFDs_List = capnp.StructList[ShellFDs]
 
 // NewShellFDs creates a new list of ShellFDs.
 func NewShellFDs_List(s *capnp.Segment, sz int32) (ShellFDs_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return ShellFDs_List{l}, err
-}
-
-func (s ShellFDs_List) At(i int) ShellFDs { return ShellFDs{s.List.Struct(i)} }
-
-func (s ShellFDs_List) Set(i int, v ShellFDs) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s ShellFDs_List) String() string {
-	str, _ := text.MarshalList(0xa58abe200abe0444, s.List)
-	return str
+	return capnp.StructList[ShellFDs](l), err
 }
 
 // ShellFDs_Future is a wrapper for a ShellFDs promised by a client call.
@@ -585,22 +654,22 @@ type ShellFDs_Future struct{ *capnp.Future }
 
 func (p ShellFDs_Future) Struct() (ShellFDs, error) {
 	s, err := p.Future.Struct()
-	return ShellFDs{s}, err
+	return ShellFDs(s), err
 }
 
 func (p ShellFDs_Future) AcceptHttp() FileDescriptor {
-	return FileDescriptor{Client: p.Future.Field(0, nil).Client()}
+	return FileDescriptor(p.Future.Field(0, nil).Client())
 }
 
 func (p ShellFDs_Future) AcceptSmtp() FileDescriptor {
-	return FileDescriptor{Client: p.Future.Field(1, nil).Client()}
+	return FileDescriptor(p.Future.Field(1, nil).Client())
 }
 
 func (p ShellFDs_Future) ConnectBackend() FileDescriptor {
-	return FileDescriptor{Client: p.Future.Field(2, nil).Client()}
+	return FileDescriptor(p.Future.Field(2, nil).Client())
 }
 
-type DevSession struct{ Client *capnp.Client }
+type DevSession capnp.Client
 
 // DevSession_TypeID is the unique identifier for the type DevSession.
 const DevSession_TypeID = 0xc0433f3776e7c305
@@ -616,20 +685,30 @@ func (c DevSession) UpdateManifest(ctx context.Context, params func(DevSession_u
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(DevSession_updateManifest_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(DevSession_updateManifest_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return DevSession_updateManifest_Results_Future{Future: ans.Future()}, release
 }
 
 func (c DevSession) AddRef() DevSession {
-	return DevSession{
-		Client: c.Client.AddRef(),
-	}
+	return DevSession(capnp.Client(c).AddRef())
 }
 
 func (c DevSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c DevSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (DevSession) DecodeFromPtr(p capnp.Ptr) DevSession {
+	return DevSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c DevSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A DevSession_Server is a DevSession with a local implementation.
@@ -638,15 +717,15 @@ type DevSession_Server interface {
 }
 
 // DevSession_NewServer creates a new Server from an implementation of DevSession_Server.
-func DevSession_NewServer(s DevSession_Server, policy *server.Policy) *server.Server {
+func DevSession_NewServer(s DevSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(DevSession_Methods(nil, s), s, c, policy)
+	return server.New(DevSession_Methods(nil, s), s, c)
 }
 
 // DevSession_ServerToClient creates a new Client from an implementation of DevSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func DevSession_ServerToClient(s DevSession_Server, policy *server.Policy) DevSession {
-	return DevSession{Client: capnp.NewClient(DevSession_NewServer(s, policy))}
+func DevSession_ServerToClient(s DevSession_Server) DevSession {
+	return DevSession(capnp.NewClient(DevSession_NewServer(s)))
 }
 
 // DevSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -679,60 +758,79 @@ type DevSession_updateManifest struct {
 
 // Args returns the call's arguments.
 func (c DevSession_updateManifest) Args() DevSession_updateManifest_Params {
-	return DevSession_updateManifest_Params{Struct: c.Call.Args()}
+	return DevSession_updateManifest_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c DevSession_updateManifest) AllocResults() (DevSession_updateManifest_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return DevSession_updateManifest_Results{Struct: r}, err
+	return DevSession_updateManifest_Results(r), err
 }
 
-type DevSession_updateManifest_Params struct{ capnp.Struct }
+// DevSession_List is a list of DevSession.
+type DevSession_List = capnp.CapList[DevSession]
+
+// NewDevSession creates a new list of DevSession.
+func NewDevSession_List(s *capnp.Segment, sz int32) (DevSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[DevSession](l), err
+}
+
+type DevSession_updateManifest_Params capnp.Struct
 
 // DevSession_updateManifest_Params_TypeID is the unique identifier for the type DevSession_updateManifest_Params.
 const DevSession_updateManifest_Params_TypeID = 0xbff8c51eccea5f2d
 
 func NewDevSession_updateManifest_Params(s *capnp.Segment) (DevSession_updateManifest_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return DevSession_updateManifest_Params{st}, err
+	return DevSession_updateManifest_Params(st), err
 }
 
 func NewRootDevSession_updateManifest_Params(s *capnp.Segment) (DevSession_updateManifest_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return DevSession_updateManifest_Params{st}, err
+	return DevSession_updateManifest_Params(st), err
 }
 
 func ReadRootDevSession_updateManifest_Params(msg *capnp.Message) (DevSession_updateManifest_Params, error) {
 	root, err := msg.Root()
-	return DevSession_updateManifest_Params{root.Struct()}, err
+	return DevSession_updateManifest_Params(root.Struct()), err
 }
 
 func (s DevSession_updateManifest_Params) String() string {
-	str, _ := text.Marshal(0xbff8c51eccea5f2d, s.Struct)
+	str, _ := text.Marshal(0xbff8c51eccea5f2d, capnp.Struct(s))
 	return str
 }
 
+func (s DevSession_updateManifest_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (DevSession_updateManifest_Params) DecodeFromPtr(p capnp.Ptr) DevSession_updateManifest_Params {
+	return DevSession_updateManifest_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s DevSession_updateManifest_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s DevSession_updateManifest_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s DevSession_updateManifest_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s DevSession_updateManifest_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // DevSession_updateManifest_Params_List is a list of DevSession_updateManifest_Params.
-type DevSession_updateManifest_Params_List struct{ capnp.List }
+type DevSession_updateManifest_Params_List = capnp.StructList[DevSession_updateManifest_Params]
 
 // NewDevSession_updateManifest_Params creates a new list of DevSession_updateManifest_Params.
 func NewDevSession_updateManifest_Params_List(s *capnp.Segment, sz int32) (DevSession_updateManifest_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return DevSession_updateManifest_Params_List{l}, err
-}
-
-func (s DevSession_updateManifest_Params_List) At(i int) DevSession_updateManifest_Params {
-	return DevSession_updateManifest_Params{s.List.Struct(i)}
-}
-
-func (s DevSession_updateManifest_Params_List) Set(i int, v DevSession_updateManifest_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s DevSession_updateManifest_Params_List) String() string {
-	str, _ := text.MarshalList(0xbff8c51eccea5f2d, s.List)
-	return str
+	return capnp.StructList[DevSession_updateManifest_Params](l), err
 }
 
 // DevSession_updateManifest_Params_Future is a wrapper for a DevSession_updateManifest_Params promised by a client call.
@@ -740,54 +838,64 @@ type DevSession_updateManifest_Params_Future struct{ *capnp.Future }
 
 func (p DevSession_updateManifest_Params_Future) Struct() (DevSession_updateManifest_Params, error) {
 	s, err := p.Future.Struct()
-	return DevSession_updateManifest_Params{s}, err
+	return DevSession_updateManifest_Params(s), err
 }
 
-type DevSession_updateManifest_Results struct{ capnp.Struct }
+type DevSession_updateManifest_Results capnp.Struct
 
 // DevSession_updateManifest_Results_TypeID is the unique identifier for the type DevSession_updateManifest_Results.
 const DevSession_updateManifest_Results_TypeID = 0x93f10e053f665a30
 
 func NewDevSession_updateManifest_Results(s *capnp.Segment) (DevSession_updateManifest_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return DevSession_updateManifest_Results{st}, err
+	return DevSession_updateManifest_Results(st), err
 }
 
 func NewRootDevSession_updateManifest_Results(s *capnp.Segment) (DevSession_updateManifest_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return DevSession_updateManifest_Results{st}, err
+	return DevSession_updateManifest_Results(st), err
 }
 
 func ReadRootDevSession_updateManifest_Results(msg *capnp.Message) (DevSession_updateManifest_Results, error) {
 	root, err := msg.Root()
-	return DevSession_updateManifest_Results{root.Struct()}, err
+	return DevSession_updateManifest_Results(root.Struct()), err
 }
 
 func (s DevSession_updateManifest_Results) String() string {
-	str, _ := text.Marshal(0x93f10e053f665a30, s.Struct)
+	str, _ := text.Marshal(0x93f10e053f665a30, capnp.Struct(s))
 	return str
 }
 
+func (s DevSession_updateManifest_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (DevSession_updateManifest_Results) DecodeFromPtr(p capnp.Ptr) DevSession_updateManifest_Results {
+	return DevSession_updateManifest_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s DevSession_updateManifest_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s DevSession_updateManifest_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s DevSession_updateManifest_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s DevSession_updateManifest_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // DevSession_updateManifest_Results_List is a list of DevSession_updateManifest_Results.
-type DevSession_updateManifest_Results_List struct{ capnp.List }
+type DevSession_updateManifest_Results_List = capnp.StructList[DevSession_updateManifest_Results]
 
 // NewDevSession_updateManifest_Results creates a new list of DevSession_updateManifest_Results.
 func NewDevSession_updateManifest_Results_List(s *capnp.Segment, sz int32) (DevSession_updateManifest_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return DevSession_updateManifest_Results_List{l}, err
-}
-
-func (s DevSession_updateManifest_Results_List) At(i int) DevSession_updateManifest_Results {
-	return DevSession_updateManifest_Results{s.List.Struct(i)}
-}
-
-func (s DevSession_updateManifest_Results_List) Set(i int, v DevSession_updateManifest_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s DevSession_updateManifest_Results_List) String() string {
-	str, _ := text.MarshalList(0x93f10e053f665a30, s.List)
-	return str
+	return capnp.StructList[DevSession_updateManifest_Results](l), err
 }
 
 // DevSession_updateManifest_Results_Future is a wrapper for a DevSession_updateManifest_Results promised by a client call.
@@ -795,22 +903,32 @@ type DevSession_updateManifest_Results_Future struct{ *capnp.Future }
 
 func (p DevSession_updateManifest_Results_Future) Struct() (DevSession_updateManifest_Results, error) {
 	s, err := p.Future.Struct()
-	return DevSession_updateManifest_Results{s}, err
+	return DevSession_updateManifest_Results(s), err
 }
 
-type FileDescriptor struct{ Client *capnp.Client }
+type FileDescriptor capnp.Client
 
 // FileDescriptor_TypeID is the unique identifier for the type FileDescriptor.
 const FileDescriptor_TypeID = 0xd9ccfac7d7a20cc0
 
 func (c FileDescriptor) AddRef() FileDescriptor {
-	return FileDescriptor{
-		Client: c.Client.AddRef(),
-	}
+	return FileDescriptor(capnp.Client(c).AddRef())
 }
 
 func (c FileDescriptor) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c FileDescriptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (FileDescriptor) DecodeFromPtr(p capnp.Ptr) FileDescriptor {
+	return FileDescriptor(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c FileDescriptor) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A FileDescriptor_Server is a FileDescriptor with a local implementation.
@@ -818,15 +936,15 @@ type FileDescriptor_Server interface {
 }
 
 // FileDescriptor_NewServer creates a new Server from an implementation of FileDescriptor_Server.
-func FileDescriptor_NewServer(s FileDescriptor_Server, policy *server.Policy) *server.Server {
+func FileDescriptor_NewServer(s FileDescriptor_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(FileDescriptor_Methods(nil, s), s, c, policy)
+	return server.New(FileDescriptor_Methods(nil, s), s, c)
 }
 
 // FileDescriptor_ServerToClient creates a new Client from an implementation of FileDescriptor_Server.
 // The caller is responsible for calling Release on the returned Client.
-func FileDescriptor_ServerToClient(s FileDescriptor_Server, policy *server.Policy) FileDescriptor {
-	return FileDescriptor{Client: capnp.NewClient(FileDescriptor_NewServer(s, policy))}
+func FileDescriptor_ServerToClient(s FileDescriptor_Server) FileDescriptor {
+	return FileDescriptor(capnp.NewClient(FileDescriptor_NewServer(s)))
 }
 
 // FileDescriptor_Methods appends Methods to a slice that invoke the methods on s.
@@ -839,58 +957,67 @@ func FileDescriptor_Methods(methods []server.Method, s FileDescriptor_Server) []
 	return methods
 }
 
-const schema_d4c5feffbd79e908 = "x\xda\x8c\x94M\x88\x1cE\x14\xc7\xdf\xab\x0f{\x136" +
-	"\x92\xa2w\x11\x11\xb3\x9bu!.\xb8_\xae\xc1\x18\x0f" +
-	"\xbdl&\xab\x86\x04\xbb2\x06d@\xdc\xb6\xa7\x96\x19" +
-	"\xd2\xd3\xd3N\xd5\x8c$ \x89\x82\x04rP\xd4\x83\x82" +
-	"7Qr0\x12\x10\xbc\x08\xc6\x0d\x12\x82\x12/\x12\x10" +
-	"oA\x0f\xa27\xe3\x07\xea\xc1\x92\x9aI\xef\xf4\x9a\x9d" +
-	"e\x0f\x0dM\xbd\xf7\xfe\xef\xbd_\xbdWs?\xe2\"" +
-	"\x99\xe7\x81\x07 \x9f\xe1w\xd9\xb9\xcaj\xc0\xef\xfe\xf5" +
-	"m\x10\xe3\x08\xc0<\x80\x85\xd7\xe8g\x08\xcc>\xfe\xd6" +
-	"\xce\x0b\x1f\xad\x9d}\xa7`i\xd3W\x9d\xa5\xc4.\xef" +
-	"\x1c\xbf|\xfeC\x10\xa3h\x87~>\xf5\xb9\xfd\xf7\xea" +
-	"\x0d\xe0\xd4\x03\xf0#z\xcbot\xff\xea\xf4\x12\xa0]" +
-	"\xd9\x7f\xa1v\xe6\x817.\xf5T8:\x99]\xac\x82" +
-	"\x80\xfe\xbd,\x00\xb4\xd3\xcf\xffr}\xcf\xd5\xbf\xbe(" +
-	"\xa4y\x8c}\xe2\xd2\xf0/\x7f\xea<\x1a\x1cZ\x031" +
-	"J\xfbi\x00\x17\xa6\x18A\x7f\xbfs\xf5\xe7\xd9\x13\xfe" +
-	"s\xee\xcf\xee\xdd\xf3\xf7\xc4\x95\x8b\xaf\x7fu;\x11q" +
-	"B\x87\xd9y\x97\xe8\x04{\x09\xd0~|\xf4\xe9\xec\xc0" +
-	"\x9b\xfb\xbe\xbdC\xeeS'w\x85\xdd\x03\xe0\x7f\xc3\xce" +
-	"\xf9{\xb9\x93\xbb/\xfc\xfa\x8f}\xe6\x83\x1bE\xb9\x1d" +
-	"\xfc\x05'7\xca\x9d\xdc\xda\xf0\xfb\xdf]\xfb\xe7\xfa\xf7" +
-	"w\xc8\xbd\xc8'\xd0\x7f\xc5\x89\xf8/s\xcf}\x00\xf6" +
-	"\x87?\xdf;\xd7\xfe\xed\xdaM\x10\xe3\xac_\x09\xe0\x82" +
-	"\xe2\x15\xf4O9\x9f\xb2\xe1\x14\xcbg9AHm\xdc" +
-	"LM\xab\x99Ls\xdd\x8cO*3\x13GY\x9a\x1d" +
-	",\xa9NYi]o\xa63\xed\xac\x1a\x19u,J" +
-	"\xeb\xabJ\x9b\xc9\xe3\x81\xd2\xed\xc4\xe8\xf5\xc0\xa1\x0d\x81" +
-	"\x87z\xa7\x89j\xcdTU\xa7\\SI2\x19F\xad" +
-	"\xa8\xa1!\x0f\xd8\xe0_\xae\xa9\xb1$Y.\xe9\x10Q" +
-	"\x0eS\x06\xc0\x10@\x1c\xae\x00\xc8\x12E\x19\x12\x14\x88" +
-	"#\xe8\x0e\x8f\xb9\xc3\xa3\x14\xe5\xb3\x04\x05!#H\x00" +
-	"\xc4\x89\xd3n\xbe(\xca\x15\x826\x8ac\x95\x99'\x0d" +
-	"P\x93\xa1\xe8\x93\x03D\x01\xb9\xb9\xdc\x18`\x8e\x9bi" +
-	"\xaab\xb3\x04A\x14\x9fTius\x97n\x0fl\x8b" +
-	"\xa6\xbb\xfd\xd2\x86\x96l\xbd\x9d]\x0f\x03\xc8!\x8ar" +
-	"\x84\xe0X\x94eOUq\x18\x08\x0e\x17\x14\xb7\xcb?" +
-	"\x1c\xeb\xd2\\\x8f\xa3\x03\xe2\xc0\x01e\x94\x03\xac\x0f>" +
-	"\xe6+(\xc4i b\x87gsm\x08z\xea\x8b\x18" +
-	"\xe2\xa0\x926\xbb\xd9\xe3\xbdY\xe86\x97\xf7:u\x04" +
-	"@>HQ>R\xb8\xba\xf9\x83\x00\xf2!\x8a\xf2\x00" +
-	"A\xab]\xecrU\x03\x00\xee\xee\xef8 \xee\x06\x0c" +
-	"jQZM\x14\x0a{sie\xe5\xe2\xe4\xef\xef\xfe" +
-	"\x9f=\x1dP\x16H\x86X\x98\x7f\xac\xd8\x9eg\x18\x01" +
-	"559\xd4\x85\x91?6\x98\xaf\xb1\x98?\x02DL" +
-	"y\xd8\x7fB0\xdfIq\xff\x04\x10!<\x9bw\x0c" +
-	"\x00\x8b\xe8UUg#\xa9-\xc7\xc1A\xf2\x12\xa3\x8b" +
-	"\x8c\x1c\x8eI\x8ar\xae\xc0hz\xa9\x0f.Xmk" +
-	"\xb5\xbc\xc9\x04\x9e\xd1\xbd\xebE\xd1\x7f\xb5\xb6\xe4\xb3\\" +
-	"OTI\xe9\xb8U\xcf<\xd3l\x85\x88!\xe5\xdb\xaa" +
-	"=\x87GM-D\xbc=\xb0 \xf0\x96\x9d\xedD\xad" +
-	"Y\x1d\xa5\xa4\xaaM\xb3\xd5\x98\xedy\xce\xc6\xcd\xb1n" +
-	"\xf0\x7f\x01\x00\x00\xff\xff:G\xd1Q"
+// FileDescriptor_List is a list of FileDescriptor.
+type FileDescriptor_List = capnp.CapList[FileDescriptor]
+
+// NewFileDescriptor creates a new list of FileDescriptor.
+func NewFileDescriptor_List(s *capnp.Segment, sz int32) (FileDescriptor_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[FileDescriptor](l), err
+}
+
+const schema_d4c5feffbd79e908 = "x\xda\x8c\x94]h\x1cU\x14\xc7\xcf\xb9\x1fNZ\x12" +
+	"\xe9e\x12D\xc4&\x8d\x81\x1a0_\xc6b\xad\x0f\x13" +
+	"\xd2m\xd4\xd2\xe2\xdcn\x0b\xb2 f\x9c\xbda\x97\xce" +
+	"\xce\x8e{\xef\xae\xb4 \xad\x82\x14\xfa\xa0\xa8\x0f\x0a\xbe" +
+	"\x89\xd2\x07+\x05\xc1\x17\xc1\x9a\"\xa5(\xf5E\x0a\xe2" +
+	"[\x11D\xf4\xcd\xfa\x81\xfa\xe0\x95\xbb\xdb\xc9N\xda$" +
+	"\xe4a`\xb8\xe7\x9c\xff9\xe7w\xcf\xb9\xb3?\xe1\x02" +
+	"\x9b\x1b\x0a< \xf28\xbf\xc7\xceVV\x02~\xefo" +
+	"\xef\x80\x18C\x00\xe6\x01\xcc\xbfN?G`\xf6\xc9\xb7" +
+	"w^\xf8x\xf5\xec\xbb\x05K\x9b\xbe\xe6,%vy" +
+	"\xe7\xd8\xe5\xf3\x1f\x81\x18A;\xf0\xcb\xa9/\xec\x7fW" +
+	"o\x00\xa7\x1e\x80\x1f\xd1[~\xa3\xfbW\xa7\x97\x00\xed" +
+	"\xf2\xbe\x0b\xb53\x0f\xbdy\xa9\xa7\xc2\xd1\xc9\x0c\xb1\x0a" +
+	"\x02\xfa\xf7\xb3\x00\xd0N\xbd\xf0\xeb\xf5\xddW\xff\xfe\xb2" +
+	"\x90\xe6\x09\xf6\xa9K\xc3\xbf\xfa\xb9\xf3xpp\x15\xc4" +
+	"\x08\xed\xa7\x01\x9c\x9fd\x04\xfd}\xce\xd5\x9fcO\xf9" +
+	"\xcf\xbb?\xbbg\xf7?\xe3W.\xbe\xf1\xf5\xedD\xc4" +
+	"\x09\x1db\xe7]\xa2\x13\xece@\xfb\xc9\x91g\xb3\xfd" +
+	"o\xed\xfd\xee.\xb9\xcf\x9c\xdc\x15v\x1f\x80\xff-;" +
+	"\xe7\xef\xe1N\xee\x81\xf0\x9b?\xf7\x9a\x0fo\x14\xe5v" +
+	"\xf0\x17\x9d\xdc\x08wr\xab\x83\x1f|\x7f\xed\xdf\xeb?" +
+	"\xdc%\xf7\x12\x1fG\xffU'\xe2\xbf\xc2=\xf7\x01\xd8" +
+	"\x1f\xffz\xff\\\xfb\xf7k7A\x8c\xb1~%\x80\xf3" +
+	"\x8aW\xd0?\xe5|\xca\x86S,\x9f\xe5\x04!\xb5q" +
+	"35\xadf2\xc5u3>\xa9\xcct\x1ceiv" +
+	"\xa0\xa4:e\xa5u\xbd\x99N\xb7\xb3jd\xd4\xd1(" +
+	"\xad\xaf(m&\x8e\x05J\xb7\x13\xa3\xd7\x02\x07\xd6\x05" +
+	"\x1e\xec\x9d&\xaa5]U\x9drM%\xc9D\x18\xb5" +
+	"\xa2\x86\x86<`\x9d\x7f\xb9\xa6F\x93d\xa9\xa4CD" +
+	"9H\x19\x00C\x00q\xa8\x02 K\x14eHP " +
+	"\x0e\xa3;<\xea\x0e\x8fP\x94\xcf\x11\x14\x84\x0c#\x01" +
+	"\x10'N\x03\xc8\xe3\x14\xe52A\x1b\xc5\xb1\xca\xcc\xd3" +
+	"\x06\xa8\xc9P\xf4\xc9\x01\xa2\x80\xdc\\nlb\x8e\x9b" +
+	"i\xaab\xb3\x08A\x14\x9fTiuc\x97n\x0fl" +
+	"\x8b\xa6\xbb\xfd\xd2\x86\x96l\xad\x9d\xa1G\x01\xe4\x00E" +
+	"9Lp4\xca\xb2g\xaa8\x08\x04\x07\x0b\x8a\xdb\xe5" +
+	"\x1f\x8evi\xae\xc5\xd1M\xe2\xc0\x01e\x94\x03\xac\x0d" +
+	">\xe6+(\xc4i b\x87gsm\x08z\xea\x0b" +
+	"\x18\xe2f%mt\xb3\xc7z\xb3\xd0m.\xefu\xf2" +
+	"0\x80|\x98\xa2|\xacpus\x07\x00\xe4#\x14\xe5" +
+	"~\x82V\xbb\xd8\xa5\xaa\x06\x00\xdc\xd5\xdfq@\xdc\x05" +
+	"\x18\xd4\xa2\xb4\x9a(\x14\xf6\xe6\xe2\xf2\xf2\xc5\x89?\xde" +
+	"\xbb\x93=\xdd\xa4,\x90\x0c\xb10\xffX\xb1=\xcf0" +
+	"\x02jjr\xa0\x0b#\x7fl0_c1w\x18\x88" +
+	"\x98\xf4\xb0\xff\x84`\xbe\x93\xe2\xc1q Bx6\xef" +
+	"\x18\x00\x16\xd0\xab\xaa\xcezR[\x8e\x83\x83\xe4%F" +
+	"\x17\x199\x1c\x13\x14\xe5l\x81\xd1\xd4b\x1f\\\xb0\xd2" +
+	"\xd6ji\x83\x09<\xa3{\xd7\x8b\xa2\xffjm\xc9g" +
+	"\xa9\x9e\xa8\x92\xd2q\xab\x9ey\xa6\xd9\x0a\x11C\xca\xb7" +
+	"U{\x0e\x8f\x9aZ\x88x{`A\xe0-;\xd3\x89" +
+	"Z3:JIU\x9bf\xab1\xd3\xf3\x9c\x89\x9b\xa3" +
+	"\xdd\xe0\xff\x03\x00\x00\xff\xff\x8d\xa5\xd1_"
 
 func init() {
 	schemas.Register(schema_d4c5feffbd79e908,

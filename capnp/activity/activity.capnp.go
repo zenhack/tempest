@@ -13,145 +13,158 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type ActivityEvent struct{ capnp.Struct }
+type ActivityEvent capnp.Struct
 
 // ActivityEvent_TypeID is the unique identifier for the type ActivityEvent.
 const ActivityEvent_TypeID = 0xa7c0b6eaa98c6c4b
 
 func NewActivityEvent(s *capnp.Segment) (ActivityEvent, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return ActivityEvent{st}, err
+	return ActivityEvent(st), err
 }
 
 func NewRootActivityEvent(s *capnp.Segment) (ActivityEvent, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4})
-	return ActivityEvent{st}, err
+	return ActivityEvent(st), err
 }
 
 func ReadRootActivityEvent(msg *capnp.Message) (ActivityEvent, error) {
 	root, err := msg.Root()
-	return ActivityEvent{root.Struct()}, err
+	return ActivityEvent(root.Struct()), err
 }
 
 func (s ActivityEvent) String() string {
-	str, _ := text.Marshal(0xa7c0b6eaa98c6c4b, s.Struct)
+	str, _ := text.Marshal(0xa7c0b6eaa98c6c4b, capnp.Struct(s))
 	return str
 }
 
+func (s ActivityEvent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ActivityEvent) DecodeFromPtr(p capnp.Ptr) ActivityEvent {
+	return ActivityEvent(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ActivityEvent) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ActivityEvent) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ActivityEvent) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ActivityEvent) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ActivityEvent) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ActivityEvent) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ActivityEvent) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ActivityEvent) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ActivityEvent) Thread() (ActivityEvent_ThreadInfo, error) {
-	p, err := s.Struct.Ptr(3)
-	return ActivityEvent_ThreadInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return ActivityEvent_ThreadInfo(p.Struct()), err
 }
 
 func (s ActivityEvent) HasThread() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s ActivityEvent) SetThread(v ActivityEvent_ThreadInfo) error {
-	return s.Struct.SetPtr(3, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(3, capnp.Struct(v).ToPtr())
 }
 
 // NewThread sets the thread field to a newly
 // allocated ActivityEvent_ThreadInfo struct, preferring placement in s's segment.
 func (s ActivityEvent) NewThread() (ActivityEvent_ThreadInfo, error) {
-	ss, err := NewActivityEvent_ThreadInfo(s.Struct.Segment())
+	ss, err := NewActivityEvent_ThreadInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return ActivityEvent_ThreadInfo{}, err
 	}
-	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s ActivityEvent) Notification() (NotificationDisplayInfo, error) {
-	p, err := s.Struct.Ptr(1)
-	return NotificationDisplayInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return NotificationDisplayInfo(p.Struct()), err
 }
 
 func (s ActivityEvent) HasNotification() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ActivityEvent) SetNotification(v NotificationDisplayInfo) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewNotification sets the notification field to a newly
 // allocated NotificationDisplayInfo struct, preferring placement in s's segment.
 func (s ActivityEvent) NewNotification() (NotificationDisplayInfo, error) {
-	ss, err := NewNotificationDisplayInfo(s.Struct.Segment())
+	ss, err := NewNotificationDisplayInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s ActivityEvent) Type() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s ActivityEvent) SetType(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 func (s ActivityEvent) Users() (ActivityEvent_User_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return ActivityEvent_User_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return ActivityEvent_User_List(p.List()), err
 }
 
 func (s ActivityEvent) HasUsers() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ActivityEvent) SetUsers(v ActivityEvent_User_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewUsers sets the users field to a newly
 // allocated ActivityEvent_User_List, preferring placement in s's segment.
 func (s ActivityEvent) NewUsers(n int32) (ActivityEvent_User_List, error) {
-	l, err := NewActivityEvent_User_List(s.Struct.Segment(), n)
+	l, err := NewActivityEvent_User_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return ActivityEvent_User_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // ActivityEvent_List is a list of ActivityEvent.
-type ActivityEvent_List struct{ capnp.List }
+type ActivityEvent_List = capnp.StructList[ActivityEvent]
 
 // NewActivityEvent creates a new list of ActivityEvent.
 func NewActivityEvent_List(s *capnp.Segment, sz int32) (ActivityEvent_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 4}, sz)
-	return ActivityEvent_List{l}, err
-}
-
-func (s ActivityEvent_List) At(i int) ActivityEvent { return ActivityEvent{s.List.Struct(i)} }
-
-func (s ActivityEvent_List) Set(i int, v ActivityEvent) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s ActivityEvent_List) String() string {
-	str, _ := text.MarshalList(0xa7c0b6eaa98c6c4b, s.List)
-	return str
+	return capnp.StructList[ActivityEvent](l), err
 }
 
 // ActivityEvent_Future is a wrapper for a ActivityEvent promised by a client call.
@@ -159,7 +172,7 @@ type ActivityEvent_Future struct{ *capnp.Future }
 
 func (p ActivityEvent_Future) Struct() (ActivityEvent, error) {
 	s, err := p.Future.Struct()
-	return ActivityEvent{s}, err
+	return ActivityEvent(s), err
 }
 
 func (p ActivityEvent_Future) Thread() ActivityEvent_ThreadInfo_Future {
@@ -170,93 +183,102 @@ func (p ActivityEvent_Future) Notification() NotificationDisplayInfo_Future {
 	return NotificationDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
-type ActivityEvent_ThreadInfo struct{ capnp.Struct }
+type ActivityEvent_ThreadInfo capnp.Struct
 
 // ActivityEvent_ThreadInfo_TypeID is the unique identifier for the type ActivityEvent_ThreadInfo.
 const ActivityEvent_ThreadInfo_TypeID = 0xf3902b5a86ffba44
 
 func NewActivityEvent_ThreadInfo(s *capnp.Segment) (ActivityEvent_ThreadInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return ActivityEvent_ThreadInfo{st}, err
+	return ActivityEvent_ThreadInfo(st), err
 }
 
 func NewRootActivityEvent_ThreadInfo(s *capnp.Segment) (ActivityEvent_ThreadInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return ActivityEvent_ThreadInfo{st}, err
+	return ActivityEvent_ThreadInfo(st), err
 }
 
 func ReadRootActivityEvent_ThreadInfo(msg *capnp.Message) (ActivityEvent_ThreadInfo, error) {
 	root, err := msg.Root()
-	return ActivityEvent_ThreadInfo{root.Struct()}, err
+	return ActivityEvent_ThreadInfo(root.Struct()), err
 }
 
 func (s ActivityEvent_ThreadInfo) String() string {
-	str, _ := text.Marshal(0xf3902b5a86ffba44, s.Struct)
+	str, _ := text.Marshal(0xf3902b5a86ffba44, capnp.Struct(s))
 	return str
 }
 
+func (s ActivityEvent_ThreadInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ActivityEvent_ThreadInfo) DecodeFromPtr(p capnp.Ptr) ActivityEvent_ThreadInfo {
+	return ActivityEvent_ThreadInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ActivityEvent_ThreadInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ActivityEvent_ThreadInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ActivityEvent_ThreadInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ActivityEvent_ThreadInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ActivityEvent_ThreadInfo) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ActivityEvent_ThreadInfo) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ActivityEvent_ThreadInfo) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ActivityEvent_ThreadInfo) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ActivityEvent_ThreadInfo) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(1)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s ActivityEvent_ThreadInfo) HasTitle() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ActivityEvent_ThreadInfo) SetTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s ActivityEvent_ThreadInfo) NewTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // ActivityEvent_ThreadInfo_List is a list of ActivityEvent_ThreadInfo.
-type ActivityEvent_ThreadInfo_List struct{ capnp.List }
+type ActivityEvent_ThreadInfo_List = capnp.StructList[ActivityEvent_ThreadInfo]
 
 // NewActivityEvent_ThreadInfo creates a new list of ActivityEvent_ThreadInfo.
 func NewActivityEvent_ThreadInfo_List(s *capnp.Segment, sz int32) (ActivityEvent_ThreadInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return ActivityEvent_ThreadInfo_List{l}, err
-}
-
-func (s ActivityEvent_ThreadInfo_List) At(i int) ActivityEvent_ThreadInfo {
-	return ActivityEvent_ThreadInfo{s.List.Struct(i)}
-}
-
-func (s ActivityEvent_ThreadInfo_List) Set(i int, v ActivityEvent_ThreadInfo) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ActivityEvent_ThreadInfo_List) String() string {
-	str, _ := text.MarshalList(0xf3902b5a86ffba44, s.List)
-	return str
+	return capnp.StructList[ActivityEvent_ThreadInfo](l), err
 }
 
 // ActivityEvent_ThreadInfo_Future is a wrapper for a ActivityEvent_ThreadInfo promised by a client call.
@@ -264,100 +286,109 @@ type ActivityEvent_ThreadInfo_Future struct{ *capnp.Future }
 
 func (p ActivityEvent_ThreadInfo_Future) Struct() (ActivityEvent_ThreadInfo, error) {
 	s, err := p.Future.Struct()
-	return ActivityEvent_ThreadInfo{s}, err
+	return ActivityEvent_ThreadInfo(s), err
 }
 
 func (p ActivityEvent_ThreadInfo_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
 
-type ActivityEvent_User struct{ capnp.Struct }
+type ActivityEvent_User capnp.Struct
 
 // ActivityEvent_User_TypeID is the unique identifier for the type ActivityEvent_User.
 const ActivityEvent_User_TypeID = 0xbb4d119bbcd89677
 
 func NewActivityEvent_User(s *capnp.Segment) (ActivityEvent_User, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return ActivityEvent_User{st}, err
+	return ActivityEvent_User(st), err
 }
 
 func NewRootActivityEvent_User(s *capnp.Segment) (ActivityEvent_User, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return ActivityEvent_User{st}, err
+	return ActivityEvent_User(st), err
 }
 
 func ReadRootActivityEvent_User(msg *capnp.Message) (ActivityEvent_User, error) {
 	root, err := msg.Root()
-	return ActivityEvent_User{root.Struct()}, err
+	return ActivityEvent_User(root.Struct()), err
 }
 
 func (s ActivityEvent_User) String() string {
-	str, _ := text.Marshal(0xbb4d119bbcd89677, s.Struct)
+	str, _ := text.Marshal(0xbb4d119bbcd89677, capnp.Struct(s))
 	return str
 }
 
+func (s ActivityEvent_User) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ActivityEvent_User) DecodeFromPtr(p capnp.Ptr) ActivityEvent_User {
+	return ActivityEvent_User(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ActivityEvent_User) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ActivityEvent_User) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ActivityEvent_User) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ActivityEvent_User) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ActivityEvent_User) Identity() identity.Identity {
-	p, _ := s.Struct.Ptr(0)
-	return identity.Identity{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return identity.Identity(p.Interface().Client())
 }
 
 func (s ActivityEvent_User) HasIdentity() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ActivityEvent_User) SetIdentity(v identity.Identity) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s ActivityEvent_User) Mentioned() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s ActivityEvent_User) SetMentioned(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s ActivityEvent_User) Subscribed() bool {
-	return s.Struct.Bit(2)
+	return capnp.Struct(s).Bit(2)
 }
 
 func (s ActivityEvent_User) SetSubscribed(v bool) {
-	s.Struct.SetBit(2, v)
+	capnp.Struct(s).SetBit(2, v)
 }
 
 func (s ActivityEvent_User) CanView() bool {
-	return s.Struct.Bit(1)
+	return capnp.Struct(s).Bit(1)
 }
 
 func (s ActivityEvent_User) SetCanView(v bool) {
-	s.Struct.SetBit(1, v)
+	capnp.Struct(s).SetBit(1, v)
 }
 
 // ActivityEvent_User_List is a list of ActivityEvent_User.
-type ActivityEvent_User_List struct{ capnp.List }
+type ActivityEvent_User_List = capnp.StructList[ActivityEvent_User]
 
 // NewActivityEvent_User creates a new list of ActivityEvent_User.
 func NewActivityEvent_User_List(s *capnp.Segment, sz int32) (ActivityEvent_User_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return ActivityEvent_User_List{l}, err
-}
-
-func (s ActivityEvent_User_List) At(i int) ActivityEvent_User {
-	return ActivityEvent_User{s.List.Struct(i)}
-}
-
-func (s ActivityEvent_User_List) Set(i int, v ActivityEvent_User) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ActivityEvent_User_List) String() string {
-	str, _ := text.MarshalList(0xbb4d119bbcd89677, s.List)
-	return str
+	return capnp.StructList[ActivityEvent_User](l), err
 }
 
 // ActivityEvent_User_Future is a wrapper for a ActivityEvent_User promised by a client call.
@@ -365,14 +396,14 @@ type ActivityEvent_User_Future struct{ *capnp.Future }
 
 func (p ActivityEvent_User_Future) Struct() (ActivityEvent_User, error) {
 	s, err := p.Future.Struct()
-	return ActivityEvent_User{s}, err
+	return ActivityEvent_User(s), err
 }
 
 func (p ActivityEvent_User_Future) Identity() identity.Identity {
-	return identity.Identity{Client: p.Future.Field(0, nil).Client()}
+	return identity.Identity(p.Future.Field(0, nil).Client())
 }
 
-type ActivityTypeDef struct{ capnp.Struct }
+type ActivityTypeDef capnp.Struct
 type ActivityTypeDef_requiredPermission ActivityTypeDef
 type ActivityTypeDef_requiredPermission_Which uint16
 
@@ -401,87 +432,109 @@ const ActivityTypeDef_TypeID = 0xe638de0ad7c89a2b
 
 func NewActivityTypeDef(s *capnp.Segment) (ActivityTypeDef, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return ActivityTypeDef{st}, err
+	return ActivityTypeDef(st), err
 }
 
 func NewRootActivityTypeDef(s *capnp.Segment) (ActivityTypeDef, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return ActivityTypeDef{st}, err
+	return ActivityTypeDef(st), err
 }
 
 func ReadRootActivityTypeDef(msg *capnp.Message) (ActivityTypeDef, error) {
 	root, err := msg.Root()
-	return ActivityTypeDef{root.Struct()}, err
+	return ActivityTypeDef(root.Struct()), err
 }
 
 func (s ActivityTypeDef) String() string {
-	str, _ := text.Marshal(0xe638de0ad7c89a2b, s.Struct)
+	str, _ := text.Marshal(0xe638de0ad7c89a2b, capnp.Struct(s))
 	return str
 }
 
+func (s ActivityTypeDef) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ActivityTypeDef) DecodeFromPtr(p capnp.Ptr) ActivityTypeDef {
+	return ActivityTypeDef(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ActivityTypeDef) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ActivityTypeDef) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ActivityTypeDef) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ActivityTypeDef) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s ActivityTypeDef) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s ActivityTypeDef) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s ActivityTypeDef) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s ActivityTypeDef) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s ActivityTypeDef) VerbPhrase() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(1)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s ActivityTypeDef) HasVerbPhrase() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s ActivityTypeDef) SetVerbPhrase(v util.LocalizedText) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewVerbPhrase sets the verbPhrase field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s ActivityTypeDef) NewVerbPhrase() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s ActivityTypeDef) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(2)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s ActivityTypeDef) HasDescription() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s ActivityTypeDef) SetDescription(v util.LocalizedText) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s ActivityTypeDef) NewDescription() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -490,88 +543,88 @@ func (s ActivityTypeDef) RequiredPermission() ActivityTypeDef_requiredPermission
 }
 
 func (s ActivityTypeDef_requiredPermission) Which() ActivityTypeDef_requiredPermission_Which {
-	return ActivityTypeDef_requiredPermission_Which(s.Struct.Uint16(0))
+	return ActivityTypeDef_requiredPermission_Which(capnp.Struct(s).Uint16(0))
+}
+func (s ActivityTypeDef_requiredPermission) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ActivityTypeDef_requiredPermission) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ActivityTypeDef_requiredPermission) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s ActivityTypeDef_requiredPermission) SetEveryone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s ActivityTypeDef_requiredPermission) PermissionIndex() uint16 {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != permissionIndex")
 	}
-	return s.Struct.Uint16(2)
+	return capnp.Struct(s).Uint16(2)
 }
 
 func (s ActivityTypeDef_requiredPermission) SetPermissionIndex(v uint16) {
-	s.Struct.SetUint16(0, 1)
-	s.Struct.SetUint16(2, v)
+	capnp.Struct(s).SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(2, v)
 }
 
 func (s ActivityTypeDef_requiredPermission) SetExplicitList() {
-	s.Struct.SetUint16(0, 2)
+	capnp.Struct(s).SetUint16(0, 2)
 
 }
 
 func (s ActivityTypeDef) Obsolete() bool {
-	return s.Struct.Bit(32)
+	return capnp.Struct(s).Bit(32)
 }
 
 func (s ActivityTypeDef) SetObsolete(v bool) {
-	s.Struct.SetBit(32, v)
+	capnp.Struct(s).SetBit(32, v)
 }
 
 func (s ActivityTypeDef) NotifySubscribers() bool {
-	return s.Struct.Bit(33)
+	return capnp.Struct(s).Bit(33)
 }
 
 func (s ActivityTypeDef) SetNotifySubscribers(v bool) {
-	s.Struct.SetBit(33, v)
+	capnp.Struct(s).SetBit(33, v)
 }
 
 func (s ActivityTypeDef) AutoSubscribeToThread() bool {
-	return s.Struct.Bit(34)
+	return capnp.Struct(s).Bit(34)
 }
 
 func (s ActivityTypeDef) SetAutoSubscribeToThread(v bool) {
-	s.Struct.SetBit(34, v)
+	capnp.Struct(s).SetBit(34, v)
 }
 
 func (s ActivityTypeDef) AutoSubscribeToGrain() bool {
-	return s.Struct.Bit(35)
+	return capnp.Struct(s).Bit(35)
 }
 
 func (s ActivityTypeDef) SetAutoSubscribeToGrain(v bool) {
-	s.Struct.SetBit(35, v)
+	capnp.Struct(s).SetBit(35, v)
 }
 
 func (s ActivityTypeDef) SuppressUnread() bool {
-	return s.Struct.Bit(36)
+	return capnp.Struct(s).Bit(36)
 }
 
 func (s ActivityTypeDef) SetSuppressUnread(v bool) {
-	s.Struct.SetBit(36, v)
+	capnp.Struct(s).SetBit(36, v)
 }
 
 // ActivityTypeDef_List is a list of ActivityTypeDef.
-type ActivityTypeDef_List struct{ capnp.List }
+type ActivityTypeDef_List = capnp.StructList[ActivityTypeDef]
 
 // NewActivityTypeDef creates a new list of ActivityTypeDef.
 func NewActivityTypeDef_List(s *capnp.Segment, sz int32) (ActivityTypeDef_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return ActivityTypeDef_List{l}, err
-}
-
-func (s ActivityTypeDef_List) At(i int) ActivityTypeDef { return ActivityTypeDef{s.List.Struct(i)} }
-
-func (s ActivityTypeDef_List) Set(i int, v ActivityTypeDef) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s ActivityTypeDef_List) String() string {
-	str, _ := text.MarshalList(0xe638de0ad7c89a2b, s.List)
-	return str
+	return capnp.StructList[ActivityTypeDef](l), err
 }
 
 // ActivityTypeDef_Future is a wrapper for a ActivityTypeDef promised by a client call.
@@ -579,7 +632,7 @@ type ActivityTypeDef_Future struct{ *capnp.Future }
 
 func (p ActivityTypeDef_Future) Struct() (ActivityTypeDef, error) {
 	s, err := p.Future.Struct()
-	return ActivityTypeDef{s}, err
+	return ActivityTypeDef(s), err
 }
 
 func (p ActivityTypeDef_Future) VerbPhrase() util.LocalizedText_Future {
@@ -599,78 +652,87 @@ type ActivityTypeDef_requiredPermission_Future struct{ *capnp.Future }
 
 func (p ActivityTypeDef_requiredPermission_Future) Struct() (ActivityTypeDef_requiredPermission, error) {
 	s, err := p.Future.Struct()
-	return ActivityTypeDef_requiredPermission{s}, err
+	return ActivityTypeDef_requiredPermission(s), err
 }
 
-type NotificationDisplayInfo struct{ capnp.Struct }
+type NotificationDisplayInfo capnp.Struct
 
 // NotificationDisplayInfo_TypeID is the unique identifier for the type NotificationDisplayInfo.
 const NotificationDisplayInfo_TypeID = 0xd3b9f2ca42d4f783
 
 func NewNotificationDisplayInfo(s *capnp.Segment) (NotificationDisplayInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return NotificationDisplayInfo{st}, err
+	return NotificationDisplayInfo(st), err
 }
 
 func NewRootNotificationDisplayInfo(s *capnp.Segment) (NotificationDisplayInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return NotificationDisplayInfo{st}, err
+	return NotificationDisplayInfo(st), err
 }
 
 func ReadRootNotificationDisplayInfo(msg *capnp.Message) (NotificationDisplayInfo, error) {
 	root, err := msg.Root()
-	return NotificationDisplayInfo{root.Struct()}, err
+	return NotificationDisplayInfo(root.Struct()), err
 }
 
 func (s NotificationDisplayInfo) String() string {
-	str, _ := text.Marshal(0xd3b9f2ca42d4f783, s.Struct)
+	str, _ := text.Marshal(0xd3b9f2ca42d4f783, capnp.Struct(s))
 	return str
 }
 
+func (s NotificationDisplayInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (NotificationDisplayInfo) DecodeFromPtr(p capnp.Ptr) NotificationDisplayInfo {
+	return NotificationDisplayInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s NotificationDisplayInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s NotificationDisplayInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s NotificationDisplayInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s NotificationDisplayInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s NotificationDisplayInfo) Caption() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s NotificationDisplayInfo) HasCaption() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s NotificationDisplayInfo) SetCaption(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewCaption sets the caption field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s NotificationDisplayInfo) NewCaption() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // NotificationDisplayInfo_List is a list of NotificationDisplayInfo.
-type NotificationDisplayInfo_List struct{ capnp.List }
+type NotificationDisplayInfo_List = capnp.StructList[NotificationDisplayInfo]
 
 // NewNotificationDisplayInfo creates a new list of NotificationDisplayInfo.
 func NewNotificationDisplayInfo_List(s *capnp.Segment, sz int32) (NotificationDisplayInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return NotificationDisplayInfo_List{l}, err
-}
-
-func (s NotificationDisplayInfo_List) At(i int) NotificationDisplayInfo {
-	return NotificationDisplayInfo{s.List.Struct(i)}
-}
-
-func (s NotificationDisplayInfo_List) Set(i int, v NotificationDisplayInfo) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s NotificationDisplayInfo_List) String() string {
-	str, _ := text.MarshalList(0xd3b9f2ca42d4f783, s.List)
-	return str
+	return capnp.StructList[NotificationDisplayInfo](l), err
 }
 
 // NotificationDisplayInfo_Future is a wrapper for a NotificationDisplayInfo promised by a client call.
@@ -678,14 +740,14 @@ type NotificationDisplayInfo_Future struct{ *capnp.Future }
 
 func (p NotificationDisplayInfo_Future) Struct() (NotificationDisplayInfo, error) {
 	s, err := p.Future.Struct()
-	return NotificationDisplayInfo{s}, err
+	return NotificationDisplayInfo(s), err
 }
 
 func (p NotificationDisplayInfo_Future) Caption() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-type NotificationTarget struct{ Client *capnp.Client }
+type NotificationTarget capnp.Client
 
 // NotificationTarget_TypeID is the unique identifier for the type NotificationTarget.
 const NotificationTarget_TypeID = 0xf0f87337d73020f0
@@ -701,20 +763,30 @@ func (c NotificationTarget) AddOngoing(ctx context.Context, params func(Notifica
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(NotificationTarget_addOngoing_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(NotificationTarget_addOngoing_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return NotificationTarget_addOngoing_Results_Future{Future: ans.Future()}, release
 }
 
 func (c NotificationTarget) AddRef() NotificationTarget {
-	return NotificationTarget{
-		Client: c.Client.AddRef(),
-	}
+	return NotificationTarget(capnp.Client(c).AddRef())
 }
 
 func (c NotificationTarget) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c NotificationTarget) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (NotificationTarget) DecodeFromPtr(p capnp.Ptr) NotificationTarget {
+	return NotificationTarget(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c NotificationTarget) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A NotificationTarget_Server is a NotificationTarget with a local implementation.
@@ -723,15 +795,15 @@ type NotificationTarget_Server interface {
 }
 
 // NotificationTarget_NewServer creates a new Server from an implementation of NotificationTarget_Server.
-func NotificationTarget_NewServer(s NotificationTarget_Server, policy *server.Policy) *server.Server {
+func NotificationTarget_NewServer(s NotificationTarget_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(NotificationTarget_Methods(nil, s), s, c, policy)
+	return server.New(NotificationTarget_Methods(nil, s), s, c)
 }
 
 // NotificationTarget_ServerToClient creates a new Client from an implementation of NotificationTarget_Server.
 // The caller is responsible for calling Release on the returned Client.
-func NotificationTarget_ServerToClient(s NotificationTarget_Server, policy *server.Policy) NotificationTarget {
-	return NotificationTarget{Client: capnp.NewClient(NotificationTarget_NewServer(s, policy))}
+func NotificationTarget_ServerToClient(s NotificationTarget_Server) NotificationTarget {
+	return NotificationTarget(capnp.NewClient(NotificationTarget_NewServer(s)))
 }
 
 // NotificationTarget_Methods appends Methods to a slice that invoke the methods on s.
@@ -764,102 +836,120 @@ type NotificationTarget_addOngoing struct {
 
 // Args returns the call's arguments.
 func (c NotificationTarget_addOngoing) Args() NotificationTarget_addOngoing_Params {
-	return NotificationTarget_addOngoing_Params{Struct: c.Call.Args()}
+	return NotificationTarget_addOngoing_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c NotificationTarget_addOngoing) AllocResults() (NotificationTarget_addOngoing_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return NotificationTarget_addOngoing_Results{Struct: r}, err
+	return NotificationTarget_addOngoing_Results(r), err
 }
 
-type NotificationTarget_addOngoing_Params struct{ capnp.Struct }
+// NotificationTarget_List is a list of NotificationTarget.
+type NotificationTarget_List = capnp.CapList[NotificationTarget]
+
+// NewNotificationTarget creates a new list of NotificationTarget.
+func NewNotificationTarget_List(s *capnp.Segment, sz int32) (NotificationTarget_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[NotificationTarget](l), err
+}
+
+type NotificationTarget_addOngoing_Params capnp.Struct
 
 // NotificationTarget_addOngoing_Params_TypeID is the unique identifier for the type NotificationTarget_addOngoing_Params.
 const NotificationTarget_addOngoing_Params_TypeID = 0xdaaca64376c9033a
 
 func NewNotificationTarget_addOngoing_Params(s *capnp.Segment) (NotificationTarget_addOngoing_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return NotificationTarget_addOngoing_Params{st}, err
+	return NotificationTarget_addOngoing_Params(st), err
 }
 
 func NewRootNotificationTarget_addOngoing_Params(s *capnp.Segment) (NotificationTarget_addOngoing_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return NotificationTarget_addOngoing_Params{st}, err
+	return NotificationTarget_addOngoing_Params(st), err
 }
 
 func ReadRootNotificationTarget_addOngoing_Params(msg *capnp.Message) (NotificationTarget_addOngoing_Params, error) {
 	root, err := msg.Root()
-	return NotificationTarget_addOngoing_Params{root.Struct()}, err
+	return NotificationTarget_addOngoing_Params(root.Struct()), err
 }
 
 func (s NotificationTarget_addOngoing_Params) String() string {
-	str, _ := text.Marshal(0xdaaca64376c9033a, s.Struct)
+	str, _ := text.Marshal(0xdaaca64376c9033a, capnp.Struct(s))
 	return str
 }
 
+func (s NotificationTarget_addOngoing_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (NotificationTarget_addOngoing_Params) DecodeFromPtr(p capnp.Ptr) NotificationTarget_addOngoing_Params {
+	return NotificationTarget_addOngoing_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s NotificationTarget_addOngoing_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s NotificationTarget_addOngoing_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s NotificationTarget_addOngoing_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s NotificationTarget_addOngoing_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s NotificationTarget_addOngoing_Params) DisplayInfo() (NotificationDisplayInfo, error) {
-	p, err := s.Struct.Ptr(0)
-	return NotificationDisplayInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return NotificationDisplayInfo(p.Struct()), err
 }
 
 func (s NotificationTarget_addOngoing_Params) HasDisplayInfo() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s NotificationTarget_addOngoing_Params) SetDisplayInfo(v NotificationDisplayInfo) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated NotificationDisplayInfo struct, preferring placement in s's segment.
 func (s NotificationTarget_addOngoing_Params) NewDisplayInfo() (NotificationDisplayInfo, error) {
-	ss, err := NewNotificationDisplayInfo(s.Struct.Segment())
+	ss, err := NewNotificationDisplayInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return NotificationDisplayInfo{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s NotificationTarget_addOngoing_Params) Notification() OngoingNotification {
-	p, _ := s.Struct.Ptr(1)
-	return OngoingNotification{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return OngoingNotification(p.Interface().Client())
 }
 
 func (s NotificationTarget_addOngoing_Params) HasNotification() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s NotificationTarget_addOngoing_Params) SetNotification(v OngoingNotification) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // NotificationTarget_addOngoing_Params_List is a list of NotificationTarget_addOngoing_Params.
-type NotificationTarget_addOngoing_Params_List struct{ capnp.List }
+type NotificationTarget_addOngoing_Params_List = capnp.StructList[NotificationTarget_addOngoing_Params]
 
 // NewNotificationTarget_addOngoing_Params creates a new list of NotificationTarget_addOngoing_Params.
 func NewNotificationTarget_addOngoing_Params_List(s *capnp.Segment, sz int32) (NotificationTarget_addOngoing_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return NotificationTarget_addOngoing_Params_List{l}, err
-}
-
-func (s NotificationTarget_addOngoing_Params_List) At(i int) NotificationTarget_addOngoing_Params {
-	return NotificationTarget_addOngoing_Params{s.List.Struct(i)}
-}
-
-func (s NotificationTarget_addOngoing_Params_List) Set(i int, v NotificationTarget_addOngoing_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s NotificationTarget_addOngoing_Params_List) String() string {
-	str, _ := text.MarshalList(0xdaaca64376c9033a, s.List)
-	return str
+	return capnp.StructList[NotificationTarget_addOngoing_Params](l), err
 }
 
 // NotificationTarget_addOngoing_Params_Future is a wrapper for a NotificationTarget_addOngoing_Params promised by a client call.
@@ -867,7 +957,7 @@ type NotificationTarget_addOngoing_Params_Future struct{ *capnp.Future }
 
 func (p NotificationTarget_addOngoing_Params_Future) Struct() (NotificationTarget_addOngoing_Params, error) {
 	s, err := p.Future.Struct()
-	return NotificationTarget_addOngoing_Params{s}, err
+	return NotificationTarget_addOngoing_Params(s), err
 }
 
 func (p NotificationTarget_addOngoing_Params_Future) DisplayInfo() NotificationDisplayInfo_Future {
@@ -875,72 +965,81 @@ func (p NotificationTarget_addOngoing_Params_Future) DisplayInfo() NotificationD
 }
 
 func (p NotificationTarget_addOngoing_Params_Future) Notification() OngoingNotification {
-	return OngoingNotification{Client: p.Future.Field(1, nil).Client()}
+	return OngoingNotification(p.Future.Field(1, nil).Client())
 }
 
-type NotificationTarget_addOngoing_Results struct{ capnp.Struct }
+type NotificationTarget_addOngoing_Results capnp.Struct
 
 // NotificationTarget_addOngoing_Results_TypeID is the unique identifier for the type NotificationTarget_addOngoing_Results.
 const NotificationTarget_addOngoing_Results_TypeID = 0xee4cbafe4028d3c2
 
 func NewNotificationTarget_addOngoing_Results(s *capnp.Segment) (NotificationTarget_addOngoing_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return NotificationTarget_addOngoing_Results{st}, err
+	return NotificationTarget_addOngoing_Results(st), err
 }
 
 func NewRootNotificationTarget_addOngoing_Results(s *capnp.Segment) (NotificationTarget_addOngoing_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return NotificationTarget_addOngoing_Results{st}, err
+	return NotificationTarget_addOngoing_Results(st), err
 }
 
 func ReadRootNotificationTarget_addOngoing_Results(msg *capnp.Message) (NotificationTarget_addOngoing_Results, error) {
 	root, err := msg.Root()
-	return NotificationTarget_addOngoing_Results{root.Struct()}, err
+	return NotificationTarget_addOngoing_Results(root.Struct()), err
 }
 
 func (s NotificationTarget_addOngoing_Results) String() string {
-	str, _ := text.Marshal(0xee4cbafe4028d3c2, s.Struct)
+	str, _ := text.Marshal(0xee4cbafe4028d3c2, capnp.Struct(s))
 	return str
 }
 
+func (s NotificationTarget_addOngoing_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (NotificationTarget_addOngoing_Results) DecodeFromPtr(p capnp.Ptr) NotificationTarget_addOngoing_Results {
+	return NotificationTarget_addOngoing_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s NotificationTarget_addOngoing_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s NotificationTarget_addOngoing_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s NotificationTarget_addOngoing_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s NotificationTarget_addOngoing_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s NotificationTarget_addOngoing_Results) Handle() util.Handle {
-	p, _ := s.Struct.Ptr(0)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s NotificationTarget_addOngoing_Results) HasHandle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s NotificationTarget_addOngoing_Results) SetHandle(v util.Handle) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // NotificationTarget_addOngoing_Results_List is a list of NotificationTarget_addOngoing_Results.
-type NotificationTarget_addOngoing_Results_List struct{ capnp.List }
+type NotificationTarget_addOngoing_Results_List = capnp.StructList[NotificationTarget_addOngoing_Results]
 
 // NewNotificationTarget_addOngoing_Results creates a new list of NotificationTarget_addOngoing_Results.
 func NewNotificationTarget_addOngoing_Results_List(s *capnp.Segment, sz int32) (NotificationTarget_addOngoing_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return NotificationTarget_addOngoing_Results_List{l}, err
-}
-
-func (s NotificationTarget_addOngoing_Results_List) At(i int) NotificationTarget_addOngoing_Results {
-	return NotificationTarget_addOngoing_Results{s.List.Struct(i)}
-}
-
-func (s NotificationTarget_addOngoing_Results_List) Set(i int, v NotificationTarget_addOngoing_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s NotificationTarget_addOngoing_Results_List) String() string {
-	str, _ := text.MarshalList(0xee4cbafe4028d3c2, s.List)
-	return str
+	return capnp.StructList[NotificationTarget_addOngoing_Results](l), err
 }
 
 // NotificationTarget_addOngoing_Results_Future is a wrapper for a NotificationTarget_addOngoing_Results promised by a client call.
@@ -948,14 +1047,14 @@ type NotificationTarget_addOngoing_Results_Future struct{ *capnp.Future }
 
 func (p NotificationTarget_addOngoing_Results_Future) Struct() (NotificationTarget_addOngoing_Results, error) {
 	s, err := p.Future.Struct()
-	return NotificationTarget_addOngoing_Results{s}, err
+	return NotificationTarget_addOngoing_Results(s), err
 }
 
 func (p NotificationTarget_addOngoing_Results_Future) Handle() util.Handle {
-	return util.Handle{Client: p.Future.Field(0, nil).Client()}
+	return util.Handle(p.Future.Field(0, nil).Client())
 }
 
-type OngoingNotification struct{ Client *capnp.Client }
+type OngoingNotification capnp.Client
 
 // OngoingNotification_TypeID is the unique identifier for the type OngoingNotification.
 const OngoingNotification_TypeID = 0xfe851ddbb88940cd
@@ -971,20 +1070,30 @@ func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNoti
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(OngoingNotification_cancel_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(OngoingNotification_cancel_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
 }
 
 func (c OngoingNotification) AddRef() OngoingNotification {
-	return OngoingNotification{
-		Client: c.Client.AddRef(),
-	}
+	return OngoingNotification(capnp.Client(c).AddRef())
 }
 
 func (c OngoingNotification) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c OngoingNotification) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (OngoingNotification) DecodeFromPtr(p capnp.Ptr) OngoingNotification {
+	return OngoingNotification(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c OngoingNotification) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A OngoingNotification_Server is a OngoingNotification with a local implementation.
@@ -993,15 +1102,15 @@ type OngoingNotification_Server interface {
 }
 
 // OngoingNotification_NewServer creates a new Server from an implementation of OngoingNotification_Server.
-func OngoingNotification_NewServer(s OngoingNotification_Server, policy *server.Policy) *server.Server {
+func OngoingNotification_NewServer(s OngoingNotification_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(OngoingNotification_Methods(nil, s), s, c, policy)
+	return server.New(OngoingNotification_Methods(nil, s), s, c)
 }
 
 // OngoingNotification_ServerToClient creates a new Client from an implementation of OngoingNotification_Server.
 // The caller is responsible for calling Release on the returned Client.
-func OngoingNotification_ServerToClient(s OngoingNotification_Server, policy *server.Policy) OngoingNotification {
-	return OngoingNotification{Client: capnp.NewClient(OngoingNotification_NewServer(s, policy))}
+func OngoingNotification_ServerToClient(s OngoingNotification_Server) OngoingNotification {
+	return OngoingNotification(capnp.NewClient(OngoingNotification_NewServer(s)))
 }
 
 // OngoingNotification_Methods appends Methods to a slice that invoke the methods on s.
@@ -1034,60 +1143,79 @@ type OngoingNotification_cancel struct {
 
 // Args returns the call's arguments.
 func (c OngoingNotification_cancel) Args() OngoingNotification_cancel_Params {
-	return OngoingNotification_cancel_Params{Struct: c.Call.Args()}
+	return OngoingNotification_cancel_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c OngoingNotification_cancel) AllocResults() (OngoingNotification_cancel_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return OngoingNotification_cancel_Results{Struct: r}, err
+	return OngoingNotification_cancel_Results(r), err
 }
 
-type OngoingNotification_cancel_Params struct{ capnp.Struct }
+// OngoingNotification_List is a list of OngoingNotification.
+type OngoingNotification_List = capnp.CapList[OngoingNotification]
+
+// NewOngoingNotification creates a new list of OngoingNotification.
+func NewOngoingNotification_List(s *capnp.Segment, sz int32) (OngoingNotification_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[OngoingNotification](l), err
+}
+
+type OngoingNotification_cancel_Params capnp.Struct
 
 // OngoingNotification_cancel_Params_TypeID is the unique identifier for the type OngoingNotification_cancel_Params.
 const OngoingNotification_cancel_Params_TypeID = 0xf1d1cb82a830948b
 
 func NewOngoingNotification_cancel_Params(s *capnp.Segment) (OngoingNotification_cancel_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return OngoingNotification_cancel_Params{st}, err
+	return OngoingNotification_cancel_Params(st), err
 }
 
 func NewRootOngoingNotification_cancel_Params(s *capnp.Segment) (OngoingNotification_cancel_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return OngoingNotification_cancel_Params{st}, err
+	return OngoingNotification_cancel_Params(st), err
 }
 
 func ReadRootOngoingNotification_cancel_Params(msg *capnp.Message) (OngoingNotification_cancel_Params, error) {
 	root, err := msg.Root()
-	return OngoingNotification_cancel_Params{root.Struct()}, err
+	return OngoingNotification_cancel_Params(root.Struct()), err
 }
 
 func (s OngoingNotification_cancel_Params) String() string {
-	str, _ := text.Marshal(0xf1d1cb82a830948b, s.Struct)
+	str, _ := text.Marshal(0xf1d1cb82a830948b, capnp.Struct(s))
 	return str
 }
 
+func (s OngoingNotification_cancel_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (OngoingNotification_cancel_Params) DecodeFromPtr(p capnp.Ptr) OngoingNotification_cancel_Params {
+	return OngoingNotification_cancel_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s OngoingNotification_cancel_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s OngoingNotification_cancel_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s OngoingNotification_cancel_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s OngoingNotification_cancel_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // OngoingNotification_cancel_Params_List is a list of OngoingNotification_cancel_Params.
-type OngoingNotification_cancel_Params_List struct{ capnp.List }
+type OngoingNotification_cancel_Params_List = capnp.StructList[OngoingNotification_cancel_Params]
 
 // NewOngoingNotification_cancel_Params creates a new list of OngoingNotification_cancel_Params.
 func NewOngoingNotification_cancel_Params_List(s *capnp.Segment, sz int32) (OngoingNotification_cancel_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return OngoingNotification_cancel_Params_List{l}, err
-}
-
-func (s OngoingNotification_cancel_Params_List) At(i int) OngoingNotification_cancel_Params {
-	return OngoingNotification_cancel_Params{s.List.Struct(i)}
-}
-
-func (s OngoingNotification_cancel_Params_List) Set(i int, v OngoingNotification_cancel_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s OngoingNotification_cancel_Params_List) String() string {
-	str, _ := text.MarshalList(0xf1d1cb82a830948b, s.List)
-	return str
+	return capnp.StructList[OngoingNotification_cancel_Params](l), err
 }
 
 // OngoingNotification_cancel_Params_Future is a wrapper for a OngoingNotification_cancel_Params promised by a client call.
@@ -1095,54 +1223,64 @@ type OngoingNotification_cancel_Params_Future struct{ *capnp.Future }
 
 func (p OngoingNotification_cancel_Params_Future) Struct() (OngoingNotification_cancel_Params, error) {
 	s, err := p.Future.Struct()
-	return OngoingNotification_cancel_Params{s}, err
+	return OngoingNotification_cancel_Params(s), err
 }
 
-type OngoingNotification_cancel_Results struct{ capnp.Struct }
+type OngoingNotification_cancel_Results capnp.Struct
 
 // OngoingNotification_cancel_Results_TypeID is the unique identifier for the type OngoingNotification_cancel_Results.
 const OngoingNotification_cancel_Results_TypeID = 0xf81453d4b819e209
 
 func NewOngoingNotification_cancel_Results(s *capnp.Segment) (OngoingNotification_cancel_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return OngoingNotification_cancel_Results{st}, err
+	return OngoingNotification_cancel_Results(st), err
 }
 
 func NewRootOngoingNotification_cancel_Results(s *capnp.Segment) (OngoingNotification_cancel_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return OngoingNotification_cancel_Results{st}, err
+	return OngoingNotification_cancel_Results(st), err
 }
 
 func ReadRootOngoingNotification_cancel_Results(msg *capnp.Message) (OngoingNotification_cancel_Results, error) {
 	root, err := msg.Root()
-	return OngoingNotification_cancel_Results{root.Struct()}, err
+	return OngoingNotification_cancel_Results(root.Struct()), err
 }
 
 func (s OngoingNotification_cancel_Results) String() string {
-	str, _ := text.Marshal(0xf81453d4b819e209, s.Struct)
+	str, _ := text.Marshal(0xf81453d4b819e209, capnp.Struct(s))
 	return str
 }
 
+func (s OngoingNotification_cancel_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (OngoingNotification_cancel_Results) DecodeFromPtr(p capnp.Ptr) OngoingNotification_cancel_Results {
+	return OngoingNotification_cancel_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s OngoingNotification_cancel_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s OngoingNotification_cancel_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s OngoingNotification_cancel_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s OngoingNotification_cancel_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // OngoingNotification_cancel_Results_List is a list of OngoingNotification_cancel_Results.
-type OngoingNotification_cancel_Results_List struct{ capnp.List }
+type OngoingNotification_cancel_Results_List = capnp.StructList[OngoingNotification_cancel_Results]
 
 // NewOngoingNotification_cancel_Results creates a new list of OngoingNotification_cancel_Results.
 func NewOngoingNotification_cancel_Results_List(s *capnp.Segment, sz int32) (OngoingNotification_cancel_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return OngoingNotification_cancel_Results_List{l}, err
-}
-
-func (s OngoingNotification_cancel_Results_List) At(i int) OngoingNotification_cancel_Results {
-	return OngoingNotification_cancel_Results{s.List.Struct(i)}
-}
-
-func (s OngoingNotification_cancel_Results_List) Set(i int, v OngoingNotification_cancel_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s OngoingNotification_cancel_Results_List) String() string {
-	str, _ := text.MarshalList(0xf81453d4b819e209, s.List)
-	return str
+	return capnp.StructList[OngoingNotification_cancel_Results](l), err
 }
 
 // OngoingNotification_cancel_Results_Future is a wrapper for a OngoingNotification_cancel_Results promised by a client call.
@@ -1150,93 +1288,93 @@ type OngoingNotification_cancel_Results_Future struct{ *capnp.Future }
 
 func (p OngoingNotification_cancel_Results_Future) Struct() (OngoingNotification_cancel_Results, error) {
 	s, err := p.Future.Struct()
-	return OngoingNotification_cancel_Results{s}, err
+	return OngoingNotification_cancel_Results(s), err
 }
 
-const schema_a4e001d4cbcf33fa = "x\xda\x94UmhTW\x1a~\x9f{frg\x9c" +
-	"\xc9N\x8es\x7f\xec.\x1b\xe2j`]eC4\x0b" +
-	".a!\xd9lDb\xb5\xcdq\x92R\x02Bnf" +
-	"N\x92[&\xf7\x8e\xf7\xde\x89\x19K\xa9Z[j\xb5" +
-	" \xa2Em\xffX\xb4U\x11J\x0b\xd6\x8f\xb6`\xfb" +
-	"\xabVDD\x8b\xa5\xa5E\x84~ \xb4\xf8\x05UQ" +
-	"o9\xf3m\x12K\xfbo\xe6\xdc\xf7}\xce\xf3>\xef" +
-	"\xf3\xbe\xa7}\x17\xeb\xd6\x96\x84\x8f\xc7\x88\xc4+\xe1\x86" +
-	"\xe0\xfc\xf0\xad\xb5\xcb\xed\xdd{I\xb4\x00\xc1\xe2}\x9f" +
-	"]\x9e\xf3\xed\x7f\xbe\xa7A\xa6\x83\x11u|\x12\xde\x09" +
-	"B\xf2B\xf8]B\xf0Dv\xfb\xe1k\x1f\x9c~\x87" +
-	"D\x02\x08\xeeu\x9c?{\x09W\x0eP8\xa4\x13%" +
-	"\xf3\x0d\xd7\x92\x9b\x1a\xfeA\xd4\xb1\xb7\xa1\x05\x84`\xfd" +
-	"\xeb_~\xf4\x06_\xfd!\x89f\xd4\xe5\x86\xa1\x13u" +
-	"|\xac\xcfE\xf2\x9c\xae\x12\xcf\xe8?\x10\x82\x17\x7f\xb9" +
-	"\xd4\xf3\xf9\xcd\x93\x17\x89'\xea\xa1\x8b\xc1\x87#\x9dH" +
-	"\x9e\x8c\xa8\xe0c\x91.B\xd0\xc9\xceL\xfe\xff\xed\xa3" +
-	"_\x11\x9f\x0f\xa2\xb0\xa6\x82\xbe\x88\xbc\xa5\x98~\x17Y" +
-	"OuuLc\xca\x14F_\xf4^r0\xaarD" +
-	"4PL?\xbd\xb8\xb0\xfb\xe1\xa9U?\x97\xe1\x8aw" +
-	"\xca\xd8\x11\x05\x97\x8f\xa9\xfb\xae\xcfk\xbf\xbc\xcc\xbbs" +
-	"\x9dx\x82\xd5\xd0\x08\x1d\xbbcs\x91<\x18S\xa8\xfb" +
-	"c+\x92\xe7\xd4\xaf`\xdb\xae\xf6C\x9b\xcf^\xb8A" +
-	"|\x01\x88\x948\x1d\xc7b\xaf\x82BA\xef\xa9\xe0\xe5" +
-	"\xa1\xc5;n\x11o\xaeW\xa4\xc8\xff`\xac\x07\xc9c" +
-	"E\xa8\xf7b\xaa\x86\xe8\xd5\xbf\x9c\xb8\x942\xee\xd4\xc1" +
-	"4\xc6w*\x98s\xdd[O|\xdd\xfc\xd2\xc3\x19t" +
-	"\x1e\xc4\xfe\x8adc\\aD\xe3+\x92K\xe2:\xdd" +
-	"\x0c\xcc\xb4oMZ~!\xdc\x966sv\xae\xf3\x7f" +
-	"\xe5\xff\x03\x85\x9c\xec\x95\xa3m\xae\\\x97\xb7\\\x99\xe9" +
-	"\x97\xee\x84\xe5y\x96\x03[\xc4Y(\x1e\x04\x86\xb2\x00" +
-	"_\xbe\x92H\xf42\x88~\x0d\xcdx\x18\xc0@\x88\x88" +
-	"\xaf\xdeL$V1\x88g44j\x0f\x02\x03a\"" +
-	">\xf8,\x91\x18`\x10\xc3\x1a\x029)\xdd\x82cK" +
-	"\"=\xc8\x95\xd1\xe1\xd8}vFN\x11t\xd2\xa0\x13" +
-	"\x029\x95\xcbZi\xcb\xa7\xc4*\xcb\xf3\xa9\xa1JX" +
-	"\x9bFxybR\xda\xbe\x88\x00uBF\x87jF" +
-	"\xe3\xd1E\xc1\xc0\xb8+\xcdL\x9fMl\xd4I\x0cz" +
-	"\xd2\x15\x06\x0b\x11\x85@\xc4\x9f_D$\xa6\x18\xc4\x16" +
-	"\x0d\\\x83\x01u\xb8I1\xde\xc8 \xb6k\x003\xa0" +
-	"\x11\xf1\xad*p\x0b\x83\xd8\xa1\x81\x87\xb4\x92\x0e\xaf-" +
-	"U#\xc3 \x0eh\xe0*R\xa9\xb0\xbf\x93H\xbc\xc9" +
-	" \x0eiH\xe4L\x7f\x1cq\xd2\x10'\x04\xb6\xe3[" +
-	"\xa3V\xda\xa4\x84o96\x9aj\x0e'\xa0\x89\x90\xf0" +
-	"\x0b9Y\x11\xa1%\xefI\xd7\xc3\x9f\x08\xfd\x0ch\xaa" +
-	"\x95DP\x87]~\xb1*4\xd5\x0a/\x81T\xb5b" +
-	"\xd3\xb5RR\xb5\x0dz\x12n? \x9a\xaa\x1a\x98\xaa" +
-	"\x9b\xc3\x0c\"\xab\x01e\x09\xac5Db\x9cA\xf8\x1a" +
-	"8CI\x83u=D\"\xcb \xa6\x94Xe\x0d\xf2" +
-	"CD\xc2g\x10\x1b5\x04VF\xda\xbe\xe5\x17\x88\x08" +
-	"<\xf8\xf37\xe2\xf0\x86=[N+f\x9c\x10L\xa8" +
-	"\x8f\xaa\xf9\xc8\x00\xa4\x01\x84\x17\xd2\xa6\xfd\xb4%\xd7W" +
-	"\xfe\x07^~\xc4K\xbb\xd6\x081Y\x0d\x9aQ\xd2\x93" +
-	"e!\x15Z\xaf\xe5\xe5\xb2]f\xa1\xcf\x1euT]" +
-	"\xa1j]\x8d\x8an\x84A\x18\x9a\xba'W\x16\xbd\xef" +
-	"\xeas\xcb\xdc\xe3k\xb7M\xd7+<\x0b\xf8\x80\xe9\x8e" +
-	"I\xbf\xcd\xccd\x9e\xb2\xc7\x1c\xcb\x1ek\xed7]\xdd" +
-	"\x9c\xf0D\xa4z\xcd?G\x88\xc4B\x06\xf1oe\x82" +
-	"\xb2~K\x94\x85\xda\x19\xc4\x7f5\x04\x19E\xd1,\xf4" +
-	"\x91n\x8f:3\xdb>\xdd\x17\xbc6\xcde\xe1\x1eg" +
-	"\xff\x81\xae\xd2\xc0\xaa\xba[\xab\x84~RV\xfd\x91A" +
-	"\xdc\xae#tC\xb5\xe9:\x83\xb8_\xee\x9dj\xe8]" +
-	"E\xfd\x0eC*\x04\xe5t\xa0\xb6\xfb\x93\xc0>\xd2x" +
-	"h\x9e\x81\x06\x80\xdfXY\x97\x1e\xfe\xbb\xa1\x16\"\xbf" +
-	"\xbb\x93H\xdcgHE\xa0\x817\xcc7\x10!J\x86" +
-	"\xf1>Q*\x02\x86\x94\xa1\xce\xf5\x05\x06\xa2DI\x8e" +
-	"#D)C\x9d\xcfS\xe7\x91V\x03s\x88\x92\xcd\xd8" +
-	"@\x94\xfa\x9b:_\x08\x0d\x09\xdb\x9c\x90\xd5\x91\x99\x94" +
-	"\xeeH\xff\xb8k\x12\xf3\xe4,\xbd\xcbHe\x96\x9cO" +
-	"\xfa\xec\xbd\xad,2T6\x19s\xec\xc0\x19\xf1\x9c\xac" +
-	"\xf4\xa52i\xc5a\xc5\x16\x14Ry\x94\xdc']x" +
-	"5\xf7\xe5}'\x95\x1f\xf1P\xfc2\xe0\x0c\xb4\x94F" +
-	"\xefq\xdfW$\\\xd3\xb2\xeb\x1c\x9d\xcb\xb9\xd2\xf3\xa8" +
-	"k\xd0~4\xef\x0f\x19o\x8d\xf4\x12\xf9\xac\xef\xd5\x1b" +
-	"\xbc\xb3f\xf0\xaeq\xd3\xced%xp\xa5gx\xf8" +
-	"h\xeb\xed=\xd3\xcd\xc3\x1ew\x0d\xfc\xd2\xdc\x84\x89\xaa" +
-	"\xcf(*\x0f \xe7C\xa4\xf1\xa8\x1eT\xa8\x10\xb3\xc7" +
-	"\xba\xd1\x8f\x99\xfc\xcbL\xeb\xf1\xdb\xd2\xa6\x9d\x96Y5" +
-	"5\xe6\x84GT\xcd\x09\xcd\xba\x9c*\x9bz\xd4!E" +
-	"\xa9n\xc6\x94\xa5[\x19D{\x9d\xa5\xff\xb5\xb46x" +
-	"\x8f,\xda\x16\xdf\xf2\xb3\xf2w\x8c\xfao0^#\xbd" +
-	"|\xd6\x877C\xbe\x199\xcc\xb1k\xfaU\x1ezT" +
-	"\x9ej\xce;I\xe3a\xbd\xab\x84[T\xee\xd7\x00\x00" +
-	"\x00\xff\xff\xaf-\xadP"
+const schema_a4e001d4cbcf33fa = "x\xda\x94Um\x88TU\x18~\x9f{f\xf6\xce8" +
+	"\xb3\xcd\x1eg~T\xb4\xac\xe9B\xa6\xb4\xacn`," +
+	"\xc1n\xdb\x8a\xaci\xedqv#\x16\x84\xbd;sv" +
+	"\xf7\xc6\xec\xbd\xe3\xbdw\xd6\x1d#R\xb3\xd04\x10I" +
+	"Q\xeb\x8f\xa1\xa5\"D\x81\xf9Q\x81\xf5+\x13\x11\xd1" +
+	"0\x8aB\x84>\x10\x0a\xbf \x15\xf5\xc6\x99ow\xd7" +
+	"\xa8\x7f3\xe7\xbe\xefs\x9e\xf7y\x9f\xf7=\xad;X" +
+	"g`A\xfd\x91\x08ibc\xb0\xce?3x}\xe5" +
+	"bk\xfb.\x12M\x80?\x7f\xf7\xb7\x17f\xfc\xf2\xcc" +
+	"o\xd4\xcft0\xa2\xb6\xaf\x83\xdb@\x88\x9f\x0d~B" +
+	"\xf0_\xc8l9p\xf9\xf3\x13\x1f\x93\x88\x01\xfe\xed\xb6" +
+	"3\xa7\xce\xe3\xe2^\x0a\x06t\xa2x\xae\xeer|]" +
+	"\xdd\x13Dm\xbb\xea\x9a@\xf0W\xef\xf8\xe1\xcb\xf7\xf9" +
+	"\xf2/H4\xa2&7\x08\x9d\xa8\xed+}&\xe2\xa7" +
+	"u\x95xR\xff\x9d\xe0\xbf\xf9\xf7\xf9\xae\xef\xae\x1d;" +
+	"G<V\x0b]\x08>\x10jG\xfcXH\x05\x1f\x0e" +
+	"u\x10\xfcvvr\xfc\xf9\x8f\x0e\xfdH|6\x88\x82" +
+	"\x9a\x0a\xfa>\xf4\xa1b\xfakh5\xd5\xd41\x89)" +
+	"S\x18=\xe1\xdb\xf1\xfe\xb0\xca\x11a_1\xfd\xe6\xdc" +
+	"\xdc\xce{\xc7\x97\xfdU\x82+\xdc)#\x07\x15\\." +
+	"\xa2\xee\xbb2\xab\xf5\xc2\"\xf7\xe6\x15\xe21VE#" +
+	"\xb4m\x8f\xccD|_D\xa1\xee\x89,\x89\x9fV\xbf" +
+	"\xfc\xcd\xef\xb5\xee_\x7f\xea\xecU\xe2s@\xa4\xc4i" +
+	";\x1cy\x07\x14\xf0\xbb\x8f\xfbo\x0f\xcc\xdfz\x9dx" +
+	"c\xad\"\x05\xfe\xfb\"]\x88\x1f.@}\x1aQ5" +
+	"\x84/=r\xf4|2q\xb3\x06\xa6>\xbaM\xc1\x9c" +
+	"\xee\xdct\xf4\xa7\xc6\xb7\xeeM\xa1s7\xf2(\xe2\xf5" +
+	"Q\x85\x11\x8e.\x89/\x88\xeat\xcd7R\x9e9n" +
+	"z\xf9`K\xca\xc8Z\xd9\xf6\xe7J\xff\xfb\xf2Y\xd9" +
+	"-\x87[\x1c\xb9*g:2\xdd+\x9d1\xd3uM" +
+	"\x1b\x96\x88\xb2@\xd4\xf7\x13\xca\x02|\xf1R\"\xd1\xcd" +
+	" z54\xe2\x9e\x8f\x04\x02D|\xf9z\"\xb1\x8c" +
+	"A\xbc\xa2\xa1^\xbb\xeb'\x10$\xe2\xfd\xaf\x12\x89>" +
+	"\x061\xa8\xc1\x97\xe3\xd2\xc9\xdb\x96$\xd2\xfdl\x09\x1d" +
+	"\xb6\xd5c\xa5\xe5\x04A'\x0d:\xc1\x97\x13\xd9\x8c\x99" +
+	"2=\x8a-3]\x8f\xea*\x84\xb5I\x84\x17\xc7\xc6" +
+	"\xa5\xe5\x89\x10P#dx\xa0j4\x1e\x9e\xe7\xf7\x8d" +
+	":\xd2H\xf7X\xc4\x86\xedX\xbf+\x1d\x91`\x01\xa2" +
+	"\x00\x88\xf8\xeb\xf3\x88\xc4\x04\x83\xd8\xa0\x81kH@\x1d" +
+	"\xaeS\x8c\xd72\x88-\x1a\xc0\x12\xd0\x88\xf8&\x15\xb8" +
+	"\x81Al\xd5\xc0\x03ZQ\x87w\x17\x12\x89\x8d\x0cb" +
+	"\xaf\x06\xae\"\x95\x0a{\xda\x89\xc4\x07\x0cb\xbf\x86X" +
+	"\xd6\xf0F\x11%\x0dQ\x82o\xd9\x9e9l\xa6\x0c\x8a" +
+	"y\xa6m\xa1\xa1\xeap\x02\x1a\x081/\x9f\x95e\x11" +
+	"\x9ar\xaet\\<D\xe8e@C\xb5$\x82:\xec" +
+	"\xf0\x0aU\xa1\xa1Zx\x11\xa4\xa2\x15\x9b\xac\x95\x92\xaa" +
+	"\xa5\xdf\x95pz\x01\xd1P\xd1\xc0P\xdd\x1cd\x10\x19" +
+	"\x0d(I`\xae \x12\xa3\x0c\xc2\xd3\xc0\x19\x8a\x1a\xac" +
+	"\xea\"\x12\x19\x061\xa1\xc4*i\x90\x1b \x12\x1e\x83" +
+	"X\xab\xc17\xd3\xd2\xf2L/OD\xe0\xfe\xc3?\x8b" +
+	"\x03kvn8\xa1\x98q\x82?\xa6>\xaa\xe6#\x0d" +
+	"\x90\x06\x10\xdeH\x19\xd6\xcb\xa6\\]\xfe\xef\xbb\xb9!" +
+	"7\xe5\x98C\xc4d%hJI/\x96\x84Th\xdd" +
+	"\xa6\x9b\xcdt\x18\xf9\x1ek\xd8Vu\x05*u\xd5+" +
+	"\xba!\x06\x91\xd0\xd4=\xd9\x92\xe8=\x97^[\xe4\x1c" +
+	"Y\xb9y\xb2^\xc1i\xc0\xfb\x0cgDz-F:" +
+	"\xfd\x925b\x9b\xd6Hs\xaf\xe1\xe8\xc6\x98+B\x95" +
+	"k\x9e\x1c\"\x12s\x19\xc4\xd3\xca\x04%\xfd\x16(\x0b" +
+	"\xb52\x88g5\xf8iE\xd1\xc8\xf7\x90n\x0d\xdbS" +
+	"\xdb>\xd9\x17\xbc:\xcd%\xe1\x1ed\xff\xbe\x8e\xe2\xc0" +
+	"\xaa\xba\x9b+\x84\xfeTV\xfd\x83A\xdc\xa8!tU" +
+	"\xb5\xe9\x0a\x83\xb8S\xea\x9dj\xe8-E\xfd&C2" +
+	"\x00\xe5t\xa0\xba\xfb\xe3\xc0n\xd2x`V\x02u\x00" +
+	"\xbf\xba\xb4&=\xf8xB-D~k\x1b\x91\xb8\xc3" +
+	"\x90\x0cA\x03\xaf\x9b\x9d@\x88(\x1e\xc4gD\xc9\x10" +
+	"\x18\x92\x09u\xae\xcfI L\x14\xe78H\x94L\xa8" +
+	"\xf3Y\xea<\xd4\x9c\xc0\x0c\xa2x#\xd6\x10%\x1fS" +
+	"\xe7s\xa1!f\x19c\xb222\xe3\xd2\x19\xea\x1du" +
+	"\x0cb\xae\x9c\xa6wi\xa9\xcc\x92\xf5H\x9f\xbe\xb7\xe5" +
+	"E\x86\xf2&c\xb6\xe5\xdbC\xae\x9d\x91\x9eT&-" +
+	";\xac\xd0\x82|2\x87\xa2\xfb\xa4\x03\xb7\xea\xbe\x9cg" +
+	"'sC.\x0a_\xfa\xec\xbe\xa6\xe2\xe8=\xe8\xfb\x92" +
+	"\x98c\x98V\x8d\xa3\xb3YG\xba.u\xf4[\xf7\xe7" +
+	"\xfd/\xe3\xad\x90n,\x97\xf1\xdcZ\x83\xb7W\x0d\xde" +
+	"1jX\xe9\x8c\x04\xf7/v\x0d\x0e\x1ej\xbe\xb1s" +
+	"\xb2y\xd8\x83\xae\x81W\x9c\x9b Q\xe5\x19E\xf9\x01" +
+	"\xe4|\x804\x1e\xd6\xfd2\x15b\xd6H'z1\x95" +
+	"\x7f\x89i-~K\xca\xb0R2\xa3\xa6\xc6\x18s\x89" +
+	"*9\x81i\x97SyS\x0f\xdb\xa4(\xd5\xcc\x98\xb2" +
+	"t3\x83h\xad\xb1\xf4S\x0b\xab\x83w\xdf\xa2m\xf2" +
+	"L/#\xff\xc3\xa8\xff\x0b\xe3\x15\xd2\xcde<\xb8S" +
+	"\xe4\x9b\x92\xc3l\xab\xaa_\xf9\xa1G\xf9\xa9\xe6\xbc\x9d" +
+	"4\x1e\xd4;\x8a\xb8\x05\xe5\xfe\x09\x00\x00\xff\xff3\x1c" +
+	"\xad^"
 
 func init() {
 	schemas.Register(schema_a4e001d4cbcf33fa,

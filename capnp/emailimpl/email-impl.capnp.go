@@ -12,7 +12,7 @@ import (
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 )
 
-type PersistentEmailVerifier struct{ Client *capnp.Client }
+type PersistentEmailVerifier capnp.Client
 
 // PersistentEmailVerifier_TypeID is the unique identifier for the type PersistentEmailVerifier.
 const PersistentEmailVerifier_TypeID = 0xd76bb6182f0aece3
@@ -28,9 +28,9 @@ func (c PersistentEmailVerifier) GetId(ctx context.Context, params func(email.Em
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_getId_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_getId_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailVerifier_getId_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentEmailVerifier) VerifyEmail(ctx context.Context, params func(email.EmailVerifier_verifyEmail_Params) error) (email.EmailVerifier_verifyEmail_Results_Future, capnp.ReleaseFunc) {
@@ -44,9 +44,9 @@ func (c PersistentEmailVerifier) VerifyEmail(ctx context.Context, params func(em
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_verifyEmail_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailVerifier_verifyEmail_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailVerifier_verifyEmail_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentEmailVerifier) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -60,11 +60,9 @@ func (c PersistentEmailVerifier) AddRequirements(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentEmailVerifier) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -78,20 +76,30 @@ func (c PersistentEmailVerifier) Save(ctx context.Context, params func(persisten
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentEmailVerifier) AddRef() PersistentEmailVerifier {
-	return PersistentEmailVerifier{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentEmailVerifier(capnp.Client(c).AddRef())
 }
 
 func (c PersistentEmailVerifier) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentEmailVerifier) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentEmailVerifier) DecodeFromPtr(p capnp.Ptr) PersistentEmailVerifier {
+	return PersistentEmailVerifier(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentEmailVerifier) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentEmailVerifier_Server is a PersistentEmailVerifier with a local implementation.
@@ -106,15 +114,15 @@ type PersistentEmailVerifier_Server interface {
 }
 
 // PersistentEmailVerifier_NewServer creates a new Server from an implementation of PersistentEmailVerifier_Server.
-func PersistentEmailVerifier_NewServer(s PersistentEmailVerifier_Server, policy *server.Policy) *server.Server {
+func PersistentEmailVerifier_NewServer(s PersistentEmailVerifier_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentEmailVerifier_Methods(nil, s), s, c, policy)
+	return server.New(PersistentEmailVerifier_Methods(nil, s), s, c)
 }
 
 // PersistentEmailVerifier_ServerToClient creates a new Client from an implementation of PersistentEmailVerifier_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentEmailVerifier_ServerToClient(s PersistentEmailVerifier_Server, policy *server.Policy) PersistentEmailVerifier {
-	return PersistentEmailVerifier{Client: capnp.NewClient(PersistentEmailVerifier_NewServer(s, policy))}
+func PersistentEmailVerifier_ServerToClient(s PersistentEmailVerifier_Server) PersistentEmailVerifier {
+	return PersistentEmailVerifier(capnp.NewClient(PersistentEmailVerifier_NewServer(s)))
 }
 
 // PersistentEmailVerifier_Methods appends Methods to a slice that invoke the methods on s.
@@ -175,7 +183,16 @@ func PersistentEmailVerifier_Methods(methods []server.Method, s PersistentEmailV
 	return methods
 }
 
-type PersistentVerifiedEmail struct{ Client *capnp.Client }
+// PersistentEmailVerifier_List is a list of PersistentEmailVerifier.
+type PersistentEmailVerifier_List = capnp.CapList[PersistentEmailVerifier]
+
+// NewPersistentEmailVerifier creates a new list of PersistentEmailVerifier.
+func NewPersistentEmailVerifier_List(s *capnp.Segment, sz int32) (PersistentEmailVerifier_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentEmailVerifier](l), err
+}
+
+type PersistentVerifiedEmail capnp.Client
 
 // PersistentVerifiedEmail_TypeID is the unique identifier for the type PersistentVerifiedEmail.
 const PersistentVerifiedEmail_TypeID = 0xe536db3eed324f9b
@@ -191,11 +208,9 @@ func (c PersistentVerifiedEmail) AddRequirements(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentVerifiedEmail) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -209,20 +224,30 @@ func (c PersistentVerifiedEmail) Save(ctx context.Context, params func(persisten
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentVerifiedEmail) AddRef() PersistentVerifiedEmail {
-	return PersistentVerifiedEmail{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentVerifiedEmail(capnp.Client(c).AddRef())
 }
 
 func (c PersistentVerifiedEmail) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentVerifiedEmail) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentVerifiedEmail) DecodeFromPtr(p capnp.Ptr) PersistentVerifiedEmail {
+	return PersistentVerifiedEmail(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentVerifiedEmail) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentVerifiedEmail_Server is a PersistentVerifiedEmail with a local implementation.
@@ -233,15 +258,15 @@ type PersistentVerifiedEmail_Server interface {
 }
 
 // PersistentVerifiedEmail_NewServer creates a new Server from an implementation of PersistentVerifiedEmail_Server.
-func PersistentVerifiedEmail_NewServer(s PersistentVerifiedEmail_Server, policy *server.Policy) *server.Server {
+func PersistentVerifiedEmail_NewServer(s PersistentVerifiedEmail_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentVerifiedEmail_Methods(nil, s), s, c, policy)
+	return server.New(PersistentVerifiedEmail_Methods(nil, s), s, c)
 }
 
 // PersistentVerifiedEmail_ServerToClient creates a new Client from an implementation of PersistentVerifiedEmail_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentVerifiedEmail_ServerToClient(s PersistentVerifiedEmail_Server, policy *server.Policy) PersistentVerifiedEmail {
-	return PersistentVerifiedEmail{Client: capnp.NewClient(PersistentVerifiedEmail_NewServer(s, policy))}
+func PersistentVerifiedEmail_ServerToClient(s PersistentVerifiedEmail_Server) PersistentVerifiedEmail {
+	return PersistentVerifiedEmail(capnp.NewClient(PersistentVerifiedEmail_NewServer(s)))
 }
 
 // PersistentVerifiedEmail_Methods appends Methods to a slice that invoke the methods on s.
@@ -278,7 +303,16 @@ func PersistentVerifiedEmail_Methods(methods []server.Method, s PersistentVerifi
 	return methods
 }
 
-const schema_92829022d203a580 = "x\xda2x\xc8\xe8\xc0d\xc8*\xcf\xc7\xc0\x10\xb8\x84" +
+// PersistentVerifiedEmail_List is a list of PersistentVerifiedEmail.
+type PersistentVerifiedEmail_List = capnp.CapList[PersistentVerifiedEmail]
+
+// NewPersistentVerifiedEmail creates a new list of PersistentVerifiedEmail.
+func NewPersistentVerifiedEmail_List(s *capnp.Segment, sz int32) (PersistentVerifiedEmail_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentVerifiedEmail](l), err
+}
+
+const schema_92829022d203a580 = "x\xda2x\xcc\xe8\xc0b\xc8+\xcf\xc7\xc0\x14\xb8\x84" +
 	"\x95\xed\xff\xe37\\\xfa\x12\xdb\xb2\xaf3\x08\x0a2\xff" +
 	"oX\xca|IiB\xd3$\x06\x06F\xe3\xafl^" +
 	"\x8c\xc2\x9c\xec\xec\x0c\x0c\xc2\xac\xec\xec\xc2\xac\xec\xea\x0c" +
@@ -290,7 +324,7 @@ const schema_92829022d203a580 = "x\xda2x\xc8\xe8\xc0d\xc8*\xcf\xc7\xc0\x10\xb8\x
 	"\x18\x19\xff\xff_)=\xf7\xd4\xf7\x88+\x0c\x0c\x0c\xff" +
 	"\xb7\\\xddWs\xfdm\xcfa\x10\x1b\x9fiP\x83R" +
 	"\xc0\xa6\xa2\x98\x16\xf5\xcb\xd7\x8d\xe9c\xf7\x0f4\xd3\x00" +
-	"\x01\x00\x00\xff\xff\xa0PY\x7f"
+	"\x01\x00\x00\xff\xff\xae\x80Y\x8d"
 
 func init() {
 	schemas.Register(schema_92829022d203a580,

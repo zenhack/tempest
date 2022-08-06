@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/crypto/nacl/sign"
 
-	"zenhack.net/go/sandstorm/capnp/spk"
 	"capnproto.org/go/capnp/v3"
+	"zenhack.net/go/sandstorm/capnp/spk"
 )
 
 var (
@@ -46,7 +46,7 @@ func (k Key) AddToFile(path string) error {
 		return err
 	}
 	defer f.Close()
-	return capnp.NewEncoder(f).Encode(k.Struct.Message())
+	return capnp.NewEncoder(f).Encode(spk.KeyFile(k).Message())
 }
 
 // Generate a new signing key. It will be the root object of its own message.

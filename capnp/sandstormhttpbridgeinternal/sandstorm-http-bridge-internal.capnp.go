@@ -19,7 +19,7 @@ const (
 	BridgeRequestSessionHtml = "<!DOCTYPE html>\n\n<html>\n  <head>\n    <style type=\"text/css\">\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        font-family: sans-serif;\n        font-size: 20px;\n      }\n      button {\n        border: none;\n        font-size: inherit;\n        font-family: inherit;\n        font-weight: inherit;\n        text-decoration: inherit;\n        color: inherit;\n        line-height: inherit;\n        background-color: transparent;\n        text-align: inherit;\n        padding: 0;\n        cursor: pointer;\n        display: block;\n        overflow: hidden;\n        text-overflow: ellipsis;\n        white-space: nowrap;\n        width: 100%;\n        padding-left: 32px;\n        height: 31px;\n      }\n      li {\n        border: 1px solid #ddd;\n        border-bottom: none;\n        background-color: #eee;\n        vertical-align: middle;\n        height: 32px;\n      }\n      ul {\n        border-bottom: 1px solid #ddd;\n        padding: 0;\n        margin: 10px;\n        list-style-type: none;\n      }\n    </style>\n  </head>\n  <body>\n    <ul id=\"list\">\n    </ul>\n\n    <script type=\"text/javascript\">\n      var config = @CONFIG@;\n\n      function makeClickHandler(name) {\n        return function () {\n          var xhr = new XMLHttpRequest();\n          xhr.onload = function () {\n            if (xhr.status >= 400) {\n              alert(\"XHR returned status \" + xhr.status + \":\\n\" + xhr.responseText);\n            }\n          }\n          xhr.onerror = function(e) { alert(e); };\n          xhr.open(\"post\", \"/\");\n          xhr.send(name);\n        }\n      }\n\n      var list = document.getElementById(\"list\");\n      for (var i in config) {\n        var api = config[i];\n\n        var button = document.createElement(\"button\");\n        button.addEventListener(\"click\", makeClickHandler(api.name));\n        if (api.displayInfo && api.displayInfo.title && api.displayInfo.title.defaultText) {\n          button.textContent = api.displayInfo.title.defaultText;\n        } else {\n          button.textContent = \"Use this grain\";\n        }\n\n        var item = document.createElement(\"li\");\n        item.appendChild(button);\n\n        list.appendChild(item);\n      }\n    </script>\n  </body>\n</html>\n"
 )
 
-type BridgeObjectId struct{ capnp.Struct }
+type BridgeObjectId capnp.Struct
 type BridgeObjectId_Which uint16
 
 const (
@@ -44,94 +44,108 @@ const BridgeObjectId_TypeID = 0xde7c54260c265bb4
 
 func NewBridgeObjectId(s *capnp.Segment) (BridgeObjectId, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return BridgeObjectId{st}, err
+	return BridgeObjectId(st), err
 }
 
 func NewRootBridgeObjectId(s *capnp.Segment) (BridgeObjectId, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return BridgeObjectId{st}, err
+	return BridgeObjectId(st), err
 }
 
 func ReadRootBridgeObjectId(msg *capnp.Message) (BridgeObjectId, error) {
 	root, err := msg.Root()
-	return BridgeObjectId{root.Struct()}, err
+	return BridgeObjectId(root.Struct()), err
 }
 
 func (s BridgeObjectId) String() string {
-	str, _ := text.Marshal(0xde7c54260c265bb4, s.Struct)
+	str, _ := text.Marshal(0xde7c54260c265bb4, capnp.Struct(s))
 	return str
 }
 
+func (s BridgeObjectId) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (BridgeObjectId) DecodeFromPtr(p capnp.Ptr) BridgeObjectId {
+	return BridgeObjectId(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s BridgeObjectId) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s BridgeObjectId) Which() BridgeObjectId_Which {
-	return BridgeObjectId_Which(s.Struct.Uint16(0))
+	return BridgeObjectId_Which(capnp.Struct(s).Uint16(0))
+}
+func (s BridgeObjectId) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s BridgeObjectId) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s BridgeObjectId) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s BridgeObjectId) Application() (capnp.Ptr, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != application")
 	}
-	return s.Struct.Ptr(0)
+	return capnp.Struct(s).Ptr(0)
 }
 
 func (s BridgeObjectId) HasApplication() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s BridgeObjectId) SetApplication(v capnp.Ptr) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetPtr(0, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetPtr(0, v)
 }
 
 func (s BridgeObjectId) HttpApi() (BridgeObjectId_HttpApi, error) {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != httpApi")
 	}
-	p, err := s.Struct.Ptr(0)
-	return BridgeObjectId_HttpApi{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return BridgeObjectId_HttpApi(p.Struct()), err
 }
 
 func (s BridgeObjectId) HasHttpApi() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s BridgeObjectId) SetHttpApi(v BridgeObjectId_HttpApi) error {
-	s.Struct.SetUint16(0, 1)
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	capnp.Struct(s).SetUint16(0, 1)
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewHttpApi sets the httpApi field to a newly
 // allocated BridgeObjectId_HttpApi struct, preferring placement in s's segment.
 func (s BridgeObjectId) NewHttpApi() (BridgeObjectId_HttpApi, error) {
-	s.Struct.SetUint16(0, 1)
-	ss, err := NewBridgeObjectId_HttpApi(s.Struct.Segment())
+	capnp.Struct(s).SetUint16(0, 1)
+	ss, err := NewBridgeObjectId_HttpApi(capnp.Struct(s).Segment())
 	if err != nil {
 		return BridgeObjectId_HttpApi{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // BridgeObjectId_List is a list of BridgeObjectId.
-type BridgeObjectId_List struct{ capnp.List }
+type BridgeObjectId_List = capnp.StructList[BridgeObjectId]
 
 // NewBridgeObjectId creates a new list of BridgeObjectId.
 func NewBridgeObjectId_List(s *capnp.Segment, sz int32) (BridgeObjectId_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return BridgeObjectId_List{l}, err
-}
-
-func (s BridgeObjectId_List) At(i int) BridgeObjectId { return BridgeObjectId{s.List.Struct(i)} }
-
-func (s BridgeObjectId_List) Set(i int, v BridgeObjectId) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s BridgeObjectId_List) String() string {
-	str, _ := text.MarshalList(0xde7c54260c265bb4, s.List)
-	return str
+	return capnp.StructList[BridgeObjectId](l), err
 }
 
 // BridgeObjectId_Future is a wrapper for a BridgeObjectId promised by a client call.
@@ -139,7 +153,7 @@ type BridgeObjectId_Future struct{ *capnp.Future }
 
 func (p BridgeObjectId_Future) Struct() (BridgeObjectId, error) {
 	s, err := p.Future.Struct()
-	return BridgeObjectId{s}, err
+	return BridgeObjectId(s), err
 }
 
 func (p BridgeObjectId_Future) Application() *capnp.Future {
@@ -150,124 +164,133 @@ func (p BridgeObjectId_Future) HttpApi() BridgeObjectId_HttpApi_Future {
 	return BridgeObjectId_HttpApi_Future{Future: p.Future.Field(0, nil)}
 }
 
-type BridgeObjectId_HttpApi struct{ capnp.Struct }
+type BridgeObjectId_HttpApi capnp.Struct
 
 // BridgeObjectId_HttpApi_TypeID is the unique identifier for the type BridgeObjectId_HttpApi.
 const BridgeObjectId_HttpApi_TypeID = 0x903896a2654fb12b
 
 func NewBridgeObjectId_HttpApi(s *capnp.Segment) (BridgeObjectId_HttpApi, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return BridgeObjectId_HttpApi{st}, err
+	return BridgeObjectId_HttpApi(st), err
 }
 
 func NewRootBridgeObjectId_HttpApi(s *capnp.Segment) (BridgeObjectId_HttpApi, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return BridgeObjectId_HttpApi{st}, err
+	return BridgeObjectId_HttpApi(st), err
 }
 
 func ReadRootBridgeObjectId_HttpApi(msg *capnp.Message) (BridgeObjectId_HttpApi, error) {
 	root, err := msg.Root()
-	return BridgeObjectId_HttpApi{root.Struct()}, err
+	return BridgeObjectId_HttpApi(root.Struct()), err
 }
 
 func (s BridgeObjectId_HttpApi) String() string {
-	str, _ := text.Marshal(0x903896a2654fb12b, s.Struct)
+	str, _ := text.Marshal(0x903896a2654fb12b, capnp.Struct(s))
 	return str
 }
 
+func (s BridgeObjectId_HttpApi) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (BridgeObjectId_HttpApi) DecodeFromPtr(p capnp.Ptr) BridgeObjectId_HttpApi {
+	return BridgeObjectId_HttpApi(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s BridgeObjectId_HttpApi) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s BridgeObjectId_HttpApi) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s BridgeObjectId_HttpApi) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s BridgeObjectId_HttpApi) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s BridgeObjectId_HttpApi) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s BridgeObjectId_HttpApi) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s BridgeObjectId_HttpApi) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s BridgeObjectId_HttpApi) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s BridgeObjectId_HttpApi) Path() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s BridgeObjectId_HttpApi) HasPath() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s BridgeObjectId_HttpApi) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s BridgeObjectId_HttpApi) SetPath(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s BridgeObjectId_HttpApi) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(2)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return capnp.BitList(p.List()), err
 }
 
 func (s BridgeObjectId_HttpApi) HasPermissions() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s BridgeObjectId_HttpApi) SetPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewPermissions sets the permissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s BridgeObjectId_HttpApi) NewPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s BridgeObjectId_HttpApi) IdentityId() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return []byte(p.Data()), err
 }
 
 func (s BridgeObjectId_HttpApi) HasIdentityId() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s BridgeObjectId_HttpApi) SetIdentityId(v []byte) error {
-	return s.Struct.SetData(3, v)
+	return capnp.Struct(s).SetData(3, v)
 }
 
 // BridgeObjectId_HttpApi_List is a list of BridgeObjectId_HttpApi.
-type BridgeObjectId_HttpApi_List struct{ capnp.List }
+type BridgeObjectId_HttpApi_List = capnp.StructList[BridgeObjectId_HttpApi]
 
 // NewBridgeObjectId_HttpApi creates a new list of BridgeObjectId_HttpApi.
 func NewBridgeObjectId_HttpApi_List(s *capnp.Segment, sz int32) (BridgeObjectId_HttpApi_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return BridgeObjectId_HttpApi_List{l}, err
-}
-
-func (s BridgeObjectId_HttpApi_List) At(i int) BridgeObjectId_HttpApi {
-	return BridgeObjectId_HttpApi{s.List.Struct(i)}
-}
-
-func (s BridgeObjectId_HttpApi_List) Set(i int, v BridgeObjectId_HttpApi) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s BridgeObjectId_HttpApi_List) String() string {
-	str, _ := text.MarshalList(0x903896a2654fb12b, s.List)
-	return str
+	return capnp.StructList[BridgeObjectId_HttpApi](l), err
 }
 
 // BridgeObjectId_HttpApi_Future is a wrapper for a BridgeObjectId_HttpApi promised by a client call.
@@ -275,10 +298,10 @@ type BridgeObjectId_HttpApi_Future struct{ *capnp.Future }
 
 func (p BridgeObjectId_HttpApi_Future) Struct() (BridgeObjectId_HttpApi, error) {
 	s, err := p.Future.Struct()
-	return BridgeObjectId_HttpApi{s}, err
+	return BridgeObjectId_HttpApi(s), err
 }
 
-type BridgeHttpSession struct{ Client *capnp.Client }
+type BridgeHttpSession capnp.Client
 
 // BridgeHttpSession_TypeID is the unique identifier for the type BridgeHttpSession.
 const BridgeHttpSession_TypeID = 0xb71e38915c2a2afc
@@ -294,9 +317,9 @@ func (c BridgeHttpSession) Get(ctx context.Context, params func(websession.WebSe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_get_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Post(ctx context.Context, params func(websession.WebSession_post_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -310,9 +333,9 @@ func (c BridgeHttpSession) Post(ctx context.Context, params func(websession.WebS
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_post_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) OpenWebSocket(ctx context.Context, params func(websession.WebSession_openWebSocket_Params) error) (websession.WebSession_openWebSocket_Results_Future, capnp.ReleaseFunc) {
@@ -326,9 +349,9 @@ func (c BridgeHttpSession) OpenWebSocket(ctx context.Context, params func(webses
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_openWebSocket_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_openWebSocket_Results_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Put(ctx context.Context, params func(websession.WebSession_put_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -342,9 +365,9 @@ func (c BridgeHttpSession) Put(ctx context.Context, params func(websession.WebSe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_put_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Delete(ctx context.Context, params func(websession.WebSession_delete_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -358,9 +381,9 @@ func (c BridgeHttpSession) Delete(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_delete_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) PostStreaming(ctx context.Context, params func(websession.WebSession_postStreaming_Params) error) (websession.WebSession_postStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -374,9 +397,9 @@ func (c BridgeHttpSession) PostStreaming(ctx context.Context, params func(webses
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_postStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_postStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) PutStreaming(ctx context.Context, params func(websession.WebSession_putStreaming_Params) error) (websession.WebSession_putStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -390,9 +413,9 @@ func (c BridgeHttpSession) PutStreaming(ctx context.Context, params func(websess
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_putStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_putStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Propfind(ctx context.Context, params func(websession.WebSession_propfind_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -406,9 +429,9 @@ func (c BridgeHttpSession) Propfind(ctx context.Context, params func(websession.
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_propfind_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Proppatch(ctx context.Context, params func(websession.WebSession_proppatch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -422,9 +445,9 @@ func (c BridgeHttpSession) Proppatch(ctx context.Context, params func(websession
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_proppatch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Mkcol(ctx context.Context, params func(websession.WebSession_mkcol_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -438,9 +461,9 @@ func (c BridgeHttpSession) Mkcol(ctx context.Context, params func(websession.Web
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_mkcol_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Copy(ctx context.Context, params func(websession.WebSession_copy_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -454,9 +477,9 @@ func (c BridgeHttpSession) Copy(ctx context.Context, params func(websession.WebS
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_copy_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Move(ctx context.Context, params func(websession.WebSession_move_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -470,9 +493,9 @@ func (c BridgeHttpSession) Move(ctx context.Context, params func(websession.WebS
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_move_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Lock(ctx context.Context, params func(websession.WebSession_lock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -486,9 +509,9 @@ func (c BridgeHttpSession) Lock(ctx context.Context, params func(websession.WebS
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_lock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Unlock(ctx context.Context, params func(websession.WebSession_unlock_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -502,9 +525,9 @@ func (c BridgeHttpSession) Unlock(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_unlock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Acl(ctx context.Context, params func(websession.WebSession_acl_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -518,9 +541,9 @@ func (c BridgeHttpSession) Acl(ctx context.Context, params func(websession.WebSe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_acl_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Report(ctx context.Context, params func(websession.WebSession_report_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -534,9 +557,9 @@ func (c BridgeHttpSession) Report(ctx context.Context, params func(websession.We
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_report_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Options(ctx context.Context, params func(websession.WebSession_options_Params) error) (websession.WebSession_Options_Future, capnp.ReleaseFunc) {
@@ -550,9 +573,9 @@ func (c BridgeHttpSession) Options(ctx context.Context, params func(websession.W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_options_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Options_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Patch(ctx context.Context, params func(websession.WebSession_patch_Params) error) (websession.WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -566,9 +589,9 @@ func (c BridgeHttpSession) Patch(ctx context.Context, params func(websession.Web
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(websession.WebSession_patch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c BridgeHttpSession) Save(ctx context.Context, params func(grain.AppPersistent_save_Params) error) (grain.AppPersistent_save_Results_Future, capnp.ReleaseFunc) {
@@ -582,20 +605,30 @@ func (c BridgeHttpSession) Save(ctx context.Context, params func(grain.AppPersis
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.AppPersistent_save_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.AppPersistent_save_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.AppPersistent_save_Results_Future{Future: ans.Future()}, release
 }
 
 func (c BridgeHttpSession) AddRef() BridgeHttpSession {
-	return BridgeHttpSession{
-		Client: c.Client.AddRef(),
-	}
+	return BridgeHttpSession(capnp.Client(c).AddRef())
 }
 
 func (c BridgeHttpSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c BridgeHttpSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (BridgeHttpSession) DecodeFromPtr(p capnp.Ptr) BridgeHttpSession {
+	return BridgeHttpSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c BridgeHttpSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A BridgeHttpSession_Server is a BridgeHttpSession with a local implementation.
@@ -640,15 +673,15 @@ type BridgeHttpSession_Server interface {
 }
 
 // BridgeHttpSession_NewServer creates a new Server from an implementation of BridgeHttpSession_Server.
-func BridgeHttpSession_NewServer(s BridgeHttpSession_Server, policy *server.Policy) *server.Server {
+func BridgeHttpSession_NewServer(s BridgeHttpSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(BridgeHttpSession_Methods(nil, s), s, c, policy)
+	return server.New(BridgeHttpSession_Methods(nil, s), s, c)
 }
 
 // BridgeHttpSession_ServerToClient creates a new Client from an implementation of BridgeHttpSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func BridgeHttpSession_ServerToClient(s BridgeHttpSession_Server, policy *server.Policy) BridgeHttpSession {
-	return BridgeHttpSession{Client: capnp.NewClient(BridgeHttpSession_NewServer(s, policy))}
+func BridgeHttpSession_ServerToClient(s BridgeHttpSession_Server) BridgeHttpSession {
+	return BridgeHttpSession(capnp.NewClient(BridgeHttpSession_NewServer(s)))
 }
 
 // BridgeHttpSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -889,7 +922,16 @@ func BridgeHttpSession_Methods(methods []server.Method, s BridgeHttpSession_Serv
 	return methods
 }
 
-type SessionInfo struct{ capnp.Struct }
+// BridgeHttpSession_List is a list of BridgeHttpSession.
+type BridgeHttpSession_List = capnp.CapList[BridgeHttpSession]
+
+// NewBridgeHttpSession creates a new list of BridgeHttpSession.
+func NewBridgeHttpSession_List(s *capnp.Segment, sz int32) (BridgeHttpSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[BridgeHttpSession](l), err
+}
+
+type SessionInfo capnp.Struct
 type SessionInfo_request SessionInfo
 type SessionInfo_offer SessionInfo
 type SessionInfo_Which uint16
@@ -919,120 +961,161 @@ const SessionInfo_TypeID = 0xcf999463ccff87dd
 
 func NewSessionInfo(s *capnp.Segment) (SessionInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return SessionInfo{st}, err
+	return SessionInfo(st), err
 }
 
 func NewRootSessionInfo(s *capnp.Segment) (SessionInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return SessionInfo{st}, err
+	return SessionInfo(st), err
 }
 
 func ReadRootSessionInfo(msg *capnp.Message) (SessionInfo, error) {
 	root, err := msg.Root()
-	return SessionInfo{root.Struct()}, err
+	return SessionInfo(root.Struct()), err
 }
 
 func (s SessionInfo) String() string {
-	str, _ := text.Marshal(0xcf999463ccff87dd, s.Struct)
+	str, _ := text.Marshal(0xcf999463ccff87dd, capnp.Struct(s))
 	return str
 }
 
+func (s SessionInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SessionInfo) DecodeFromPtr(p capnp.Ptr) SessionInfo {
+	return SessionInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SessionInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s SessionInfo) Which() SessionInfo_Which {
-	return SessionInfo_Which(s.Struct.Uint16(0))
+	return SessionInfo_Which(capnp.Struct(s).Uint16(0))
+}
+func (s SessionInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SessionInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SessionInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s SessionInfo) SetNormal() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s SessionInfo) Request() SessionInfo_request { return SessionInfo_request(s) }
 
 func (s SessionInfo) SetRequest() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 }
 
+func (s SessionInfo_request) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SessionInfo_request) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SessionInfo_request) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SessionInfo_request) RequestInfo() (powerbox.PowerboxDescriptor_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return powerbox.PowerboxDescriptor_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return powerbox.PowerboxDescriptor_List(p.List()), err
 }
 
 func (s SessionInfo_request) HasRequestInfo() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SessionInfo_request) SetRequestInfo(v powerbox.PowerboxDescriptor_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewRequestInfo sets the requestInfo field to a newly
 // allocated powerbox.PowerboxDescriptor_List, preferring placement in s's segment.
 func (s SessionInfo_request) NewRequestInfo(n int32) (powerbox.PowerboxDescriptor_List, error) {
-	l, err := powerbox.NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	l, err := powerbox.NewPowerboxDescriptor_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return powerbox.PowerboxDescriptor_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s SessionInfo) Offer() SessionInfo_offer { return SessionInfo_offer(s) }
 
 func (s SessionInfo) SetOffer() {
-	s.Struct.SetUint16(0, 2)
+	capnp.Struct(s).SetUint16(0, 2)
 }
 
-func (s SessionInfo_offer) Offer() (capnp.Ptr, error) {
-	return s.Struct.Ptr(0)
+func (s SessionInfo_offer) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SessionInfo_offer) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SessionInfo_offer) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s SessionInfo_offer) Offer() capnp.Client {
+	p, _ := capnp.Struct(s).Ptr(0)
+	return p.Interface().Client()
 }
 
 func (s SessionInfo_offer) HasOffer() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s SessionInfo_offer) SetOffer(v capnp.Ptr) error {
-	return s.Struct.SetPtr(0, v)
+func (s SessionInfo_offer) SetOffer(c capnp.Client) error {
+	if !c.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
+	}
+	seg := s.Segment()
+	in := capnp.NewInterface(seg, seg.Message().AddCap(c))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
-
 func (s SessionInfo_offer) Descriptor() (powerbox.PowerboxDescriptor, error) {
-	p, err := s.Struct.Ptr(1)
-	return powerbox.PowerboxDescriptor{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return powerbox.PowerboxDescriptor(p.Struct()), err
 }
 
 func (s SessionInfo_offer) HasDescriptor() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SessionInfo_offer) SetDescriptor(v powerbox.PowerboxDescriptor) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewDescriptor sets the descriptor field to a newly
 // allocated powerbox.PowerboxDescriptor struct, preferring placement in s's segment.
 func (s SessionInfo_offer) NewDescriptor() (powerbox.PowerboxDescriptor, error) {
-	ss, err := powerbox.NewPowerboxDescriptor(s.Struct.Segment())
+	ss, err := powerbox.NewPowerboxDescriptor(capnp.Struct(s).Segment())
 	if err != nil {
 		return powerbox.PowerboxDescriptor{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // SessionInfo_List is a list of SessionInfo.
-type SessionInfo_List struct{ capnp.List }
+type SessionInfo_List = capnp.StructList[SessionInfo]
 
 // NewSessionInfo creates a new list of SessionInfo.
 func NewSessionInfo_List(s *capnp.Segment, sz int32) (SessionInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
-	return SessionInfo_List{l}, err
-}
-
-func (s SessionInfo_List) At(i int) SessionInfo { return SessionInfo{s.List.Struct(i)} }
-
-func (s SessionInfo_List) Set(i int, v SessionInfo) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s SessionInfo_List) String() string {
-	str, _ := text.MarshalList(0xcf999463ccff87dd, s.List)
-	return str
+	return capnp.StructList[SessionInfo](l), err
 }
 
 // SessionInfo_Future is a wrapper for a SessionInfo promised by a client call.
@@ -1040,7 +1123,7 @@ type SessionInfo_Future struct{ *capnp.Future }
 
 func (p SessionInfo_Future) Struct() (SessionInfo, error) {
 	s, err := p.Future.Struct()
-	return SessionInfo{s}, err
+	return SessionInfo(s), err
 }
 
 func (p SessionInfo_Future) Request() SessionInfo_request_Future {
@@ -1052,7 +1135,7 @@ type SessionInfo_request_Future struct{ *capnp.Future }
 
 func (p SessionInfo_request_Future) Struct() (SessionInfo_request, error) {
 	s, err := p.Future.Struct()
-	return SessionInfo_request{s}, err
+	return SessionInfo_request(s), err
 }
 
 func (p SessionInfo_Future) Offer() SessionInfo_offer_Future {
@@ -1064,7 +1147,7 @@ type SessionInfo_offer_Future struct{ *capnp.Future }
 
 func (p SessionInfo_offer_Future) Struct() (SessionInfo_offer, error) {
 	s, err := p.Future.Struct()
-	return SessionInfo_offer{s}, err
+	return SessionInfo_offer(s), err
 }
 
 func (p SessionInfo_offer_Future) Offer() *capnp.Future {
@@ -1075,111 +1158,112 @@ func (p SessionInfo_offer_Future) Descriptor() powerbox.PowerboxDescriptor_Futur
 	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
 }
 
-const schema_f963cc483d8f9e3a = "x\xda\x9cWMl\x1cI\x15~\xaf\xdb\xf6\xecF\xf6" +
-	"f&v\xec\x03\x88\xd4\xce\xe20N2\xe3\xbf\x1c\xc2" +
-	"\xd8\xb3\xf1\xdak\xd6F\x09qo\x82\x14v\x83D\xb9" +
-	"\xab\xc6S\x9b\x9e\xaa\xa6\xba\xc6\xf6,DY\x04h\x05" +
-	"Z\x04H\x08\x01\x07\x0e\xe1\x88\xd8\x15\x12\x12\xb0\x17N" +
-	"\xb0\xfc,\xda\x0b\x17\x0eY\x89\x1f\x098p\xe1\x06\x02" +
-	"\x1a\xd5t\xdb\xd3\xf3\x13\x12\x90\x0f.\xbf\xf7\xea\xd5W" +
-	"\xdf\xfb\xdes\xf5\xc2\xc6\xd8\x9a\xb38\x9a{\x12\xe0\xfa" +
-	"+8:\x16\xbf\xde6\x7f\xfe\xf17^\xf8,\x14f" +
-	"G\xe2\xea\xb7\xbf\\\xdbz\xdb\xff;\x00.\x8b\xfc\xdf" +
-	"p\xf2\xf3\xf9\x9c\x0d\xcc\xbbx\xfd\xb5\xbc\x83\x00\xf1\xf9" +
-	"\xef_\xe3\xf7\xbe~\xe9+P\xb8\x88\xf1\x0f^<;" +
-	"~\xf6\xc6\xa7\xdf\x85\xd1\x91\x1c\xc0\xf2O\xa7~\x8f\x93" +
-	"\xbf\x9b\xca\x01L\xde\x9f\xfa\x13`L\x16\xdf\xfd\xde\xda" +
-	"{\x9c\xd7\xc1[D\x8c\xef\xbf\x1a\xbf\xed\x7f\xed\x9b\xef" +
-	"\xc0i'\x87\x00\xcb\xbf8\xfd&\x02N\xfe\xf6\xf4\x01" +
-	"`\xfc\xcfs\xe7n}\xf5\xd2\xfb~\x08\x85Y\xb7\x07" +
-	"\xc7\x07\xa7\xdf\xc4Io\xda&\xbd:\x9d\x9b\xbc:\xfd" +
-	"\x01\x80n*o\x16\xb1\x1b\xbe\xe9\xe4\\\x80\xe5\xd6\xf4" +
-	"\x17q\xf2K\x9d-_\x98~\x0328\xfb\xc21\xe7" +
-	"\x00,\xffe\xfa\x1eN\xe2\xcc\x0c\xc0\xe4\xe33\x16K" +
-	"\xed\xder\xeeW\xdf}\xfc\x8f\xc3a\x8b\x99_Z\xd8" +
-	"wf.C\xdc\xf9\xf9M\x1cQ\xc9\"\xa3\xf4X\xb3" +
-	"\xdc0&,\xefj\xc1\xf6xYH\xc3\xb5\xa4A\xc5" +
-	"\xa7\xa1\x0c\xab\x89\xf5y\xfe\xc9\x16\x8f\xccu\x1eEB" +
-	"\x9d\x91[\xa6\x19\xec \xe2888\x0e\xb0\x88\x1f~" +
-	"6^}\xf2\xd9k\x1b7>\xb6\x13o\x92\x86i\x06" +
-	"O\x9f8\xb1\x9a\xfc&d\xb5\xc1)\xb3\x0bBV#" +
-	"\xd3\x0e81\xed\x90\xd7\x8a\x86\x1f\x9ay?\x8a\x8a\x89" +
-	"\x8f\x90s\xe4S\xe9\x8a\x90]uX\x8e\xc4\xcbB\xee" +
-	"U\xc9\xae\xd2\x8c\xeb\xf2\xae:\\I\xfdwN\x1cE" +
-	"\xb1vfS]IS\xae\xd3\xa6\x08\xdaU\x12Q\x19" +
-	"\x95#\xaeE}\xa57 \x12/\xf3*YZ\x08\x07" +
-	"\xd3\xb5\x8cQ\xb2\x07\x85=\xb9J\xa4\x92|h\x16!" +
-	"\x1b\\\x0b\xb32\x1c\xc2p\xef\x01\x17{\x0d3\xc4k" +
-	"\x09)3\xee+M\x8dPrH\x84\xaf\x02\xa5\x87\xd8" +
-	"\x03!y\xb9\xf1\xa0\xbc\xbb\xd4\xbf\xbd\xa7UK\xb2r" +
-	"\x9a\xc0h*\xa3\x90j.\xfb\x8f\xa7\x81\xd8\x1bvr" +
-	"H\x19\xeb\x14c!\x83\xa6\xa5#\x9b-T\x1d\xd5t" +
-	"\x1dLDa@\xdbU\xb2\x1b(\xffv\xd7\xae\xf6\xb9" +
-	"\xae\x07\xea\xa0J\x1a\x821.\xfb\xce\xee\xbay\x10\x88" +
-	"0\x12Q7\xe0\xa0!\x0c/G!\xf5\xb9-\xc7\x81" +
-	"\xa6a\xc6)\x98iT\xc9\xe2\xc2\xc2\xec\x00\xe2r\xc0" +
-	"\xeb\xa6J\x96\x97\xba\xe5&\xe4\x88\xaa\xe5\xc5A\x11\x04" +
-	"b\x88\x00\x16\xc3C\x12\xa9@0\xf2\x14cl\xa5\xcf" +
-	"_\xdeU\xc6\xa8f\xbfN\x06y\x7f\x8a\xf3\x8c\x7f\x9f" +
-	"k#|\x1a\x1c\x91\xde\x14\x8c\x05|\x08\xca\xa5A\x94" +
-	"\xad`\x00\xe51\x8a\x07\x81\x1dV\xc3&\xd5{BZ" +
-	"\xee\xb2\xfc\x04\"2\xe5N\xaf\x96m\xaf\xf6^,\x81" +
-	"\xb0:\xdf\xf1w\x1a|\xfe\xa8\xc3WmC\xa6\xad\xde" +
-	"\x0a\x88`\xb5\xa2M\x95v\xf8\xea|\xcb\x0e\x86d\x10" +
-	"\xf8Z\x84&;\x09^\xa2\xfb4\xb1\x1e\x0f\x84}\xaa" +
-	"\x89\xafd]\xec\x91\x1aY\xdb\xb8\xf6\x91\x0fm?\xb7" +
-	"\xb6r\"\xf5\xd6[\xd2\xb7}B\x9a\xf46\xdf\x08\x84" +
-	"\x7f{\x8bJ\x16p]\x92\xb4\xc9\xe72\xfchnZ" +
-	"Zv7\x94\xb2\xce\xe4\x98\xc3\x86&5\"\xf9\x01\xb9" +
-	"y\xf5\xca\x961a:\xf3Js+\x99\xc8\xc3\x86\xae" +
-	"(\x19(\xcaH\xed\x81\xe9\x08\x11uR\xb2\xa1\x91\xa1" +
-	"\xa6\x15\x91\xa7k\xe4\xe2\xc2B\x7f\x10!4\xe0\xda\x94" +
-	"\x8a7\xb7\x9eO\x11rF\xd2-Er\x9ed2\x9c" +
-	"'\xc5\xea-yd\xd4<\x0a\x95\x8c\xf8\x0d~hz" +
-	"\xe0u\xe5\xd1\xbfN\x80s\xad\x95\xce /Y\x96R" +
-	"\x18|n\x85\xdc\x19\xb8k\xc8e\xa9\x18\xaa\xc8\x14/" +
-	"\x90\xe2|q\x80\x8c\x88K\x96\xd0\xdd\xf5\xdc9\xd6I" +
-	"\xa6\x8cV\x06\xa4F\x98\xf2[M.Me\x8f\x9b\xcd" +
-	"\x80\xdb\xe5z{\x9b\x95\x12\x99\x1c'\xa9+MJv" +
-	"\x9b B\xa6\x12\xc8\xf2g]4\x14\xa4\x96\xfa^\x14" +
-	"\x1f?\x96E\xe2MGy\xe6D_sjxzh" +
-	"\xa9\x98\x04do\x94X*\x94\xb1\xcd}.\xcd\x15\x11" +
-	"\x19.\xb9.\x15}\xab\xad\xe2\x85A\x9d\xd1PT:" +
-	"\x97\xcfd\xb1\xb5\xb7\xf6t\x06n\xcb\xba\"g\xcf\x92" +
-	">S\xc5\x08\x13\xf0\x07:*\x8c\xd7i+0\x9d\x0a" +
-	"\xf7\xe8&\x05i;fCI\xc3\xa5e\xf5\xa192" +
-	"\xc5!<\x88\xf8\xc3S\x16?\x1aqb\x1a\"\"{" +
-	"\x9a\x0aY\xcc\x96\xb7\x87hax\xd3\xd2\x1c\x1f\xf1\x9c" +
-	"\xef#:\x10Y\x92mx\x85\x86!\x97l\xa3!\x02" +
-	"VJN\x9f\xcb\x94\xcfJ\xa1'\xc4\xee\x99\x1b\x98>" +
-	"\x9dQ\x91\x8c\x9fd\xea\xac\xce'/\x0e\x80G|\xdc" +
-	"\xacw\xac\xd7v_\xe2\xbe\xd9f\x15\xdb\xf5\xb9gB" +
-	"\xb1\x83\xe8\xe5\xdd\x11\x80\x11\x04(\xd0s\x00\xde-\x17" +
-	"\xbd\x86\x83\x05\xc4)\xb4Fn\x8d\x9fp\xd1\x0b\x1c," +
-	"8\xce\x14:\x00\x05\xb1\x0b\xe05\\\xf4>\xe7`\xc1" +
-	"u\xa7\xd0\x05(|\xe6\x05\x00\xef\x15\x17\xbd\xd7\x1c<" +
-	"i\xb5\x92\xbe\x9a\xf0dHM\xe3\xe8\x8f8\xe4\xba)" +
-	"\xa2H@N\xc9\x08\x9f\x00\xdcq\x11\x11\x1c\xbb\x8c\x05" +
-	"\xe3\xd2\x08\xd3\x06w\x9b\xe1\x0488\x01x|\xc5\xd1" +
-	"\xffz\xc5\xe4\xc9&\xad*.WT\xbd\xce\xb5\xf7\x98" +
-	"\xbdZ\x82xn\x09\xc0{\xbf\x8b\xdeBz7\x8b\xb8" +
-	"l\x11_p\xd1\xbb\xe4\xe0\x99\xce\x16<5\xe2\x02\xe2" +
-	")\xc0\x98\xf1\x84wp\x95\xc6||\xf3\xbdo\xfd\xe4" +
-	";'\xdf\xf9+\x00b\xfe\x91A%\xbc[\xba\xaf_" +
-	"N\xf0\xed \xee\xb8\xa3\xdec\x88\xf1[\xbf\x9e\xfdY" +
-	"\xfb\x0f\xed\x9f\x03@\xfc\xa3\xe7^\xbd\xff\xad\xc3\x7f\xbc" +
-	"\x01kX\xc03\xde\x88\x83]\x13@\x01g\xbc\x11D" +
-	"\xecp\x95\xef>\x98\xff\x1fr\x00l\xd5\xc7\xdd\x91\xf1" +
-	"8\xee\x94}\xb3\x0a\xe0\xad\xb9\xe8]qp\x02\xff\x1d" +
-	"c\xe6\x89]\xd8^\x07g\xc2\xf9\x975\x1e\x7f.\x14" +
-	"\x16\x97\xc0\xb9,\x95n\xd2\x00\xc6\xee\xea\xe4\xdfGB" +
-	"\xe0\xff\xc4KG\x8f9\xb3\xcd\xec\xe52\xdf.\xb8~" +
-	"\xd7R\xf6L(l\x09\x8fp\xceY\xd1\x95\\\xf4." +
-	"&8\x13}.\xaewk\x18\xd30\x0c\x84O\x0d\xe4" +
-	"\x84\x92x\x0a\x1c[\xc9\xbb\x8d$\x17\xe6\xbbG\xf4\x15" +
-	"q\xecQ\xc9\xab\xa4\x97\x05\xf0F\x12qY\x0c\x13\x16" +
-	"\xd9\xb8\x8b^\xc9\xc18\x8d\xd8\x86\x9c\xac\xab#}\xf7" +
-	"\xea\xe7\x09\xc0\xff\x04\x00\x00\xff\xff\xaf\xbb\xff`"
+const schema_f963cc483d8f9e3a = "x\xda\x9cW\xdfo\\G\x15>\xe7\xde\xb5\xb7\x8d\xec" +
+	"f7\x8e\xed\x07\x10\x99nqX'\xd9\xf5\xaf E" +
+	"ko\xe3\xda5\xb5Q \xbeu\x90B\x1b\x04\xe3;" +
+	"\xb3\xdei\xee\xce\\\xe6\xce\xda\xdeB\x14\x10\x95*!" +
+	"$@\xa2\x08x@\"<!\xa0U%\x10m_x" +
+	"\xa3\x08\x8a\xfa\x17\xb4H\x80\x04/<\x80\xc4\x03\x08\xb8" +
+	"h\xf6^{\xafw74 ?x|\xce\x993\xdf" +
+	"|\xe7;\xc7s\xe7\xb7GWs\x0b\xe3\x9f~\x14\x9c" +
+	"\x9d\x17pd4~\xb9c\xfe\xf4\xfa\xb7\x9e\xf9\x12\x14" +
+	"grq\xed\xbb_\xado\xbe\xe5\xff\x1d\x00\x97^*" +
+	"\xfc\x15'^-\xe4\x01v~Tpq\xe7\xb5\x82\x83" +
+	"\x00\xf1\xc5W\xaf\xf3{\xdf\xbc\xf25(^\xc6\xf8'" +
+	"\xcf\x9e\x1f;\x7f\xe3\xf3\xef\xc2H.\x0f\xb0\xf4\x97\xb3" +
+	"\xbf\xc3\x89\xf1\xc9<\xc0\xc4\xc3\x93\x7f\x04\x8c\xc9\xc2\xbb" +
+	"?^}\x9f\xf32x\x0b\x88\xf1;/\xc6o\xf9\xdf" +
+	"\xf8\xf6\xdb0\xe9\xe4\x11`\xe9o\x93o \xe0\xc4\xc8" +
+	"\xd4\x01`\xfc\xcf\x0b\x17n}\xfd\xca\x07~\x06\xc5\x19" +
+	"\xf7\x04\x0e>\xf5\x06N\xdc\x99\xb2I;S\xf9\x89\xce" +
+	"\xd4\x87\x00z\xa9\xbc\x19\xc4^\xf8\x86\x93w\x01\x96\xbe" +
+	"7\xf5e\x9cx\xbd\xbb\xe5\xa7S\xaf@\x06g_8" +
+	"\xe6\x1d\x80\xa5\xc9\xe9{8Q\x99\x9e\x06\x98\xf8\xf0\xb4" +
+	"\xc5R\xbf\xb7\x94\xff\xf5\x0f\x1f\xfe\xc3p\xd8/M\xff" +
+	"\xca\xc2\xfe\xc1\xf4U\x88\xbb?\xbf\x8d#*Yd\x94" +
+	"\x1emU\x9a\xc6\x84\x95]-\xd8\x1e\xaf\x08i\xb8\x96" +
+	"4\xa8\xfa4\x94a-\xb1>\xcd?\xdb\xe6\x91\xd9\xe1" +
+	"Q$\xd49\xb9iZ\xc16\"\x8e\x81\x83c\x00\x0b" +
+	"\xf8\xd1'\xe3\x95G\x9f\xbc\xbe~\xe3\x93\xdb\xf1\x06i" +
+	"\x9aV\xf0\xf8\xa9S+\xc9oBV\x9a\x9c2\xbb " +
+	"d%2\x9d\x80\x13\xd3\x09y\xbdd\xf8\xa1\x99\xf3\xa3" +
+	"\xa8\x94\xf8\x08\xb9@>\x97\xae\x08\xd9U\x87\x95H<" +
+	"/\xe4^\x8d\xec*\xcd\xb8\xae\xec\xaa\xc3\xe5\xd4\x7f\xe7" +
+	"\xd4Q\x14\xebd65\x944\x95\x06m\x89\xa0S#" +
+	"\x11\x95Q%\xe2Z4\x96O\x06D\xe2y^#\x8b" +
+	"\xf3\xe1`\xba\xb61J\x9e@aO\xae\x11\xa9$\x1f" +
+	"\x9aE\xc8&\xd7\xc2,\x0f\x870\xdc{\xc0\xc5^\xd3" +
+	"\x0c\xf1ZB*\x8c\xfbJS#\x94\x1c\x12\xe1\xab@" +
+	"\xe9!\xf6@H^i\xde/\xef.\xf5o\xefi\xd5" +
+	"\x96\xac\x92&0\x9a\xca(\xa4\x9a\xcb\xfe\xe3i \xf6" +
+	"\x86\x9d\x1cR\xc6\xba\xc5\x98\xcf\xa0i\xeb\xc8f\x0bU" +
+	"W5=\x07\x13Q\x18\xd0N\x8d\xec\x06\xca\xbf\xdd\xb3" +
+	"\xab}\xae\x1b\x81:\xa8\x91\xa6`\x8c\xcb\xbe\xb3{n" +
+	"\x1e\x04\"\x8cD\xd4\x0b8h\x0a\xc3+QH}n" +
+	"\xcbq\xa0i\x98q\x0af\x9a5\xb20??3\x80" +
+	"\xb8\x12\xf0\x86\xa9\x91\xa5\xc5^\xb9\x099\xa2jia" +
+	"P\x04\x81\x18\"\x80\x85\xf0\x90D*\x10\x8c<\xc6\x18" +
+	"[\xee\xf3Wv\x951\xaa\xd5\xaf\x93A\xde\x1f\xe3<" +
+	"\xe3\xdf\xe7\xda\x08\x9f\x06G\xa4\xb7\x04c\x01\x1f\x82r" +
+	"q\x10e;\x18@y\x8c\xe2~`\x87\xd5\xb0E\xf5" +
+	"\x9e\x90\x96\xbb,?\x81\x88L\xa5\xdb\xab\x15\xdb\xab'" +
+	"/\x96@X\x99\xeb\xfa\xbb\x0d>w\xd4\xe1+\xb6!" +
+	"\xd3Vo\x07D\xb0z\xc9\xa6J;|e\xaem\x07" +
+	"C2\x08|-B\x93\x9d\x04\xcf\xd1}\x9aX\x8f\x07" +
+	"\xc2>\xd5\xc4W\xb2!\xf6H\x9d\xac\xae_\xff\xf8G" +
+	"\xb6\x9eZ]>\x95z\x1bm\xe9\xdb>!-z\x9b" +
+	"\xaf\x07\xc2\xbf\xbdI%\x0b\xb8.K\xda\xe2\xb3\x19~" +
+	"47m-{\x1b\xcaYgr\xccaS\x93:\x91" +
+	"\xfc\x80\xdc\xfc\xd8\xb5Mc\xc2t\xe6\x95g\x973\x91" +
+	"\x87M]U2P\x94\x91\xfa}\xd3\x11\"\x1a\xa4l" +
+	"C#CM;\"\x8f\xd7\xc9\xe5\xf9\xf9\xfe Bh" +
+	"\xc0\xb5)\x97nn>\x9d\"\xe4\x8c\xa4[J\xe4\"" +
+	"\xc9d\xb8HJ\xb5[\xf2\xc8\xa8y\x14*\x19\xf1\x1b" +
+	"\xfc\xd0\x9c\x80\xd7\x93G\xff:\x01\xce\xb5V:\x83\xbc" +
+	"lYJa\xf0\xd9erg\xe0\xae!\x97\xe5R\xa8" +
+	"\"S\xbaDJs\xa5\x012\".YBw\xcfs" +
+	"\xe7X'\x992Z\x19\x90:a\xcao\xb7\xb84\xd5" +
+	"=n6\x02n\x97k\x9d-VNdr\x9c\xa4\xa1" +
+	"4)\xdbm\x82\x08\x99J \xcb\x9fu\xd1P\x90z" +
+	"\xea{V|\xeaX\x16\x897\x1d\xe5\x99\x13}\xcd\xa9" +
+	"\xe1\xe9\xa1\xe5R\x12\x90\xbdQb\xa9R\xc66\xf6\xb9" +
+	"4\xd7Dd\xb8\xe4\xba\\\xf2\xad\xb6J\x97\x06uF" +
+	"CQ\xed^>\x93\xc5\xd6\xde\xda\xd3\x19\xb8%\x1b\x8a" +
+	"\x9c?O\xfaLU#L\xc0\xef\xeb\xa82\xde\xa0\xed" +
+	"\xc0t+|B7)H\xdb1\xebJ\x1a.-\xab" +
+	"\xef\x99#S\x1c\xc2\x83\x88\xbfw\xca\xd2'\"NL" +
+	"SDdOS!K\xd9\xf2\x9e Z\x18\xde\xb24" +
+	"\xc7G<\x17\xfa\x88\x0eD\x96d\x1b^\xa5a\xc8%" +
+	"[o\x8a\x80\x95\x93\xd3g3\xe5\xb3R8\x11b\xf7" +
+	"\xcc\x0eL\x9f\xee\xa8H\xc6O2uV\xe6\x92\x17\x07" +
+	"\xc0\x03>n\xd6\xba\xd6\xeb\xbb\xcfq\xdfl\xb1\xaa\xed" +
+	"\xfa\xfc\x13\xa1\xd8F\xf4\x0an\x0e \x87\x00Ez\x01" +
+	"\xc0\xbb\xe5\xa2\xd7t\xb0\x88x\x16\xad\x91[\xe3g\\" +
+	"\xf4\x02\x07\x8b\x8es\x16\x1d\x80\xa2\xd8\x05\xf0\x9a.z" +
+	"/8Xt\xdd\xb3\xe8\x02\x14\xbf\xf8\x0c\x80\xf7\x05\x17" +
+	"\xbd\xaf8x\xdaj%}5\xe1\xe9\x90\x9a\xe6\xd1\x1f" +
+	"q\xc8uKD\x91\x80\xbc\x92\x11>\x02\xb8\xed\"\"" +
+	"8v\x19\x0b\xc6\xa5\x11\xa6\x03\xee\x16\xc3qpp\x1c" +
+	"\xf0\xf8\x8a#\xff\xf5\x8a\xc9\x93MZU\\\xad\xaaF" +
+	"\x83k\xef!{\xb5\x04\xf1\xec\"\x80\xf7A\x17\xbd\xf9" +
+	"\xf4n\x16q\xc5\"\xbe\xe4\xa2w\xc5\xc1s\xdd-x" +
+	"&\xe7\x02\xe2\x19\xc0\x98\xf1\x84wp\x95\xc6B|\xf3" +
+	"\xfdo\xfe\xfc\xfb\xa7\xdf\xfe3\x00b\xe1\x81A%\xbc" +
+	"[\xbaw\xae&\xf8\xb6\x11\xb7\xdd\x11\xef!\xc4\xf8\xcd" +
+	"\xdf\xcc\xfc\xa2\xf3\xfb\xce/\x01 ~\xed\xa9\x17\xdf\xf9" +
+	"\xce\xe1?^\x81U,\xe29/\xe7`\xcf\x04P\xc4" +
+	"i/\x87\x88]\xae\x0a\xbd\x07\xf3\xffC\x0e\x80\xad\xfa" +
+	"\x98\x9b\x1b\x8b\xe3n\xd97j\x00\xde\xaa\x8b\xde5\x07" +
+	"\xc7\xf1\xdf1f\x9e\xd8\xc5\xad5p\xc6\x9d\x7fY\xe3" +
+	"\xf1\xe7Bqa\x11\x9c\xabR\xe9\x16\x0d`\xf4\xaeN" +
+	"\xfe}$\x04\xfeO\xbct\xf5\x987[\xcc^.\xf3" +
+	"\xed\x82kw-eO\x84\xc2\x96\xf0\x08\xe7\xac\x15]" +
+	"\xd9E\xefr\x823\xd1\xe7\xc2Z\xaf\x861\x0d\xc3@" +
+	"\xf8\xd4@^(\x89g\xc0\xb1\x95\xbc\xdbLra\xa1" +
+	"wD_\x11G\x1f\x94\xbcjzY\x00/\x97\x88\xcb" +
+	"b\x18\xb7\xc8\xc6\\\xf4\xca\x0e\xc6i\xc4\x16\xe4eC" +
+	"\x1d\xe9\xfb\xa4~\x1e\x01\xfcO\x00\x00\x00\xff\xffI\xdb" +
+	"\xff\x80"
 
 func init() {
 	schemas.Register(schema_f963cc483d8f9e3a,

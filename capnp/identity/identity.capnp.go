@@ -11,7 +11,7 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type Identity struct{ Client *capnp.Client }
+type Identity capnp.Client
 
 // Identity_TypeID is the unique identifier for the type Identity.
 const Identity_TypeID = 0xc084987aa951dd18
@@ -27,20 +27,30 @@ func (c Identity) GetProfile(ctx context.Context, params func(Identity_getProfil
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Identity_getProfile_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Identity_getProfile_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Identity_getProfile_Results_Future{Future: ans.Future()}, release
 }
 
 func (c Identity) AddRef() Identity {
-	return Identity{
-		Client: c.Client.AddRef(),
-	}
+	return Identity(capnp.Client(c).AddRef())
 }
 
 func (c Identity) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c Identity) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (Identity) DecodeFromPtr(p capnp.Ptr) Identity {
+	return Identity(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c Identity) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A Identity_Server is a Identity with a local implementation.
@@ -49,15 +59,15 @@ type Identity_Server interface {
 }
 
 // Identity_NewServer creates a new Server from an implementation of Identity_Server.
-func Identity_NewServer(s Identity_Server, policy *server.Policy) *server.Server {
+func Identity_NewServer(s Identity_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(Identity_Methods(nil, s), s, c, policy)
+	return server.New(Identity_Methods(nil, s), s, c)
 }
 
 // Identity_ServerToClient creates a new Client from an implementation of Identity_Server.
 // The caller is responsible for calling Release on the returned Client.
-func Identity_ServerToClient(s Identity_Server, policy *server.Policy) Identity {
-	return Identity{Client: capnp.NewClient(Identity_NewServer(s, policy))}
+func Identity_ServerToClient(s Identity_Server) Identity {
+	return Identity(capnp.NewClient(Identity_NewServer(s)))
 }
 
 // Identity_Methods appends Methods to a slice that invoke the methods on s.
@@ -90,84 +100,102 @@ type Identity_getProfile struct {
 
 // Args returns the call's arguments.
 func (c Identity_getProfile) Args() Identity_getProfile_Params {
-	return Identity_getProfile_Params{Struct: c.Call.Args()}
+	return Identity_getProfile_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Identity_getProfile) AllocResults() (Identity_getProfile_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Identity_getProfile_Results{Struct: r}, err
+	return Identity_getProfile_Results(r), err
 }
 
-type Identity_PowerboxTag struct{ capnp.Struct }
+// Identity_List is a list of Identity.
+type Identity_List = capnp.CapList[Identity]
+
+// NewIdentity creates a new list of Identity.
+func NewIdentity_List(s *capnp.Segment, sz int32) (Identity_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[Identity](l), err
+}
+
+type Identity_PowerboxTag capnp.Struct
 
 // Identity_PowerboxTag_TypeID is the unique identifier for the type Identity_PowerboxTag.
 const Identity_PowerboxTag_TypeID = 0xf35052cfb1d3bbe8
 
 func NewIdentity_PowerboxTag(s *capnp.Segment) (Identity_PowerboxTag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Identity_PowerboxTag{st}, err
+	return Identity_PowerboxTag(st), err
 }
 
 func NewRootIdentity_PowerboxTag(s *capnp.Segment) (Identity_PowerboxTag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Identity_PowerboxTag{st}, err
+	return Identity_PowerboxTag(st), err
 }
 
 func ReadRootIdentity_PowerboxTag(msg *capnp.Message) (Identity_PowerboxTag, error) {
 	root, err := msg.Root()
-	return Identity_PowerboxTag{root.Struct()}, err
+	return Identity_PowerboxTag(root.Struct()), err
 }
 
 func (s Identity_PowerboxTag) String() string {
-	str, _ := text.Marshal(0xf35052cfb1d3bbe8, s.Struct)
+	str, _ := text.Marshal(0xf35052cfb1d3bbe8, capnp.Struct(s))
 	return str
 }
 
+func (s Identity_PowerboxTag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Identity_PowerboxTag) DecodeFromPtr(p capnp.Ptr) Identity_PowerboxTag {
+	return Identity_PowerboxTag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Identity_PowerboxTag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Identity_PowerboxTag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Identity_PowerboxTag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Identity_PowerboxTag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Identity_PowerboxTag) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(0)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return capnp.BitList(p.List()), err
 }
 
 func (s Identity_PowerboxTag) HasPermissions() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Identity_PowerboxTag) SetPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewPermissions sets the permissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s Identity_PowerboxTag) NewPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // Identity_PowerboxTag_List is a list of Identity_PowerboxTag.
-type Identity_PowerboxTag_List struct{ capnp.List }
+type Identity_PowerboxTag_List = capnp.StructList[Identity_PowerboxTag]
 
 // NewIdentity_PowerboxTag creates a new list of Identity_PowerboxTag.
 func NewIdentity_PowerboxTag_List(s *capnp.Segment, sz int32) (Identity_PowerboxTag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Identity_PowerboxTag_List{l}, err
-}
-
-func (s Identity_PowerboxTag_List) At(i int) Identity_PowerboxTag {
-	return Identity_PowerboxTag{s.List.Struct(i)}
-}
-
-func (s Identity_PowerboxTag_List) Set(i int, v Identity_PowerboxTag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Identity_PowerboxTag_List) String() string {
-	str, _ := text.MarshalList(0xf35052cfb1d3bbe8, s.List)
-	return str
+	return capnp.StructList[Identity_PowerboxTag](l), err
 }
 
 // Identity_PowerboxTag_Future is a wrapper for a Identity_PowerboxTag promised by a client call.
@@ -175,54 +203,64 @@ type Identity_PowerboxTag_Future struct{ *capnp.Future }
 
 func (p Identity_PowerboxTag_Future) Struct() (Identity_PowerboxTag, error) {
 	s, err := p.Future.Struct()
-	return Identity_PowerboxTag{s}, err
+	return Identity_PowerboxTag(s), err
 }
 
-type Identity_getProfile_Params struct{ capnp.Struct }
+type Identity_getProfile_Params capnp.Struct
 
 // Identity_getProfile_Params_TypeID is the unique identifier for the type Identity_getProfile_Params.
 const Identity_getProfile_Params_TypeID = 0xf32d79a7b575d94c
 
 func NewIdentity_getProfile_Params(s *capnp.Segment) (Identity_getProfile_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Identity_getProfile_Params{st}, err
+	return Identity_getProfile_Params(st), err
 }
 
 func NewRootIdentity_getProfile_Params(s *capnp.Segment) (Identity_getProfile_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Identity_getProfile_Params{st}, err
+	return Identity_getProfile_Params(st), err
 }
 
 func ReadRootIdentity_getProfile_Params(msg *capnp.Message) (Identity_getProfile_Params, error) {
 	root, err := msg.Root()
-	return Identity_getProfile_Params{root.Struct()}, err
+	return Identity_getProfile_Params(root.Struct()), err
 }
 
 func (s Identity_getProfile_Params) String() string {
-	str, _ := text.Marshal(0xf32d79a7b575d94c, s.Struct)
+	str, _ := text.Marshal(0xf32d79a7b575d94c, capnp.Struct(s))
 	return str
 }
 
+func (s Identity_getProfile_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Identity_getProfile_Params) DecodeFromPtr(p capnp.Ptr) Identity_getProfile_Params {
+	return Identity_getProfile_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Identity_getProfile_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Identity_getProfile_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Identity_getProfile_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Identity_getProfile_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Identity_getProfile_Params_List is a list of Identity_getProfile_Params.
-type Identity_getProfile_Params_List struct{ capnp.List }
+type Identity_getProfile_Params_List = capnp.StructList[Identity_getProfile_Params]
 
 // NewIdentity_getProfile_Params creates a new list of Identity_getProfile_Params.
 func NewIdentity_getProfile_Params_List(s *capnp.Segment, sz int32) (Identity_getProfile_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Identity_getProfile_Params_List{l}, err
-}
-
-func (s Identity_getProfile_Params_List) At(i int) Identity_getProfile_Params {
-	return Identity_getProfile_Params{s.List.Struct(i)}
-}
-
-func (s Identity_getProfile_Params_List) Set(i int, v Identity_getProfile_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Identity_getProfile_Params_List) String() string {
-	str, _ := text.MarshalList(0xf32d79a7b575d94c, s.List)
-	return str
+	return capnp.StructList[Identity_getProfile_Params](l), err
 }
 
 // Identity_getProfile_Params_Future is a wrapper for a Identity_getProfile_Params promised by a client call.
@@ -230,78 +268,87 @@ type Identity_getProfile_Params_Future struct{ *capnp.Future }
 
 func (p Identity_getProfile_Params_Future) Struct() (Identity_getProfile_Params, error) {
 	s, err := p.Future.Struct()
-	return Identity_getProfile_Params{s}, err
+	return Identity_getProfile_Params(s), err
 }
 
-type Identity_getProfile_Results struct{ capnp.Struct }
+type Identity_getProfile_Results capnp.Struct
 
 // Identity_getProfile_Results_TypeID is the unique identifier for the type Identity_getProfile_Results.
 const Identity_getProfile_Results_TypeID = 0xcd7272b855c92f6d
 
 func NewIdentity_getProfile_Results(s *capnp.Segment) (Identity_getProfile_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Identity_getProfile_Results{st}, err
+	return Identity_getProfile_Results(st), err
 }
 
 func NewRootIdentity_getProfile_Results(s *capnp.Segment) (Identity_getProfile_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Identity_getProfile_Results{st}, err
+	return Identity_getProfile_Results(st), err
 }
 
 func ReadRootIdentity_getProfile_Results(msg *capnp.Message) (Identity_getProfile_Results, error) {
 	root, err := msg.Root()
-	return Identity_getProfile_Results{root.Struct()}, err
+	return Identity_getProfile_Results(root.Struct()), err
 }
 
 func (s Identity_getProfile_Results) String() string {
-	str, _ := text.Marshal(0xcd7272b855c92f6d, s.Struct)
+	str, _ := text.Marshal(0xcd7272b855c92f6d, capnp.Struct(s))
 	return str
 }
 
+func (s Identity_getProfile_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Identity_getProfile_Results) DecodeFromPtr(p capnp.Ptr) Identity_getProfile_Results {
+	return Identity_getProfile_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Identity_getProfile_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Identity_getProfile_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Identity_getProfile_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Identity_getProfile_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Identity_getProfile_Results) Profile() (Profile, error) {
-	p, err := s.Struct.Ptr(0)
-	return Profile{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return Profile(p.Struct()), err
 }
 
 func (s Identity_getProfile_Results) HasProfile() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Identity_getProfile_Results) SetProfile(v Profile) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewProfile sets the profile field to a newly
 // allocated Profile struct, preferring placement in s's segment.
 func (s Identity_getProfile_Results) NewProfile() (Profile, error) {
-	ss, err := NewProfile(s.Struct.Segment())
+	ss, err := NewProfile(capnp.Struct(s).Segment())
 	if err != nil {
 		return Profile{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // Identity_getProfile_Results_List is a list of Identity_getProfile_Results.
-type Identity_getProfile_Results_List struct{ capnp.List }
+type Identity_getProfile_Results_List = capnp.StructList[Identity_getProfile_Results]
 
 // NewIdentity_getProfile_Results creates a new list of Identity_getProfile_Results.
 func NewIdentity_getProfile_Results_List(s *capnp.Segment, sz int32) (Identity_getProfile_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Identity_getProfile_Results_List{l}, err
-}
-
-func (s Identity_getProfile_Results_List) At(i int) Identity_getProfile_Results {
-	return Identity_getProfile_Results{s.List.Struct(i)}
-}
-
-func (s Identity_getProfile_Results_List) Set(i int, v Identity_getProfile_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Identity_getProfile_Results_List) String() string {
-	str, _ := text.MarshalList(0xcd7272b855c92f6d, s.List)
-	return str
+	return capnp.StructList[Identity_getProfile_Results](l), err
 }
 
 // Identity_getProfile_Results_Future is a wrapper for a Identity_getProfile_Results promised by a client call.
@@ -309,122 +356,135 @@ type Identity_getProfile_Results_Future struct{ *capnp.Future }
 
 func (p Identity_getProfile_Results_Future) Struct() (Identity_getProfile_Results, error) {
 	s, err := p.Future.Struct()
-	return Identity_getProfile_Results{s}, err
+	return Identity_getProfile_Results(s), err
 }
 
 func (p Identity_getProfile_Results_Future) Profile() Profile_Future {
 	return Profile_Future{Future: p.Future.Field(0, nil)}
 }
 
-type Profile struct{ capnp.Struct }
+type Profile capnp.Struct
 
 // Profile_TypeID is the unique identifier for the type Profile.
 const Profile_TypeID = 0xd3d0c34d7201fcef
 
 func NewProfile(s *capnp.Segment) (Profile, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return Profile{st}, err
+	return Profile(st), err
 }
 
 func NewRootProfile(s *capnp.Segment) (Profile, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return Profile{st}, err
+	return Profile(st), err
 }
 
 func ReadRootProfile(msg *capnp.Message) (Profile, error) {
 	root, err := msg.Root()
-	return Profile{root.Struct()}, err
+	return Profile(root.Struct()), err
 }
 
 func (s Profile) String() string {
-	str, _ := text.Marshal(0xd3d0c34d7201fcef, s.Struct)
+	str, _ := text.Marshal(0xd3d0c34d7201fcef, capnp.Struct(s))
 	return str
 }
 
+func (s Profile) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Profile) DecodeFromPtr(p capnp.Ptr) Profile {
+	return Profile(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Profile) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Profile) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Profile) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Profile) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Profile) DisplayName() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Profile) HasDisplayName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Profile) SetDisplayName(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewDisplayName sets the displayName field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Profile) NewDisplayName() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Profile) PreferredHandle() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s Profile) HasPreferredHandle() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Profile) PreferredHandleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s Profile) SetPreferredHandle(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s Profile) Picture() util.StaticAsset {
-	p, _ := s.Struct.Ptr(2)
-	return util.StaticAsset{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(2)
+	return util.StaticAsset(p.Interface().Client())
 }
 
 func (s Profile) HasPicture() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Profile) SetPicture(v util.StaticAsset) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(2, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(2, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(2, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(2, in.ToPtr())
 }
 
 func (s Profile) Pronouns() Profile_Pronouns {
-	return Profile_Pronouns(s.Struct.Uint16(0))
+	return Profile_Pronouns(capnp.Struct(s).Uint16(0))
 }
 
 func (s Profile) SetPronouns(v Profile_Pronouns) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 // Profile_List is a list of Profile.
-type Profile_List struct{ capnp.List }
+type Profile_List = capnp.StructList[Profile]
 
 // NewProfile creates a new list of Profile.
 func NewProfile_List(s *capnp.Segment, sz int32) (Profile_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return Profile_List{l}, err
-}
-
-func (s Profile_List) At(i int) Profile { return Profile{s.List.Struct(i)} }
-
-func (s Profile_List) Set(i int, v Profile) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Profile_List) String() string {
-	str, _ := text.MarshalList(0xd3d0c34d7201fcef, s.List)
-	return str
+	return capnp.StructList[Profile](l), err
 }
 
 // Profile_Future is a wrapper for a Profile promised by a client call.
@@ -432,7 +492,7 @@ type Profile_Future struct{ *capnp.Future }
 
 func (p Profile_Future) Struct() (Profile, error) {
 	s, err := p.Future.Struct()
-	return Profile{s}, err
+	return Profile(s), err
 }
 
 func (p Profile_Future) DisplayName() util.LocalizedText_Future {
@@ -440,7 +500,7 @@ func (p Profile_Future) DisplayName() util.LocalizedText_Future {
 }
 
 func (p Profile_Future) Picture() util.StaticAsset {
-	return util.StaticAsset{Client: p.Future.Field(2, nil).Client()}
+	return util.StaticAsset(p.Future.Field(2, nil).Client())
 }
 
 type Profile_Pronouns uint16
@@ -491,200 +551,202 @@ func Profile_PronounsFromString(c string) Profile_Pronouns {
 	}
 }
 
-type Profile_Pronouns_List struct{ capnp.List }
+type Profile_Pronouns_List = capnp.EnumList[Profile_Pronouns]
 
 func NewProfile_Pronouns_List(s *capnp.Segment, sz int32) (Profile_Pronouns_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return Profile_Pronouns_List{l.List}, err
+	return capnp.NewEnumList[Profile_Pronouns](s, sz)
 }
 
-func (l Profile_Pronouns_List) At(i int) Profile_Pronouns {
-	ul := capnp.UInt16List{List: l.List}
-	return Profile_Pronouns(ul.At(i))
-}
-
-func (l Profile_Pronouns_List) Set(i int, v Profile_Pronouns) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type UserInfo struct{ capnp.Struct }
+type UserInfo capnp.Struct
 
 // UserInfo_TypeID is the unique identifier for the type UserInfo.
 const UserInfo_TypeID = 0x94b9d1efb35d11d3
 
 func NewUserInfo(s *capnp.Segment) (UserInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 7})
-	return UserInfo{st}, err
+	return UserInfo(st), err
 }
 
 func NewRootUserInfo(s *capnp.Segment) (UserInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 7})
-	return UserInfo{st}, err
+	return UserInfo(st), err
 }
 
 func ReadRootUserInfo(msg *capnp.Message) (UserInfo, error) {
 	root, err := msg.Root()
-	return UserInfo{root.Struct()}, err
+	return UserInfo(root.Struct()), err
 }
 
 func (s UserInfo) String() string {
-	str, _ := text.Marshal(0x94b9d1efb35d11d3, s.Struct)
+	str, _ := text.Marshal(0x94b9d1efb35d11d3, capnp.Struct(s))
 	return str
 }
 
+func (s UserInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (UserInfo) DecodeFromPtr(p capnp.Ptr) UserInfo {
+	return UserInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s UserInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s UserInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s UserInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s UserInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s UserInfo) DisplayName() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s UserInfo) HasDisplayName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s UserInfo) SetDisplayName(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewDisplayName sets the displayName field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s UserInfo) NewDisplayName() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s UserInfo) PreferredHandle() (string, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.Text(), err
 }
 
 func (s UserInfo) HasPreferredHandle() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s UserInfo) PreferredHandleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.TextBytes(), err
 }
 
 func (s UserInfo) SetPreferredHandle(v string) error {
-	return s.Struct.SetText(4, v)
+	return capnp.Struct(s).SetText(4, v)
 }
 
 func (s UserInfo) PictureUrl() (string, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.Text(), err
 }
 
 func (s UserInfo) HasPictureUrl() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s UserInfo) PictureUrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.TextBytes(), err
 }
 
 func (s UserInfo) SetPictureUrl(v string) error {
-	return s.Struct.SetText(5, v)
+	return capnp.Struct(s).SetText(5, v)
 }
 
 func (s UserInfo) Pronouns() Profile_Pronouns {
-	return Profile_Pronouns(s.Struct.Uint16(0))
+	return Profile_Pronouns(capnp.Struct(s).Uint16(0))
 }
 
 func (s UserInfo) SetPronouns(v Profile_Pronouns) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 func (s UserInfo) DeprecatedPermissionsBlob() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s UserInfo) HasDeprecatedPermissionsBlob() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s UserInfo) SetDeprecatedPermissionsBlob(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 func (s UserInfo) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(3)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return capnp.BitList(p.List()), err
 }
 
 func (s UserInfo) HasPermissions() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s UserInfo) SetPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(3, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(3, v.ToPtr())
 }
 
 // NewPermissions sets the permissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s UserInfo) NewPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
 	return l, err
 }
 
 func (s UserInfo) IdentityId() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return []byte(p.Data()), err
 }
 
 func (s UserInfo) HasIdentityId() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s UserInfo) SetIdentityId(v []byte) error {
-	return s.Struct.SetData(2, v)
+	return capnp.Struct(s).SetData(2, v)
 }
 
 func (s UserInfo) Identity() Identity {
-	p, _ := s.Struct.Ptr(6)
-	return Identity{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(6)
+	return Identity(p.Interface().Client())
 }
 
 func (s UserInfo) HasIdentity() bool {
-	return s.Struct.HasPtr(6)
+	return capnp.Struct(s).HasPtr(6)
 }
 
 func (s UserInfo) SetIdentity(v Identity) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(6, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(6, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(6, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(6, in.ToPtr())
 }
 
 // UserInfo_List is a list of UserInfo.
-type UserInfo_List struct{ capnp.List }
+type UserInfo_List = capnp.StructList[UserInfo]
 
 // NewUserInfo creates a new list of UserInfo.
 func NewUserInfo_List(s *capnp.Segment, sz int32) (UserInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 7}, sz)
-	return UserInfo_List{l}, err
-}
-
-func (s UserInfo_List) At(i int) UserInfo { return UserInfo{s.List.Struct(i)} }
-
-func (s UserInfo_List) Set(i int, v UserInfo) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s UserInfo_List) String() string {
-	str, _ := text.MarshalList(0x94b9d1efb35d11d3, s.List)
-	return str
+	return capnp.StructList[UserInfo](l), err
 }
 
 // UserInfo_Future is a wrapper for a UserInfo promised by a client call.
@@ -692,7 +754,7 @@ type UserInfo_Future struct{ *capnp.Future }
 
 func (p UserInfo_Future) Struct() (UserInfo, error) {
 	s, err := p.Future.Struct()
-	return UserInfo{s}, err
+	return UserInfo(s), err
 }
 
 func (p UserInfo_Future) DisplayName() util.LocalizedText_Future {
@@ -700,61 +762,61 @@ func (p UserInfo_Future) DisplayName() util.LocalizedText_Future {
 }
 
 func (p UserInfo_Future) Identity() Identity {
-	return Identity{Client: p.Future.Field(6, nil).Client()}
+	return Identity(p.Future.Field(6, nil).Client())
 }
 
-const schema_c822108a5c3d7d25 = "x\xda\x8c\x94M\x88\x1c\xc5\x1b\xc6\x9f\xa7\xaa{&\x81" +
-	"\xdd\xffL\xd1\xf3'\x1b\x10\xf2A\x04\x15\xb3~\xe4 " +
-	"\x06d\xc2^t\x17\x95\xae\x1d\xf7\xe0b\xc4\x9e\x9d\xda" +
-	"u\xa0gz\xac\xee\xc1\xac\"+!{P\x09x\xf0" +
-	"\xa0W/\x12\xc4\x83\x88\xe8\x9a\x8bD\x82\xe6\x10\x92\xb8" +
-	"\xa7\x05\x05\xf5\x92\x08J\x14=\x89\xd0R=_K\xc4" +
-	"\x90\xd3\x0co=\xfd\xbco\xbf\xcf\xaf\xeb\xc1\xff\x8b\x13" +
-	"\xe2!\xffz\x09\xd0\xa1_\xca\xf9\xe1\xa3\x9bW\x8e\xf6" +
-	"\xcf@\xed\x13\xf9\xcd\xbfi\x9f\xfa\xea\xea6\xc0c\xcf" +
-	"J\xc1\xc0\xc82\x10Dr\x0d\xcc\xb7\xd5\xc9On^" +
-	"\xdbz\x07\xbaB\xe6w\xbf\xf6\xd8soV\x0f\x7f\x03" +
-	"\xbf\xec$\x9b\xf2Bp\xd6\x89\x8f\xbd!\xbf&\x98\xcf" +
-	"|\xaf\xcf\xbd\xf2\xee\x99/\xa1*r\"\x06\x83M\xff" +
-	"Bp\xd6\xdf\x07\x04\xef\xf9\x8f\x07\x17\xfd2\x90w\x1e" +
-	"\xb8\xb4\xf4\xb9\xb5\x97\xa1f\x08\xf8t>\x1f\xf9\xcb\x04" +
-	"\x83-\xbf\x0eN\x06\xbb\xa5w1\xde\x8e\xffE\xf0c" +
-	"\xe1\xf8\xab\x7f\x1d\xcc\x9f\xdc\xe9\x7f\xfa\xc1\xfa\xd1?\x06" +
-	"n\x9e3\xbb\\Z$\xbc\xfc\xc6\xf9\xed\x8f\xaf,\x86" +
-	"\xc5\xc9d\xc2A\xbf\xad\xd2a\x06\x97J\xce\xf0b\xa9" +
-	"\x8e\xb7\xf3v\xcbt\xb3v\xb6.gW\xa2^\xb7w" +
-	"<\xb4\xc9j;6\xb3\xa1M\xbaI\xbf\x9b\"$u" +
-	"\x95\x02P\xf7\xce\x01\xa4:t\x1f@\xa1\xf6\x1f\x07(" +
-	"\x95z\x18\xd8\xe8\x9a~f\xa3\xb8\xd2\x89bS_5" +
-	"\xee\xe7\x80M\x9aI6\xb6\x17C\xfb\xa5\xd4\xd8\xf9\xee" +
-	"jR\xd8\x1e\x94\x1e\xe0\x11P\xd7\x9a\x80\xbe*\xa9\xbf" +
-	"\x13T\x1ekt\xc5\x9do\x01\xfd\x83\xa4\xfeEP\x95" +
-	"D\xad\x18\xe2\xe7e@\xdf\x90\xd4\x7f\x0a*_\xd6(" +
-	"\x01\xf5\xbb{\xfc7\xc9\xc6\x14\x05\x15\xbd\x1a= \xd8" +
-	"\xcb\xd3@c\x0f%\x1b5\x0aR\xd6\xe8\x03\x81\xe2\x02" +
-	"\xd0\xa8\xba\xf2]N.\xfc\x1aK@\xb0\x9f\xcb@c" +
-	"\xc6\xd5\x8f\xb8z\xb9Ts+\x0b\x0e\x15\xfa\x83\xae~" +
-	"?\x05\xf3V;\xed\xc5\xd1\xfa\xd3(G\x1d\xc3j>" +
-	"\xff\xd3\xab\x8f\xd8\xcfN\xbe\xe5\x96S\x05\xf3\x96\xe9Y" +
-	"\xb3\x12e\xc2\xb4Bc;\xed4m'\xddt.N" +
-	"\xd8\xe44\x04\xa7\xc1\xf1Z \xe7[\xe3bo\xa8F" +
-	"9\xe9\xa6\xfc\x1f\x18J\x92\x10\xeeo\xde\xb3f\xd5X" +
-	"k\xd8z\"\xea\xb6b\x03NAp\xaa8\x19&\x05" +
-	"\xb02!\x1dd\xc5\x9d\xb6W\xb2\xbe5K\x906\x1e" +
-	"?2n\x0fPM\x10q\xe9\xee:\x1de6?R" +
-	"k\x8f\xdcE\x17\x9by\x98\xbcll39\x85\xf23" +
-	"\xd1\x9a\xf6\xa4\x0f\x8c\xc1\xe4\x88w\xa5\x96!\xd4\xder" +
-	"\xbef\xb2\x02/\xc8\xd8\x9c`\xc8I+\xef\x96V\xb3" +
-	"#il\x8e,\x9a\xb4\x1f\xcb,\xd5\xde\x18\x97\xe99" +
-	"@\xef\x91\xd45\xc1\x8d\xde@\xc7\xea\xee\x0f\xbbHb" +
-	"\xe4\xce\x11\xdb\xf5\x81\xb4x\x8f\xc9\x95\xc0\x85<\x9c\xec" +
-	"PW\xc7m\"\x87\xd5\x0b\x92:vT\x0d\xa9l\x9f" +
-	"\x06\xf4\x8b\x92:s\xec\x0c\xa9|\xc9\x0d\x14K\xeaS" +
-	"\x03\xce\x1c\x94\xfd\x05@g\x92\xfa\xf5;\x80\xe6?\xe3" +
-	"\xdd\x18\x06H\x95\xd7\xdf?w\xa0\xf9\xfc\xf9\xbfF9" +
-	"\xdd>\xf8;Ym\x18\xd9\xa8\xc3\xf4_\x97\xc0X;" +
-	"\xca\xd7\xc5\xeb\xbe\xd8]\x11\xb8\xddLI\xea{\xc4\xed" +
-	"\xc9\xfd'\x00\x00\xff\xff\xa0\xc8\x7fS"
+const schema_c822108a5c3d7d25 = "x\xda\x8c\x94O\x88\x1cE\x18\xc5\xdf\xab\xea\x9eI`" +
+	"\xd7\x99\xa2\x07\xb2\x01!\x7f\x88\xa0b\xd6?9\x88\x01" +
+	"\x99\xb0\x17\xddE\xa5k\xc7=\xb8\x18\xb1g\xa7v\x1d" +
+	"\xe8\x99\x1e\xab{0\xab\xc8J\xc8\x1eT\x02\x1e<\xe8" +
+	"\xd5\x8b\x04\xf1 \"\xba\xe6\"\x91\xa09\x84$\xeei" +
+	"AA\xbd$\x82\x12EO\"\xb4T\xcf\xbf%b\xc8" +
+	"i\x86\xaf^\xbf\xef\xeb\xef\xfd\xba\x1e\xda'Nx\x0f" +
+	"O_/A\xe8\xd0/\xe5\xfc\xe8\xb1\xcd+G\xfbg" +
+	"\xa0\xf6\x89\xfc\xe6?\xb4O\x7f}u\x1b\xe0\xb1\xe7\xa4" +
+	"``d\x19\x08\"\xb9\x06\xe6\xdb\xea\xe4\xa77\xafm" +
+	"\xbd\x0b]!\xf3{^\x7f\xfc\xf9\xb7\xaa\x87\xbf\x85_" +
+	"v\x92My!8\xeb\xc4\xc7\xde\x94\xdf\x10\xccg~" +
+	"\xd0\xe7^}\xef\xccWP\x159\x11\x83\xc1\xa6\x7f!" +
+	"8\xeb\xef\x03\x82\xf7\xfd'\x82\x8b~\x19\xc8;\x0f^" +
+	"Z\xfa\xc2\xda\xcbP3\x04|:\x9f\x8f\xfde\x82\xc1" +
+	"\x96_\x07'\x83\xdd\xd2\xbb\x18o\xc7\xff2\xf8\xa9p" +
+	"\xfc\xcd\xbf\x0e\xe6O\xed\xf4?\xfbp\xfd\xe8\x9f\x037" +
+	"\xcf\x99].-\x12^~\xe3\xfc\xf6'W\x16\xc3\xe2" +
+	"d2\xe1\xa0\xdfV\xe90\x83K%gx\xb1T\xc7" +
+	";y\xbbe\xbaY;[\x97\xb3+Q\xaf\xdb;\x1e" +
+	"\xdad\xb5\x1d\x9b\xd9\xd0&\xdd\xa4\xdfM\x11\x92\xbaJ" +
+	"\x01\xa8\xfb\xe6\x00R\x1d\xba\x1f\xa0P\xfb\x8f\x03\x94J" +
+	"=\x02ltM?\xb3Q\\\xe9D\xb1\xa9\xaf\x1a\xf7" +
+	"s\xc0&\xcd$\x1b\xdb\x8b\xa1\xfdRj\xec|w5" +
+	")l\x0fJ\x0f\xf0\x08\xa8kM@_\x95\xd4\xdf\x0b" +
+	"*\x8f5\xba\xe2\xcew\x80\xfeQR\xff*\xa8J\xa2" +
+	"V\x0c\xf1\xcb2\xa0oH\xea\xbf\x04\x95/k\x94\x80" +
+	"\xfa\xc3=\xfe\xbbdc\x8a\x82\x8a^\x8d\x1e\x10\xec\xe5" +
+	"i\xa0\xb1\x87\x92\x8d\x1a\x05)k\xf4\x81@q\x01h" +
+	"T]\xf9n'\x17~\x8d% \xd8\xcfe\xa01\xe3" +
+	"\xeaG\\\xbd\\\xaa\xb9\x95\x05\x87\x0a\xfdAW\x7f\x80" +
+	"\x82y\xab\x9d\xf6\xe2h\xfd\x19\x94\xa3\x8ea5\x9f\xff" +
+	"\xf9\xb5G\xed\xe7'\xdfv\xcb\xa9\x82y\xcb\xf4\xacY" +
+	"\x892aZ\xa1\xb1\x9dv\x9a\xb6\x93n:\x17'l" +
+	"r\x1a\x82\xd3\xe0x-\x90\xf3\xadq\xb17T\xa3\x9c" +
+	"tS\xde\x05\x86\x92$\x84\xfb\x9b\xf7\xacY5\xd6\x1a" +
+	"\xb6\x9e\x8c\xba\xad\xd8\x80S\x10\x9c*N\x86I\x01\xac" +
+	"LH\x07Yq\xa7\xed\x95\xaco\xcd\x12\xa4\x8d\xc7\x8f" +
+	"\x8c\xdb\x03T\x13D\\\xba\xbbNG\x99\xcd\x8f\xd4\xda" +
+	"#w\xd1\xc5f\x1e&\xaf\x18\xdbLN\xa1\xfcl\xb4" +
+	"\xa6=\xe9\x03c09\xe2]\xa9e\x08\xb5\xb7\x9c\xaf" +
+	"\x99\xac\xc0\x0b26'\x18r\xd2\xca\xbb\xa5\xd5\xecH" +
+	"\x1a\x9b#\x8b&\xed\xc72K\xb57\xc6ez\x0e\xd0" +
+	"{$uMp\xa37\xd0\xb1\xba\xfb\xc3.\x92\x18\xb9" +
+	"s\xc4v} -\xdecr%p!\x0f';\xd4" +
+	"\xd5q\x9b\xc8a\xf5\xa2\xa4\x8e\x1dUC*\xdb\xa7\x01" +
+	"\xfd\x92\xa4\xce\x1c;C*_v\x03\xc5\x92\xfa\xd4\x80" +
+	"3\x07e\x7f\x01\xd0\x99\xa4~\xe3\x0e\xa0\xf9\xdfx7" +
+	"\x86\x01R\xe5\xf5\x0f\xce\x1dh\xbep\xfe\xefQN\xb7" +
+	"\x0f\xfeNV\x1bF6\xea0\xfd\xcf%0\xd6\x8e\xf2" +
+	"u\xf1\xba/vW\x04n7S\x92\xfa^q{r" +
+	"\xff\x0d\x00\x00\xff\xff\xee\x14\x7fa"
 
 func init() {
 	schemas.Register(schema_c822108a5c3d7d25,

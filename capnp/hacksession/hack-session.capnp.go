@@ -14,7 +14,7 @@ import (
 	ip "zenhack.net/go/sandstorm/capnp/ip"
 )
 
-type HackSessionContext struct{ Client *capnp.Client }
+type HackSessionContext capnp.Client
 
 // HackSessionContext_TypeID is the unique identifier for the type HackSessionContext.
 const HackSessionContext_TypeID = 0xe14c1f5321159b8f
@@ -30,9 +30,9 @@ func (c HackSessionContext) GetPublicId(ctx context.Context, params func(HackSes
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getPublicId_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getPublicId_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_getPublicId_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteHttpGet(ctx context.Context, params func(HackSessionContext_obsoleteHttpGet_Params) error) (HackSessionContext_obsoleteHttpGet_Results_Future, capnp.ReleaseFunc) {
@@ -46,9 +46,9 @@ func (c HackSessionContext) ObsoleteHttpGet(ctx context.Context, params func(Hac
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteHttpGet_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteHttpGet_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteHttpGet_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) GetUserAddress(ctx context.Context, params func(HackSessionContext_getUserAddress_Params) error) (email.EmailAddress_Future, capnp.ReleaseFunc) {
@@ -62,9 +62,9 @@ func (c HackSessionContext) GetUserAddress(ctx context.Context, params func(Hack
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getUserAddress_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_getUserAddress_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailAddress_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteGenerateApiToken(ctx context.Context, params func(HackSessionContext_obsoleteGenerateApiToken_Params) error) (HackSessionContext_obsoleteGenerateApiToken_Results_Future, capnp.ReleaseFunc) {
@@ -78,11 +78,9 @@ func (c HackSessionContext) ObsoleteGenerateApiToken(ctx context.Context, params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(HackSessionContext_obsoleteGenerateApiToken_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGenerateApiToken_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteGenerateApiToken_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteListApiTokens(ctx context.Context, params func(HackSessionContext_obsoleteListApiTokens_Params) error) (HackSessionContext_obsoleteListApiTokens_Results_Future, capnp.ReleaseFunc) {
@@ -96,9 +94,9 @@ func (c HackSessionContext) ObsoleteListApiTokens(ctx context.Context, params fu
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteListApiTokens_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteListApiTokens_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteListApiTokens_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteRevokeApiToken(ctx context.Context, params func(HackSessionContext_obsoleteRevokeApiToken_Params) error) (HackSessionContext_obsoleteRevokeApiToken_Results_Future, capnp.ReleaseFunc) {
@@ -112,9 +110,9 @@ func (c HackSessionContext) ObsoleteRevokeApiToken(ctx context.Context, params f
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteRevokeApiToken_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteRevokeApiToken_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteRevokeApiToken_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteGetIpNetwork(ctx context.Context, params func(HackSessionContext_obsoleteGetIpNetwork_Params) error) (HackSessionContext_obsoleteGetIpNetwork_Results_Future, capnp.ReleaseFunc) {
@@ -128,9 +126,9 @@ func (c HackSessionContext) ObsoleteGetIpNetwork(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpNetwork_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpNetwork_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteGetIpNetwork_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteGetIpInterface(ctx context.Context, params func(HackSessionContext_obsoleteGetIpInterface_Params) error) (HackSessionContext_obsoleteGetIpInterface_Results_Future, capnp.ReleaseFunc) {
@@ -144,9 +142,9 @@ func (c HackSessionContext) ObsoleteGetIpInterface(ctx context.Context, params f
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpInterface_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetIpInterface_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteGetIpInterface_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ObsoleteGetUiViewForEndpoint(ctx context.Context, params func(HackSessionContext_obsoleteGetUiViewForEndpoint_Params) error) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future, capnp.ReleaseFunc) {
@@ -160,11 +158,9 @@ func (c HackSessionContext) ObsoleteGetUiViewForEndpoint(ctx context.Context, pa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(HackSessionContext_obsoleteGetUiViewForEndpoint_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(HackSessionContext_obsoleteGetUiViewForEndpoint_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) GetSharedPermissions(ctx context.Context, params func(grain.SessionContext_getSharedPermissions_Params) error) (grain.SessionContext_getSharedPermissions_Results_Future, capnp.ReleaseFunc) {
@@ -178,9 +174,9 @@ func (c HackSessionContext) GetSharedPermissions(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_getSharedPermissions_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_getSharedPermissions_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_getSharedPermissions_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) TieToUser(ctx context.Context, params func(grain.SessionContext_tieToUser_Params) error) (grain.SessionContext_tieToUser_Results_Future, capnp.ReleaseFunc) {
@@ -194,9 +190,9 @@ func (c HackSessionContext) TieToUser(ctx context.Context, params func(grain.Ses
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_tieToUser_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_tieToUser_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_tieToUser_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) Offer(ctx context.Context, params func(grain.SessionContext_offer_Params) error) (grain.SessionContext_offer_Results_Future, capnp.ReleaseFunc) {
@@ -210,9 +206,9 @@ func (c HackSessionContext) Offer(ctx context.Context, params func(grain.Session
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_offer_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_offer_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_offer_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) Request(ctx context.Context, params func(grain.SessionContext_request_Params) error) (grain.SessionContext_request_Results_Future, capnp.ReleaseFunc) {
@@ -226,9 +222,9 @@ func (c HackSessionContext) Request(ctx context.Context, params func(grain.Sessi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_request_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_request_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_request_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) FulfillRequest(ctx context.Context, params func(grain.SessionContext_fulfillRequest_Params) error) (grain.SessionContext_fulfillRequest_Results_Future, capnp.ReleaseFunc) {
@@ -242,9 +238,9 @@ func (c HackSessionContext) FulfillRequest(ctx context.Context, params func(grai
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_fulfillRequest_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_fulfillRequest_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_fulfillRequest_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) Close(ctx context.Context, params func(grain.SessionContext_close_Params) error) (grain.SessionContext_close_Results_Future, capnp.ReleaseFunc) {
@@ -258,9 +254,9 @@ func (c HackSessionContext) Close(ctx context.Context, params func(grain.Session
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_close_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_close_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_close_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) OpenView(ctx context.Context, params func(grain.SessionContext_openView_Params) error) (grain.SessionContext_openView_Results_Future, capnp.ReleaseFunc) {
@@ -274,9 +270,9 @@ func (c HackSessionContext) OpenView(ctx context.Context, params func(grain.Sess
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_openView_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_openView_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_openView_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) ClaimRequest(ctx context.Context, params func(grain.SessionContext_claimRequest_Params) error) (grain.SessionContext_claimRequest_Results_Future, capnp.ReleaseFunc) {
@@ -290,9 +286,9 @@ func (c HackSessionContext) ClaimRequest(ctx context.Context, params func(grain.
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_claimRequest_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_claimRequest_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_claimRequest_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) Activity(ctx context.Context, params func(grain.SessionContext_activity_Params) error) (grain.SessionContext_activity_Results_Future, capnp.ReleaseFunc) {
@@ -306,9 +302,9 @@ func (c HackSessionContext) Activity(ctx context.Context, params func(grain.Sess
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_activity_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(grain.SessionContext_activity_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return grain.SessionContext_activity_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) Send(ctx context.Context, params func(email.EmailSendPort_send_Params) error) (email.EmailSendPort_send_Results_Future, capnp.ReleaseFunc) {
@@ -322,9 +318,9 @@ func (c HackSessionContext) Send(ctx context.Context, params func(email.EmailSen
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
 func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error) (email.EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
@@ -338,20 +334,30 @@ func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.E
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
 func (c HackSessionContext) AddRef() HackSessionContext {
-	return HackSessionContext{
-		Client: c.Client.AddRef(),
-	}
+	return HackSessionContext(capnp.Client(c).AddRef())
 }
 
 func (c HackSessionContext) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c HackSessionContext) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext) DecodeFromPtr(p capnp.Ptr) HackSessionContext {
+	return HackSessionContext(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c HackSessionContext) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A HackSessionContext_Server is a HackSessionContext with a local implementation.
@@ -398,15 +404,15 @@ type HackSessionContext_Server interface {
 }
 
 // HackSessionContext_NewServer creates a new Server from an implementation of HackSessionContext_Server.
-func HackSessionContext_NewServer(s HackSessionContext_Server, policy *server.Policy) *server.Server {
+func HackSessionContext_NewServer(s HackSessionContext_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(HackSessionContext_Methods(nil, s), s, c, policy)
+	return server.New(HackSessionContext_Methods(nil, s), s, c)
 }
 
 // HackSessionContext_ServerToClient creates a new Client from an implementation of HackSessionContext_Server.
 // The caller is responsible for calling Release on the returned Client.
-func HackSessionContext_ServerToClient(s HackSessionContext_Server, policy *server.Policy) HackSessionContext {
-	return HackSessionContext{Client: capnp.NewClient(HackSessionContext_NewServer(s, policy))}
+func HackSessionContext_ServerToClient(s HackSessionContext_Server) HackSessionContext {
+	return HackSessionContext(capnp.NewClient(HackSessionContext_NewServer(s)))
 }
 
 // HackSessionContext_Methods appends Methods to a slice that invoke the methods on s.
@@ -667,13 +673,13 @@ type HackSessionContext_getPublicId struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_getPublicId) Args() HackSessionContext_getPublicId_Params {
-	return HackSessionContext_getPublicId_Params{Struct: c.Call.Args()}
+	return HackSessionContext_getPublicId_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_getPublicId) AllocResults() (HackSessionContext_getPublicId_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return HackSessionContext_getPublicId_Results{Struct: r}, err
+	return HackSessionContext_getPublicId_Results(r), err
 }
 
 // HackSessionContext_obsoleteHttpGet holds the state for a server call to HackSessionContext.obsoleteHttpGet.
@@ -684,13 +690,13 @@ type HackSessionContext_obsoleteHttpGet struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteHttpGet) Args() HackSessionContext_obsoleteHttpGet_Params {
-	return HackSessionContext_obsoleteHttpGet_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteHttpGet_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteHttpGet) AllocResults() (HackSessionContext_obsoleteHttpGet_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_obsoleteHttpGet_Results{Struct: r}, err
+	return HackSessionContext_obsoleteHttpGet_Results(r), err
 }
 
 // HackSessionContext_getUserAddress holds the state for a server call to HackSessionContext.getUserAddress.
@@ -701,13 +707,13 @@ type HackSessionContext_getUserAddress struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_getUserAddress) Args() HackSessionContext_getUserAddress_Params {
-	return HackSessionContext_getUserAddress_Params{Struct: c.Call.Args()}
+	return HackSessionContext_getUserAddress_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_getUserAddress) AllocResults() (email.EmailAddress, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return email.EmailAddress{Struct: r}, err
+	return email.EmailAddress(r), err
 }
 
 // HackSessionContext_obsoleteGenerateApiToken holds the state for a server call to HackSessionContext.obsoleteGenerateApiToken.
@@ -718,13 +724,13 @@ type HackSessionContext_obsoleteGenerateApiToken struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteGenerateApiToken) Args() HackSessionContext_obsoleteGenerateApiToken_Params {
-	return HackSessionContext_obsoleteGenerateApiToken_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteGenerateApiToken_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteGenerateApiToken) AllocResults() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return HackSessionContext_obsoleteGenerateApiToken_Results{Struct: r}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Results(r), err
 }
 
 // HackSessionContext_obsoleteListApiTokens holds the state for a server call to HackSessionContext.obsoleteListApiTokens.
@@ -735,13 +741,13 @@ type HackSessionContext_obsoleteListApiTokens struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteListApiTokens) Args() HackSessionContext_obsoleteListApiTokens_Params {
-	return HackSessionContext_obsoleteListApiTokens_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteListApiTokens_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteListApiTokens) AllocResults() (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteListApiTokens_Results{Struct: r}, err
+	return HackSessionContext_obsoleteListApiTokens_Results(r), err
 }
 
 // HackSessionContext_obsoleteRevokeApiToken holds the state for a server call to HackSessionContext.obsoleteRevokeApiToken.
@@ -752,13 +758,13 @@ type HackSessionContext_obsoleteRevokeApiToken struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteRevokeApiToken) Args() HackSessionContext_obsoleteRevokeApiToken_Params {
-	return HackSessionContext_obsoleteRevokeApiToken_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteRevokeApiToken_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteRevokeApiToken) AllocResults() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteRevokeApiToken_Results{Struct: r}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Results(r), err
 }
 
 // HackSessionContext_obsoleteGetIpNetwork holds the state for a server call to HackSessionContext.obsoleteGetIpNetwork.
@@ -769,13 +775,13 @@ type HackSessionContext_obsoleteGetIpNetwork struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteGetIpNetwork) Args() HackSessionContext_obsoleteGetIpNetwork_Params {
-	return HackSessionContext_obsoleteGetIpNetwork_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteGetIpNetwork_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteGetIpNetwork) AllocResults() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpNetwork_Results{Struct: r}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Results(r), err
 }
 
 // HackSessionContext_obsoleteGetIpInterface holds the state for a server call to HackSessionContext.obsoleteGetIpInterface.
@@ -786,13 +792,13 @@ type HackSessionContext_obsoleteGetIpInterface struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteGetIpInterface) Args() HackSessionContext_obsoleteGetIpInterface_Params {
-	return HackSessionContext_obsoleteGetIpInterface_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteGetIpInterface_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteGetIpInterface) AllocResults() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpInterface_Results{Struct: r}, err
+	return HackSessionContext_obsoleteGetIpInterface_Results(r), err
 }
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint holds the state for a server call to HackSessionContext.obsoleteGetUiViewForEndpoint.
@@ -803,120 +809,138 @@ type HackSessionContext_obsoleteGetUiViewForEndpoint struct {
 
 // Args returns the call's arguments.
 func (c HackSessionContext_obsoleteGetUiViewForEndpoint) Args() HackSessionContext_obsoleteGetUiViewForEndpoint_Params {
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{Struct: c.Call.Args()}
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c HackSessionContext_obsoleteGetUiViewForEndpoint) AllocResults() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{Struct: r}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(r), err
 }
 
-type HackSessionContext_TokenInfo struct{ capnp.Struct }
+// HackSessionContext_List is a list of HackSessionContext.
+type HackSessionContext_List = capnp.CapList[HackSessionContext]
+
+// NewHackSessionContext creates a new list of HackSessionContext.
+func NewHackSessionContext_List(s *capnp.Segment, sz int32) (HackSessionContext_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[HackSessionContext](l), err
+}
+
+type HackSessionContext_TokenInfo capnp.Struct
 
 // HackSessionContext_TokenInfo_TypeID is the unique identifier for the type HackSessionContext_TokenInfo.
 const HackSessionContext_TokenInfo_TypeID = 0xf910658ae8c6674d
 
 func NewHackSessionContext_TokenInfo(s *capnp.Segment) (HackSessionContext_TokenInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return HackSessionContext_TokenInfo{st}, err
+	return HackSessionContext_TokenInfo(st), err
 }
 
 func NewRootHackSessionContext_TokenInfo(s *capnp.Segment) (HackSessionContext_TokenInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return HackSessionContext_TokenInfo{st}, err
+	return HackSessionContext_TokenInfo(st), err
 }
 
 func ReadRootHackSessionContext_TokenInfo(msg *capnp.Message) (HackSessionContext_TokenInfo, error) {
 	root, err := msg.Root()
-	return HackSessionContext_TokenInfo{root.Struct()}, err
+	return HackSessionContext_TokenInfo(root.Struct()), err
 }
 
 func (s HackSessionContext_TokenInfo) String() string {
-	str, _ := text.Marshal(0xf910658ae8c6674d, s.Struct)
+	str, _ := text.Marshal(0xf910658ae8c6674d, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_TokenInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_TokenInfo) DecodeFromPtr(p capnp.Ptr) HackSessionContext_TokenInfo {
+	return HackSessionContext_TokenInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_TokenInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_TokenInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_TokenInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_TokenInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_TokenInfo) TokenId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_TokenInfo) HasTokenId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_TokenInfo) TokenIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_TokenInfo) SetTokenId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s HackSessionContext_TokenInfo) Petname() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_TokenInfo) HasPetname() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s HackSessionContext_TokenInfo) PetnameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_TokenInfo) SetPetname(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s HackSessionContext_TokenInfo) UserInfo() (identity.UserInfo, error) {
-	p, err := s.Struct.Ptr(2)
-	return identity.UserInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return identity.UserInfo(p.Struct()), err
 }
 
 func (s HackSessionContext_TokenInfo) HasUserInfo() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s HackSessionContext_TokenInfo) SetUserInfo(v identity.UserInfo) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewUserInfo sets the userInfo field to a newly
 // allocated identity.UserInfo struct, preferring placement in s's segment.
 func (s HackSessionContext_TokenInfo) NewUserInfo() (identity.UserInfo, error) {
-	ss, err := identity.NewUserInfo(s.Struct.Segment())
+	ss, err := identity.NewUserInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return identity.UserInfo{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // HackSessionContext_TokenInfo_List is a list of HackSessionContext_TokenInfo.
-type HackSessionContext_TokenInfo_List struct{ capnp.List }
+type HackSessionContext_TokenInfo_List = capnp.StructList[HackSessionContext_TokenInfo]
 
 // NewHackSessionContext_TokenInfo creates a new list of HackSessionContext_TokenInfo.
 func NewHackSessionContext_TokenInfo_List(s *capnp.Segment, sz int32) (HackSessionContext_TokenInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return HackSessionContext_TokenInfo_List{l}, err
-}
-
-func (s HackSessionContext_TokenInfo_List) At(i int) HackSessionContext_TokenInfo {
-	return HackSessionContext_TokenInfo{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_TokenInfo_List) Set(i int, v HackSessionContext_TokenInfo) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_TokenInfo_List) String() string {
-	str, _ := text.MarshalList(0xf910658ae8c6674d, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_TokenInfo](l), err
 }
 
 // HackSessionContext_TokenInfo_Future is a wrapper for a HackSessionContext_TokenInfo promised by a client call.
@@ -924,58 +948,68 @@ type HackSessionContext_TokenInfo_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_TokenInfo_Future) Struct() (HackSessionContext_TokenInfo, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_TokenInfo{s}, err
+	return HackSessionContext_TokenInfo(s), err
 }
 
 func (p HackSessionContext_TokenInfo_Future) UserInfo() identity.UserInfo_Future {
 	return identity.UserInfo_Future{Future: p.Future.Field(2, nil)}
 }
 
-type HackSessionContext_getPublicId_Params struct{ capnp.Struct }
+type HackSessionContext_getPublicId_Params capnp.Struct
 
 // HackSessionContext_getPublicId_Params_TypeID is the unique identifier for the type HackSessionContext_getPublicId_Params.
 const HackSessionContext_getPublicId_Params_TypeID = 0xe706d835e9cd64af
 
 func NewHackSessionContext_getPublicId_Params(s *capnp.Segment) (HackSessionContext_getPublicId_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_getPublicId_Params{st}, err
+	return HackSessionContext_getPublicId_Params(st), err
 }
 
 func NewRootHackSessionContext_getPublicId_Params(s *capnp.Segment) (HackSessionContext_getPublicId_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_getPublicId_Params{st}, err
+	return HackSessionContext_getPublicId_Params(st), err
 }
 
 func ReadRootHackSessionContext_getPublicId_Params(msg *capnp.Message) (HackSessionContext_getPublicId_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_getPublicId_Params{root.Struct()}, err
+	return HackSessionContext_getPublicId_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_getPublicId_Params) String() string {
-	str, _ := text.Marshal(0xe706d835e9cd64af, s.Struct)
+	str, _ := text.Marshal(0xe706d835e9cd64af, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_getPublicId_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_getPublicId_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_getPublicId_Params {
+	return HackSessionContext_getPublicId_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_getPublicId_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_getPublicId_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_getPublicId_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_getPublicId_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_getPublicId_Params_List is a list of HackSessionContext_getPublicId_Params.
-type HackSessionContext_getPublicId_Params_List struct{ capnp.List }
+type HackSessionContext_getPublicId_Params_List = capnp.StructList[HackSessionContext_getPublicId_Params]
 
 // NewHackSessionContext_getPublicId_Params creates a new list of HackSessionContext_getPublicId_Params.
 func NewHackSessionContext_getPublicId_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_getPublicId_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_getPublicId_Params_List{l}, err
-}
-
-func (s HackSessionContext_getPublicId_Params_List) At(i int) HackSessionContext_getPublicId_Params {
-	return HackSessionContext_getPublicId_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_getPublicId_Params_List) Set(i int, v HackSessionContext_getPublicId_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_getPublicId_Params_List) String() string {
-	str, _ := text.MarshalList(0xe706d835e9cd64af, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_getPublicId_Params](l), err
 }
 
 // HackSessionContext_getPublicId_Params_Future is a wrapper for a HackSessionContext_getPublicId_Params promised by a client call.
@@ -983,116 +1017,125 @@ type HackSessionContext_getPublicId_Params_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_getPublicId_Params_Future) Struct() (HackSessionContext_getPublicId_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_getPublicId_Params{s}, err
+	return HackSessionContext_getPublicId_Params(s), err
 }
 
-type HackSessionContext_getPublicId_Results struct{ capnp.Struct }
+type HackSessionContext_getPublicId_Results capnp.Struct
 
 // HackSessionContext_getPublicId_Results_TypeID is the unique identifier for the type HackSessionContext_getPublicId_Results.
 const HackSessionContext_getPublicId_Results_TypeID = 0xe96193c522f6c05d
 
 func NewHackSessionContext_getPublicId_Results(s *capnp.Segment) (HackSessionContext_getPublicId_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return HackSessionContext_getPublicId_Results{st}, err
+	return HackSessionContext_getPublicId_Results(st), err
 }
 
 func NewRootHackSessionContext_getPublicId_Results(s *capnp.Segment) (HackSessionContext_getPublicId_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return HackSessionContext_getPublicId_Results{st}, err
+	return HackSessionContext_getPublicId_Results(st), err
 }
 
 func ReadRootHackSessionContext_getPublicId_Results(msg *capnp.Message) (HackSessionContext_getPublicId_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_getPublicId_Results{root.Struct()}, err
+	return HackSessionContext_getPublicId_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_getPublicId_Results) String() string {
-	str, _ := text.Marshal(0xe96193c522f6c05d, s.Struct)
+	str, _ := text.Marshal(0xe96193c522f6c05d, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_getPublicId_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_getPublicId_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_getPublicId_Results {
+	return HackSessionContext_getPublicId_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_getPublicId_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_getPublicId_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_getPublicId_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_getPublicId_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_getPublicId_Results) PublicId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) HasPublicId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_getPublicId_Results) PublicIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) SetPublicId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s HackSessionContext_getPublicId_Results) Hostname() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) HasHostname() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s HackSessionContext_getPublicId_Results) HostnameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) SetHostname(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s HackSessionContext_getPublicId_Results) AutoUrl() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) HasAutoUrl() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s HackSessionContext_getPublicId_Results) AutoUrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_getPublicId_Results) SetAutoUrl(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s HackSessionContext_getPublicId_Results) IsDemoUser() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s HackSessionContext_getPublicId_Results) SetIsDemoUser(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 // HackSessionContext_getPublicId_Results_List is a list of HackSessionContext_getPublicId_Results.
-type HackSessionContext_getPublicId_Results_List struct{ capnp.List }
+type HackSessionContext_getPublicId_Results_List = capnp.StructList[HackSessionContext_getPublicId_Results]
 
 // NewHackSessionContext_getPublicId_Results creates a new list of HackSessionContext_getPublicId_Results.
 func NewHackSessionContext_getPublicId_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_getPublicId_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return HackSessionContext_getPublicId_Results_List{l}, err
-}
-
-func (s HackSessionContext_getPublicId_Results_List) At(i int) HackSessionContext_getPublicId_Results {
-	return HackSessionContext_getPublicId_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_getPublicId_Results_List) Set(i int, v HackSessionContext_getPublicId_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_getPublicId_Results_List) String() string {
-	str, _ := text.MarshalList(0xe96193c522f6c05d, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_getPublicId_Results](l), err
 }
 
 // HackSessionContext_getPublicId_Results_Future is a wrapper for a HackSessionContext_getPublicId_Results promised by a client call.
@@ -1100,72 +1143,81 @@ type HackSessionContext_getPublicId_Results_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_getPublicId_Results_Future) Struct() (HackSessionContext_getPublicId_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_getPublicId_Results{s}, err
+	return HackSessionContext_getPublicId_Results(s), err
 }
 
-type HackSessionContext_obsoleteHttpGet_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteHttpGet_Params capnp.Struct
 
 // HackSessionContext_obsoleteHttpGet_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteHttpGet_Params.
 const HackSessionContext_obsoleteHttpGet_Params_TypeID = 0xe54437a7b8f52843
 
 func NewHackSessionContext_obsoleteHttpGet_Params(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteHttpGet_Params{st}, err
+	return HackSessionContext_obsoleteHttpGet_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteHttpGet_Params(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteHttpGet_Params{st}, err
+	return HackSessionContext_obsoleteHttpGet_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteHttpGet_Params(msg *capnp.Message) (HackSessionContext_obsoleteHttpGet_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteHttpGet_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteHttpGet_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Params) String() string {
-	str, _ := text.Marshal(0xe54437a7b8f52843, s.Struct)
+	str, _ := text.Marshal(0xe54437a7b8f52843, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteHttpGet_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteHttpGet_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteHttpGet_Params {
+	return HackSessionContext_obsoleteHttpGet_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteHttpGet_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteHttpGet_Params) Url() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Params) HasUrl() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Params) UrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Params) SetUrl(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // HackSessionContext_obsoleteHttpGet_Params_List is a list of HackSessionContext_obsoleteHttpGet_Params.
-type HackSessionContext_obsoleteHttpGet_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteHttpGet_Params_List = capnp.StructList[HackSessionContext_obsoleteHttpGet_Params]
 
 // NewHackSessionContext_obsoleteHttpGet_Params creates a new list of HackSessionContext_obsoleteHttpGet_Params.
 func NewHackSessionContext_obsoleteHttpGet_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteHttpGet_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteHttpGet_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Params_List) At(i int) HackSessionContext_obsoleteHttpGet_Params {
-	return HackSessionContext_obsoleteHttpGet_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Params_List) Set(i int, v HackSessionContext_obsoleteHttpGet_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Params_List) String() string {
-	str, _ := text.MarshalList(0xe54437a7b8f52843, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteHttpGet_Params](l), err
 }
 
 // HackSessionContext_obsoleteHttpGet_Params_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Params promised by a client call.
@@ -1173,85 +1225,94 @@ type HackSessionContext_obsoleteHttpGet_Params_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_obsoleteHttpGet_Params_Future) Struct() (HackSessionContext_obsoleteHttpGet_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteHttpGet_Params{s}, err
+	return HackSessionContext_obsoleteHttpGet_Params(s), err
 }
 
-type HackSessionContext_obsoleteHttpGet_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteHttpGet_Results capnp.Struct
 
 // HackSessionContext_obsoleteHttpGet_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteHttpGet_Results.
 const HackSessionContext_obsoleteHttpGet_Results_TypeID = 0xb44df810894a44f4
 
 func NewHackSessionContext_obsoleteHttpGet_Results(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_obsoleteHttpGet_Results{st}, err
+	return HackSessionContext_obsoleteHttpGet_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteHttpGet_Results(s *capnp.Segment) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return HackSessionContext_obsoleteHttpGet_Results{st}, err
+	return HackSessionContext_obsoleteHttpGet_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteHttpGet_Results(msg *capnp.Message) (HackSessionContext_obsoleteHttpGet_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteHttpGet_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteHttpGet_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) String() string {
-	str, _ := text.Marshal(0xb44df810894a44f4, s.Struct)
+	str, _ := text.Marshal(0xb44df810894a44f4, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteHttpGet_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteHttpGet_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteHttpGet_Results {
+	return HackSessionContext_obsoleteHttpGet_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteHttpGet_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteHttpGet_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteHttpGet_Results) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) HasMimeType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) SetMimeType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) Content() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s HackSessionContext_obsoleteHttpGet_Results) SetContent(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 // HackSessionContext_obsoleteHttpGet_Results_List is a list of HackSessionContext_obsoleteHttpGet_Results.
-type HackSessionContext_obsoleteHttpGet_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteHttpGet_Results_List = capnp.StructList[HackSessionContext_obsoleteHttpGet_Results]
 
 // NewHackSessionContext_obsoleteHttpGet_Results creates a new list of HackSessionContext_obsoleteHttpGet_Results.
 func NewHackSessionContext_obsoleteHttpGet_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteHttpGet_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return HackSessionContext_obsoleteHttpGet_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Results_List) At(i int) HackSessionContext_obsoleteHttpGet_Results {
-	return HackSessionContext_obsoleteHttpGet_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Results_List) Set(i int, v HackSessionContext_obsoleteHttpGet_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteHttpGet_Results_List) String() string {
-	str, _ := text.MarshalList(0xb44df810894a44f4, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteHttpGet_Results](l), err
 }
 
 // HackSessionContext_obsoleteHttpGet_Results_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Results promised by a client call.
@@ -1259,54 +1320,64 @@ type HackSessionContext_obsoleteHttpGet_Results_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_obsoleteHttpGet_Results_Future) Struct() (HackSessionContext_obsoleteHttpGet_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteHttpGet_Results{s}, err
+	return HackSessionContext_obsoleteHttpGet_Results(s), err
 }
 
-type HackSessionContext_getUserAddress_Params struct{ capnp.Struct }
+type HackSessionContext_getUserAddress_Params capnp.Struct
 
 // HackSessionContext_getUserAddress_Params_TypeID is the unique identifier for the type HackSessionContext_getUserAddress_Params.
 const HackSessionContext_getUserAddress_Params_TypeID = 0xa15e445037d1834c
 
 func NewHackSessionContext_getUserAddress_Params(s *capnp.Segment) (HackSessionContext_getUserAddress_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_getUserAddress_Params{st}, err
+	return HackSessionContext_getUserAddress_Params(st), err
 }
 
 func NewRootHackSessionContext_getUserAddress_Params(s *capnp.Segment) (HackSessionContext_getUserAddress_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_getUserAddress_Params{st}, err
+	return HackSessionContext_getUserAddress_Params(st), err
 }
 
 func ReadRootHackSessionContext_getUserAddress_Params(msg *capnp.Message) (HackSessionContext_getUserAddress_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_getUserAddress_Params{root.Struct()}, err
+	return HackSessionContext_getUserAddress_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_getUserAddress_Params) String() string {
-	str, _ := text.Marshal(0xa15e445037d1834c, s.Struct)
+	str, _ := text.Marshal(0xa15e445037d1834c, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_getUserAddress_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_getUserAddress_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_getUserAddress_Params {
+	return HackSessionContext_getUserAddress_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_getUserAddress_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_getUserAddress_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_getUserAddress_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_getUserAddress_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_getUserAddress_Params_List is a list of HackSessionContext_getUserAddress_Params.
-type HackSessionContext_getUserAddress_Params_List struct{ capnp.List }
+type HackSessionContext_getUserAddress_Params_List = capnp.StructList[HackSessionContext_getUserAddress_Params]
 
 // NewHackSessionContext_getUserAddress_Params creates a new list of HackSessionContext_getUserAddress_Params.
 func NewHackSessionContext_getUserAddress_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_getUserAddress_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_getUserAddress_Params_List{l}, err
-}
-
-func (s HackSessionContext_getUserAddress_Params_List) At(i int) HackSessionContext_getUserAddress_Params {
-	return HackSessionContext_getUserAddress_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_getUserAddress_Params_List) Set(i int, v HackSessionContext_getUserAddress_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_getUserAddress_Params_List) String() string {
-	str, _ := text.MarshalList(0xa15e445037d1834c, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_getUserAddress_Params](l), err
 }
 
 // HackSessionContext_getUserAddress_Params_Future is a wrapper for a HackSessionContext_getUserAddress_Params promised by a client call.
@@ -1314,104 +1385,113 @@ type HackSessionContext_getUserAddress_Params_Future struct{ *capnp.Future }
 
 func (p HackSessionContext_getUserAddress_Params_Future) Struct() (HackSessionContext_getUserAddress_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_getUserAddress_Params{s}, err
+	return HackSessionContext_getUserAddress_Params(s), err
 }
 
-type HackSessionContext_obsoleteGenerateApiToken_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteGenerateApiToken_Params capnp.Struct
 
 // HackSessionContext_obsoleteGenerateApiToken_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGenerateApiToken_Params.
 const HackSessionContext_obsoleteGenerateApiToken_Params_TypeID = 0x837afa61d880beb6
 
 func NewHackSessionContext_obsoleteGenerateApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return HackSessionContext_obsoleteGenerateApiToken_Params{st}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGenerateApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return HackSessionContext_obsoleteGenerateApiToken_Params{st}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGenerateApiToken_Params(msg *capnp.Message) (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGenerateApiToken_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) String() string {
-	str, _ := text.Marshal(0x837afa61d880beb6, s.Struct)
+	str, _ := text.Marshal(0x837afa61d880beb6, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGenerateApiToken_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGenerateApiToken_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGenerateApiToken_Params {
+	return HackSessionContext_obsoleteGenerateApiToken_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGenerateApiToken_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) Petname() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) HasPetname() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) PetnameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) SetPetname(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) UserInfo() (identity.UserInfo, error) {
-	p, err := s.Struct.Ptr(1)
-	return identity.UserInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return identity.UserInfo(p.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) HasUserInfo() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) SetUserInfo(v identity.UserInfo) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewUserInfo sets the userInfo field to a newly
 // allocated identity.UserInfo struct, preferring placement in s's segment.
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) NewUserInfo() (identity.UserInfo, error) {
-	ss, err := identity.NewUserInfo(s.Struct.Segment())
+	ss, err := identity.NewUserInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return identity.UserInfo{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) Expires() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Params) SetExpires(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 // HackSessionContext_obsoleteGenerateApiToken_Params_List is a list of HackSessionContext_obsoleteGenerateApiToken_Params.
-type HackSessionContext_obsoleteGenerateApiToken_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteGenerateApiToken_Params_List = capnp.StructList[HackSessionContext_obsoleteGenerateApiToken_Params]
 
 // NewHackSessionContext_obsoleteGenerateApiToken_Params creates a new list of HackSessionContext_obsoleteGenerateApiToken_Params.
 func NewHackSessionContext_obsoleteGenerateApiToken_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGenerateApiToken_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
-	return HackSessionContext_obsoleteGenerateApiToken_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Params_List) At(i int) HackSessionContext_obsoleteGenerateApiToken_Params {
-	return HackSessionContext_obsoleteGenerateApiToken_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Params_List) Set(i int, v HackSessionContext_obsoleteGenerateApiToken_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Params_List) String() string {
-	str, _ := text.MarshalList(0x837afa61d880beb6, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGenerateApiToken_Params](l), err
 }
 
 // HackSessionContext_obsoleteGenerateApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Params promised by a client call.
@@ -1419,112 +1499,121 @@ type HackSessionContext_obsoleteGenerateApiToken_Params_Future struct{ *capnp.Fu
 
 func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGenerateApiToken_Params{s}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Params(s), err
 }
 
 func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) UserInfo() identity.UserInfo_Future {
 	return identity.UserInfo_Future{Future: p.Future.Field(1, nil)}
 }
 
-type HackSessionContext_obsoleteGenerateApiToken_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteGenerateApiToken_Results capnp.Struct
 
 // HackSessionContext_obsoleteGenerateApiToken_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGenerateApiToken_Results.
 const HackSessionContext_obsoleteGenerateApiToken_Results_TypeID = 0xc9973f31a90887f9
 
 func NewHackSessionContext_obsoleteGenerateApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return HackSessionContext_obsoleteGenerateApiToken_Results{st}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGenerateApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return HackSessionContext_obsoleteGenerateApiToken_Results{st}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGenerateApiToken_Results(msg *capnp.Message) (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGenerateApiToken_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) String() string {
-	str, _ := text.Marshal(0xc9973f31a90887f9, s.Struct)
+	str, _ := text.Marshal(0xc9973f31a90887f9, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGenerateApiToken_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGenerateApiToken_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGenerateApiToken_Results {
+	return HackSessionContext_obsoleteGenerateApiToken_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGenerateApiToken_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGenerateApiToken_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) Token() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasToken() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) SetToken(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) EndpointUrl() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasEndpointUrl() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) EndpointUrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) SetEndpointUrl(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenId() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) HasTokenId() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) TokenIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteGenerateApiToken_Results) SetTokenId(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // HackSessionContext_obsoleteGenerateApiToken_Results_List is a list of HackSessionContext_obsoleteGenerateApiToken_Results.
-type HackSessionContext_obsoleteGenerateApiToken_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteGenerateApiToken_Results_List = capnp.StructList[HackSessionContext_obsoleteGenerateApiToken_Results]
 
 // NewHackSessionContext_obsoleteGenerateApiToken_Results creates a new list of HackSessionContext_obsoleteGenerateApiToken_Results.
 func NewHackSessionContext_obsoleteGenerateApiToken_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGenerateApiToken_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return HackSessionContext_obsoleteGenerateApiToken_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Results_List) At(i int) HackSessionContext_obsoleteGenerateApiToken_Results {
-	return HackSessionContext_obsoleteGenerateApiToken_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Results_List) Set(i int, v HackSessionContext_obsoleteGenerateApiToken_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGenerateApiToken_Results_List) String() string {
-	str, _ := text.MarshalList(0xc9973f31a90887f9, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGenerateApiToken_Results](l), err
 }
 
 // HackSessionContext_obsoleteGenerateApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Results promised by a client call.
@@ -1532,54 +1621,64 @@ type HackSessionContext_obsoleteGenerateApiToken_Results_Future struct{ *capnp.F
 
 func (p HackSessionContext_obsoleteGenerateApiToken_Results_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGenerateApiToken_Results{s}, err
+	return HackSessionContext_obsoleteGenerateApiToken_Results(s), err
 }
 
-type HackSessionContext_obsoleteListApiTokens_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteListApiTokens_Params capnp.Struct
 
 // HackSessionContext_obsoleteListApiTokens_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteListApiTokens_Params.
 const HackSessionContext_obsoleteListApiTokens_Params_TypeID = 0xfe777c71f871f413
 
 func NewHackSessionContext_obsoleteListApiTokens_Params(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteListApiTokens_Params{st}, err
+	return HackSessionContext_obsoleteListApiTokens_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteListApiTokens_Params(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteListApiTokens_Params{st}, err
+	return HackSessionContext_obsoleteListApiTokens_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteListApiTokens_Params(msg *capnp.Message) (HackSessionContext_obsoleteListApiTokens_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteListApiTokens_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteListApiTokens_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Params) String() string {
-	str, _ := text.Marshal(0xfe777c71f871f413, s.Struct)
+	str, _ := text.Marshal(0xfe777c71f871f413, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteListApiTokens_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteListApiTokens_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteListApiTokens_Params {
+	return HackSessionContext_obsoleteListApiTokens_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteListApiTokens_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_obsoleteListApiTokens_Params_List is a list of HackSessionContext_obsoleteListApiTokens_Params.
-type HackSessionContext_obsoleteListApiTokens_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteListApiTokens_Params_List = capnp.StructList[HackSessionContext_obsoleteListApiTokens_Params]
 
 // NewHackSessionContext_obsoleteListApiTokens_Params creates a new list of HackSessionContext_obsoleteListApiTokens_Params.
 func NewHackSessionContext_obsoleteListApiTokens_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteListApiTokens_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_obsoleteListApiTokens_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Params_List) At(i int) HackSessionContext_obsoleteListApiTokens_Params {
-	return HackSessionContext_obsoleteListApiTokens_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Params_List) Set(i int, v HackSessionContext_obsoleteListApiTokens_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Params_List) String() string {
-	str, _ := text.MarshalList(0xfe777c71f871f413, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteListApiTokens_Params](l), err
 }
 
 // HackSessionContext_obsoleteListApiTokens_Params_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Params promised by a client call.
@@ -1587,78 +1686,87 @@ type HackSessionContext_obsoleteListApiTokens_Params_Future struct{ *capnp.Futur
 
 func (p HackSessionContext_obsoleteListApiTokens_Params_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteListApiTokens_Params{s}, err
+	return HackSessionContext_obsoleteListApiTokens_Params(s), err
 }
 
-type HackSessionContext_obsoleteListApiTokens_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteListApiTokens_Results capnp.Struct
 
 // HackSessionContext_obsoleteListApiTokens_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteListApiTokens_Results.
 const HackSessionContext_obsoleteListApiTokens_Results_TypeID = 0xe9e4890dae20b03c
 
 func NewHackSessionContext_obsoleteListApiTokens_Results(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteListApiTokens_Results{st}, err
+	return HackSessionContext_obsoleteListApiTokens_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteListApiTokens_Results(s *capnp.Segment) (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteListApiTokens_Results{st}, err
+	return HackSessionContext_obsoleteListApiTokens_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteListApiTokens_Results(msg *capnp.Message) (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteListApiTokens_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteListApiTokens_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Results) String() string {
-	str, _ := text.Marshal(0xe9e4890dae20b03c, s.Struct)
+	str, _ := text.Marshal(0xe9e4890dae20b03c, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteListApiTokens_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteListApiTokens_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteListApiTokens_Results {
+	return HackSessionContext_obsoleteListApiTokens_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteListApiTokens_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteListApiTokens_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteListApiTokens_Results) Tokens() (HackSessionContext_TokenInfo_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return HackSessionContext_TokenInfo_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return HackSessionContext_TokenInfo_List(p.List()), err
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Results) HasTokens() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteListApiTokens_Results) SetTokens(v HackSessionContext_TokenInfo_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewTokens sets the tokens field to a newly
 // allocated HackSessionContext_TokenInfo_List, preferring placement in s's segment.
 func (s HackSessionContext_obsoleteListApiTokens_Results) NewTokens(n int32) (HackSessionContext_TokenInfo_List, error) {
-	l, err := NewHackSessionContext_TokenInfo_List(s.Struct.Segment(), n)
+	l, err := NewHackSessionContext_TokenInfo_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return HackSessionContext_TokenInfo_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // HackSessionContext_obsoleteListApiTokens_Results_List is a list of HackSessionContext_obsoleteListApiTokens_Results.
-type HackSessionContext_obsoleteListApiTokens_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteListApiTokens_Results_List = capnp.StructList[HackSessionContext_obsoleteListApiTokens_Results]
 
 // NewHackSessionContext_obsoleteListApiTokens_Results creates a new list of HackSessionContext_obsoleteListApiTokens_Results.
 func NewHackSessionContext_obsoleteListApiTokens_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteListApiTokens_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteListApiTokens_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Results_List) At(i int) HackSessionContext_obsoleteListApiTokens_Results {
-	return HackSessionContext_obsoleteListApiTokens_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Results_List) Set(i int, v HackSessionContext_obsoleteListApiTokens_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteListApiTokens_Results_List) String() string {
-	str, _ := text.MarshalList(0xe9e4890dae20b03c, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteListApiTokens_Results](l), err
 }
 
 // HackSessionContext_obsoleteListApiTokens_Results_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Results promised by a client call.
@@ -1666,72 +1774,81 @@ type HackSessionContext_obsoleteListApiTokens_Results_Future struct{ *capnp.Futu
 
 func (p HackSessionContext_obsoleteListApiTokens_Results_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteListApiTokens_Results{s}, err
+	return HackSessionContext_obsoleteListApiTokens_Results(s), err
 }
 
-type HackSessionContext_obsoleteRevokeApiToken_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteRevokeApiToken_Params capnp.Struct
 
 // HackSessionContext_obsoleteRevokeApiToken_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteRevokeApiToken_Params.
 const HackSessionContext_obsoleteRevokeApiToken_Params_TypeID = 0x845e8081686d8a0f
 
 func NewHackSessionContext_obsoleteRevokeApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteRevokeApiToken_Params{st}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteRevokeApiToken_Params(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteRevokeApiToken_Params{st}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteRevokeApiToken_Params(msg *capnp.Message) (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteRevokeApiToken_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) String() string {
-	str, _ := text.Marshal(0x845e8081686d8a0f, s.Struct)
+	str, _ := text.Marshal(0x845e8081686d8a0f, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteRevokeApiToken_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteRevokeApiToken_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteRevokeApiToken_Params {
+	return HackSessionContext_obsoleteRevokeApiToken_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteRevokeApiToken_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) TokenId() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) HasTokenId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) TokenIdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Params) SetTokenId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // HackSessionContext_obsoleteRevokeApiToken_Params_List is a list of HackSessionContext_obsoleteRevokeApiToken_Params.
-type HackSessionContext_obsoleteRevokeApiToken_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteRevokeApiToken_Params_List = capnp.StructList[HackSessionContext_obsoleteRevokeApiToken_Params]
 
 // NewHackSessionContext_obsoleteRevokeApiToken_Params creates a new list of HackSessionContext_obsoleteRevokeApiToken_Params.
 func NewHackSessionContext_obsoleteRevokeApiToken_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteRevokeApiToken_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteRevokeApiToken_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Params_List) At(i int) HackSessionContext_obsoleteRevokeApiToken_Params {
-	return HackSessionContext_obsoleteRevokeApiToken_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Params_List) Set(i int, v HackSessionContext_obsoleteRevokeApiToken_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Params_List) String() string {
-	str, _ := text.MarshalList(0x845e8081686d8a0f, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteRevokeApiToken_Params](l), err
 }
 
 // HackSessionContext_obsoleteRevokeApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Params promised by a client call.
@@ -1739,54 +1856,64 @@ type HackSessionContext_obsoleteRevokeApiToken_Params_Future struct{ *capnp.Futu
 
 func (p HackSessionContext_obsoleteRevokeApiToken_Params_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteRevokeApiToken_Params{s}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Params(s), err
 }
 
-type HackSessionContext_obsoleteRevokeApiToken_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteRevokeApiToken_Results capnp.Struct
 
 // HackSessionContext_obsoleteRevokeApiToken_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteRevokeApiToken_Results.
 const HackSessionContext_obsoleteRevokeApiToken_Results_TypeID = 0xaea67098dc479ce6
 
 func NewHackSessionContext_obsoleteRevokeApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteRevokeApiToken_Results{st}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteRevokeApiToken_Results(s *capnp.Segment) (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteRevokeApiToken_Results{st}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteRevokeApiToken_Results(msg *capnp.Message) (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteRevokeApiToken_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteRevokeApiToken_Results) String() string {
-	str, _ := text.Marshal(0xaea67098dc479ce6, s.Struct)
+	str, _ := text.Marshal(0xaea67098dc479ce6, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteRevokeApiToken_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteRevokeApiToken_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteRevokeApiToken_Results {
+	return HackSessionContext_obsoleteRevokeApiToken_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteRevokeApiToken_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteRevokeApiToken_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_obsoleteRevokeApiToken_Results_List is a list of HackSessionContext_obsoleteRevokeApiToken_Results.
-type HackSessionContext_obsoleteRevokeApiToken_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteRevokeApiToken_Results_List = capnp.StructList[HackSessionContext_obsoleteRevokeApiToken_Results]
 
 // NewHackSessionContext_obsoleteRevokeApiToken_Results creates a new list of HackSessionContext_obsoleteRevokeApiToken_Results.
 func NewHackSessionContext_obsoleteRevokeApiToken_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteRevokeApiToken_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_obsoleteRevokeApiToken_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Results_List) At(i int) HackSessionContext_obsoleteRevokeApiToken_Results {
-	return HackSessionContext_obsoleteRevokeApiToken_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Results_List) Set(i int, v HackSessionContext_obsoleteRevokeApiToken_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteRevokeApiToken_Results_List) String() string {
-	str, _ := text.MarshalList(0xaea67098dc479ce6, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteRevokeApiToken_Results](l), err
 }
 
 // HackSessionContext_obsoleteRevokeApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Results promised by a client call.
@@ -1794,54 +1921,64 @@ type HackSessionContext_obsoleteRevokeApiToken_Results_Future struct{ *capnp.Fut
 
 func (p HackSessionContext_obsoleteRevokeApiToken_Results_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteRevokeApiToken_Results{s}, err
+	return HackSessionContext_obsoleteRevokeApiToken_Results(s), err
 }
 
-type HackSessionContext_obsoleteGetIpNetwork_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetIpNetwork_Params capnp.Struct
 
 // HackSessionContext_obsoleteGetIpNetwork_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpNetwork_Params.
 const HackSessionContext_obsoleteGetIpNetwork_Params_TypeID = 0x97f9d7a51ffe0741
 
 func NewHackSessionContext_obsoleteGetIpNetwork_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteGetIpNetwork_Params{st}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetIpNetwork_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteGetIpNetwork_Params{st}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpNetwork_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetIpNetwork_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Params) String() string {
-	str, _ := text.Marshal(0x97f9d7a51ffe0741, s.Struct)
+	str, _ := text.Marshal(0x97f9d7a51ffe0741, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetIpNetwork_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetIpNetwork_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetIpNetwork_Params {
+	return HackSessionContext_obsoleteGetIpNetwork_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetIpNetwork_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_obsoleteGetIpNetwork_Params_List is a list of HackSessionContext_obsoleteGetIpNetwork_Params.
-type HackSessionContext_obsoleteGetIpNetwork_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetIpNetwork_Params_List = capnp.StructList[HackSessionContext_obsoleteGetIpNetwork_Params]
 
 // NewHackSessionContext_obsoleteGetIpNetwork_Params creates a new list of HackSessionContext_obsoleteGetIpNetwork_Params.
 func NewHackSessionContext_obsoleteGetIpNetwork_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetIpNetwork_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_obsoleteGetIpNetwork_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Params_List) At(i int) HackSessionContext_obsoleteGetIpNetwork_Params {
-	return HackSessionContext_obsoleteGetIpNetwork_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Params_List) Set(i int, v HackSessionContext_obsoleteGetIpNetwork_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Params_List) String() string {
-	str, _ := text.MarshalList(0x97f9d7a51ffe0741, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetIpNetwork_Params](l), err
 }
 
 // HackSessionContext_obsoleteGetIpNetwork_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Params promised by a client call.
@@ -1849,72 +1986,81 @@ type HackSessionContext_obsoleteGetIpNetwork_Params_Future struct{ *capnp.Future
 
 func (p HackSessionContext_obsoleteGetIpNetwork_Params_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpNetwork_Params{s}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Params(s), err
 }
 
-type HackSessionContext_obsoleteGetIpNetwork_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetIpNetwork_Results capnp.Struct
 
 // HackSessionContext_obsoleteGetIpNetwork_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpNetwork_Results.
 const HackSessionContext_obsoleteGetIpNetwork_Results_TypeID = 0xa9502e5fdabb8b07
 
 func NewHackSessionContext_obsoleteGetIpNetwork_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpNetwork_Results{st}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetIpNetwork_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpNetwork_Results{st}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpNetwork_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetIpNetwork_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) String() string {
-	str, _ := text.Marshal(0xa9502e5fdabb8b07, s.Struct)
+	str, _ := text.Marshal(0xa9502e5fdabb8b07, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetIpNetwork_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetIpNetwork_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetIpNetwork_Results {
+	return HackSessionContext_obsoleteGetIpNetwork_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetIpNetwork_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetIpNetwork_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) Network() ip.IpNetwork {
-	p, _ := s.Struct.Ptr(0)
-	return ip.IpNetwork{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return ip.IpNetwork(p.Interface().Client())
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) HasNetwork() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetIpNetwork_Results) SetNetwork(v ip.IpNetwork) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // HackSessionContext_obsoleteGetIpNetwork_Results_List is a list of HackSessionContext_obsoleteGetIpNetwork_Results.
-type HackSessionContext_obsoleteGetIpNetwork_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetIpNetwork_Results_List = capnp.StructList[HackSessionContext_obsoleteGetIpNetwork_Results]
 
 // NewHackSessionContext_obsoleteGetIpNetwork_Results creates a new list of HackSessionContext_obsoleteGetIpNetwork_Results.
 func NewHackSessionContext_obsoleteGetIpNetwork_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetIpNetwork_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteGetIpNetwork_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Results_List) At(i int) HackSessionContext_obsoleteGetIpNetwork_Results {
-	return HackSessionContext_obsoleteGetIpNetwork_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Results_List) Set(i int, v HackSessionContext_obsoleteGetIpNetwork_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetIpNetwork_Results_List) String() string {
-	str, _ := text.MarshalList(0xa9502e5fdabb8b07, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetIpNetwork_Results](l), err
 }
 
 // HackSessionContext_obsoleteGetIpNetwork_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Results promised by a client call.
@@ -1922,58 +2068,68 @@ type HackSessionContext_obsoleteGetIpNetwork_Results_Future struct{ *capnp.Futur
 
 func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpNetwork_Results{s}, err
+	return HackSessionContext_obsoleteGetIpNetwork_Results(s), err
 }
 
 func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Network() ip.IpNetwork {
-	return ip.IpNetwork{Client: p.Future.Field(0, nil).Client()}
+	return ip.IpNetwork(p.Future.Field(0, nil).Client())
 }
 
-type HackSessionContext_obsoleteGetIpInterface_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetIpInterface_Params capnp.Struct
 
 // HackSessionContext_obsoleteGetIpInterface_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpInterface_Params.
 const HackSessionContext_obsoleteGetIpInterface_Params_TypeID = 0xecebff1662ba10a1
 
 func NewHackSessionContext_obsoleteGetIpInterface_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteGetIpInterface_Params{st}, err
+	return HackSessionContext_obsoleteGetIpInterface_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetIpInterface_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return HackSessionContext_obsoleteGetIpInterface_Params{st}, err
+	return HackSessionContext_obsoleteGetIpInterface_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpInterface_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetIpInterface_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetIpInterface_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteGetIpInterface_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Params) String() string {
-	str, _ := text.Marshal(0xecebff1662ba10a1, s.Struct)
+	str, _ := text.Marshal(0xecebff1662ba10a1, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetIpInterface_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetIpInterface_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetIpInterface_Params {
+	return HackSessionContext_obsoleteGetIpInterface_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetIpInterface_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // HackSessionContext_obsoleteGetIpInterface_Params_List is a list of HackSessionContext_obsoleteGetIpInterface_Params.
-type HackSessionContext_obsoleteGetIpInterface_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetIpInterface_Params_List = capnp.StructList[HackSessionContext_obsoleteGetIpInterface_Params]
 
 // NewHackSessionContext_obsoleteGetIpInterface_Params creates a new list of HackSessionContext_obsoleteGetIpInterface_Params.
 func NewHackSessionContext_obsoleteGetIpInterface_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetIpInterface_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return HackSessionContext_obsoleteGetIpInterface_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Params_List) At(i int) HackSessionContext_obsoleteGetIpInterface_Params {
-	return HackSessionContext_obsoleteGetIpInterface_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Params_List) Set(i int, v HackSessionContext_obsoleteGetIpInterface_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Params_List) String() string {
-	str, _ := text.MarshalList(0xecebff1662ba10a1, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetIpInterface_Params](l), err
 }
 
 // HackSessionContext_obsoleteGetIpInterface_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Params promised by a client call.
@@ -1981,72 +2137,81 @@ type HackSessionContext_obsoleteGetIpInterface_Params_Future struct{ *capnp.Futu
 
 func (p HackSessionContext_obsoleteGetIpInterface_Params_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpInterface_Params{s}, err
+	return HackSessionContext_obsoleteGetIpInterface_Params(s), err
 }
 
-type HackSessionContext_obsoleteGetIpInterface_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetIpInterface_Results capnp.Struct
 
 // HackSessionContext_obsoleteGetIpInterface_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetIpInterface_Results.
 const HackSessionContext_obsoleteGetIpInterface_Results_TypeID = 0xb9147a48c12c807d
 
 func NewHackSessionContext_obsoleteGetIpInterface_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpInterface_Results{st}, err
+	return HackSessionContext_obsoleteGetIpInterface_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetIpInterface_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetIpInterface_Results{st}, err
+	return HackSessionContext_obsoleteGetIpInterface_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetIpInterface_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetIpInterface_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteGetIpInterface_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Results) String() string {
-	str, _ := text.Marshal(0xb9147a48c12c807d, s.Struct)
+	str, _ := text.Marshal(0xb9147a48c12c807d, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetIpInterface_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetIpInterface_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetIpInterface_Results {
+	return HackSessionContext_obsoleteGetIpInterface_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetIpInterface_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetIpInterface_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGetIpInterface_Results) Interface() ip.IpInterface {
-	p, _ := s.Struct.Ptr(0)
-	return ip.IpInterface{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return ip.IpInterface(p.Interface().Client())
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Results) HasInterface() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetIpInterface_Results) SetInterface(v ip.IpInterface) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // HackSessionContext_obsoleteGetIpInterface_Results_List is a list of HackSessionContext_obsoleteGetIpInterface_Results.
-type HackSessionContext_obsoleteGetIpInterface_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetIpInterface_Results_List = capnp.StructList[HackSessionContext_obsoleteGetIpInterface_Results]
 
 // NewHackSessionContext_obsoleteGetIpInterface_Results creates a new list of HackSessionContext_obsoleteGetIpInterface_Results.
 func NewHackSessionContext_obsoleteGetIpInterface_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetIpInterface_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteGetIpInterface_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Results_List) At(i int) HackSessionContext_obsoleteGetIpInterface_Results {
-	return HackSessionContext_obsoleteGetIpInterface_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Results_List) Set(i int, v HackSessionContext_obsoleteGetIpInterface_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetIpInterface_Results_List) String() string {
-	str, _ := text.MarshalList(0xb9147a48c12c807d, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetIpInterface_Results](l), err
 }
 
 // HackSessionContext_obsoleteGetIpInterface_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Results promised by a client call.
@@ -2054,76 +2219,85 @@ type HackSessionContext_obsoleteGetIpInterface_Results_Future struct{ *capnp.Fut
 
 func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpInterface_Results{s}, err
+	return HackSessionContext_obsoleteGetIpInterface_Results(s), err
 }
 
 func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Interface() ip.IpInterface {
-	return ip.IpInterface{Client: p.Future.Field(0, nil).Client()}
+	return ip.IpInterface(p.Future.Field(0, nil).Client())
 }
 
-type HackSessionContext_obsoleteGetUiViewForEndpoint_Params struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Params capnp.Struct
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Params_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
 const HackSessionContext_obsoleteGetUiViewForEndpoint_Params_TypeID = 0xb45bb2d206694fe6
 
 func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetUiViewForEndpoint_Params(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetUiViewForEndpoint_Params(msg *capnp.Message) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{root.Struct()}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) String() string {
-	str, _ := text.Marshal(0xb45bb2d206694fe6, s.Struct)
+	str, _ := text.Marshal(0xb45bb2d206694fe6, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetUiViewForEndpoint_Params) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetUiViewForEndpoint_Params {
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) Url() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) HasUrl() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) UrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params) SetUrl(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List is a list of HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
-type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List = capnp.StructList[HackSessionContext_obsoleteGetUiViewForEndpoint_Params]
 
 // NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params creates a new list of HackSessionContext_obsoleteGetUiViewForEndpoint_Params.
 func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) At(i int) HackSessionContext_obsoleteGetUiViewForEndpoint_Params {
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) Set(i int, v HackSessionContext_obsoleteGetUiViewForEndpoint_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Params_List) String() string {
-	str, _ := text.MarshalList(0xb45bb2d206694fe6, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetUiViewForEndpoint_Params](l), err
 }
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Params promised by a client call.
@@ -2131,72 +2305,81 @@ type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future struct{ *capn
 
 func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params{s}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(s), err
 }
 
-type HackSessionContext_obsoleteGetUiViewForEndpoint_Results struct{ capnp.Struct }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Results capnp.Struct
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Results_TypeID is the unique identifier for the type HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
 const HackSessionContext_obsoleteGetUiViewForEndpoint_Results_TypeID = 0xfdc944999b9296df
 
 func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(st), err
 }
 
 func NewRootHackSessionContext_obsoleteGetUiViewForEndpoint_Results(s *capnp.Segment) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{st}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(st), err
 }
 
 func ReadRootHackSessionContext_obsoleteGetUiViewForEndpoint_Results(msg *capnp.Message) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	root, err := msg.Root()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{root.Struct()}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(root.Struct()), err
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) String() string {
-	str, _ := text.Marshal(0xfdc944999b9296df, s.Struct)
+	str, _ := text.Marshal(0xfdc944999b9296df, capnp.Struct(s))
 	return str
 }
 
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HackSessionContext_obsoleteGetUiViewForEndpoint_Results) DecodeFromPtr(p capnp.Ptr) HackSessionContext_obsoleteGetUiViewForEndpoint_Results {
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) View() grain.UiView {
-	p, _ := s.Struct.Ptr(0)
-	return grain.UiView{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return grain.UiView(p.Interface().Client())
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) HasView() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results) SetView(v grain.UiView) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List is a list of HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
-type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List struct{ capnp.List }
+type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List = capnp.StructList[HackSessionContext_obsoleteGetUiViewForEndpoint_Results]
 
 // NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results creates a new list of HackSessionContext_obsoleteGetUiViewForEndpoint_Results.
 func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results_List(s *capnp.Segment, sz int32) (HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List{l}, err
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) At(i int) HackSessionContext_obsoleteGetUiViewForEndpoint_Results {
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{s.List.Struct(i)}
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) Set(i int, v HackSessionContext_obsoleteGetUiViewForEndpoint_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HackSessionContext_obsoleteGetUiViewForEndpoint_Results_List) String() string {
-	str, _ := text.MarshalList(0xfdc944999b9296df, s.List)
-	return str
+	return capnp.StructList[HackSessionContext_obsoleteGetUiViewForEndpoint_Results](l), err
 }
 
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Results promised by a client call.
@@ -2204,14 +2387,14 @@ type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future struct{ *cap
 
 func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
 	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results{s}, err
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(s), err
 }
 
 func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) View() grain.UiView {
-	return grain.UiView{Client: p.Future.Field(0, nil).Client()}
+	return grain.UiView(p.Future.Field(0, nil).Client())
 }
 
-type HackEmailSession struct{ Client *capnp.Client }
+type HackEmailSession capnp.Client
 
 // HackEmailSession_TypeID is the unique identifier for the type HackEmailSession.
 const HackEmailSession_TypeID = 0xc3b5ced7344b04a6
@@ -2227,9 +2410,9 @@ func (c HackEmailSession) Send(ctx context.Context, params func(email.EmailSendP
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_send_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailSendPort_send_Results_Future{Future: ans.Future()}, release
 }
 func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.EmailSendPort_hintAddress_Params) error) (email.EmailSendPort_hintAddress_Results_Future, capnp.ReleaseFunc) {
@@ -2243,20 +2426,30 @@ func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.Ema
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(email.EmailSendPort_hintAddress_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
 func (c HackEmailSession) AddRef() HackEmailSession {
-	return HackEmailSession{
-		Client: c.Client.AddRef(),
-	}
+	return HackEmailSession(capnp.Client(c).AddRef())
 }
 
 func (c HackEmailSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c HackEmailSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (HackEmailSession) DecodeFromPtr(p capnp.Ptr) HackEmailSession {
+	return HackEmailSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c HackEmailSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A HackEmailSession_Server is a HackEmailSession with a local implementation.
@@ -2267,15 +2460,15 @@ type HackEmailSession_Server interface {
 }
 
 // HackEmailSession_NewServer creates a new Server from an implementation of HackEmailSession_Server.
-func HackEmailSession_NewServer(s HackEmailSession_Server, policy *server.Policy) *server.Server {
+func HackEmailSession_NewServer(s HackEmailSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(HackEmailSession_Methods(nil, s), s, c, policy)
+	return server.New(HackEmailSession_Methods(nil, s), s, c)
 }
 
 // HackEmailSession_ServerToClient creates a new Client from an implementation of HackEmailSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func HackEmailSession_ServerToClient(s HackEmailSession_Server, policy *server.Policy) HackEmailSession {
-	return HackEmailSession{Client: capnp.NewClient(HackEmailSession_NewServer(s, policy))}
+func HackEmailSession_ServerToClient(s HackEmailSession_Server) HackEmailSession {
+	return HackEmailSession(capnp.NewClient(HackEmailSession_NewServer(s)))
 }
 
 // HackEmailSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -2312,99 +2505,108 @@ func HackEmailSession_Methods(methods []server.Method, s HackEmailSession_Server
 	return methods
 }
 
-const schema_bf6889795837d1e0 = "x\xda\xacVml\x14\xd5\x1a~\xdf3\xbb\x9d6i" +
-	"o;w{\xb9\xec\xd2v\xa1i\xb8\xd0\x00\x81\x02\x17" +
-	"B\xee\xa5-\xb4\xb7]n\xd1\x9d\x85\"b@\xa7\xdb" +
-	"C;\xe9\xee\xcc\xb23\xa5\xd0hZ\xc1h\x8a?L" +
-	"\xfc\x02\x82\x7fH\x04S\xa3`\x10\x8c\xe0\x07\x1aS\x93" +
-	"\x92`R\x0c\x16\x95D\x8b\"\x16\x09\x06\x05BI`" +
-	"\xcc\x99\xdd\x99\x9e\x16\x0a\xd4\x9a\xfd\xb3\x99\xf3\x9e\xe7\xfd" +
-	"~\x9e3\xf7\xf5\xcc\x0a2\xcf\xdb?\x17`\xd5b\xe2" +
-	"\xcd\xb0\xde\xfb\xb8\xf3\x8cr\xb3};\xc8\xd3\x11\x01\xbc" +
-	"D\x04\x98/O.#\x80>u\xf2A@+wG" +
-	"\xbc\xf9\xe9\xce\x0d\xcf\x804\x9d\x19 3\xf0\xfa\x8b\x99" +
-	"A\xa1\xbf\x1c\xd0\xaa\x14o\x07\xf7\xf5\x0f\xedL\x19x" +
-	"\xd8\xf9\x7f\xfd\x7f'\xe0\xb1\xea\xb6\xf7-\x0aWm\xd8" +
-	"\xcb\x9d,\xf4\x9fC\xf0X\xe2\xf3\x1f|\xf3\xf8\x9cp" +
-	"7\x0f:\xd3\x1f`\xa0\x956\xe8O\xaf\xd5\x9c\xdd\x95" +
-	"\xd8\x7f\x80\xbb\xaa\xf8K\x19\xe8\xd5\xaa\x15]y7V" +
-	"\x1eN_\xb5\x03~\xd4\xff\x1b\x02\xfa\xe2\xfe6v\xf5" +
-	"a5\xe3\xd4\xa1\xc7\x0e\xf3\xd8'\xfd\x11\x86=hc" +
-	"?\xd59\xeb\xd3\xda\xf6\xfc\xa3\xbcAV\xa0\x94\x19L" +
-	"\x0b0\x83\xfd\x9e\xff/\xe8\xff\xe2\xc8g \xf9\x04\xeb" +
-	"\xfb\xbeEk\xb7v5\x1f\x07\xc0\xf9\xd5\x81b\xf4\xd5" +
-	"\x07D\x00\x9f\x1c\x10}r\xe0_\x00\xd6\xd0s\x99\xdd" +
-	"\xf3\xcaw\xf6\xa6\xe1\x04\x06\x17\x0a,apJ\x80U" +
-	"\xf0\x85=\xff\x98\xb6*X7p\x07\xdc\xad@\x19\xfa" +
-	"r\xa6\xfc\x13`\xbe\x7fJ\x0d\xf1\xf5\x140\xbc\xe53" +
-	"\xae\xbd\xff\xc6\xa2\xaa\xf3|x\x1f\x15\\d\x09\xf6\x15" +
-	"\xb0\xf0\x0e6\x9e\x1c\\x&\xe3\x02W\x9b+\x05'" +
-	"XY\xd7\x7fr\xbd\xb8\xe7%e\xd0\xe9\xa6\x1d\xcb\xf9" +
-	"\x82S\xec\xeeP\xc1\x05@\xeb?\xefL=\x90\xd3\xf5" +
-	"\xe3 \x0f\xfeu\xa1\xdd\xcd+\x85\x0c|o\xde\xb1\x86" +
-	"I\xd6/\x978\xf0iE\xc5\xac\xf0+\x9b>\xffy" +
-	"\x07\xcd\x1bb'\xc39\xa5|\xf8\x8b\xb6\xa1ov\x11" +
-	"+\xcc\xcc\"\x96\xf3w\xaf\xbe\xb8gwU\xef-\xde" +
-	"OO\xd1:\xe6g\xa0\x88\xf9\xf1]\xddtc\xd3\x93" +
-	"m\xb79?\x18\x0c\x10\xb0\xdc\xdf2\xabY\x89\xb6\xcc" +
-	"6\xa8!\x1a\xaa\xae\xcd\x89*\x09-\xb1\xa4V\x89\xb6" +
-	"\xac\xa2\x06\xfb\xb2\\\xd7L\xba\xc5\x9c\xa37\x18z\x8c" +
-	"\x9a\xb4\x86j4\xa9\x98\xb42\xa1\xae\xd6[\xa8V\x12" +
-	"\x0e*I%n\xc8\xd9\x82\x07\xc0\x83\x00R\xf52\x00" +
-	"\xb9B@\xb9\x8e\xa0\x84\x98\xcf\xaa$\x85V\x00\xc8\xb5" +
-	"\x02\xca\xab\x09\"\xc9G\x82(\xc9\xcc\xb0N@y-" +
-	"\xc1\x8e\x0455%N1\x1b\x08f\x03Z\xad\x06M" +
-	"\x86\xb4\x8d:\x00`\x9e\xf5\xa5\xb4\xfe\xdd_\xfb\x8e\xbe" +
-	"\x0c\x80\x98\x07\xd8A\xb7$\xd4$50\x0b\x08f\x01" +
-	"\x8e7\x8b\x08\xdd\xac\xb7p9(I\x91\xe5\xe0qs" +
-	"\xc8a\xa1e\x0a(\xe7\x13\xec0\x99Q\xa8\xd1\x0dm" +
-	"\xdc%3C\x89\x87\xa8\xd9\xa6'[\x98+%\x8e\x86" +
-	"\x8b\x91qo\x8c&j\xd6\x1b4Y\xd9\xd8\x98\xa4\x86" +
-	"\xe1\x04:\xa1\x08\"\xd4h\x8d\x09\xe6\x98\xd9j);" +
-	"\x94\xac\x8a\xa9\xa5\xed-\x8fl\xebfE\x97&\\\xe4" +
-	"\x085r[c\xe6\x03\xa7\xee\xc0\xd4\x9af\xa2\x86\x9a" +
-	"%\x11\x1a4\xd8}9\xd3\x8d{&\x1b\xaa\x19\x02\xca" +
-	"\x0b\xb8I\x9b\xc7\x92\x99%\xa0\xbc\x98\xa0\x15W\xe3t" +
-	"\xf5\xd6\x04eS\x94n_G\x949\xd0L\xcc\x01\x82" +
-	"9\\Z\x99\x0f\\\xcczu\x8dJ\xdb\xfe\xa7'\xab" +
-	"\xb5\xc6\x84\xaej\xa6\xd3V\xbe\xa6\xc5\xc35\x15[\x93" +
-	"\xb1\x09MOH3ir\xa3\x12\xa5n\x15yO\x11" +
-	"\x009[@y2AKM[\x02R\x94\xac\x9b_" +
-	"-\x1d\xd4\xc2\xb3~\x18\xddAa\x94\xef\xea\xb8\xa2\xc6" +
-	"X\x00\xa2\xaaka\xc4\xb0\xe0\x953\x11-}\xd2\x91" +
-	"\xb5\x97+\xcb\xae\x03\x80u\xe2\xc3\xde\xba\xe3\x85\xdb/" +
-	"\xb1\xff\x13%\x8dH9M\xf5\x92c\x8d\xb2\xbb\xb1F" +
-	"\xc30kH\x84\xd1\x06\xc0\x08\xda\x08\xda\xbb\xe9\xd6\x96" +
-	"\xa6\xfb\x01b\xfdp\xc5\xc7\xdc_a\xac\xe8\x83v\xf8" +
-	"\xb2\x07\x91#d\x8cXv\xf0!m#\xa0.\x97\x08" +
-	"^\x00W&\xd0Q\x05\x9f\x84\x0d@|Y(\"\xba" +
-	"*\x83\x8e\x9eJ\xb7\xb6\x01\x91\xae\x89(\xb8\xba\x8d\x03" +
-	"K\xd7<{\xf9\xec\xdboI\x83\xed@\xa4\x01\x11=" +
-	"\xee\x83\x01\x1d\xd9\x93N\x9f\x00\"\x9d\x16\xd1\xebr:" +
-	":*#\xf5\x1e\x02\"\xf5\x88\x98\xe1>#\xd0Qv" +
-	"\xe9\xe81 \xd2\x11\x11E\xf7\x05\x81\xce\xb3@\xea~" +
-	"\x13\x88\xb4O\xc4LW\x8f\xd0Qmi7\xbb\xf7\x8a" +
-	"\x88\xc4Uzt\xd4F\xea\xba\x08D\xea\x12\xad&j" +
-	"\x86[\x1bb*\x88\xd1Pc\x05ZN\xb71\xbd\xb1" +
-	"P\x81\x96\xc3_P\x9eb0\xce\x8c\x8c\x9e\x0a\x00\x1e" +
-	"\xa4N5Lv\x12dG\xfc=tx\xa5<u\x8d" +
-	"?r\x88.\x971\xd8\x1d\x07!\xcd,O\xad\xd1\xc8" +
-	"0F\xees.\x1b\xa0\x0a\xb4\xe7\xff\xdf\xbfG\xd7\x15" +
-	"V,=>\xd6\xfc\x8f\x93\xc2\xc2Jnr\x94\xce\xdc" +
-	"\x8f%\xee\xaf\x0fv\x0f\xa2\xa1\xc6\x14\x07\x19\x0f\x1e\x1d" +
-	"\x7f\xd7\x16\x05\x13\x0d9\xcf\x0dMa\xe4\xfa\x84\x80r" +
-	"\x8c[H\x95}l\x16P6\xb9\x85\xdc\xc4\x162&" +
-	"\xa0\xbc\x85 \x0a\xf9(\x00H\xad\xeb\x00dS@\xb9" +
-	"\x93\xa0\x95H\xbb\xe1X\xd8j\xd6\x0d[\xf0yfV" +
-	"ZM\x9d[\\K5\xaah\\\xaf7@\xa0ID" +
-	" \x88\xe3\xe7Og\x8e\xec1\xb2\xf3\x14G\xd1\xe7\x92" +
-	"t\x0bJ\x08\x96\xdbTa\xe0\xdf\x00\xc3\x02b\xde\xf0" +
-	"\xfa\x03\xb2\x8f\x13$\xef\xd1\xf2\xed\xbd7\x8aC7:" +
-	"\x84\x11\xef\xfb\xc0b\x1f\xab\x04\x94\xc3\\gV\xae\xe0" +
-	"^X\xa3hp|/\xae\xbfD%\xef\xf6\xf4(\x1d" +
-	"^\x80\xdc\xcd*mC\xc9\xbap\xae\xe9\xe2\xae\xfe\xc3" +
-	"\xdf\xfe\xc9w\xc7\xc8\x8e\xb3\xad\x10\xe2\xc6\x1f\x01\x00\x00" +
-	"\xff\xff\xf4D!W"
+// HackEmailSession_List is a list of HackEmailSession.
+type HackEmailSession_List = capnp.CapList[HackEmailSession]
+
+// NewHackEmailSession creates a new list of HackEmailSession.
+func NewHackEmailSession_List(s *capnp.Segment, sz int32) (HackEmailSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[HackEmailSession](l), err
+}
+
+const schema_bf6889795837d1e0 = "x\xda\xacVml\x14\xd5\x1a~\xdf3\xdbNI\xda" +
+	"\xdb\xce\xdd\xc2e\x17\xda\xe56\xbd\\h\x00m\x01Q" +
+	"Bh+\xad\xedb\xab;\x0bE\xc4\x80N\xb7\x87v" +
+	"\xd2\xdd\x99\xed\xce,\x85\xc6\xa6\x05\xfcH1\xc4DE" +
+	" \xf8\x87\x1f`j\x14\x14\xc1\x08\x1a\xd1\x18LJ\xa2" +
+	"\x09\x18\x84(\x89\x82\x1fX$\x18\x14\x08%\x811g" +
+	"vgzZ(Pk\xf6\xcff\xce{\x9e\xf7\xfby" +
+	"\xce\xfd\xefeUxJs\xee+\x05\xb2d\x01\xc9\xc8" +
+	"\xb4>\xf8\xa4\xfb\x94r\xbdc#\xc8S\x11\x012\x88" +
+	"\x080\xbbsb\x19\x01\xf4n\x99\xb8\x17\xd0\xca\xdd\x14" +
+	"kY\xdf\xbd\xea9\x90\xa62\x03d\x06\xa5\xbe\"f" +
+	"\x10\xf4\x95\x03Z\x95\xe2\xcd\xc0\xae\x93\x03[S\x06\x1e" +
+	"v\xae\xfa\xfeM\xc0c\xd5m<6/T\xb5j'" +
+	"w\xa2\xf8\xce\"x,\xf1\xa5\x8f\xbe}zV\xa8\x97" +
+	"\x07m\xf0\xf9\x19h\xcc\x06\xfd\xe5\x8d\x9a\xd3\xdb\xe2\xbb" +
+	"\xf7pW7\xfbJ\x18\xe8\xe5\xaa\xc5=y\xd7\xea\xf7" +
+	"\xa7\xaf\xda\x01?\xef\xfb\x03\x01\xbd\xdb}\xed\xec\xea\xe3" +
+	"j\xe6\xf1}O\xed\xe7\xb1\x07|a\x86=\xde\xcf\xb0" +
+	";\xbbg|V\xdb\x91\x7f\x907\x98\xeb/a\x06\xf5" +
+	"\xb6\xc1n\xcf\xa3sN~u\xe0s\x90\xbc\x82\xf5\xc3" +
+	"\xb1y\xcb\xd7\xf5\xb4\x1c\x06\xc0\xd9m\xfe\"\xf4\xae\xf7" +
+	"\x8b\x00\xdeN\xbf\xe8\xed\xf4\xff\x1f\xc0\x1ax1\xab\xb7" +
+	"\xb4|k_\x1aN`pI\xff|\x06\xb7\xd9\xcf*" +
+	"\xf8\xf2\x8e\xf1\xff]\x12\xa8;s\x0b\xdc\xf4Ie\xe8" +
+	"}h\xd2\x7f\x00fWO\xaa!\xdeK\x93\x19\xde\xa2" +
+	"iW>|s^\xd5\xcf|x\xfd\x93\xcf\xb3\x04o" +
+	"Lf\xe1\xedm\xfa\xb2\x7f\xee\xa9\xccs\\m\x0a\x0a" +
+	"\x8e\xb2\xb2\xae\xfc\xf4j\xd1\x91W\x95~\xa7\x9bv," +
+	"R\xc1qv\xf7\x7f\x05\xe7\x00\xad\x05\xefN\xd9\x93\xd3" +
+	"\xf3S?\x0f\x9eQhw\xb3\xa0\x90\x81\xef\xcc;\xd4" +
+	"8\xc1\xfa\xed\x02\x07^\xcf\xce=V}\xf3\x17\xbfn" +
+	"\xa2y\x03\xecd0\xa7\x94\x8f\xea\xc2\x0d\xe8}\xb2\x90" +
+	"\x15\xa6\xa1\x90\xe5\xfc\xfd\xeb\xaf\xec\xd8^\xd5w\x83\xf7" +
+	"s\xa9p\x05\xf3\x93\x13`~\xbc\x97\xdb\xae\xb5=\xdb" +
+	"~\x93\xf333\xe0'`\xb9\xbfz\xabE\x89\xb4\xce" +
+	"4\xa8!\x1a\xaa\xae\xcd\x8a(q->\xbfV\x89\xb4" +
+	".\xa1\x06\xfb\xb2H\xd7L\xba\xd6\x9c\xa57\x1az\x94" +
+	"\x9a\xb4\x86j4\xa1\x98\xb42\xae.\xd5[\xa9V\x1c" +
+	"\x0a(\x09%f\xc8\xd9\x82\x07\xc0\x83\x00R\xf5\xc3\x00" +
+	"r\x85\x80r\x1dA\x091\x9fUI\x0a.\x06\x90k" +
+	"\x05\x94\x97\x12D\x92\x8f\x04Q\x92\x99a\x9d\x80\xf2r" +
+	"\x82]qjjJ\x8cb6\x10\xcc\x06\xb4\x92\x06M" +
+	"\x04\xb5\xd5:\x00`\x9e\xf5\xb5\xb4\xf2\xfd\xdf\x8f\x1d|" +
+	"\x0d\x001\x0f\xb0\x8b\xae\x8d\xab\x09j\xe08 8\x0e" +
+	"p\xb4Y\x84\xe9\x1a\xbd\x95\xcbAI\x88,\x07\x8f\x9b" +
+	"C\x0e\x0b-K@9\x9f`\x97\xc9\x8c\x82Mnh" +
+	"\xa3.\x99\x19\x8c?F\xcdv=\xd1\xca\\)14" +
+	"\\\x8c\xcc;c4S\xb3\xc1\xa0\x89\xca\xa6\xa6\x045" +
+	"\x0c'\xd01E\x10\xa6F2*\x98#f\xab\xa5\xec" +
+	"P\xb2*\xa6\x94t\xb4>\xb1\xa1\x97\x15]\x1as\x91" +
+	"\xc3\xd4\xc8MF\xcd{N\xdd\x81\xa95\xcdx\x0d5" +
+	"\x8b\xc34`\xb0\xfbr\x96\x1b\xf7t6T\xd3\x04\x94" +
+	"\xe7p\x93V\xca\x92\x99!\xa0\xfc A+\xa6\xc6\xe8" +
+	"\xd2uq\xca\xa6(\xdd\xbe\xae\x08s\xa0\x99\x98\x03\x04" +
+	"s\xb8\xb4\xb2\xee\xb9\x98\x0d\xea2\x95\xb6?\xa2'\xaa" +
+	"\xb5\xa6\xb8\xaej\xa6\xd3V\xbe\xa6E\x835\x15\x93\x89" +
+	"\xe8\x98\xa6'\xa8\x994\xb1Z\x89P\xb7\x8a\xbc\xa70" +
+	"\x80\x9c-\xa0<\x91\xa0\xa5\xa6-\x01)J\xd6\xf5o" +
+	"\x16\xf6k\xa1\x19?\x0e\xef\xa00\xccwuLQ\xa3" +
+	",\x00Q\xd5\xb5\x10bH\xc8\x90\xb3\x10-}\xc2\x81" +
+	"\xe5\x17+\xcb\xae\x02\x80u\xf4\xe3\xbe\xba\xc3\x05\x1b/" +
+	"\xb0\xffc%\x8dp9M\xf5\x92c\x8d\xb2\xdb\xb1F" +
+	"\xe3 kH\x84\xd1\x06\xc0\x10\xda\x08\xd8\xbb\xe9\xd6\x96" +
+	"\xa6\xfb\x01b\xc3`\xc5G\xdc_a\xa4\xe8\x03v\xf8" +
+	"\xb2\x07\x91#d\x0c[v\xf0Am5\xa0.\x17\x0b" +
+	"\x19\x00\xaeL\xa0\xa3\x0a^\x09\x1b\x81x\xc7\xa1\x88\xe8" +
+	"\xaa\x0c:z*\xdd\xd8\x00D\xba\"\xa2\xe0\xea6\x9e" +
+	"Y\xb8\xec\x85\x8b\xa7\xdfy[\xea\xef\x00\"\x9d\x11\xd1" +
+	"\xe3>\x18\xd0\x91=\xe9\xc4Q \xd2\x09\x113\\N" +
+	"GGe\xa4\xbe}@\xa4#\"f\xba\xcf\x08t\x94" +
+	"]:x\x08\x88t@D\xd1}A\xa0\xf3,\x90z" +
+	"\xdf\x02\"\xed\x121\xcb\xd5#tT[\xda\xce\xeem" +
+	"\x11\x91\xb8J\x8f\x8e\xdaH=\xe7\x81H=\xa2\xd5L" +
+	"\xcdP\xb21\xaa\x82\x18\x096U\xa0\xe5t\x1b\xd3\x1b" +
+	"\x0b\x15h9\xfc\x05\xe5)\x06\xe3\xcc\xc8\xf0\xa9\x00\xe0" +
+	"A\xeaT\xc3d'\x01v\xc4\xdfC\x87W\xcaS\xd7" +
+	"\xf8#\x87\xe8r\x19\x83\xddr\x10\xd4\xcc\xf2\xd4\x1a\x0d" +
+	"\x0dc\xe8>\xe7\xb2\x01\xaa@{\xfe\x1f\xf83\xb2\xa2" +
+	"\xa0b\xe1\xe1\x91\xe6\x7f\x94\x14\x16Rr\x13\xc3t\xe6" +
+	"n,qw}\xb0{\x10\x096\xa58\xc8\xb8\xf7\xe8" +
+	"\xf8\xbb\xb6(\x98h\xc8ynh\x0a#\xd7g\x04\x94" +
+	"\xa3\xdcB\xaa\xecc\x8b\x80\xb2\xc9-d\x1b[\xc8\xa8" +
+	"\x80\xf2Z\x82(\xe4\xa3\x00 %W\x00\xc8\xa6\x80r" +
+	"7A+\x9ev\xc3\xb1\xb0\xd5\xa2\x1b\xb6\xe0\xf3\xcc\xac" +
+	"$M\x9d[\\K5\xaahLo0@\xa0\x09D" +
+	" \x88\xa3\xe7Og\x8e\xec1\xb2\xf3\x14\x87\xd1\xe7\xfc" +
+	"t\x0b\x8a\x09\x96\xdbTa\xe0\xbf\x00C\x02b\xde\xe0" +
+	"\xfa\x03\xb2\x8fc$\xef\xe1\xf2\x9dqg\x14\x87nt" +
+	"\x08!\xde\xf5\x81\xc5>V\x09(\x87\xb8\xce\xd4/\xe6" +
+	"^X\xc3hpt/\xae\x7fD%o\xf7\xf4(\x19" +
+	"\\\x80\xdc5*mG\xc9:w\xb6\xf9\xfc\xb6\x93\xfb" +
+	"\xbf\xfb\x9b\xef\x8e\xa1\x1dg[!\xc4\x8c\xbf\x02\x00\x00" +
+	"\xff\xff\x8f\xd9\x1f\x94"
 
 func init() {
 	schemas.Register(schema_bf6889795837d1e0,

@@ -12,7 +12,7 @@ import (
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 )
 
-type PersistentIdentity struct{ Client *capnp.Client }
+type PersistentIdentity capnp.Client
 
 // PersistentIdentity_TypeID is the unique identifier for the type PersistentIdentity.
 const PersistentIdentity_TypeID = 0xaaecb6e5c137fd7a
@@ -28,9 +28,9 @@ func (c PersistentIdentity) GetProfile(ctx context.Context, params func(identity
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(identity.Identity_getProfile_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(identity.Identity_getProfile_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return identity.Identity_getProfile_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIdentity) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -44,11 +44,9 @@ func (c PersistentIdentity) AddRequirements(ctx context.Context, params func(sup
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -62,20 +60,30 @@ func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Per
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentIdentity) AddRef() PersistentIdentity {
-	return PersistentIdentity{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentIdentity(capnp.Client(c).AddRef())
 }
 
 func (c PersistentIdentity) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentIdentity) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentIdentity) DecodeFromPtr(p capnp.Ptr) PersistentIdentity {
+	return PersistentIdentity(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentIdentity) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentIdentity_Server is a PersistentIdentity with a local implementation.
@@ -88,15 +96,15 @@ type PersistentIdentity_Server interface {
 }
 
 // PersistentIdentity_NewServer creates a new Server from an implementation of PersistentIdentity_Server.
-func PersistentIdentity_NewServer(s PersistentIdentity_Server, policy *server.Policy) *server.Server {
+func PersistentIdentity_NewServer(s PersistentIdentity_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentIdentity_Methods(nil, s), s, c, policy)
+	return server.New(PersistentIdentity_Methods(nil, s), s, c)
 }
 
 // PersistentIdentity_ServerToClient creates a new Client from an implementation of PersistentIdentity_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentIdentity_ServerToClient(s PersistentIdentity_Server, policy *server.Policy) PersistentIdentity {
-	return PersistentIdentity{Client: capnp.NewClient(PersistentIdentity_NewServer(s, policy))}
+func PersistentIdentity_ServerToClient(s PersistentIdentity_Server) PersistentIdentity {
+	return PersistentIdentity(capnp.NewClient(PersistentIdentity_NewServer(s)))
 }
 
 // PersistentIdentity_Methods appends Methods to a slice that invoke the methods on s.
@@ -145,7 +153,16 @@ func PersistentIdentity_Methods(methods []server.Method, s PersistentIdentity_Se
 	return methods
 }
 
-const schema_acf10e4407376d3f = "x\xda2x\xc9\xe8\xc0d\xc8z\x9e\x8f\x81!p\x0d" +
+// PersistentIdentity_List is a list of PersistentIdentity.
+type PersistentIdentity_List = capnp.CapList[PersistentIdentity]
+
+// NewPersistentIdentity creates a new list of PersistentIdentity.
+func NewPersistentIdentity_List(s *capnp.Segment, sz int32) (PersistentIdentity_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentIdentity](l), err
+}
+
+const schema_acf10e4407376d3f = "x\xda2x\xcd\xe8\xc0b\xc8{\x9e\x8f\x81)p\x0d" +
 	"+\xdb\xff\xaa\xbf\xe6\x07\x9fn{\xb3\x8aAP\x84\xf9" +
 	"\xbf}\xae9\xbb\x0b\xdf\xc75\x0c\x0c\x8c\xc6\xbe\xecV" +
 	"\x8c\xc2\xb1\xec\xec\x0c\x0c\xc2\x91\xec\xec\xc2\x91\xec\xea\x0c" +
@@ -154,7 +171,7 @@ const schema_acf10e4407376d3f = "x\xda2x\xc9\xe8\xc0d\xc8z\x9e\x8f\x81!p\x0d" +
 	"I\xcd+\xf1L\xb1\x87\xc8\x0702\x060\xb3\x06r" +
 	"02\xfe\x97\xb8\x1b\xb8\xb2jF\xcb\x01\x06\x06\x86\xff" +
 	"[\xae\xee\xab\xb9\xfe\xb6\xe70\x03\x03\x03 \x00\x00\xff" +
-	"\xff4\x95/\xd6"
+	"\xff;\xd3/\xe4"
 
 func init() {
 	schemas.Register(schema_acf10e4407376d3f,

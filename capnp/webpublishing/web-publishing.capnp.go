@@ -12,7 +12,7 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type WebSite struct{ Client *capnp.Client }
+type WebSite capnp.Client
 
 // WebSite_TypeID is the unique identifier for the type WebSite.
 const WebSite_TypeID = 0xdddcca47803e2377
@@ -28,9 +28,9 @@ func (c WebSite) GetUrl(ctx context.Context, params func(WebSite_getUrl_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getUrl_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getUrl_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_getUrl_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSite) GetEntities(ctx context.Context, params func(WebSite_getEntities_Params) error) (WebSite_getEntities_Results_Future, capnp.ReleaseFunc) {
@@ -44,9 +44,9 @@ func (c WebSite) GetEntities(ctx context.Context, params func(WebSite_getEntitie
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getEntities_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getEntities_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_getEntities_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSite) GetNotFoundEntities(ctx context.Context, params func(WebSite_getNotFoundEntities_Params) error) (WebSite_getNotFoundEntities_Results_Future, capnp.ReleaseFunc) {
@@ -60,9 +60,9 @@ func (c WebSite) GetNotFoundEntities(ctx context.Context, params func(WebSite_ge
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getNotFoundEntities_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getNotFoundEntities_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_getNotFoundEntities_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSite) UploadBlob(ctx context.Context, params func(WebSite_uploadBlob_Params) error) (WebSite_uploadBlob_Results_Future, capnp.ReleaseFunc) {
@@ -76,9 +76,9 @@ func (c WebSite) UploadBlob(ctx context.Context, params func(WebSite_uploadBlob_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_uploadBlob_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_uploadBlob_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_uploadBlob_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSite) GetSubsite(ctx context.Context, params func(WebSite_getSubsite_Params) error) (WebSite_getSubsite_Results_Future, capnp.ReleaseFunc) {
@@ -92,9 +92,9 @@ func (c WebSite) GetSubsite(ctx context.Context, params func(WebSite_getSubsite_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getSubsite_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_getSubsite_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_getSubsite_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSite) ListResources(ctx context.Context, params func(WebSite_listResources_Params) error) (WebSite_listResources_Results_Future, capnp.ReleaseFunc) {
@@ -108,20 +108,30 @@ func (c WebSite) ListResources(ctx context.Context, params func(WebSite_listReso
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_listResources_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSite_listResources_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSite_listResources_Results_Future{Future: ans.Future()}, release
 }
 
 func (c WebSite) AddRef() WebSite {
-	return WebSite{
-		Client: c.Client.AddRef(),
-	}
+	return WebSite(capnp.Client(c).AddRef())
 }
 
 func (c WebSite) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c WebSite) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (WebSite) DecodeFromPtr(p capnp.Ptr) WebSite {
+	return WebSite(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c WebSite) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A WebSite_Server is a WebSite with a local implementation.
@@ -140,15 +150,15 @@ type WebSite_Server interface {
 }
 
 // WebSite_NewServer creates a new Server from an implementation of WebSite_Server.
-func WebSite_NewServer(s WebSite_Server, policy *server.Policy) *server.Server {
+func WebSite_NewServer(s WebSite_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(WebSite_Methods(nil, s), s, c, policy)
+	return server.New(WebSite_Methods(nil, s), s, c)
 }
 
 // WebSite_ServerToClient creates a new Client from an implementation of WebSite_Server.
 // The caller is responsible for calling Release on the returned Client.
-func WebSite_ServerToClient(s WebSite_Server, policy *server.Policy) WebSite {
-	return WebSite{Client: capnp.NewClient(WebSite_NewServer(s, policy))}
+func WebSite_ServerToClient(s WebSite_Server) WebSite {
+	return WebSite(capnp.NewClient(WebSite_NewServer(s)))
 }
 
 // WebSite_Methods appends Methods to a slice that invoke the methods on s.
@@ -241,13 +251,13 @@ type WebSite_getUrl struct {
 
 // Args returns the call's arguments.
 func (c WebSite_getUrl) Args() WebSite_getUrl_Params {
-	return WebSite_getUrl_Params{Struct: c.Call.Args()}
+	return WebSite_getUrl_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_getUrl) AllocResults() (WebSite_getUrl_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getUrl_Results{Struct: r}, err
+	return WebSite_getUrl_Results(r), err
 }
 
 // WebSite_getEntities holds the state for a server call to WebSite.getEntities.
@@ -258,13 +268,13 @@ type WebSite_getEntities struct {
 
 // Args returns the call's arguments.
 func (c WebSite_getEntities) Args() WebSite_getEntities_Params {
-	return WebSite_getEntities_Params{Struct: c.Call.Args()}
+	return WebSite_getEntities_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_getEntities) AllocResults() (WebSite_getEntities_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getEntities_Results{Struct: r}, err
+	return WebSite_getEntities_Results(r), err
 }
 
 // WebSite_getNotFoundEntities holds the state for a server call to WebSite.getNotFoundEntities.
@@ -275,13 +285,13 @@ type WebSite_getNotFoundEntities struct {
 
 // Args returns the call's arguments.
 func (c WebSite_getNotFoundEntities) Args() WebSite_getNotFoundEntities_Params {
-	return WebSite_getNotFoundEntities_Params{Struct: c.Call.Args()}
+	return WebSite_getNotFoundEntities_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_getNotFoundEntities) AllocResults() (WebSite_getNotFoundEntities_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getNotFoundEntities_Results{Struct: r}, err
+	return WebSite_getNotFoundEntities_Results(r), err
 }
 
 // WebSite_uploadBlob holds the state for a server call to WebSite.uploadBlob.
@@ -292,13 +302,13 @@ type WebSite_uploadBlob struct {
 
 // Args returns the call's arguments.
 func (c WebSite_uploadBlob) Args() WebSite_uploadBlob_Params {
-	return WebSite_uploadBlob_Params{Struct: c.Call.Args()}
+	return WebSite_uploadBlob_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_uploadBlob) AllocResults() (WebSite_uploadBlob_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSite_uploadBlob_Results{Struct: r}, err
+	return WebSite_uploadBlob_Results(r), err
 }
 
 // WebSite_getSubsite holds the state for a server call to WebSite.getSubsite.
@@ -309,13 +319,13 @@ type WebSite_getSubsite struct {
 
 // Args returns the call's arguments.
 func (c WebSite_getSubsite) Args() WebSite_getSubsite_Params {
-	return WebSite_getSubsite_Params{Struct: c.Call.Args()}
+	return WebSite_getSubsite_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_getSubsite) AllocResults() (WebSite_getSubsite_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getSubsite_Results{Struct: r}, err
+	return WebSite_getSubsite_Results(r), err
 }
 
 // WebSite_listResources holds the state for a server call to WebSite.listResources.
@@ -326,16 +336,25 @@ type WebSite_listResources struct {
 
 // Args returns the call's arguments.
 func (c WebSite_listResources) Args() WebSite_listResources_Params {
-	return WebSite_listResources_Params{Struct: c.Call.Args()}
+	return WebSite_listResources_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSite_listResources) AllocResults() (WebSite_listResources_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_listResources_Results{Struct: r}, err
+	return WebSite_listResources_Results(r), err
 }
 
-type WebSite_Entity struct{ capnp.Struct }
+// WebSite_List is a list of WebSite.
+type WebSite_List = capnp.CapList[WebSite]
+
+// NewWebSite creates a new list of WebSite.
+func NewWebSite_List(s *capnp.Segment, sz int32) (WebSite_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[WebSite](l), err
+}
+
+type WebSite_Entity capnp.Struct
 type WebSite_Entity_body WebSite_Entity
 type WebSite_Entity_body_Which uint16
 
@@ -361,162 +380,186 @@ const WebSite_Entity_TypeID = 0xd019dd3e3c0e7e68
 
 func NewWebSite_Entity(s *capnp.Segment) (WebSite_Entity, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
-	return WebSite_Entity{st}, err
+	return WebSite_Entity(st), err
 }
 
 func NewRootWebSite_Entity(s *capnp.Segment) (WebSite_Entity, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
-	return WebSite_Entity{st}, err
+	return WebSite_Entity(st), err
 }
 
 func ReadRootWebSite_Entity(msg *capnp.Message) (WebSite_Entity, error) {
 	root, err := msg.Root()
-	return WebSite_Entity{root.Struct()}, err
+	return WebSite_Entity(root.Struct()), err
 }
 
 func (s WebSite_Entity) String() string {
-	str, _ := text.Marshal(0xd019dd3e3c0e7e68, s.Struct)
+	str, _ := text.Marshal(0xd019dd3e3c0e7e68, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_Entity) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_Entity) DecodeFromPtr(p capnp.Ptr) WebSite_Entity {
+	return WebSite_Entity(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_Entity) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_Entity) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_Entity) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_Entity) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_Entity) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSite_Entity) HasMimeType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_Entity) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_Entity) SetMimeType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSite_Entity) Language() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSite_Entity) HasLanguage() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSite_Entity) LanguageBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_Entity) SetLanguage(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSite_Entity) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSite_Entity) HasEncoding() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSite_Entity) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_Entity) SetEncoding(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s WebSite_Entity) Body() WebSite_Entity_body { return WebSite_Entity_body(s) }
 
 func (s WebSite_Entity_body) Which() WebSite_Entity_body_Which {
-	return WebSite_Entity_body_Which(s.Struct.Uint16(0))
+	return WebSite_Entity_body_Which(capnp.Struct(s).Uint16(0))
+}
+func (s WebSite_Entity_body) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_Entity_body) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_Entity_body) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSite_Entity_body) Bytes() ([]byte, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != bytes")
 	}
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return []byte(p.Data()), err
 }
 
 func (s WebSite_Entity_body) HasBytes() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSite_Entity_body) SetBytes(v []byte) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetData(3, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetData(3, v)
 }
 
 func (s WebSite_Entity_body) Blob() util.Blob {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != blob")
 	}
-	p, _ := s.Struct.Ptr(3)
-	return util.Blob{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(3)
+	return util.Blob(p.Interface().Client())
 }
 
 func (s WebSite_Entity_body) HasBlob() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSite_Entity_body) SetBlob(v util.Blob) error {
-	s.Struct.SetUint16(0, 1)
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(3, capnp.Ptr{})
+	capnp.Struct(s).SetUint16(0, 1)
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(3, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(3, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(3, in.ToPtr())
 }
 
 func (s WebSite_Entity) RedirectTo() (string, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.Text(), err
 }
 
 func (s WebSite_Entity) HasRedirectTo() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s WebSite_Entity) RedirectToBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_Entity) SetRedirectTo(v string) error {
-	return s.Struct.SetText(4, v)
+	return capnp.Struct(s).SetText(4, v)
 }
 
 // WebSite_Entity_List is a list of WebSite_Entity.
-type WebSite_Entity_List struct{ capnp.List }
+type WebSite_Entity_List = capnp.StructList[WebSite_Entity]
 
 // NewWebSite_Entity creates a new list of WebSite_Entity.
 func NewWebSite_Entity_List(s *capnp.Segment, sz int32) (WebSite_Entity_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
-	return WebSite_Entity_List{l}, err
-}
-
-func (s WebSite_Entity_List) At(i int) WebSite_Entity { return WebSite_Entity{s.List.Struct(i)} }
-
-func (s WebSite_Entity_List) Set(i int, v WebSite_Entity) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s WebSite_Entity_List) String() string {
-	str, _ := text.MarshalList(0xd019dd3e3c0e7e68, s.List)
-	return str
+	return capnp.StructList[WebSite_Entity](l), err
 }
 
 // WebSite_Entity_Future is a wrapper for a WebSite_Entity promised by a client call.
@@ -524,7 +567,7 @@ type WebSite_Entity_Future struct{ *capnp.Future }
 
 func (p WebSite_Entity_Future) Struct() (WebSite_Entity, error) {
 	s, err := p.Future.Struct()
-	return WebSite_Entity{s}, err
+	return WebSite_Entity(s), err
 }
 
 func (p WebSite_Entity_Future) Body() WebSite_Entity_body_Future {
@@ -536,58 +579,68 @@ type WebSite_Entity_body_Future struct{ *capnp.Future }
 
 func (p WebSite_Entity_body_Future) Struct() (WebSite_Entity_body, error) {
 	s, err := p.Future.Struct()
-	return WebSite_Entity_body{s}, err
+	return WebSite_Entity_body(s), err
 }
 
 func (p WebSite_Entity_body_Future) Blob() util.Blob {
-	return util.Blob{Client: p.Future.Field(3, nil).Client()}
+	return util.Blob(p.Future.Field(3, nil).Client())
 }
 
-type WebSite_getUrl_Params struct{ capnp.Struct }
+type WebSite_getUrl_Params capnp.Struct
 
 // WebSite_getUrl_Params_TypeID is the unique identifier for the type WebSite_getUrl_Params.
 const WebSite_getUrl_Params_TypeID = 0xdc072ae47872d061
 
 func NewWebSite_getUrl_Params(s *capnp.Segment) (WebSite_getUrl_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_getUrl_Params{st}, err
+	return WebSite_getUrl_Params(st), err
 }
 
 func NewRootWebSite_getUrl_Params(s *capnp.Segment) (WebSite_getUrl_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_getUrl_Params{st}, err
+	return WebSite_getUrl_Params(st), err
 }
 
 func ReadRootWebSite_getUrl_Params(msg *capnp.Message) (WebSite_getUrl_Params, error) {
 	root, err := msg.Root()
-	return WebSite_getUrl_Params{root.Struct()}, err
+	return WebSite_getUrl_Params(root.Struct()), err
 }
 
 func (s WebSite_getUrl_Params) String() string {
-	str, _ := text.Marshal(0xdc072ae47872d061, s.Struct)
+	str, _ := text.Marshal(0xdc072ae47872d061, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getUrl_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getUrl_Params) DecodeFromPtr(p capnp.Ptr) WebSite_getUrl_Params {
+	return WebSite_getUrl_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getUrl_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getUrl_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getUrl_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getUrl_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // WebSite_getUrl_Params_List is a list of WebSite_getUrl_Params.
-type WebSite_getUrl_Params_List struct{ capnp.List }
+type WebSite_getUrl_Params_List = capnp.StructList[WebSite_getUrl_Params]
 
 // NewWebSite_getUrl_Params creates a new list of WebSite_getUrl_Params.
 func NewWebSite_getUrl_Params_List(s *capnp.Segment, sz int32) (WebSite_getUrl_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return WebSite_getUrl_Params_List{l}, err
-}
-
-func (s WebSite_getUrl_Params_List) At(i int) WebSite_getUrl_Params {
-	return WebSite_getUrl_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_getUrl_Params_List) Set(i int, v WebSite_getUrl_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getUrl_Params_List) String() string {
-	str, _ := text.MarshalList(0xdc072ae47872d061, s.List)
-	return str
+	return capnp.StructList[WebSite_getUrl_Params](l), err
 }
 
 // WebSite_getUrl_Params_Future is a wrapper for a WebSite_getUrl_Params promised by a client call.
@@ -595,72 +648,81 @@ type WebSite_getUrl_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_getUrl_Params_Future) Struct() (WebSite_getUrl_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getUrl_Params{s}, err
+	return WebSite_getUrl_Params(s), err
 }
 
-type WebSite_getUrl_Results struct{ capnp.Struct }
+type WebSite_getUrl_Results capnp.Struct
 
 // WebSite_getUrl_Results_TypeID is the unique identifier for the type WebSite_getUrl_Results.
 const WebSite_getUrl_Results_TypeID = 0xb2855d483568639e
 
 func NewWebSite_getUrl_Results(s *capnp.Segment) (WebSite_getUrl_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getUrl_Results{st}, err
+	return WebSite_getUrl_Results(st), err
 }
 
 func NewRootWebSite_getUrl_Results(s *capnp.Segment) (WebSite_getUrl_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getUrl_Results{st}, err
+	return WebSite_getUrl_Results(st), err
 }
 
 func ReadRootWebSite_getUrl_Results(msg *capnp.Message) (WebSite_getUrl_Results, error) {
 	root, err := msg.Root()
-	return WebSite_getUrl_Results{root.Struct()}, err
+	return WebSite_getUrl_Results(root.Struct()), err
 }
 
 func (s WebSite_getUrl_Results) String() string {
-	str, _ := text.Marshal(0xb2855d483568639e, s.Struct)
+	str, _ := text.Marshal(0xb2855d483568639e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getUrl_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getUrl_Results) DecodeFromPtr(p capnp.Ptr) WebSite_getUrl_Results {
+	return WebSite_getUrl_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getUrl_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getUrl_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getUrl_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getUrl_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getUrl_Results) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSite_getUrl_Results) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getUrl_Results) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_getUrl_Results) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // WebSite_getUrl_Results_List is a list of WebSite_getUrl_Results.
-type WebSite_getUrl_Results_List struct{ capnp.List }
+type WebSite_getUrl_Results_List = capnp.StructList[WebSite_getUrl_Results]
 
 // NewWebSite_getUrl_Results creates a new list of WebSite_getUrl_Results.
 func NewWebSite_getUrl_Results_List(s *capnp.Segment, sz int32) (WebSite_getUrl_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getUrl_Results_List{l}, err
-}
-
-func (s WebSite_getUrl_Results_List) At(i int) WebSite_getUrl_Results {
-	return WebSite_getUrl_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_getUrl_Results_List) Set(i int, v WebSite_getUrl_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getUrl_Results_List) String() string {
-	str, _ := text.MarshalList(0xb2855d483568639e, s.List)
-	return str
+	return capnp.StructList[WebSite_getUrl_Results](l), err
 }
 
 // WebSite_getUrl_Results_Future is a wrapper for a WebSite_getUrl_Results promised by a client call.
@@ -668,72 +730,81 @@ type WebSite_getUrl_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_getUrl_Results_Future) Struct() (WebSite_getUrl_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getUrl_Results{s}, err
+	return WebSite_getUrl_Results(s), err
 }
 
-type WebSite_getEntities_Params struct{ capnp.Struct }
+type WebSite_getEntities_Params capnp.Struct
 
 // WebSite_getEntities_Params_TypeID is the unique identifier for the type WebSite_getEntities_Params.
 const WebSite_getEntities_Params_TypeID = 0xfe1643d6b01e7cf4
 
 func NewWebSite_getEntities_Params(s *capnp.Segment) (WebSite_getEntities_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getEntities_Params{st}, err
+	return WebSite_getEntities_Params(st), err
 }
 
 func NewRootWebSite_getEntities_Params(s *capnp.Segment) (WebSite_getEntities_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getEntities_Params{st}, err
+	return WebSite_getEntities_Params(st), err
 }
 
 func ReadRootWebSite_getEntities_Params(msg *capnp.Message) (WebSite_getEntities_Params, error) {
 	root, err := msg.Root()
-	return WebSite_getEntities_Params{root.Struct()}, err
+	return WebSite_getEntities_Params(root.Struct()), err
 }
 
 func (s WebSite_getEntities_Params) String() string {
-	str, _ := text.Marshal(0xfe1643d6b01e7cf4, s.Struct)
+	str, _ := text.Marshal(0xfe1643d6b01e7cf4, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getEntities_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getEntities_Params) DecodeFromPtr(p capnp.Ptr) WebSite_getEntities_Params {
+	return WebSite_getEntities_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getEntities_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getEntities_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getEntities_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getEntities_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getEntities_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSite_getEntities_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getEntities_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_getEntities_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // WebSite_getEntities_Params_List is a list of WebSite_getEntities_Params.
-type WebSite_getEntities_Params_List struct{ capnp.List }
+type WebSite_getEntities_Params_List = capnp.StructList[WebSite_getEntities_Params]
 
 // NewWebSite_getEntities_Params creates a new list of WebSite_getEntities_Params.
 func NewWebSite_getEntities_Params_List(s *capnp.Segment, sz int32) (WebSite_getEntities_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getEntities_Params_List{l}, err
-}
-
-func (s WebSite_getEntities_Params_List) At(i int) WebSite_getEntities_Params {
-	return WebSite_getEntities_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_getEntities_Params_List) Set(i int, v WebSite_getEntities_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getEntities_Params_List) String() string {
-	str, _ := text.MarshalList(0xfe1643d6b01e7cf4, s.List)
-	return str
+	return capnp.StructList[WebSite_getEntities_Params](l), err
 }
 
 // WebSite_getEntities_Params_Future is a wrapper for a WebSite_getEntities_Params promised by a client call.
@@ -741,72 +812,81 @@ type WebSite_getEntities_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_getEntities_Params_Future) Struct() (WebSite_getEntities_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getEntities_Params{s}, err
+	return WebSite_getEntities_Params(s), err
 }
 
-type WebSite_getEntities_Results struct{ capnp.Struct }
+type WebSite_getEntities_Results capnp.Struct
 
 // WebSite_getEntities_Results_TypeID is the unique identifier for the type WebSite_getEntities_Results.
 const WebSite_getEntities_Results_TypeID = 0xc3739b6f070fb5ea
 
 func NewWebSite_getEntities_Results(s *capnp.Segment) (WebSite_getEntities_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getEntities_Results{st}, err
+	return WebSite_getEntities_Results(st), err
 }
 
 func NewRootWebSite_getEntities_Results(s *capnp.Segment) (WebSite_getEntities_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getEntities_Results{st}, err
+	return WebSite_getEntities_Results(st), err
 }
 
 func ReadRootWebSite_getEntities_Results(msg *capnp.Message) (WebSite_getEntities_Results, error) {
 	root, err := msg.Root()
-	return WebSite_getEntities_Results{root.Struct()}, err
+	return WebSite_getEntities_Results(root.Struct()), err
 }
 
 func (s WebSite_getEntities_Results) String() string {
-	str, _ := text.Marshal(0xc3739b6f070fb5ea, s.Struct)
+	str, _ := text.Marshal(0xc3739b6f070fb5ea, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getEntities_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getEntities_Results) DecodeFromPtr(p capnp.Ptr) WebSite_getEntities_Results {
+	return WebSite_getEntities_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getEntities_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getEntities_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getEntities_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getEntities_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getEntities_Results) Entities() util.Assignable {
-	p, _ := s.Struct.Ptr(0)
-	return util.Assignable{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Assignable(p.Interface().Client())
 }
 
 func (s WebSite_getEntities_Results) HasEntities() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getEntities_Results) SetEntities(v util.Assignable) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // WebSite_getEntities_Results_List is a list of WebSite_getEntities_Results.
-type WebSite_getEntities_Results_List struct{ capnp.List }
+type WebSite_getEntities_Results_List = capnp.StructList[WebSite_getEntities_Results]
 
 // NewWebSite_getEntities_Results creates a new list of WebSite_getEntities_Results.
 func NewWebSite_getEntities_Results_List(s *capnp.Segment, sz int32) (WebSite_getEntities_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getEntities_Results_List{l}, err
-}
-
-func (s WebSite_getEntities_Results_List) At(i int) WebSite_getEntities_Results {
-	return WebSite_getEntities_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_getEntities_Results_List) Set(i int, v WebSite_getEntities_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getEntities_Results_List) String() string {
-	str, _ := text.MarshalList(0xc3739b6f070fb5ea, s.List)
-	return str
+	return capnp.StructList[WebSite_getEntities_Results](l), err
 }
 
 // WebSite_getEntities_Results_Future is a wrapper for a WebSite_getEntities_Results promised by a client call.
@@ -814,58 +894,68 @@ type WebSite_getEntities_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_getEntities_Results_Future) Struct() (WebSite_getEntities_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getEntities_Results{s}, err
+	return WebSite_getEntities_Results(s), err
 }
 
 func (p WebSite_getEntities_Results_Future) Entities() util.Assignable {
-	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
+	return util.Assignable(p.Future.Field(0, nil).Client())
 }
 
-type WebSite_getNotFoundEntities_Params struct{ capnp.Struct }
+type WebSite_getNotFoundEntities_Params capnp.Struct
 
 // WebSite_getNotFoundEntities_Params_TypeID is the unique identifier for the type WebSite_getNotFoundEntities_Params.
 const WebSite_getNotFoundEntities_Params_TypeID = 0xc3db68ea10a823b6
 
 func NewWebSite_getNotFoundEntities_Params(s *capnp.Segment) (WebSite_getNotFoundEntities_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_getNotFoundEntities_Params{st}, err
+	return WebSite_getNotFoundEntities_Params(st), err
 }
 
 func NewRootWebSite_getNotFoundEntities_Params(s *capnp.Segment) (WebSite_getNotFoundEntities_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_getNotFoundEntities_Params{st}, err
+	return WebSite_getNotFoundEntities_Params(st), err
 }
 
 func ReadRootWebSite_getNotFoundEntities_Params(msg *capnp.Message) (WebSite_getNotFoundEntities_Params, error) {
 	root, err := msg.Root()
-	return WebSite_getNotFoundEntities_Params{root.Struct()}, err
+	return WebSite_getNotFoundEntities_Params(root.Struct()), err
 }
 
 func (s WebSite_getNotFoundEntities_Params) String() string {
-	str, _ := text.Marshal(0xc3db68ea10a823b6, s.Struct)
+	str, _ := text.Marshal(0xc3db68ea10a823b6, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getNotFoundEntities_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getNotFoundEntities_Params) DecodeFromPtr(p capnp.Ptr) WebSite_getNotFoundEntities_Params {
+	return WebSite_getNotFoundEntities_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getNotFoundEntities_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getNotFoundEntities_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getNotFoundEntities_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getNotFoundEntities_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // WebSite_getNotFoundEntities_Params_List is a list of WebSite_getNotFoundEntities_Params.
-type WebSite_getNotFoundEntities_Params_List struct{ capnp.List }
+type WebSite_getNotFoundEntities_Params_List = capnp.StructList[WebSite_getNotFoundEntities_Params]
 
 // NewWebSite_getNotFoundEntities_Params creates a new list of WebSite_getNotFoundEntities_Params.
 func NewWebSite_getNotFoundEntities_Params_List(s *capnp.Segment, sz int32) (WebSite_getNotFoundEntities_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return WebSite_getNotFoundEntities_Params_List{l}, err
-}
-
-func (s WebSite_getNotFoundEntities_Params_List) At(i int) WebSite_getNotFoundEntities_Params {
-	return WebSite_getNotFoundEntities_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_getNotFoundEntities_Params_List) Set(i int, v WebSite_getNotFoundEntities_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getNotFoundEntities_Params_List) String() string {
-	str, _ := text.MarshalList(0xc3db68ea10a823b6, s.List)
-	return str
+	return capnp.StructList[WebSite_getNotFoundEntities_Params](l), err
 }
 
 // WebSite_getNotFoundEntities_Params_Future is a wrapper for a WebSite_getNotFoundEntities_Params promised by a client call.
@@ -873,72 +963,81 @@ type WebSite_getNotFoundEntities_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_getNotFoundEntities_Params_Future) Struct() (WebSite_getNotFoundEntities_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getNotFoundEntities_Params{s}, err
+	return WebSite_getNotFoundEntities_Params(s), err
 }
 
-type WebSite_getNotFoundEntities_Results struct{ capnp.Struct }
+type WebSite_getNotFoundEntities_Results capnp.Struct
 
 // WebSite_getNotFoundEntities_Results_TypeID is the unique identifier for the type WebSite_getNotFoundEntities_Results.
 const WebSite_getNotFoundEntities_Results_TypeID = 0xff383cbabc241462
 
 func NewWebSite_getNotFoundEntities_Results(s *capnp.Segment) (WebSite_getNotFoundEntities_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getNotFoundEntities_Results{st}, err
+	return WebSite_getNotFoundEntities_Results(st), err
 }
 
 func NewRootWebSite_getNotFoundEntities_Results(s *capnp.Segment) (WebSite_getNotFoundEntities_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getNotFoundEntities_Results{st}, err
+	return WebSite_getNotFoundEntities_Results(st), err
 }
 
 func ReadRootWebSite_getNotFoundEntities_Results(msg *capnp.Message) (WebSite_getNotFoundEntities_Results, error) {
 	root, err := msg.Root()
-	return WebSite_getNotFoundEntities_Results{root.Struct()}, err
+	return WebSite_getNotFoundEntities_Results(root.Struct()), err
 }
 
 func (s WebSite_getNotFoundEntities_Results) String() string {
-	str, _ := text.Marshal(0xff383cbabc241462, s.Struct)
+	str, _ := text.Marshal(0xff383cbabc241462, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getNotFoundEntities_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getNotFoundEntities_Results) DecodeFromPtr(p capnp.Ptr) WebSite_getNotFoundEntities_Results {
+	return WebSite_getNotFoundEntities_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getNotFoundEntities_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getNotFoundEntities_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getNotFoundEntities_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getNotFoundEntities_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getNotFoundEntities_Results) Entities() util.Assignable {
-	p, _ := s.Struct.Ptr(0)
-	return util.Assignable{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Assignable(p.Interface().Client())
 }
 
 func (s WebSite_getNotFoundEntities_Results) HasEntities() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getNotFoundEntities_Results) SetEntities(v util.Assignable) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // WebSite_getNotFoundEntities_Results_List is a list of WebSite_getNotFoundEntities_Results.
-type WebSite_getNotFoundEntities_Results_List struct{ capnp.List }
+type WebSite_getNotFoundEntities_Results_List = capnp.StructList[WebSite_getNotFoundEntities_Results]
 
 // NewWebSite_getNotFoundEntities_Results creates a new list of WebSite_getNotFoundEntities_Results.
 func NewWebSite_getNotFoundEntities_Results_List(s *capnp.Segment, sz int32) (WebSite_getNotFoundEntities_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getNotFoundEntities_Results_List{l}, err
-}
-
-func (s WebSite_getNotFoundEntities_Results_List) At(i int) WebSite_getNotFoundEntities_Results {
-	return WebSite_getNotFoundEntities_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_getNotFoundEntities_Results_List) Set(i int, v WebSite_getNotFoundEntities_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getNotFoundEntities_Results_List) String() string {
-	str, _ := text.MarshalList(0xff383cbabc241462, s.List)
-	return str
+	return capnp.StructList[WebSite_getNotFoundEntities_Results](l), err
 }
 
 // WebSite_getNotFoundEntities_Results_Future is a wrapper for a WebSite_getNotFoundEntities_Results promised by a client call.
@@ -946,58 +1045,68 @@ type WebSite_getNotFoundEntities_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_getNotFoundEntities_Results_Future) Struct() (WebSite_getNotFoundEntities_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getNotFoundEntities_Results{s}, err
+	return WebSite_getNotFoundEntities_Results(s), err
 }
 
 func (p WebSite_getNotFoundEntities_Results_Future) Entities() util.Assignable {
-	return util.Assignable{Client: p.Future.Field(0, nil).Client()}
+	return util.Assignable(p.Future.Field(0, nil).Client())
 }
 
-type WebSite_uploadBlob_Params struct{ capnp.Struct }
+type WebSite_uploadBlob_Params capnp.Struct
 
 // WebSite_uploadBlob_Params_TypeID is the unique identifier for the type WebSite_uploadBlob_Params.
 const WebSite_uploadBlob_Params_TypeID = 0xe2ae317a2a41a9f6
 
 func NewWebSite_uploadBlob_Params(s *capnp.Segment) (WebSite_uploadBlob_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_uploadBlob_Params{st}, err
+	return WebSite_uploadBlob_Params(st), err
 }
 
 func NewRootWebSite_uploadBlob_Params(s *capnp.Segment) (WebSite_uploadBlob_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSite_uploadBlob_Params{st}, err
+	return WebSite_uploadBlob_Params(st), err
 }
 
 func ReadRootWebSite_uploadBlob_Params(msg *capnp.Message) (WebSite_uploadBlob_Params, error) {
 	root, err := msg.Root()
-	return WebSite_uploadBlob_Params{root.Struct()}, err
+	return WebSite_uploadBlob_Params(root.Struct()), err
 }
 
 func (s WebSite_uploadBlob_Params) String() string {
-	str, _ := text.Marshal(0xe2ae317a2a41a9f6, s.Struct)
+	str, _ := text.Marshal(0xe2ae317a2a41a9f6, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_uploadBlob_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_uploadBlob_Params) DecodeFromPtr(p capnp.Ptr) WebSite_uploadBlob_Params {
+	return WebSite_uploadBlob_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_uploadBlob_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_uploadBlob_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_uploadBlob_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_uploadBlob_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // WebSite_uploadBlob_Params_List is a list of WebSite_uploadBlob_Params.
-type WebSite_uploadBlob_Params_List struct{ capnp.List }
+type WebSite_uploadBlob_Params_List = capnp.StructList[WebSite_uploadBlob_Params]
 
 // NewWebSite_uploadBlob_Params creates a new list of WebSite_uploadBlob_Params.
 func NewWebSite_uploadBlob_Params_List(s *capnp.Segment, sz int32) (WebSite_uploadBlob_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return WebSite_uploadBlob_Params_List{l}, err
-}
-
-func (s WebSite_uploadBlob_Params_List) At(i int) WebSite_uploadBlob_Params {
-	return WebSite_uploadBlob_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_uploadBlob_Params_List) Set(i int, v WebSite_uploadBlob_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_uploadBlob_Params_List) String() string {
-	str, _ := text.MarshalList(0xe2ae317a2a41a9f6, s.List)
-	return str
+	return capnp.StructList[WebSite_uploadBlob_Params](l), err
 }
 
 // WebSite_uploadBlob_Params_Future is a wrapper for a WebSite_uploadBlob_Params promised by a client call.
@@ -1005,90 +1114,99 @@ type WebSite_uploadBlob_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_uploadBlob_Params_Future) Struct() (WebSite_uploadBlob_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_uploadBlob_Params{s}, err
+	return WebSite_uploadBlob_Params(s), err
 }
 
-type WebSite_uploadBlob_Results struct{ capnp.Struct }
+type WebSite_uploadBlob_Results capnp.Struct
 
 // WebSite_uploadBlob_Results_TypeID is the unique identifier for the type WebSite_uploadBlob_Results.
 const WebSite_uploadBlob_Results_TypeID = 0xc63c6c15dd189744
 
 func NewWebSite_uploadBlob_Results(s *capnp.Segment) (WebSite_uploadBlob_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSite_uploadBlob_Results{st}, err
+	return WebSite_uploadBlob_Results(st), err
 }
 
 func NewRootWebSite_uploadBlob_Results(s *capnp.Segment) (WebSite_uploadBlob_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSite_uploadBlob_Results{st}, err
+	return WebSite_uploadBlob_Results(st), err
 }
 
 func ReadRootWebSite_uploadBlob_Results(msg *capnp.Message) (WebSite_uploadBlob_Results, error) {
 	root, err := msg.Root()
-	return WebSite_uploadBlob_Results{root.Struct()}, err
+	return WebSite_uploadBlob_Results(root.Struct()), err
 }
 
 func (s WebSite_uploadBlob_Results) String() string {
-	str, _ := text.Marshal(0xc63c6c15dd189744, s.Struct)
+	str, _ := text.Marshal(0xc63c6c15dd189744, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_uploadBlob_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_uploadBlob_Results) DecodeFromPtr(p capnp.Ptr) WebSite_uploadBlob_Results {
+	return WebSite_uploadBlob_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_uploadBlob_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_uploadBlob_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_uploadBlob_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_uploadBlob_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_uploadBlob_Results) Blob() util.Blob {
-	p, _ := s.Struct.Ptr(0)
-	return util.Blob{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return util.Blob(p.Interface().Client())
 }
 
 func (s WebSite_uploadBlob_Results) HasBlob() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_uploadBlob_Results) SetBlob(v util.Blob) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s WebSite_uploadBlob_Results) Stream() util.ByteStream {
-	p, _ := s.Struct.Ptr(1)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s WebSite_uploadBlob_Results) HasStream() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSite_uploadBlob_Results) SetStream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // WebSite_uploadBlob_Results_List is a list of WebSite_uploadBlob_Results.
-type WebSite_uploadBlob_Results_List struct{ capnp.List }
+type WebSite_uploadBlob_Results_List = capnp.StructList[WebSite_uploadBlob_Results]
 
 // NewWebSite_uploadBlob_Results creates a new list of WebSite_uploadBlob_Results.
 func NewWebSite_uploadBlob_Results_List(s *capnp.Segment, sz int32) (WebSite_uploadBlob_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSite_uploadBlob_Results_List{l}, err
-}
-
-func (s WebSite_uploadBlob_Results_List) At(i int) WebSite_uploadBlob_Results {
-	return WebSite_uploadBlob_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_uploadBlob_Results_List) Set(i int, v WebSite_uploadBlob_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_uploadBlob_Results_List) String() string {
-	str, _ := text.MarshalList(0xc63c6c15dd189744, s.List)
-	return str
+	return capnp.StructList[WebSite_uploadBlob_Results](l), err
 }
 
 // WebSite_uploadBlob_Results_Future is a wrapper for a WebSite_uploadBlob_Results promised by a client call.
@@ -1096,80 +1214,89 @@ type WebSite_uploadBlob_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_uploadBlob_Results_Future) Struct() (WebSite_uploadBlob_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_uploadBlob_Results{s}, err
+	return WebSite_uploadBlob_Results(s), err
 }
 
 func (p WebSite_uploadBlob_Results_Future) Blob() util.Blob {
-	return util.Blob{Client: p.Future.Field(0, nil).Client()}
+	return util.Blob(p.Future.Field(0, nil).Client())
 }
 
 func (p WebSite_uploadBlob_Results_Future) Stream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
+	return util.ByteStream(p.Future.Field(1, nil).Client())
 }
 
-type WebSite_getSubsite_Params struct{ capnp.Struct }
+type WebSite_getSubsite_Params capnp.Struct
 
 // WebSite_getSubsite_Params_TypeID is the unique identifier for the type WebSite_getSubsite_Params.
 const WebSite_getSubsite_Params_TypeID = 0xdcbe913db7496644
 
 func NewWebSite_getSubsite_Params(s *capnp.Segment) (WebSite_getSubsite_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getSubsite_Params{st}, err
+	return WebSite_getSubsite_Params(st), err
 }
 
 func NewRootWebSite_getSubsite_Params(s *capnp.Segment) (WebSite_getSubsite_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getSubsite_Params{st}, err
+	return WebSite_getSubsite_Params(st), err
 }
 
 func ReadRootWebSite_getSubsite_Params(msg *capnp.Message) (WebSite_getSubsite_Params, error) {
 	root, err := msg.Root()
-	return WebSite_getSubsite_Params{root.Struct()}, err
+	return WebSite_getSubsite_Params(root.Struct()), err
 }
 
 func (s WebSite_getSubsite_Params) String() string {
-	str, _ := text.Marshal(0xdcbe913db7496644, s.Struct)
+	str, _ := text.Marshal(0xdcbe913db7496644, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getSubsite_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getSubsite_Params) DecodeFromPtr(p capnp.Ptr) WebSite_getSubsite_Params {
+	return WebSite_getSubsite_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getSubsite_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getSubsite_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getSubsite_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getSubsite_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getSubsite_Params) Prefix() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSite_getSubsite_Params) HasPrefix() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getSubsite_Params) PrefixBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSite_getSubsite_Params) SetPrefix(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // WebSite_getSubsite_Params_List is a list of WebSite_getSubsite_Params.
-type WebSite_getSubsite_Params_List struct{ capnp.List }
+type WebSite_getSubsite_Params_List = capnp.StructList[WebSite_getSubsite_Params]
 
 // NewWebSite_getSubsite_Params creates a new list of WebSite_getSubsite_Params.
 func NewWebSite_getSubsite_Params_List(s *capnp.Segment, sz int32) (WebSite_getSubsite_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getSubsite_Params_List{l}, err
-}
-
-func (s WebSite_getSubsite_Params_List) At(i int) WebSite_getSubsite_Params {
-	return WebSite_getSubsite_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_getSubsite_Params_List) Set(i int, v WebSite_getSubsite_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getSubsite_Params_List) String() string {
-	str, _ := text.MarshalList(0xdcbe913db7496644, s.List)
-	return str
+	return capnp.StructList[WebSite_getSubsite_Params](l), err
 }
 
 // WebSite_getSubsite_Params_Future is a wrapper for a WebSite_getSubsite_Params promised by a client call.
@@ -1177,72 +1304,81 @@ type WebSite_getSubsite_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_getSubsite_Params_Future) Struct() (WebSite_getSubsite_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getSubsite_Params{s}, err
+	return WebSite_getSubsite_Params(s), err
 }
 
-type WebSite_getSubsite_Results struct{ capnp.Struct }
+type WebSite_getSubsite_Results capnp.Struct
 
 // WebSite_getSubsite_Results_TypeID is the unique identifier for the type WebSite_getSubsite_Results.
 const WebSite_getSubsite_Results_TypeID = 0x90dec3f1a5d9b591
 
 func NewWebSite_getSubsite_Results(s *capnp.Segment) (WebSite_getSubsite_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getSubsite_Results{st}, err
+	return WebSite_getSubsite_Results(st), err
 }
 
 func NewRootWebSite_getSubsite_Results(s *capnp.Segment) (WebSite_getSubsite_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_getSubsite_Results{st}, err
+	return WebSite_getSubsite_Results(st), err
 }
 
 func ReadRootWebSite_getSubsite_Results(msg *capnp.Message) (WebSite_getSubsite_Results, error) {
 	root, err := msg.Root()
-	return WebSite_getSubsite_Results{root.Struct()}, err
+	return WebSite_getSubsite_Results(root.Struct()), err
 }
 
 func (s WebSite_getSubsite_Results) String() string {
-	str, _ := text.Marshal(0x90dec3f1a5d9b591, s.Struct)
+	str, _ := text.Marshal(0x90dec3f1a5d9b591, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_getSubsite_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_getSubsite_Results) DecodeFromPtr(p capnp.Ptr) WebSite_getSubsite_Results {
+	return WebSite_getSubsite_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_getSubsite_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_getSubsite_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_getSubsite_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_getSubsite_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_getSubsite_Results) Site() WebSite {
-	p, _ := s.Struct.Ptr(0)
-	return WebSite{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return WebSite(p.Interface().Client())
 }
 
 func (s WebSite_getSubsite_Results) HasSite() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_getSubsite_Results) SetSite(v WebSite) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // WebSite_getSubsite_Results_List is a list of WebSite_getSubsite_Results.
-type WebSite_getSubsite_Results_List struct{ capnp.List }
+type WebSite_getSubsite_Results_List = capnp.StructList[WebSite_getSubsite_Results]
 
 // NewWebSite_getSubsite_Results creates a new list of WebSite_getSubsite_Results.
 func NewWebSite_getSubsite_Results_List(s *capnp.Segment, sz int32) (WebSite_getSubsite_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_getSubsite_Results_List{l}, err
-}
-
-func (s WebSite_getSubsite_Results_List) At(i int) WebSite_getSubsite_Results {
-	return WebSite_getSubsite_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_getSubsite_Results_List) Set(i int, v WebSite_getSubsite_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_getSubsite_Results_List) String() string {
-	str, _ := text.MarshalList(0x90dec3f1a5d9b591, s.List)
-	return str
+	return capnp.StructList[WebSite_getSubsite_Results](l), err
 }
 
 // WebSite_getSubsite_Results_Future is a wrapper for a WebSite_getSubsite_Results promised by a client call.
@@ -1250,66 +1386,75 @@ type WebSite_getSubsite_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_getSubsite_Results_Future) Struct() (WebSite_getSubsite_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_getSubsite_Results{s}, err
+	return WebSite_getSubsite_Results(s), err
 }
 
 func (p WebSite_getSubsite_Results_Future) Site() WebSite {
-	return WebSite{Client: p.Future.Field(0, nil).Client()}
+	return WebSite(p.Future.Field(0, nil).Client())
 }
 
-type WebSite_listResources_Params struct{ capnp.Struct }
+type WebSite_listResources_Params capnp.Struct
 
 // WebSite_listResources_Params_TypeID is the unique identifier for the type WebSite_listResources_Params.
 const WebSite_listResources_Params_TypeID = 0x87a72be8e04db694
 
 func NewWebSite_listResources_Params(s *capnp.Segment) (WebSite_listResources_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return WebSite_listResources_Params{st}, err
+	return WebSite_listResources_Params(st), err
 }
 
 func NewRootWebSite_listResources_Params(s *capnp.Segment) (WebSite_listResources_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return WebSite_listResources_Params{st}, err
+	return WebSite_listResources_Params(st), err
 }
 
 func ReadRootWebSite_listResources_Params(msg *capnp.Message) (WebSite_listResources_Params, error) {
 	root, err := msg.Root()
-	return WebSite_listResources_Params{root.Struct()}, err
+	return WebSite_listResources_Params(root.Struct()), err
 }
 
 func (s WebSite_listResources_Params) String() string {
-	str, _ := text.Marshal(0x87a72be8e04db694, s.Struct)
+	str, _ := text.Marshal(0x87a72be8e04db694, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_listResources_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_listResources_Params) DecodeFromPtr(p capnp.Ptr) WebSite_listResources_Params {
+	return WebSite_listResources_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_listResources_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_listResources_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_listResources_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_listResources_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_listResources_Params) Shallow() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSite_listResources_Params) SetShallow(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 // WebSite_listResources_Params_List is a list of WebSite_listResources_Params.
-type WebSite_listResources_Params_List struct{ capnp.List }
+type WebSite_listResources_Params_List = capnp.StructList[WebSite_listResources_Params]
 
 // NewWebSite_listResources_Params creates a new list of WebSite_listResources_Params.
 func NewWebSite_listResources_Params_List(s *capnp.Segment, sz int32) (WebSite_listResources_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return WebSite_listResources_Params_List{l}, err
-}
-
-func (s WebSite_listResources_Params_List) At(i int) WebSite_listResources_Params {
-	return WebSite_listResources_Params{s.List.Struct(i)}
-}
-
-func (s WebSite_listResources_Params_List) Set(i int, v WebSite_listResources_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_listResources_Params_List) String() string {
-	str, _ := text.MarshalList(0x87a72be8e04db694, s.List)
-	return str
+	return capnp.StructList[WebSite_listResources_Params](l), err
 }
 
 // WebSite_listResources_Params_Future is a wrapper for a WebSite_listResources_Params promised by a client call.
@@ -1317,78 +1462,87 @@ type WebSite_listResources_Params_Future struct{ *capnp.Future }
 
 func (p WebSite_listResources_Params_Future) Struct() (WebSite_listResources_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSite_listResources_Params{s}, err
+	return WebSite_listResources_Params(s), err
 }
 
-type WebSite_listResources_Results struct{ capnp.Struct }
+type WebSite_listResources_Results capnp.Struct
 
 // WebSite_listResources_Results_TypeID is the unique identifier for the type WebSite_listResources_Results.
 const WebSite_listResources_Results_TypeID = 0xf5e0920223f0b273
 
 func NewWebSite_listResources_Results(s *capnp.Segment) (WebSite_listResources_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_listResources_Results{st}, err
+	return WebSite_listResources_Results(st), err
 }
 
 func NewRootWebSite_listResources_Results(s *capnp.Segment) (WebSite_listResources_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSite_listResources_Results{st}, err
+	return WebSite_listResources_Results(st), err
 }
 
 func ReadRootWebSite_listResources_Results(msg *capnp.Message) (WebSite_listResources_Results, error) {
 	root, err := msg.Root()
-	return WebSite_listResources_Results{root.Struct()}, err
+	return WebSite_listResources_Results(root.Struct()), err
 }
 
 func (s WebSite_listResources_Results) String() string {
-	str, _ := text.Marshal(0xf5e0920223f0b273, s.Struct)
+	str, _ := text.Marshal(0xf5e0920223f0b273, capnp.Struct(s))
 	return str
 }
 
+func (s WebSite_listResources_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSite_listResources_Results) DecodeFromPtr(p capnp.Ptr) WebSite_listResources_Results {
+	return WebSite_listResources_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSite_listResources_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSite_listResources_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSite_listResources_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSite_listResources_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSite_listResources_Results) Names() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(0)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return capnp.TextList(p.List()), err
 }
 
 func (s WebSite_listResources_Results) HasNames() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSite_listResources_Results) SetNames(v capnp.TextList) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewNames sets the names field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s WebSite_listResources_Results) NewNames(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // WebSite_listResources_Results_List is a list of WebSite_listResources_Results.
-type WebSite_listResources_Results_List struct{ capnp.List }
+type WebSite_listResources_Results_List = capnp.StructList[WebSite_listResources_Results]
 
 // NewWebSite_listResources_Results creates a new list of WebSite_listResources_Results.
 func NewWebSite_listResources_Results_List(s *capnp.Segment, sz int32) (WebSite_listResources_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSite_listResources_Results_List{l}, err
-}
-
-func (s WebSite_listResources_Results_List) At(i int) WebSite_listResources_Results {
-	return WebSite_listResources_Results{s.List.Struct(i)}
-}
-
-func (s WebSite_listResources_Results_List) Set(i int, v WebSite_listResources_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSite_listResources_Results_List) String() string {
-	str, _ := text.MarshalList(0xf5e0920223f0b273, s.List)
-	return str
+	return capnp.StructList[WebSite_listResources_Results](l), err
 }
 
 // WebSite_listResources_Results_Future is a wrapper for a WebSite_listResources_Results promised by a client call.
@@ -1396,79 +1550,79 @@ type WebSite_listResources_Results_Future struct{ *capnp.Future }
 
 func (p WebSite_listResources_Results_Future) Struct() (WebSite_listResources_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSite_listResources_Results{s}, err
+	return WebSite_listResources_Results(s), err
 }
 
-const schema_d5d3e63bd0a552b6 = "x\xda\xc4U]h\x1cU\x14>\xe7\xcel\xa7\xd9\xec" +
-	"&\xbdfc\x1b0\x866+\x9a\x95\x84\xa6i\xa1\xc4" +
-	"\xd8MZ\xe3O!\x92I\x1b\xaa\x81 3\xc9mv" +
-	"`vg\xdd\x99%\xdd\xd0\xfaS\x0c\x15QL\x8ab" +
-	"\xab\xe8\x83\x10\xab/\xda\x14\x1bQT\xa8E\x1f\x0ab" +
-	"@*\x88\x89\x14\xff\x90\xbc\xf8\x83\xf5\xb1W\xeed\xe7" +
-	"'i\xd74O}J\xf6\xccw\xcf\xf9\xee=\xdf\xf9" +
-	"\xce\xf6\x9dr7i\x8f\xfcq\x1b\x80\xba\x10\xd9\xc0\xcf" +
-	"\x96.\xbc\x93\xda\xf7\xc1qP\x93\x88<\xf3TM\xd7" +
-	"\x9e\xc5\x86y\x18\x8c(H\x00:\x86\xab\xf6#`\x9d" +
-	"Q5\x0e\xc8_\x99\xeb\xbb\xf2\xfb\xbdgN\x80\xda\x88" +
-	"\x08 +\x00\x1d_V\x9d\x14\x80\xcbUi@>}" +
-	"\xfe\xfb\x99\xbf.\xfe8\x05\xb4\x11\x01\"(\x00W\xab" +
-	"\x8e\x0b\x00F\x05\xe0\xad\x91\xcc\xae\x87\x87'\xcf\x85\x01" +
-	"[\xa3\xba\x00\xb4\xba\x80\xa5\xf3\xb5\x8a\xf5\x86}1\x0c" +
-	"\xe8\x8b\xbe \x00\xc3.`\xae\xf9\xddMK\x99\x1f\xca" +
-	"\x00\x97\xc2\x85\xe8\x17\x082\x7f\xe0\xb5-\x8b\xf5f\xd7" +
-	"W\xe5\xa3D|\x9a\x8d\xba\xc5?\x8b\x0a\xfa\xfe\xe5\x04" +
-	"}>\xde\xbc\xe7\x99\x87.-,B$\"\x90\x0d\xd5" +
-	"\xdb\xb0\xae\xa5Z\xfc{Wu\x13\x02rm\xbep\xe4" +
-	"\x97\x94\xb2\x10\xaa\xd4\x12\x1br+\x1d~\xe4\xa3\xfb\xa7" +
-	"?_\x08\x93\xac\x8fM\x88J[c\x82\xa4\x9f\x9b\xd6" +
-	"K|n`f\xfe\xbe\xdf\xbe\xbd\x0c\x80u=\xb1\xa5" +
-	"\xba\xbe\xd8f\x80\x8e\xc1\xd8\x09\xac\x1b\x8e+\x00\xfc\xdf" +
-	"\xf7zR\x13\xed\xef\xff\x14*\xd4\x1b\x9f\x10\x85\xecs" +
-	"\x7f6\x93\x93W\xae\x86\x0b\xb5\xc7_\x17\x85z\xe2\xa2" +
-	"\xd0?G\xef<\xfb\xdd\xbe\xdb\xaf\x85\x01O\xc6\xdd;" +
-	"\x1fs\x01z\"\xf9\xe9']\xbby\x18\xf0f\xfc\x92" +
-	"\x00\xcc\xc6\xd3\xc0\xe1c>\xce\xf4\xd6|Q7e\xc3" +
-	"\xce\x18\xb9\xb1\xb6\x11-\x9f\xcbw\x1eb\xfa\x01\xc3a" +
-	"m\xbd9\xc7pJm\xba5Z\x02P7J\xf2\x1d" +
-	"\x9cK\x09\x94\x00h\xcb\x0e\x005)\xa1\xba\x9d`#" +
-	"^\x13a\x19\x80\xb6\xa6\x00\xd4{$Tw\x12l\xd2" +
-	"K\x0e\xb31\x0e\x04\xe3\x80\xb5\xbai\xe9H\xf9\xcb\x0d" +
-	"S\xc3g\xee\xde\xf5+\x00\"\x15\xcfUf\x10\xb9!" +
-	"\x03\xd3\xb0\x9d\x01f[\xc5\xc2\x08\xb3\x93\xfdZA\xcb" +
-	"\xa2\xad\xca\x92\x0c #\x00\x8d\xefu\x89\xa1\x9a \xf8" +
-	"\xb4\x9d\xd1L\xd3\x1aG\x04\x82\xb8f\xea1\xe6\x1c(" +
-	"\xea\xb6\xe1\xb0\xe4\x00\xb3\x8b\xa6cC8q*H\\" +
-	"+@H\x83\xce\xae\xa2.W\xca?X0\xdd\xdc\x8a" +
-	"\xe9\xd8\x95r\xe75'\x831 \x18\xbb\x19\xc6nG" +
-	"\x0cf\xfb\x94Wp\xde\x0f\xa0\xc6$T\x1f#\xc8Y" +
-	"\x19\x09\x00H\xf9\xe9\xe9m\xa7>\x1c\xfc{\x09\x00\xba" +
-	"\x91b\x93*\x13\x0c\x07)nVeD\xc4~\x09\xb1" +
-	"\x06\xdc?\x9b\x82\xa1Yu\xe1X%z\x8fZ\xce\x83" +
-	"V17\xea\xd3t;f\x83w\xf0\x86\xe7\x8ay\xd3" +
-	"\xd2F\xf7\x9a\x96\x1e4b\xa3\x7f\xa9\x96T 4\x8a" +
-	"\x98\x10\xe6C[;\x03\x99U\x10V\xdav\x0aL\xcb" +
-	"\"\xe5O\xfc\xfcM\xcb\xf8\xeeC_\xaf\xbe\x85TI" +
-	"\xf3\x8a\xe1\x94\xfa\x11\xd5\x84O\xe2\x98x\xd9\xa3\x12\xaa" +
-	"\xcf\x87HL\x8a\xe0s\x12\xaaS\x04)!\x09\xe1\x99" +
-	"\xf4%\x11|QB\xf5\x14A\x94\x10\x03\x8f\xa5\xaf\xa6" +
-	"\x80PYN`Dd\x1c\x0a2\xf2\xac\x91e\x07K" +
-	"y&z\xe5I\xc1\xd4rcEmlE\x8c\xe5F" +
-	"\xacQ#7\x16\x8a\xd5\x8a\xe1\xe4\x056j\x14\xd8\x88" +
-	"\x03\xd2A\xeb:1\xfd\xaf<E\x83\xa4\xac\xbd6\xd8" +
-	"\x9b\x95\xf4rK\xc3\xb2\xeb\x0c\xe4\x9c\xce\x17\xd8a\xe3" +
-	"\xc8u\x1c\xc8\xea\xb4\xb5\"\xaf\x90\\ 2\x8a\x9d\xe9" +
-	"e\xc7Q\xb7H\x11\x00\xdf\x84\xd1\xdb\x1ct\xb6\x13\x08" +
-	"\x9dQ00?\xf4\x96\x06=\xad\x03\xa1\xd3\x0aJ\xfe" +
-	"\x9a@\xcf\x00\xe9\xe4\xdb@\xe8\xb3\x0a\xca\xbe\xdf\xa2\xb7" +
-	"1hq\x08\x08\xcd*\x18\xf1\xad\x1d\xbdUF5\xf1" +
-	"\xedq\x05\x89\xbf\xfe\xd0\xb3e\xdaW\x00B{\x95\xf4" +
-	"\xf2Cv#\xf7\xc6\x13\x14\x83\xd9\xcb\xbf\xddy@o" +
-	" \xcaqO\xef Y\xfa2\xcc}[\x90\x1c\xd6\x8d" +
-	"\xdcs<hr=\xaf\x1b\xfbq\xadV\x86\x06\xa8\xdc" +
-	"\x9du\xb9\xaa;t\xd2J\x87\xdaQni\x92`S" +
-	"N\xcb2\xdb3\x05\xd1\xd8\x9au9U\xd9\x02\xd6\xe5" +
-	"\x7f\x1bn\xda`n\x85\x0f\xfe\x17\x00\x00\xff\xff\x91l" +
-	"\x9a\x14"
+const schema_d5d3e63bd0a552b6 = "x\xda\xc4U]h\x1c\xd5\x17?\xe7\xcel\xa7\xd9\xee" +
+	"$\xbd\xffl\xfem\xc0\x18\xda\xachV\x12\x9a\xc6J" +
+	"\x89\xb1\x9b\xb4\xc6\x8fB$\x936T\x03Af\x92\xdb" +
+	"\xec\xc0\xec\xce\xba3K\xba\xa1\xf5\xa3\x18*\xa2\x98\x14" +
+	"\xc5V\xd1\x07!V_\xb4)6\xa2\xa8P\x8b>\x14" +
+	"\xc4\x80T\x10\x13)~!y\xf1\x03\xebc\xaf\xdc\xc9" +
+	"\xceG\xd2\xc64O>%{\xe6w\xcf\xf9\xdd{~" +
+	"\xe7wv\xdc-w\xc9m\xeao\xff\x03\xa2\xcd\xc76" +
+	"\xf0\xb3\xe5\x0bo\xa5\xf7\xbdw\x1c\xb4\x14\"\xcf>Q" +
+	"\xdd\xb9g\xa1~\x0e\x06b\x0a\x12\x80\xf6\xa1\xaa\xfd\x08" +
+	"XkV\x8d\x01\xf2\x97f{\xaf\xfcz\xe7\x99\x13\xa0" +
+	"5 \x02\xc8\x0a@\xfb\xe7U'\x05\xe0rU\x06\x90" +
+	"O\x9d\xffv\xfa\x8f\x8b\xdfO\x02m@\x80\x18\x0a\xc0" +
+	"\xd5\xaa\xe3\x02\x80q\x01xc8\xbb\xeb\xc1\xa1\x89s" +
+	"Q\xc0\xb6\xb8!\x00-\x1e`\xf1|\x8db\xbf\xe6\\" +
+	"\x8c\x02z\xe3\xcf\x09\xc0\x90\x07\x98mz{\xf3b\xf6" +
+	"\xbb\x0a\xc0\xa3p!\xfe\x19\x82\xcc\xef{e\xebB\x9d" +
+	"\xd5\xf9E\xe5(\x11\x9ff\xe2^\xf1O\xe2\x82~p" +
+	"9A\x9f\x8f5\xedy\xea\x81K\xf3\x0b\x10\x8b\x09d" +
+	"\xfd\xa6\xedX\xdb\xbcI\xfc{\xdb\xa6F\x04\xe4\xfa\\" +
+	"\xf1\xc8Oie>R\xa991\xe8U:\xfc\xd0\x07" +
+	"\xf7N}:\x1f%Y\x97\x18\x17\x95\xb6%\x04\xc9 " +
+	"7\xad\x93\xf8l\xff\xf4\xdc=\xbf|}\x19\x00k\xbb" +
+	"\x13\x8b\xb5\xbd\x89-\x00\xed\x03\x89\x13X;\xa4*\x00" +
+	"\xfc\xefw\xba\xd3\xe3m\xef\xfe\x10)\xd4\xa3\x8e\x8bB" +
+	"\xce\xb9\xdf\x9b\xc8\xc9+W\xa3\x85\xda\xd4WE\xa1n" +
+	"U\x14\xfa\xeb\xe8\xadg\xbf\xd9\xf7\xffkQ\xc0\xe3\xaa" +
+	"w\xe7c\x1e\xc0H\xa6>\xfe\xa8s7\x8f\x02^W" +
+	"/\x09\xc0\x8c\x9a\x01\x0e\x1f\xf21f\xb4\x14J\x86%" +
+	"\x9bN\xd6\xcc\x8f\xb6\x0e\xeb\x85|\xa1\xe3\x103\x0e\x98" +
+	".k\xed\xc9\xbb\xa6[n5\xec\x912\x80\xb6Q\x92" +
+	"o\xe1\\J\xa2\x04@\x9bw\x02h)\x09\xb5\x1d\x04" +
+	"\x1b\xf0\x9a\x08\xcb\x00\xb4%\x0d\xa0\xdd!\xa1v\x17\xc1" +
+	"F\xa3\xec2\x07U \xa8\x02\xd6\x18\x96m \xe5/" +
+	"\xd6O\x0e\x9d\xb9}\xd7\xcf\x00\x88T<W\x85A\xec" +
+	"\x86\x0c,\xd3q\xfb\x99c\x97\x8a\xc3\xccI\xf5\xe9E" +
+	"=\x87\x8e&K2\x80\x8c\x00T\xdd\xeb\x11C-I" +
+	"\xf0I'\xab[\x96=\x86\x08\x04q\xcd\xd4\xa3\xcc=" +
+	"P2\x1c\xd3e\xa9~\xe6\x94,\xd7\x81h\xe2t\x98" +
+	"\xb8F\x80\x90\x86\x9d]A]^-\xff@\xd1\xf2r" +
+	"+\x96\xeb\xac\x96\xbb\xa0\xbbYL\x00\xc1\xc4\xcd0\xf6" +
+	":b2'\xa0\xbc\x8c\xf3~\x00-!\xa1\xf6\x08A" +
+	"\xce*H\x00@\xcaOOm?\xf5\xfe\xc0\x9f\x8b\x00" +
+	"\xd0\x85\x14\x1b5\x99`4Hq\x8b&#\"\xf6I" +
+	"\x88\xd5\xe0\xfd\xd9\x1c\x0e\xcd\x8a\x0b'V\xa3\xf7\xb0\xed" +
+	"\xdeo\x97\xf2#\x01M\xafc\x0e\xf8\x07ox\xaeT" +
+	"\xb0l}d\xafe\x1ba#6\x06\x97jN\x87B" +
+	"\xa3\x88Ia>\xb4\xa5#\x94\xd9*\xc2\xca8n\x91" +
+	"\xe99\xa4\xfc\xb1\x1f\xbfj\x1e\xdb}\xe8\xcb\x95\xb7\x90" +
+	"V\xd3\xbcb\xba\xe5>D-\x19\x908&^\xf6\xa8" +
+	"\x84\xda\xb3\x11\x12\x13\"\xf8\x8c\x84\xda$AJHR" +
+	"x&}A\x04\x9f\x97P;E\x10%\xc4\xd0c\xe9" +
+	"\xcbi T\x96\x93\x18\x13\x19\x07\xc3\x8c<g\xe6\xd8" +
+	"\xc1r\x81\x89^\xf9R\xb0\xf4\xfchI\x1f]\x16c" +
+	"\xf9a{\xc4\xcc\x8fFb5b8y\x91\x8d\x98E" +
+	"6\xec\x82t\xd0\xbeNL\xff*O\xd1 )\xe7\xac" +
+	"\x0d\xf6g%\xb3\xd4\xd2\xa8\xec:B9g\x0aEv" +
+	"\xd8<r\x1d\x07\xb22m\x8d\xc8+$\x17\x8a\x8cb" +
+	"Gf\xc9q\xb4\xadR\x0c 0a\xf47\x07\x9d\xe9" +
+	"\x00B\xa7\x15\x0c\xcd\x0f\xfd\xa5AO\x1b@\xe8\x94\x82" +
+	"R\xb0&\xd07@:\xf1&\x10\xfa\xb4\x82r\xe0\xb7" +
+	"\xe8o\x0cZ\x1a\x04Bs\x0a\xc6\x02kG\x7f\x95Q" +
+	"]|{TA\x12\xac?\xf4m\x99\xf6\x16\x81\xd0\x1e" +
+	"%\xb3\xf4\x90]\xc8\xfd\xf1\x04\xc5d\xce\xd2oo\x1e" +
+	"\xd0\x1f\x88J\xdc\xd7;H\xb6\xb1\x04\xf3\xde\x16$\x97" +
+	"u!\xf7\x1d\x0f\x1a=\xcf\xeb\xc2>\\\xab\x95\x91\x01" +
+	"\xaatg]\xae\xea\x0d\x9d\xb4\xdc\xa1vVZ\x9a\"" +
+	"\xd8\x98\xd7s\xcc\xf1MA4\xb6z]NU\xb1\x80" +
+	"u\xf9\xdf\x86\x9b6\x98\xff\xc2\x07\xff\x09\x00\x00\xff\xff" +
+	"\x13\x0f\x9a\""
 
 func init() {
 	schemas.Register(schema_d5d3e63bd0a552b6,

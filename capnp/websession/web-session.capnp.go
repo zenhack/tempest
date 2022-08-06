@@ -23,81 +23,90 @@ const (
 
 // Constants defined in web-session.capnp.
 var (
-	WebSession_Context_headerWhitelist  = capnp.TextList{List: capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[0:368]).List()}
-	WebSession_Response_headerWhitelist = capnp.TextList{List: capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[368:440]).List()}
+	WebSession_Context_headerWhitelist  = capnp.TextList(capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[0:368]).List())
+	WebSession_Response_headerWhitelist = capnp.TextList(capnp.MustUnmarshalRoot(x_a8cb0f2f1a756b32[368:440]).List())
 )
 
-type HttpStatusDescriptor struct{ capnp.Struct }
+type HttpStatusDescriptor capnp.Struct
 
 // HttpStatusDescriptor_TypeID is the unique identifier for the type HttpStatusDescriptor.
 const HttpStatusDescriptor_TypeID = 0xbc353583a3731ade
 
 func NewHttpStatusDescriptor(s *capnp.Segment) (HttpStatusDescriptor, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return HttpStatusDescriptor{st}, err
+	return HttpStatusDescriptor(st), err
 }
 
 func NewRootHttpStatusDescriptor(s *capnp.Segment) (HttpStatusDescriptor, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return HttpStatusDescriptor{st}, err
+	return HttpStatusDescriptor(st), err
 }
 
 func ReadRootHttpStatusDescriptor(msg *capnp.Message) (HttpStatusDescriptor, error) {
 	root, err := msg.Root()
-	return HttpStatusDescriptor{root.Struct()}, err
+	return HttpStatusDescriptor(root.Struct()), err
 }
 
 func (s HttpStatusDescriptor) String() string {
-	str, _ := text.Marshal(0xbc353583a3731ade, s.Struct)
+	str, _ := text.Marshal(0xbc353583a3731ade, capnp.Struct(s))
 	return str
 }
 
+func (s HttpStatusDescriptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (HttpStatusDescriptor) DecodeFromPtr(p capnp.Ptr) HttpStatusDescriptor {
+	return HttpStatusDescriptor(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s HttpStatusDescriptor) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s HttpStatusDescriptor) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s HttpStatusDescriptor) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s HttpStatusDescriptor) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s HttpStatusDescriptor) Id() uint16 {
-	return s.Struct.Uint16(0)
+	return capnp.Struct(s).Uint16(0)
 }
 
 func (s HttpStatusDescriptor) SetId(v uint16) {
-	s.Struct.SetUint16(0, v)
+	capnp.Struct(s).SetUint16(0, v)
 }
 
 func (s HttpStatusDescriptor) Title() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s HttpStatusDescriptor) HasTitle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s HttpStatusDescriptor) TitleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s HttpStatusDescriptor) SetTitle(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // HttpStatusDescriptor_List is a list of HttpStatusDescriptor.
-type HttpStatusDescriptor_List struct{ capnp.List }
+type HttpStatusDescriptor_List = capnp.StructList[HttpStatusDescriptor]
 
 // NewHttpStatusDescriptor creates a new list of HttpStatusDescriptor.
 func NewHttpStatusDescriptor_List(s *capnp.Segment, sz int32) (HttpStatusDescriptor_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return HttpStatusDescriptor_List{l}, err
-}
-
-func (s HttpStatusDescriptor_List) At(i int) HttpStatusDescriptor {
-	return HttpStatusDescriptor{s.List.Struct(i)}
-}
-
-func (s HttpStatusDescriptor_List) Set(i int, v HttpStatusDescriptor) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s HttpStatusDescriptor_List) String() string {
-	str, _ := text.MarshalList(0xbc353583a3731ade, s.List)
-	return str
+	return capnp.StructList[HttpStatusDescriptor](l), err
 }
 
 // HttpStatusDescriptor_Future is a wrapper for a HttpStatusDescriptor promised by a client call.
@@ -105,10 +114,10 @@ type HttpStatusDescriptor_Future struct{ *capnp.Future }
 
 func (p HttpStatusDescriptor_Future) Struct() (HttpStatusDescriptor, error) {
 	s, err := p.Future.Struct()
-	return HttpStatusDescriptor{s}, err
+	return HttpStatusDescriptor(s), err
 }
 
-type WebSession struct{ Client *capnp.Client }
+type WebSession capnp.Client
 
 // WebSession_TypeID is the unique identifier for the type WebSession.
 const WebSession_TypeID = 0xa50711a14d35a8ce
@@ -124,9 +133,9 @@ func (c WebSession) Get(ctx context.Context, params func(WebSession_get_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_get_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_get_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Post(ctx context.Context, params func(WebSession_post_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -140,9 +149,9 @@ func (c WebSession) Post(ctx context.Context, params func(WebSession_post_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_post_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_post_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) OpenWebSocket(ctx context.Context, params func(WebSession_openWebSocket_Params) error) (WebSession_openWebSocket_Results_Future, capnp.ReleaseFunc) {
@@ -156,9 +165,9 @@ func (c WebSession) OpenWebSocket(ctx context.Context, params func(WebSession_op
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_openWebSocket_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_openWebSocket_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_openWebSocket_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Put(ctx context.Context, params func(WebSession_put_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -172,9 +181,9 @@ func (c WebSession) Put(ctx context.Context, params func(WebSession_put_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_put_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_put_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Delete(ctx context.Context, params func(WebSession_delete_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -188,9 +197,9 @@ func (c WebSession) Delete(ctx context.Context, params func(WebSession_delete_Pa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_delete_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_delete_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) PostStreaming(ctx context.Context, params func(WebSession_postStreaming_Params) error) (WebSession_postStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -204,9 +213,9 @@ func (c WebSession) PostStreaming(ctx context.Context, params func(WebSession_po
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_postStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_postStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_postStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSession) PutStreaming(ctx context.Context, params func(WebSession_putStreaming_Params) error) (WebSession_putStreaming_Results_Future, capnp.ReleaseFunc) {
@@ -220,9 +229,9 @@ func (c WebSession) PutStreaming(ctx context.Context, params func(WebSession_put
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 4}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_putStreaming_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_putStreaming_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_putStreaming_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Propfind(ctx context.Context, params func(WebSession_propfind_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -236,9 +245,9 @@ func (c WebSession) Propfind(ctx context.Context, params func(WebSession_propfin
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_propfind_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_propfind_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Proppatch(ctx context.Context, params func(WebSession_proppatch_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -252,9 +261,9 @@ func (c WebSession) Proppatch(ctx context.Context, params func(WebSession_proppa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_proppatch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_proppatch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Mkcol(ctx context.Context, params func(WebSession_mkcol_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -268,9 +277,9 @@ func (c WebSession) Mkcol(ctx context.Context, params func(WebSession_mkcol_Para
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_mkcol_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_mkcol_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Copy(ctx context.Context, params func(WebSession_copy_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -284,9 +293,9 @@ func (c WebSession) Copy(ctx context.Context, params func(WebSession_copy_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_copy_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_copy_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Move(ctx context.Context, params func(WebSession_move_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -300,9 +309,9 @@ func (c WebSession) Move(ctx context.Context, params func(WebSession_move_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_move_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_move_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Lock(ctx context.Context, params func(WebSession_lock_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -316,9 +325,9 @@ func (c WebSession) Lock(ctx context.Context, params func(WebSession_lock_Params
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_lock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_lock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Unlock(ctx context.Context, params func(WebSession_unlock_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -332,9 +341,9 @@ func (c WebSession) Unlock(ctx context.Context, params func(WebSession_unlock_Pa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_unlock_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_unlock_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Acl(ctx context.Context, params func(WebSession_acl_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -348,9 +357,9 @@ func (c WebSession) Acl(ctx context.Context, params func(WebSession_acl_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_acl_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_acl_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Report(ctx context.Context, params func(WebSession_report_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -364,9 +373,9 @@ func (c WebSession) Report(ctx context.Context, params func(WebSession_report_Pa
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_report_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_report_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Options(ctx context.Context, params func(WebSession_options_Params) error) (WebSession_Options_Future, capnp.ReleaseFunc) {
@@ -380,9 +389,9 @@ func (c WebSession) Options(ctx context.Context, params func(WebSession_options_
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_options_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_options_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Options_Future{Future: ans.Future()}, release
 }
 func (c WebSession) Patch(ctx context.Context, params func(WebSession_patch_Params) error) (WebSession_Response_Future, capnp.ReleaseFunc) {
@@ -396,20 +405,30 @@ func (c WebSession) Patch(ctx context.Context, params func(WebSession_patch_Para
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 3}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_patch_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_patch_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 
 func (c WebSession) AddRef() WebSession {
-	return WebSession{
-		Client: c.Client.AddRef(),
-	}
+	return WebSession(capnp.Client(c).AddRef())
 }
 
 func (c WebSession) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c WebSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (WebSession) DecodeFromPtr(p capnp.Ptr) WebSession {
+	return WebSession(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c WebSession) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A WebSession_Server is a WebSession with a local implementation.
@@ -452,15 +471,15 @@ type WebSession_Server interface {
 }
 
 // WebSession_NewServer creates a new Server from an implementation of WebSession_Server.
-func WebSession_NewServer(s WebSession_Server, policy *server.Policy) *server.Server {
+func WebSession_NewServer(s WebSession_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(WebSession_Methods(nil, s), s, c, policy)
+	return server.New(WebSession_Methods(nil, s), s, c)
 }
 
 // WebSession_ServerToClient creates a new Client from an implementation of WebSession_Server.
 // The caller is responsible for calling Release on the returned Client.
-func WebSession_ServerToClient(s WebSession_Server, policy *server.Policy) WebSession {
-	return WebSession{Client: capnp.NewClient(WebSession_NewServer(s, policy))}
+func WebSession_ServerToClient(s WebSession_Server) WebSession {
+	return WebSession(capnp.NewClient(WebSession_NewServer(s)))
 }
 
 // WebSession_Methods appends Methods to a slice that invoke the methods on s.
@@ -697,13 +716,13 @@ type WebSession_get struct {
 
 // Args returns the call's arguments.
 func (c WebSession_get) Args() WebSession_get_Params {
-	return WebSession_get_Params{Struct: c.Call.Args()}
+	return WebSession_get_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_get) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_post holds the state for a server call to WebSession.post.
@@ -714,13 +733,13 @@ type WebSession_post struct {
 
 // Args returns the call's arguments.
 func (c WebSession_post) Args() WebSession_post_Params {
-	return WebSession_post_Params{Struct: c.Call.Args()}
+	return WebSession_post_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_post) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_openWebSocket holds the state for a server call to WebSession.openWebSocket.
@@ -731,13 +750,13 @@ type WebSession_openWebSocket struct {
 
 // Args returns the call's arguments.
 func (c WebSession_openWebSocket) Args() WebSession_openWebSocket_Params {
-	return WebSession_openWebSocket_Params{Struct: c.Call.Args()}
+	return WebSession_openWebSocket_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_openWebSocket) AllocResults() (WebSession_openWebSocket_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_openWebSocket_Results{Struct: r}, err
+	return WebSession_openWebSocket_Results(r), err
 }
 
 // WebSession_put holds the state for a server call to WebSession.put.
@@ -748,13 +767,13 @@ type WebSession_put struct {
 
 // Args returns the call's arguments.
 func (c WebSession_put) Args() WebSession_put_Params {
-	return WebSession_put_Params{Struct: c.Call.Args()}
+	return WebSession_put_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_put) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_delete holds the state for a server call to WebSession.delete.
@@ -765,13 +784,13 @@ type WebSession_delete struct {
 
 // Args returns the call's arguments.
 func (c WebSession_delete) Args() WebSession_delete_Params {
-	return WebSession_delete_Params{Struct: c.Call.Args()}
+	return WebSession_delete_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_delete) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_postStreaming holds the state for a server call to WebSession.postStreaming.
@@ -782,13 +801,13 @@ type WebSession_postStreaming struct {
 
 // Args returns the call's arguments.
 func (c WebSession_postStreaming) Args() WebSession_postStreaming_Params {
-	return WebSession_postStreaming_Params{Struct: c.Call.Args()}
+	return WebSession_postStreaming_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_postStreaming) AllocResults() (WebSession_postStreaming_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_postStreaming_Results{Struct: r}, err
+	return WebSession_postStreaming_Results(r), err
 }
 
 // WebSession_putStreaming holds the state for a server call to WebSession.putStreaming.
@@ -799,13 +818,13 @@ type WebSession_putStreaming struct {
 
 // Args returns the call's arguments.
 func (c WebSession_putStreaming) Args() WebSession_putStreaming_Params {
-	return WebSession_putStreaming_Params{Struct: c.Call.Args()}
+	return WebSession_putStreaming_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_putStreaming) AllocResults() (WebSession_putStreaming_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_putStreaming_Results{Struct: r}, err
+	return WebSession_putStreaming_Results(r), err
 }
 
 // WebSession_propfind holds the state for a server call to WebSession.propfind.
@@ -816,13 +835,13 @@ type WebSession_propfind struct {
 
 // Args returns the call's arguments.
 func (c WebSession_propfind) Args() WebSession_propfind_Params {
-	return WebSession_propfind_Params{Struct: c.Call.Args()}
+	return WebSession_propfind_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_propfind) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_proppatch holds the state for a server call to WebSession.proppatch.
@@ -833,13 +852,13 @@ type WebSession_proppatch struct {
 
 // Args returns the call's arguments.
 func (c WebSession_proppatch) Args() WebSession_proppatch_Params {
-	return WebSession_proppatch_Params{Struct: c.Call.Args()}
+	return WebSession_proppatch_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_proppatch) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_mkcol holds the state for a server call to WebSession.mkcol.
@@ -850,13 +869,13 @@ type WebSession_mkcol struct {
 
 // Args returns the call's arguments.
 func (c WebSession_mkcol) Args() WebSession_mkcol_Params {
-	return WebSession_mkcol_Params{Struct: c.Call.Args()}
+	return WebSession_mkcol_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_mkcol) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_copy holds the state for a server call to WebSession.copy.
@@ -867,13 +886,13 @@ type WebSession_copy struct {
 
 // Args returns the call's arguments.
 func (c WebSession_copy) Args() WebSession_copy_Params {
-	return WebSession_copy_Params{Struct: c.Call.Args()}
+	return WebSession_copy_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_copy) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_move holds the state for a server call to WebSession.move.
@@ -884,13 +903,13 @@ type WebSession_move struct {
 
 // Args returns the call's arguments.
 func (c WebSession_move) Args() WebSession_move_Params {
-	return WebSession_move_Params{Struct: c.Call.Args()}
+	return WebSession_move_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_move) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_lock holds the state for a server call to WebSession.lock.
@@ -901,13 +920,13 @@ type WebSession_lock struct {
 
 // Args returns the call's arguments.
 func (c WebSession_lock) Args() WebSession_lock_Params {
-	return WebSession_lock_Params{Struct: c.Call.Args()}
+	return WebSession_lock_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_lock) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_unlock holds the state for a server call to WebSession.unlock.
@@ -918,13 +937,13 @@ type WebSession_unlock struct {
 
 // Args returns the call's arguments.
 func (c WebSession_unlock) Args() WebSession_unlock_Params {
-	return WebSession_unlock_Params{Struct: c.Call.Args()}
+	return WebSession_unlock_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_unlock) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_acl holds the state for a server call to WebSession.acl.
@@ -935,13 +954,13 @@ type WebSession_acl struct {
 
 // Args returns the call's arguments.
 func (c WebSession_acl) Args() WebSession_acl_Params {
-	return WebSession_acl_Params{Struct: c.Call.Args()}
+	return WebSession_acl_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_acl) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_report holds the state for a server call to WebSession.report.
@@ -952,13 +971,13 @@ type WebSession_report struct {
 
 // Args returns the call's arguments.
 func (c WebSession_report) Args() WebSession_report_Params {
-	return WebSession_report_Params{Struct: c.Call.Args()}
+	return WebSession_report_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_report) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
 // WebSession_options holds the state for a server call to WebSession.options.
@@ -969,13 +988,13 @@ type WebSession_options struct {
 
 // Args returns the call's arguments.
 func (c WebSession_options) Args() WebSession_options_Params {
-	return WebSession_options_Params{Struct: c.Call.Args()}
+	return WebSession_options_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_options) AllocResults() (WebSession_Options, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_Options{Struct: r}, err
+	return WebSession_Options(r), err
 }
 
 // WebSession_patch holds the state for a server call to WebSession.patch.
@@ -986,120 +1005,138 @@ type WebSession_patch struct {
 
 // Args returns the call's arguments.
 func (c WebSession_patch) Args() WebSession_patch_Params {
-	return WebSession_patch_Params{Struct: c.Call.Args()}
+	return WebSession_patch_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_patch) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
-type WebSession_Params struct{ capnp.Struct }
+// WebSession_List is a list of WebSession.
+type WebSession_List = capnp.CapList[WebSession]
+
+// NewWebSession creates a new list of WebSession.
+func NewWebSession_List(s *capnp.Segment, sz int32) (WebSession_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[WebSession](l), err
+}
+
+type WebSession_Params capnp.Struct
 
 // WebSession_Params_TypeID is the unique identifier for the type WebSession_Params.
 const WebSession_Params_TypeID = 0xd7051b9757f6b096
 
 func NewWebSession_Params(s *capnp.Segment) (WebSession_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_Params{st}, err
+	return WebSession_Params(st), err
 }
 
 func NewRootWebSession_Params(s *capnp.Segment) (WebSession_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_Params{st}, err
+	return WebSession_Params(st), err
 }
 
 func ReadRootWebSession_Params(msg *capnp.Message) (WebSession_Params, error) {
 	root, err := msg.Root()
-	return WebSession_Params{root.Struct()}, err
+	return WebSession_Params(root.Struct()), err
 }
 
 func (s WebSession_Params) String() string {
-	str, _ := text.Marshal(0xd7051b9757f6b096, s.Struct)
+	str, _ := text.Marshal(0xd7051b9757f6b096, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Params) DecodeFromPtr(p capnp.Ptr) WebSession_Params {
+	return WebSession_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Params) BasePath() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_Params) HasBasePath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Params) BasePathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Params) SetBasePath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_Params) UserAgent() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Params) HasUserAgent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Params) UserAgentBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Params) SetUserAgent(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Params) AcceptableLanguages() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(2)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return capnp.TextList(p.List()), err
 }
 
 func (s WebSession_Params) HasAcceptableLanguages() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Params) SetAcceptableLanguages(v capnp.TextList) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewAcceptableLanguages sets the acceptableLanguages field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s WebSession_Params) NewAcceptableLanguages(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // WebSession_Params_List is a list of WebSession_Params.
-type WebSession_Params_List struct{ capnp.List }
+type WebSession_Params_List = capnp.StructList[WebSession_Params]
 
 // NewWebSession_Params creates a new list of WebSession_Params.
 func NewWebSession_Params_List(s *capnp.Segment, sz int32) (WebSession_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_Params_List{l}, err
-}
-
-func (s WebSession_Params_List) At(i int) WebSession_Params {
-	return WebSession_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_Params_List) Set(i int, v WebSession_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Params_List) String() string {
-	str, _ := text.MarshalList(0xd7051b9757f6b096, s.List)
-	return str
+	return capnp.StructList[WebSession_Params](l), err
 }
 
 // WebSession_Params_Future is a wrapper for a WebSession_Params promised by a client call.
@@ -1107,10 +1144,10 @@ type WebSession_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_Params_Future) Struct() (WebSession_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Params{s}, err
+	return WebSession_Params(s), err
 }
 
-type WebSession_Context struct{ capnp.Struct }
+type WebSession_Context capnp.Struct
 type WebSession_Context_eTagPrecondition WebSession_Context
 type WebSession_Context_eTagPrecondition_Which uint16
 
@@ -1145,111 +1182,133 @@ const WebSession_Context_TypeID = 0xf5cae52becabc767
 
 func NewWebSession_Context(s *capnp.Segment) (WebSession_Context, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return WebSession_Context{st}, err
+	return WebSession_Context(st), err
 }
 
 func NewRootWebSession_Context(s *capnp.Segment) (WebSession_Context, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return WebSession_Context{st}, err
+	return WebSession_Context(st), err
 }
 
 func ReadRootWebSession_Context(msg *capnp.Message) (WebSession_Context, error) {
 	root, err := msg.Root()
-	return WebSession_Context{root.Struct()}, err
+	return WebSession_Context(root.Struct()), err
 }
 
 func (s WebSession_Context) String() string {
-	str, _ := text.Marshal(0xf5cae52becabc767, s.Struct)
+	str, _ := text.Marshal(0xf5cae52becabc767, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Context) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Context) DecodeFromPtr(p capnp.Ptr) WebSession_Context {
+	return WebSession_Context(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Context) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Context) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Context) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Context) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Context) Cookies() (util.KeyValue_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.KeyValue_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.KeyValue_List(p.List()), err
 }
 
 func (s WebSession_Context) HasCookies() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Context) SetCookies(v util.KeyValue_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewCookies sets the cookies field to a newly
 // allocated util.KeyValue_List, preferring placement in s's segment.
 func (s WebSession_Context) NewCookies(n int32) (util.KeyValue_List, error) {
-	l, err := util.NewKeyValue_List(s.Struct.Segment(), n)
+	l, err := util.NewKeyValue_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return util.KeyValue_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_Context) ResponseStream() util.ByteStream {
-	p, _ := s.Struct.Ptr(1)
-	return util.ByteStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return util.ByteStream(p.Interface().Client())
 }
 
 func (s WebSession_Context) HasResponseStream() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Context) SetResponseStream(v util.ByteStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 func (s WebSession_Context) Accept() (WebSession_AcceptedType_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_AcceptedType_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_AcceptedType_List(p.List()), err
 }
 
 func (s WebSession_Context) HasAccept() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Context) SetAccept(v WebSession_AcceptedType_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewAccept sets the accept field to a newly
 // allocated WebSession_AcceptedType_List, preferring placement in s's segment.
 func (s WebSession_Context) NewAccept(n int32) (WebSession_AcceptedType_List, error) {
-	l, err := NewWebSession_AcceptedType_List(s.Struct.Segment(), n)
+	l, err := NewWebSession_AcceptedType_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_AcceptedType_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_Context) AcceptEncoding() (WebSession_AcceptedEncoding_List, error) {
-	p, err := s.Struct.Ptr(5)
-	return WebSession_AcceptedEncoding_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(5)
+	return WebSession_AcceptedEncoding_List(p.List()), err
 }
 
 func (s WebSession_Context) HasAcceptEncoding() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s WebSession_Context) SetAcceptEncoding(v WebSession_AcceptedEncoding_List) error {
-	return s.Struct.SetPtr(5, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(5, v.ToPtr())
 }
 
 // NewAcceptEncoding sets the acceptEncoding field to a newly
 // allocated WebSession_AcceptedEncoding_List, preferring placement in s's segment.
 func (s WebSession_Context) NewAcceptEncoding(n int32) (WebSession_AcceptedEncoding_List, error) {
-	l, err := NewWebSession_AcceptedEncoding_List(s.Struct.Segment(), n)
+	l, err := NewWebSession_AcceptedEncoding_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_AcceptedEncoding_List{}, err
 	}
-	err = s.Struct.SetPtr(5, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(5, l.ToPtr())
 	return l, err
 }
 
@@ -1258,131 +1317,129 @@ func (s WebSession_Context) ETagPrecondition() WebSession_Context_eTagPreconditi
 }
 
 func (s WebSession_Context_eTagPrecondition) Which() WebSession_Context_eTagPrecondition_Which {
-	return WebSession_Context_eTagPrecondition_Which(s.Struct.Uint16(0))
+	return WebSession_Context_eTagPrecondition_Which(capnp.Struct(s).Uint16(0))
+}
+func (s WebSession_Context_eTagPrecondition) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Context_eTagPrecondition) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Context_eTagPrecondition) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSession_Context_eTagPrecondition) SetNone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s WebSession_Context_eTagPrecondition) SetExists() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 
 }
 
 func (s WebSession_Context_eTagPrecondition) SetDoesntExist() {
-	s.Struct.SetUint16(0, 4)
+	capnp.Struct(s).SetUint16(0, 4)
 
 }
 
 func (s WebSession_Context_eTagPrecondition) MatchesOneOf() (WebSession_ETag_List, error) {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != matchesOneOf")
 	}
-	p, err := s.Struct.Ptr(4)
-	return WebSession_ETag_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return WebSession_ETag_List(p.List()), err
 }
 
 func (s WebSession_Context_eTagPrecondition) HasMatchesOneOf() bool {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s WebSession_Context_eTagPrecondition) SetMatchesOneOf(v WebSession_ETag_List) error {
-	s.Struct.SetUint16(0, 2)
-	return s.Struct.SetPtr(4, v.List.ToPtr())
+	capnp.Struct(s).SetUint16(0, 2)
+	return capnp.Struct(s).SetPtr(4, v.ToPtr())
 }
 
 // NewMatchesOneOf sets the matchesOneOf field to a newly
 // allocated WebSession_ETag_List, preferring placement in s's segment.
 func (s WebSession_Context_eTagPrecondition) NewMatchesOneOf(n int32) (WebSession_ETag_List, error) {
-	s.Struct.SetUint16(0, 2)
-	l, err := NewWebSession_ETag_List(s.Struct.Segment(), n)
+	capnp.Struct(s).SetUint16(0, 2)
+	l, err := NewWebSession_ETag_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_ETag_List{}, err
 	}
-	err = s.Struct.SetPtr(4, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_Context_eTagPrecondition) MatchesNoneOf() (WebSession_ETag_List, error) {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		panic("Which() != matchesNoneOf")
 	}
-	p, err := s.Struct.Ptr(4)
-	return WebSession_ETag_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return WebSession_ETag_List(p.List()), err
 }
 
 func (s WebSession_Context_eTagPrecondition) HasMatchesNoneOf() bool {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		return false
 	}
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s WebSession_Context_eTagPrecondition) SetMatchesNoneOf(v WebSession_ETag_List) error {
-	s.Struct.SetUint16(0, 3)
-	return s.Struct.SetPtr(4, v.List.ToPtr())
+	capnp.Struct(s).SetUint16(0, 3)
+	return capnp.Struct(s).SetPtr(4, v.ToPtr())
 }
 
 // NewMatchesNoneOf sets the matchesNoneOf field to a newly
 // allocated WebSession_ETag_List, preferring placement in s's segment.
 func (s WebSession_Context_eTagPrecondition) NewMatchesNoneOf(n int32) (WebSession_ETag_List, error) {
-	s.Struct.SetUint16(0, 3)
-	l, err := NewWebSession_ETag_List(s.Struct.Segment(), n)
+	capnp.Struct(s).SetUint16(0, 3)
+	l, err := NewWebSession_ETag_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_ETag_List{}, err
 	}
-	err = s.Struct.SetPtr(4, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_Context) AdditionalHeaders() (WebSession_Context_Header_List, error) {
-	p, err := s.Struct.Ptr(3)
-	return WebSession_Context_Header_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return WebSession_Context_Header_List(p.List()), err
 }
 
 func (s WebSession_Context) HasAdditionalHeaders() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_Context) SetAdditionalHeaders(v WebSession_Context_Header_List) error {
-	return s.Struct.SetPtr(3, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(3, v.ToPtr())
 }
 
 // NewAdditionalHeaders sets the additionalHeaders field to a newly
 // allocated WebSession_Context_Header_List, preferring placement in s's segment.
 func (s WebSession_Context) NewAdditionalHeaders(n int32) (WebSession_Context_Header_List, error) {
-	l, err := NewWebSession_Context_Header_List(s.Struct.Segment(), n)
+	l, err := NewWebSession_Context_Header_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_Context_Header_List{}, err
 	}
-	err = s.Struct.SetPtr(3, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
 	return l, err
 }
 
 // WebSession_Context_List is a list of WebSession_Context.
-type WebSession_Context_List struct{ capnp.List }
+type WebSession_Context_List = capnp.StructList[WebSession_Context]
 
 // NewWebSession_Context creates a new list of WebSession_Context.
 func NewWebSession_Context_List(s *capnp.Segment, sz int32) (WebSession_Context_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6}, sz)
-	return WebSession_Context_List{l}, err
-}
-
-func (s WebSession_Context_List) At(i int) WebSession_Context {
-	return WebSession_Context{s.List.Struct(i)}
-}
-
-func (s WebSession_Context_List) Set(i int, v WebSession_Context) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Context_List) String() string {
-	str, _ := text.MarshalList(0xf5cae52becabc767, s.List)
-	return str
+	return capnp.StructList[WebSession_Context](l), err
 }
 
 // WebSession_Context_Future is a wrapper for a WebSession_Context promised by a client call.
@@ -1390,11 +1447,11 @@ type WebSession_Context_Future struct{ *capnp.Future }
 
 func (p WebSession_Context_Future) Struct() (WebSession_Context, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Context{s}, err
+	return WebSession_Context(s), err
 }
 
 func (p WebSession_Context_Future) ResponseStream() util.ByteStream {
-	return util.ByteStream{Client: p.Future.Field(1, nil).Client()}
+	return util.ByteStream(p.Future.Field(1, nil).Client())
 }
 
 func (p WebSession_Context_Future) ETagPrecondition() WebSession_Context_eTagPrecondition_Future {
@@ -1406,90 +1463,99 @@ type WebSession_Context_eTagPrecondition_Future struct{ *capnp.Future }
 
 func (p WebSession_Context_eTagPrecondition_Future) Struct() (WebSession_Context_eTagPrecondition, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Context_eTagPrecondition{s}, err
+	return WebSession_Context_eTagPrecondition(s), err
 }
 
-type WebSession_Context_Header struct{ capnp.Struct }
+type WebSession_Context_Header capnp.Struct
 
 // WebSession_Context_Header_TypeID is the unique identifier for the type WebSession_Context_Header.
 const WebSession_Context_Header_TypeID = 0xb4e5f4cccb748429
 
 func NewWebSession_Context_Header(s *capnp.Segment) (WebSession_Context_Header, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_Context_Header{st}, err
+	return WebSession_Context_Header(st), err
 }
 
 func NewRootWebSession_Context_Header(s *capnp.Segment) (WebSession_Context_Header, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_Context_Header{st}, err
+	return WebSession_Context_Header(st), err
 }
 
 func ReadRootWebSession_Context_Header(msg *capnp.Message) (WebSession_Context_Header, error) {
 	root, err := msg.Root()
-	return WebSession_Context_Header{root.Struct()}, err
+	return WebSession_Context_Header(root.Struct()), err
 }
 
 func (s WebSession_Context_Header) String() string {
-	str, _ := text.Marshal(0xb4e5f4cccb748429, s.Struct)
+	str, _ := text.Marshal(0xb4e5f4cccb748429, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Context_Header) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Context_Header) DecodeFromPtr(p capnp.Ptr) WebSession_Context_Header {
+	return WebSession_Context_Header(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Context_Header) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Context_Header) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Context_Header) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Context_Header) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Context_Header) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_Context_Header) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Context_Header) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Context_Header) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_Context_Header) Value() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Context_Header) HasValue() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Context_Header) ValueBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Context_Header) SetValue(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 // WebSession_Context_Header_List is a list of WebSession_Context_Header.
-type WebSession_Context_Header_List struct{ capnp.List }
+type WebSession_Context_Header_List = capnp.StructList[WebSession_Context_Header]
 
 // NewWebSession_Context_Header creates a new list of WebSession_Context_Header.
 func NewWebSession_Context_Header_List(s *capnp.Segment, sz int32) (WebSession_Context_Header_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSession_Context_Header_List{l}, err
-}
-
-func (s WebSession_Context_Header_List) At(i int) WebSession_Context_Header {
-	return WebSession_Context_Header{s.List.Struct(i)}
-}
-
-func (s WebSession_Context_Header_List) Set(i int, v WebSession_Context_Header) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Context_Header_List) String() string {
-	str, _ := text.MarshalList(0xb4e5f4cccb748429, s.List)
-	return str
+	return capnp.StructList[WebSession_Context_Header](l), err
 }
 
 // WebSession_Context_Header_Future is a wrapper for a WebSession_Context_Header promised by a client call.
@@ -1497,103 +1563,112 @@ type WebSession_Context_Header_Future struct{ *capnp.Future }
 
 func (p WebSession_Context_Header_Future) Struct() (WebSession_Context_Header, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Context_Header{s}, err
+	return WebSession_Context_Header(s), err
 }
 
-type WebSession_PostContent struct{ capnp.Struct }
+type WebSession_PostContent capnp.Struct
 
 // WebSession_PostContent_TypeID is the unique identifier for the type WebSession_PostContent.
 const WebSession_PostContent_TypeID = 0xb7d82eac416ab63e
 
 func NewWebSession_PostContent(s *capnp.Segment) (WebSession_PostContent, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_PostContent{st}, err
+	return WebSession_PostContent(st), err
 }
 
 func NewRootWebSession_PostContent(s *capnp.Segment) (WebSession_PostContent, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_PostContent{st}, err
+	return WebSession_PostContent(st), err
 }
 
 func ReadRootWebSession_PostContent(msg *capnp.Message) (WebSession_PostContent, error) {
 	root, err := msg.Root()
-	return WebSession_PostContent{root.Struct()}, err
+	return WebSession_PostContent(root.Struct()), err
 }
 
 func (s WebSession_PostContent) String() string {
-	str, _ := text.Marshal(0xb7d82eac416ab63e, s.Struct)
+	str, _ := text.Marshal(0xb7d82eac416ab63e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_PostContent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_PostContent) DecodeFromPtr(p capnp.Ptr) WebSession_PostContent {
+	return WebSession_PostContent(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_PostContent) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_PostContent) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_PostContent) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_PostContent) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_PostContent) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_PostContent) HasMimeType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_PostContent) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_PostContent) SetMimeType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_PostContent) Content() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s WebSession_PostContent) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_PostContent) SetContent(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 func (s WebSession_PostContent) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSession_PostContent) HasEncoding() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_PostContent) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_PostContent) SetEncoding(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // WebSession_PostContent_List is a list of WebSession_PostContent.
-type WebSession_PostContent_List struct{ capnp.List }
+type WebSession_PostContent_List = capnp.StructList[WebSession_PostContent]
 
 // NewWebSession_PostContent creates a new list of WebSession_PostContent.
 func NewWebSession_PostContent_List(s *capnp.Segment, sz int32) (WebSession_PostContent_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_PostContent_List{l}, err
-}
-
-func (s WebSession_PostContent_List) At(i int) WebSession_PostContent {
-	return WebSession_PostContent{s.List.Struct(i)}
-}
-
-func (s WebSession_PostContent_List) Set(i int, v WebSession_PostContent) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_PostContent_List) String() string {
-	str, _ := text.MarshalList(0xb7d82eac416ab63e, s.List)
-	return str
+	return capnp.StructList[WebSession_PostContent](l), err
 }
 
 // WebSession_PostContent_Future is a wrapper for a WebSession_PostContent promised by a client call.
@@ -1601,103 +1676,112 @@ type WebSession_PostContent_Future struct{ *capnp.Future }
 
 func (p WebSession_PostContent_Future) Struct() (WebSession_PostContent, error) {
 	s, err := p.Future.Struct()
-	return WebSession_PostContent{s}, err
+	return WebSession_PostContent(s), err
 }
 
-type WebSession_PutContent struct{ capnp.Struct }
+type WebSession_PutContent capnp.Struct
 
 // WebSession_PutContent_TypeID is the unique identifier for the type WebSession_PutContent.
 const WebSession_PutContent_TypeID = 0xd7aff1fe39659132
 
 func NewWebSession_PutContent(s *capnp.Segment) (WebSession_PutContent, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_PutContent{st}, err
+	return WebSession_PutContent(st), err
 }
 
 func NewRootWebSession_PutContent(s *capnp.Segment) (WebSession_PutContent, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_PutContent{st}, err
+	return WebSession_PutContent(st), err
 }
 
 func ReadRootWebSession_PutContent(msg *capnp.Message) (WebSession_PutContent, error) {
 	root, err := msg.Root()
-	return WebSession_PutContent{root.Struct()}, err
+	return WebSession_PutContent(root.Struct()), err
 }
 
 func (s WebSession_PutContent) String() string {
-	str, _ := text.Marshal(0xd7aff1fe39659132, s.Struct)
+	str, _ := text.Marshal(0xd7aff1fe39659132, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_PutContent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_PutContent) DecodeFromPtr(p capnp.Ptr) WebSession_PutContent {
+	return WebSession_PutContent(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_PutContent) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_PutContent) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_PutContent) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_PutContent) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_PutContent) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_PutContent) HasMimeType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_PutContent) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_PutContent) SetMimeType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_PutContent) Content() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s WebSession_PutContent) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_PutContent) SetContent(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 func (s WebSession_PutContent) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSession_PutContent) HasEncoding() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_PutContent) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_PutContent) SetEncoding(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // WebSession_PutContent_List is a list of WebSession_PutContent.
-type WebSession_PutContent_List struct{ capnp.List }
+type WebSession_PutContent_List = capnp.StructList[WebSession_PutContent]
 
 // NewWebSession_PutContent creates a new list of WebSession_PutContent.
 func NewWebSession_PutContent_List(s *capnp.Segment, sz int32) (WebSession_PutContent_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_PutContent_List{l}, err
-}
-
-func (s WebSession_PutContent_List) At(i int) WebSession_PutContent {
-	return WebSession_PutContent{s.List.Struct(i)}
-}
-
-func (s WebSession_PutContent_List) Set(i int, v WebSession_PutContent) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_PutContent_List) String() string {
-	str, _ := text.MarshalList(0xd7aff1fe39659132, s.List)
-	return str
+	return capnp.StructList[WebSession_PutContent](l), err
 }
 
 // WebSession_PutContent_Future is a wrapper for a WebSession_PutContent promised by a client call.
@@ -1705,78 +1789,89 @@ type WebSession_PutContent_Future struct{ *capnp.Future }
 
 func (p WebSession_PutContent_Future) Struct() (WebSession_PutContent, error) {
 	s, err := p.Future.Struct()
-	return WebSession_PutContent{s}, err
+	return WebSession_PutContent(s), err
 }
 
-type WebSession_ETag struct{ capnp.Struct }
+type WebSession_ETag capnp.Struct
 
 // WebSession_ETag_TypeID is the unique identifier for the type WebSession_ETag.
 const WebSession_ETag_TypeID = 0xd22c0be5b9c16558
 
 func NewWebSession_ETag(s *capnp.Segment) (WebSession_ETag, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_ETag{st}, err
+	return WebSession_ETag(st), err
 }
 
 func NewRootWebSession_ETag(s *capnp.Segment) (WebSession_ETag, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_ETag{st}, err
+	return WebSession_ETag(st), err
 }
 
 func ReadRootWebSession_ETag(msg *capnp.Message) (WebSession_ETag, error) {
 	root, err := msg.Root()
-	return WebSession_ETag{root.Struct()}, err
+	return WebSession_ETag(root.Struct()), err
 }
 
 func (s WebSession_ETag) String() string {
-	str, _ := text.Marshal(0xd22c0be5b9c16558, s.Struct)
+	str, _ := text.Marshal(0xd22c0be5b9c16558, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_ETag) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_ETag) DecodeFromPtr(p capnp.Ptr) WebSession_ETag {
+	return WebSession_ETag(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_ETag) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_ETag) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_ETag) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_ETag) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_ETag) Value() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_ETag) HasValue() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_ETag) ValueBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_ETag) SetValue(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_ETag) Weak() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_ETag) SetWeak(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 // WebSession_ETag_List is a list of WebSession_ETag.
-type WebSession_ETag_List struct{ capnp.List }
+type WebSession_ETag_List = capnp.StructList[WebSession_ETag]
 
 // NewWebSession_ETag creates a new list of WebSession_ETag.
 func NewWebSession_ETag_List(s *capnp.Segment, sz int32) (WebSession_ETag_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return WebSession_ETag_List{l}, err
-}
-
-func (s WebSession_ETag_List) At(i int) WebSession_ETag { return WebSession_ETag{s.List.Struct(i)} }
-
-func (s WebSession_ETag_List) Set(i int, v WebSession_ETag) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_ETag_List) String() string {
-	str, _ := text.MarshalList(0xd22c0be5b9c16558, s.List)
-	return str
+	return capnp.StructList[WebSession_ETag](l), err
 }
 
 // WebSession_ETag_Future is a wrapper for a WebSession_ETag promised by a client call.
@@ -1784,10 +1879,10 @@ type WebSession_ETag_Future struct{ *capnp.Future }
 
 func (p WebSession_ETag_Future) Struct() (WebSession_ETag, error) {
 	s, err := p.Future.Struct()
-	return WebSession_ETag{s}, err
+	return WebSession_ETag(s), err
 }
 
-type WebSession_Cookie struct{ capnp.Struct }
+type WebSession_Cookie capnp.Struct
 type WebSession_Cookie_expires WebSession_Cookie
 type WebSession_Cookie_expires_Which uint16
 
@@ -1816,140 +1911,160 @@ const WebSession_Cookie_TypeID = 0xa87d65bed9b60243
 
 func NewWebSession_Cookie(s *capnp.Segment) (WebSession_Cookie, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 3})
-	return WebSession_Cookie{st}, err
+	return WebSession_Cookie(st), err
 }
 
 func NewRootWebSession_Cookie(s *capnp.Segment) (WebSession_Cookie, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 3})
-	return WebSession_Cookie{st}, err
+	return WebSession_Cookie(st), err
 }
 
 func ReadRootWebSession_Cookie(msg *capnp.Message) (WebSession_Cookie, error) {
 	root, err := msg.Root()
-	return WebSession_Cookie{root.Struct()}, err
+	return WebSession_Cookie(root.Struct()), err
 }
 
 func (s WebSession_Cookie) String() string {
-	str, _ := text.Marshal(0xa87d65bed9b60243, s.Struct)
+	str, _ := text.Marshal(0xa87d65bed9b60243, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Cookie) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Cookie) DecodeFromPtr(p capnp.Ptr) WebSession_Cookie {
+	return WebSession_Cookie(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Cookie) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Cookie) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Cookie) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Cookie) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Cookie) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_Cookie) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Cookie) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Cookie) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_Cookie) Value() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Cookie) HasValue() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Cookie) ValueBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Cookie) SetValue(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Cookie) Expires() WebSession_Cookie_expires { return WebSession_Cookie_expires(s) }
 
 func (s WebSession_Cookie_expires) Which() WebSession_Cookie_expires_Which {
-	return WebSession_Cookie_expires_Which(s.Struct.Uint16(0))
+	return WebSession_Cookie_expires_Which(capnp.Struct(s).Uint16(0))
+}
+func (s WebSession_Cookie_expires) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Cookie_expires) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Cookie_expires) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSession_Cookie_expires) SetNone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s WebSession_Cookie_expires) Absolute() int64 {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != absolute")
 	}
-	return int64(s.Struct.Uint64(8))
+	return int64(capnp.Struct(s).Uint64(8))
 }
 
 func (s WebSession_Cookie_expires) SetAbsolute(v int64) {
-	s.Struct.SetUint16(0, 1)
-	s.Struct.SetUint64(8, uint64(v))
+	capnp.Struct(s).SetUint16(0, 1)
+	capnp.Struct(s).SetUint64(8, uint64(v))
 }
 
 func (s WebSession_Cookie_expires) Relative() uint64 {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != relative")
 	}
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s WebSession_Cookie_expires) SetRelative(v uint64) {
-	s.Struct.SetUint16(0, 2)
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint16(0, 2)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 func (s WebSession_Cookie) HttpOnly() bool {
-	return s.Struct.Bit(16)
+	return capnp.Struct(s).Bit(16)
 }
 
 func (s WebSession_Cookie) SetHttpOnly(v bool) {
-	s.Struct.SetBit(16, v)
+	capnp.Struct(s).SetBit(16, v)
 }
 
 func (s WebSession_Cookie) Path() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSession_Cookie) HasPath() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Cookie) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Cookie) SetPath(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 // WebSession_Cookie_List is a list of WebSession_Cookie.
-type WebSession_Cookie_List struct{ capnp.List }
+type WebSession_Cookie_List = capnp.StructList[WebSession_Cookie]
 
 // NewWebSession_Cookie creates a new list of WebSession_Cookie.
 func NewWebSession_Cookie_List(s *capnp.Segment, sz int32) (WebSession_Cookie_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 3}, sz)
-	return WebSession_Cookie_List{l}, err
-}
-
-func (s WebSession_Cookie_List) At(i int) WebSession_Cookie {
-	return WebSession_Cookie{s.List.Struct(i)}
-}
-
-func (s WebSession_Cookie_List) Set(i int, v WebSession_Cookie) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Cookie_List) String() string {
-	str, _ := text.MarshalList(0xa87d65bed9b60243, s.List)
-	return str
+	return capnp.StructList[WebSession_Cookie](l), err
 }
 
 // WebSession_Cookie_Future is a wrapper for a WebSession_Cookie promised by a client call.
@@ -1957,7 +2072,7 @@ type WebSession_Cookie_Future struct{ *capnp.Future }
 
 func (p WebSession_Cookie_Future) Struct() (WebSession_Cookie, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Cookie{s}, err
+	return WebSession_Cookie(s), err
 }
 
 func (p WebSession_Cookie_Future) Expires() WebSession_Cookie_expires_Future {
@@ -1969,80 +2084,89 @@ type WebSession_Cookie_expires_Future struct{ *capnp.Future }
 
 func (p WebSession_Cookie_expires_Future) Struct() (WebSession_Cookie_expires, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Cookie_expires{s}, err
+	return WebSession_Cookie_expires(s), err
 }
 
-type WebSession_AcceptedType struct{ capnp.Struct }
+type WebSession_AcceptedType capnp.Struct
 
 // WebSession_AcceptedType_TypeID is the unique identifier for the type WebSession_AcceptedType.
 const WebSession_AcceptedType_TypeID = 0xaaf9021b627cc1f9
 
 func NewWebSession_AcceptedType(s *capnp.Segment) (WebSession_AcceptedType, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_AcceptedType{st}, err
+	return WebSession_AcceptedType(st), err
 }
 
 func NewRootWebSession_AcceptedType(s *capnp.Segment) (WebSession_AcceptedType, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_AcceptedType{st}, err
+	return WebSession_AcceptedType(st), err
 }
 
 func ReadRootWebSession_AcceptedType(msg *capnp.Message) (WebSession_AcceptedType, error) {
 	root, err := msg.Root()
-	return WebSession_AcceptedType{root.Struct()}, err
+	return WebSession_AcceptedType(root.Struct()), err
 }
 
 func (s WebSession_AcceptedType) String() string {
-	str, _ := text.Marshal(0xaaf9021b627cc1f9, s.Struct)
+	str, _ := text.Marshal(0xaaf9021b627cc1f9, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_AcceptedType) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_AcceptedType) DecodeFromPtr(p capnp.Ptr) WebSession_AcceptedType {
+	return WebSession_AcceptedType(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_AcceptedType) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_AcceptedType) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_AcceptedType) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_AcceptedType) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_AcceptedType) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_AcceptedType) HasMimeType() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_AcceptedType) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_AcceptedType) SetMimeType(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_AcceptedType) QValue() float32 {
-	return math.Float32frombits(s.Struct.Uint32(0) ^ 0x3f800000)
+	return math.Float32frombits(capnp.Struct(s).Uint32(0) ^ 0x3f800000)
 }
 
 func (s WebSession_AcceptedType) SetQValue(v float32) {
-	s.Struct.SetUint32(0, math.Float32bits(v)^0x3f800000)
+	capnp.Struct(s).SetUint32(0, math.Float32bits(v)^0x3f800000)
 }
 
 // WebSession_AcceptedType_List is a list of WebSession_AcceptedType.
-type WebSession_AcceptedType_List struct{ capnp.List }
+type WebSession_AcceptedType_List = capnp.StructList[WebSession_AcceptedType]
 
 // NewWebSession_AcceptedType creates a new list of WebSession_AcceptedType.
 func NewWebSession_AcceptedType_List(s *capnp.Segment, sz int32) (WebSession_AcceptedType_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return WebSession_AcceptedType_List{l}, err
-}
-
-func (s WebSession_AcceptedType_List) At(i int) WebSession_AcceptedType {
-	return WebSession_AcceptedType{s.List.Struct(i)}
-}
-
-func (s WebSession_AcceptedType_List) Set(i int, v WebSession_AcceptedType) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_AcceptedType_List) String() string {
-	str, _ := text.MarshalList(0xaaf9021b627cc1f9, s.List)
-	return str
+	return capnp.StructList[WebSession_AcceptedType](l), err
 }
 
 // WebSession_AcceptedType_Future is a wrapper for a WebSession_AcceptedType promised by a client call.
@@ -2050,80 +2174,89 @@ type WebSession_AcceptedType_Future struct{ *capnp.Future }
 
 func (p WebSession_AcceptedType_Future) Struct() (WebSession_AcceptedType, error) {
 	s, err := p.Future.Struct()
-	return WebSession_AcceptedType{s}, err
+	return WebSession_AcceptedType(s), err
 }
 
-type WebSession_AcceptedEncoding struct{ capnp.Struct }
+type WebSession_AcceptedEncoding capnp.Struct
 
 // WebSession_AcceptedEncoding_TypeID is the unique identifier for the type WebSession_AcceptedEncoding.
 const WebSession_AcceptedEncoding_TypeID = 0xbda585bffe1dc7e8
 
 func NewWebSession_AcceptedEncoding(s *capnp.Segment) (WebSession_AcceptedEncoding, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_AcceptedEncoding{st}, err
+	return WebSession_AcceptedEncoding(st), err
 }
 
 func NewRootWebSession_AcceptedEncoding(s *capnp.Segment) (WebSession_AcceptedEncoding, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_AcceptedEncoding{st}, err
+	return WebSession_AcceptedEncoding(st), err
 }
 
 func ReadRootWebSession_AcceptedEncoding(msg *capnp.Message) (WebSession_AcceptedEncoding, error) {
 	root, err := msg.Root()
-	return WebSession_AcceptedEncoding{root.Struct()}, err
+	return WebSession_AcceptedEncoding(root.Struct()), err
 }
 
 func (s WebSession_AcceptedEncoding) String() string {
-	str, _ := text.Marshal(0xbda585bffe1dc7e8, s.Struct)
+	str, _ := text.Marshal(0xbda585bffe1dc7e8, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_AcceptedEncoding) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_AcceptedEncoding) DecodeFromPtr(p capnp.Ptr) WebSession_AcceptedEncoding {
+	return WebSession_AcceptedEncoding(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_AcceptedEncoding) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_AcceptedEncoding) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_AcceptedEncoding) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_AcceptedEncoding) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_AcceptedEncoding) ContentCoding() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_AcceptedEncoding) HasContentCoding() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_AcceptedEncoding) ContentCodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_AcceptedEncoding) SetContentCoding(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_AcceptedEncoding) QValue() float32 {
-	return math.Float32frombits(s.Struct.Uint32(0) ^ 0x3f800000)
+	return math.Float32frombits(capnp.Struct(s).Uint32(0) ^ 0x3f800000)
 }
 
 func (s WebSession_AcceptedEncoding) SetQValue(v float32) {
-	s.Struct.SetUint32(0, math.Float32bits(v)^0x3f800000)
+	capnp.Struct(s).SetUint32(0, math.Float32bits(v)^0x3f800000)
 }
 
 // WebSession_AcceptedEncoding_List is a list of WebSession_AcceptedEncoding.
-type WebSession_AcceptedEncoding_List struct{ capnp.List }
+type WebSession_AcceptedEncoding_List = capnp.StructList[WebSession_AcceptedEncoding]
 
 // NewWebSession_AcceptedEncoding creates a new list of WebSession_AcceptedEncoding.
 func NewWebSession_AcceptedEncoding_List(s *capnp.Segment, sz int32) (WebSession_AcceptedEncoding_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return WebSession_AcceptedEncoding_List{l}, err
-}
-
-func (s WebSession_AcceptedEncoding_List) At(i int) WebSession_AcceptedEncoding {
-	return WebSession_AcceptedEncoding{s.List.Struct(i)}
-}
-
-func (s WebSession_AcceptedEncoding_List) Set(i int, v WebSession_AcceptedEncoding) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_AcceptedEncoding_List) String() string {
-	str, _ := text.MarshalList(0xbda585bffe1dc7e8, s.List)
-	return str
+	return capnp.StructList[WebSession_AcceptedEncoding](l), err
 }
 
 // WebSession_AcceptedEncoding_Future is a wrapper for a WebSession_AcceptedEncoding promised by a client call.
@@ -2131,10 +2264,10 @@ type WebSession_AcceptedEncoding_Future struct{ *capnp.Future }
 
 func (p WebSession_AcceptedEncoding_Future) Struct() (WebSession_AcceptedEncoding, error) {
 	s, err := p.Future.Struct()
-	return WebSession_AcceptedEncoding{s}, err
+	return WebSession_AcceptedEncoding(s), err
 }
 
-type WebSession_Response struct{ capnp.Struct }
+type WebSession_Response capnp.Struct
 type WebSession_Response_content WebSession_Response
 type WebSession_Response_content_body WebSession_Response
 type WebSession_Response_content_disposition WebSession_Response
@@ -2217,72 +2350,95 @@ const WebSession_Response_TypeID = 0x8193ac6cb5429c83
 
 func NewWebSession_Response(s *capnp.Segment) (WebSession_Response, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{st}, err
+	return WebSession_Response(st), err
 }
 
 func NewRootWebSession_Response(s *capnp.Segment) (WebSession_Response, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{st}, err
+	return WebSession_Response(st), err
 }
 
 func ReadRootWebSession_Response(msg *capnp.Message) (WebSession_Response, error) {
 	root, err := msg.Root()
-	return WebSession_Response{root.Struct()}, err
+	return WebSession_Response(root.Struct()), err
 }
 
 func (s WebSession_Response) String() string {
-	str, _ := text.Marshal(0x8193ac6cb5429c83, s.Struct)
+	str, _ := text.Marshal(0x8193ac6cb5429c83, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Response) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Response) DecodeFromPtr(p capnp.Ptr) WebSession_Response {
+	return WebSession_Response(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Response) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s WebSession_Response) Which() WebSession_Response_Which {
-	return WebSession_Response_Which(s.Struct.Uint16(2))
+	return WebSession_Response_Which(capnp.Struct(s).Uint16(2))
+}
+func (s WebSession_Response) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSession_Response) SetCookies() (WebSession_Cookie_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return WebSession_Cookie_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return WebSession_Cookie_List(p.List()), err
 }
 
 func (s WebSession_Response) HasSetCookies() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Response) SetSetCookies(v WebSession_Cookie_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewSetCookies sets the setCookies field to a newly
 // allocated WebSession_Cookie_List, preferring placement in s's segment.
 func (s WebSession_Response) NewSetCookies(n int32) (WebSession_Cookie_List, error) {
-	l, err := NewWebSession_Cookie_List(s.Struct.Segment(), n)
+	l, err := NewWebSession_Cookie_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_Cookie_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_Response) CachePolicy() (WebSession_CachePolicy, error) {
-	p, err := s.Struct.Ptr(6)
-	return WebSession_CachePolicy{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(6)
+	return WebSession_CachePolicy(p.Struct()), err
 }
 
 func (s WebSession_Response) HasCachePolicy() bool {
-	return s.Struct.HasPtr(6)
+	return capnp.Struct(s).HasPtr(6)
 }
 
 func (s WebSession_Response) SetCachePolicy(v WebSession_CachePolicy) error {
-	return s.Struct.SetPtr(6, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(6, capnp.Struct(v).ToPtr())
 }
 
 // NewCachePolicy sets the cachePolicy field to a newly
 // allocated WebSession_CachePolicy struct, preferring placement in s's segment.
 func (s WebSession_Response) NewCachePolicy() (WebSession_CachePolicy, error) {
-	ss, err := NewWebSession_CachePolicy(s.Struct.Segment())
+	ss, err := NewWebSession_CachePolicy(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_CachePolicy{}, err
 	}
-	err = s.Struct.SetPtr(6, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(6, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -2291,92 +2447,103 @@ func (s WebSession_Response) Content() WebSession_Response_content {
 }
 
 func (s WebSession_Response) SetContent() {
-	s.Struct.SetUint16(2, 1)
+	capnp.Struct(s).SetUint16(2, 1)
 }
 
+func (s WebSession_Response_content) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_content) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_content) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_content) StatusCode() WebSession_Response_SuccessCode {
-	return WebSession_Response_SuccessCode(s.Struct.Uint16(4))
+	return WebSession_Response_SuccessCode(capnp.Struct(s).Uint16(4))
 }
 
 func (s WebSession_Response_content) SetStatusCode(v WebSession_Response_SuccessCode) {
-	s.Struct.SetUint16(4, uint16(v))
+	capnp.Struct(s).SetUint16(4, uint16(v))
 }
 
 func (s WebSession_Response_content) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_content) HasEncoding() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_content) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_content) SetEncoding(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Response_content) Language() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_content) HasLanguage() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Response_content) LanguageBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_content) SetLanguage(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s WebSession_Response_content) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_content) HasMimeType() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_Response_content) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_content) SetMimeType(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s WebSession_Response_content) ETag() (WebSession_ETag, error) {
-	p, err := s.Struct.Ptr(7)
-	return WebSession_ETag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(7)
+	return WebSession_ETag(p.Struct()), err
 }
 
 func (s WebSession_Response_content) HasETag() bool {
-	return s.Struct.HasPtr(7)
+	return capnp.Struct(s).HasPtr(7)
 }
 
 func (s WebSession_Response_content) SetETag(v WebSession_ETag) error {
-	return s.Struct.SetPtr(7, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(7, capnp.Struct(v).ToPtr())
 }
 
 // NewETag sets the eTag field to a newly
 // allocated WebSession_ETag struct, preferring placement in s's segment.
 func (s WebSession_Response_content) NewETag() (WebSession_ETag, error) {
-	ss, err := NewWebSession_ETag(s.Struct.Segment())
+	ss, err := NewWebSession_ETag(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_ETag{}, err
 	}
-	err = s.Struct.SetPtr(7, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(7, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -2385,51 +2552,62 @@ func (s WebSession_Response_content) Body() WebSession_Response_content_body {
 }
 
 func (s WebSession_Response_content_body) Which() WebSession_Response_content_body_Which {
-	return WebSession_Response_content_body_Which(s.Struct.Uint16(0))
+	return WebSession_Response_content_body_Which(capnp.Struct(s).Uint16(0))
+}
+func (s WebSession_Response_content_body) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_content_body) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_content_body) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSession_Response_content_body) Bytes() ([]byte, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != bytes")
 	}
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return []byte(p.Data()), err
 }
 
 func (s WebSession_Response_content_body) HasBytes() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s WebSession_Response_content_body) SetBytes(v []byte) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetData(4, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetData(4, v)
 }
 
 func (s WebSession_Response_content_body) Stream() util.Handle {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != stream")
 	}
-	p, _ := s.Struct.Ptr(4)
-	return util.Handle{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(4)
+	return util.Handle(p.Interface().Client())
 }
 
 func (s WebSession_Response_content_body) HasStream() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s WebSession_Response_content_body) SetStream(v util.Handle) error {
-	s.Struct.SetUint16(0, 1)
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(4, capnp.Ptr{})
+	capnp.Struct(s).SetUint16(0, 1)
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(4, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(4, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(4, in.ToPtr())
 }
 
 func (s WebSession_Response_content) Disposition() WebSession_Response_content_disposition {
@@ -2437,36 +2615,47 @@ func (s WebSession_Response_content) Disposition() WebSession_Response_content_d
 }
 
 func (s WebSession_Response_content_disposition) Which() WebSession_Response_content_disposition_Which {
-	return WebSession_Response_content_disposition_Which(s.Struct.Uint16(6))
+	return WebSession_Response_content_disposition_Which(capnp.Struct(s).Uint16(6))
+}
+func (s WebSession_Response_content_disposition) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_content_disposition) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_content_disposition) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s WebSession_Response_content_disposition) SetNormal() {
-	s.Struct.SetUint16(6, 0)
+	capnp.Struct(s).SetUint16(6, 0)
 
 }
 
 func (s WebSession_Response_content_disposition) Download() (string, error) {
-	if s.Struct.Uint16(6) != 1 {
+	if capnp.Struct(s).Uint16(6) != 1 {
 		panic("Which() != download")
 	}
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_content_disposition) HasDownload() bool {
-	if s.Struct.Uint16(6) != 1 {
+	if capnp.Struct(s).Uint16(6) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s WebSession_Response_content_disposition) DownloadBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(5)
+	p, err := capnp.Struct(s).Ptr(5)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_content_disposition) SetDownload(v string) error {
-	s.Struct.SetUint16(6, 1)
-	return s.Struct.SetText(5, v)
+	capnp.Struct(s).SetUint16(6, 1)
+	return capnp.Struct(s).SetText(5, v)
 }
 
 func (s WebSession_Response) NoContent() WebSession_Response_noContent {
@@ -2474,38 +2663,49 @@ func (s WebSession_Response) NoContent() WebSession_Response_noContent {
 }
 
 func (s WebSession_Response) SetNoContent() {
-	s.Struct.SetUint16(2, 4)
+	capnp.Struct(s).SetUint16(2, 4)
 }
 
+func (s WebSession_Response_noContent) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_noContent) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_noContent) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_noContent) ShouldResetForm() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_Response_noContent) SetShouldResetForm(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_Response_noContent) ETag() (WebSession_ETag, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_ETag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_ETag(p.Struct()), err
 }
 
 func (s WebSession_Response_noContent) HasETag() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_noContent) SetETag(v WebSession_ETag) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewETag sets the eTag field to a newly
 // allocated WebSession_ETag struct, preferring placement in s's segment.
 func (s WebSession_Response_noContent) NewETag() (WebSession_ETag, error) {
-	ss, err := NewWebSession_ETag(s.Struct.Segment())
+	ss, err := NewWebSession_ETag(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_ETag{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -2514,30 +2714,41 @@ func (s WebSession_Response) PreconditionFailed() WebSession_Response_preconditi
 }
 
 func (s WebSession_Response) SetPreconditionFailed() {
-	s.Struct.SetUint16(2, 5)
+	capnp.Struct(s).SetUint16(2, 5)
 }
 
+func (s WebSession_Response_preconditionFailed) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_preconditionFailed) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_preconditionFailed) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_preconditionFailed) MatchingETag() (WebSession_ETag, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_ETag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_ETag(p.Struct()), err
 }
 
 func (s WebSession_Response_preconditionFailed) HasMatchingETag() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_preconditionFailed) SetMatchingETag(v WebSession_ETag) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewMatchingETag sets the matchingETag field to a newly
 // allocated WebSession_ETag struct, preferring placement in s's segment.
 func (s WebSession_Response_preconditionFailed) NewMatchingETag() (WebSession_ETag, error) {
-	ss, err := NewWebSession_ETag(s.Struct.Segment())
+	ss, err := NewWebSession_ETag(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_ETag{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -2546,41 +2757,52 @@ func (s WebSession_Response) Redirect() WebSession_Response_redirect {
 }
 
 func (s WebSession_Response) SetRedirect() {
-	s.Struct.SetUint16(2, 0)
+	capnp.Struct(s).SetUint16(2, 0)
 }
 
+func (s WebSession_Response_redirect) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_redirect) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_redirect) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_redirect) IsPermanent() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_Response_redirect) SetIsPermanent(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_Response_redirect) SwitchToGet() bool {
-	return s.Struct.Bit(1)
+	return capnp.Struct(s).Bit(1)
 }
 
 func (s WebSession_Response_redirect) SetSwitchToGet(v bool) {
-	s.Struct.SetBit(1, v)
+	capnp.Struct(s).SetBit(1, v)
 }
 
 func (s WebSession_Response_redirect) Location() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_redirect) HasLocation() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_redirect) LocationBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_redirect) SetLocation(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Response) ClientError() WebSession_Response_clientError {
@@ -2588,56 +2810,67 @@ func (s WebSession_Response) ClientError() WebSession_Response_clientError {
 }
 
 func (s WebSession_Response) SetClientError() {
-	s.Struct.SetUint16(2, 2)
+	capnp.Struct(s).SetUint16(2, 2)
 }
 
+func (s WebSession_Response_clientError) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_clientError) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_clientError) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_clientError) StatusCode() WebSession_Response_ClientErrorCode {
-	return WebSession_Response_ClientErrorCode(s.Struct.Uint16(0))
+	return WebSession_Response_ClientErrorCode(capnp.Struct(s).Uint16(0))
 }
 
 func (s WebSession_Response_clientError) SetStatusCode(v WebSession_Response_ClientErrorCode) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 func (s WebSession_Response_clientError) DescriptionHtml() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_clientError) HasDescriptionHtml() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_clientError) DescriptionHtmlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_clientError) SetDescriptionHtml(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Response_clientError) NonHtmlBody() (WebSession_Response_ErrorBody, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Response_ErrorBody{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Response_ErrorBody(p.Struct()), err
 }
 
 func (s WebSession_Response_clientError) HasNonHtmlBody() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Response_clientError) SetNonHtmlBody(v WebSession_Response_ErrorBody) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewNonHtmlBody sets the nonHtmlBody field to a newly
 // allocated WebSession_Response_ErrorBody struct, preferring placement in s's segment.
 func (s WebSession_Response_clientError) NewNonHtmlBody() (WebSession_Response_ErrorBody, error) {
-	ss, err := NewWebSession_Response_ErrorBody(s.Struct.Segment())
+	ss, err := NewWebSession_Response_ErrorBody(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Response_ErrorBody{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
@@ -2646,95 +2879,93 @@ func (s WebSession_Response) ServerError() WebSession_Response_serverError {
 }
 
 func (s WebSession_Response) SetServerError() {
-	s.Struct.SetUint16(2, 3)
+	capnp.Struct(s).SetUint16(2, 3)
 }
 
+func (s WebSession_Response_serverError) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_serverError) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_serverError) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_serverError) DescriptionHtml() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_serverError) HasDescriptionHtml() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_serverError) DescriptionHtmlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_serverError) SetDescriptionHtml(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Response_serverError) NonHtmlBody() (WebSession_Response_ErrorBody, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Response_ErrorBody{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Response_ErrorBody(p.Struct()), err
 }
 
 func (s WebSession_Response_serverError) HasNonHtmlBody() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Response_serverError) SetNonHtmlBody(v WebSession_Response_ErrorBody) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewNonHtmlBody sets the nonHtmlBody field to a newly
 // allocated WebSession_Response_ErrorBody struct, preferring placement in s's segment.
 func (s WebSession_Response_serverError) NewNonHtmlBody() (WebSession_Response_ErrorBody, error) {
-	ss, err := NewWebSession_Response_ErrorBody(s.Struct.Segment())
+	ss, err := NewWebSession_Response_ErrorBody(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Response_ErrorBody{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_Response) AdditionalHeaders() (WebSession_Response_Header_List, error) {
-	p, err := s.Struct.Ptr(8)
-	return WebSession_Response_Header_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(8)
+	return WebSession_Response_Header_List(p.List()), err
 }
 
 func (s WebSession_Response) HasAdditionalHeaders() bool {
-	return s.Struct.HasPtr(8)
+	return capnp.Struct(s).HasPtr(8)
 }
 
 func (s WebSession_Response) SetAdditionalHeaders(v WebSession_Response_Header_List) error {
-	return s.Struct.SetPtr(8, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(8, v.ToPtr())
 }
 
 // NewAdditionalHeaders sets the additionalHeaders field to a newly
 // allocated WebSession_Response_Header_List, preferring placement in s's segment.
 func (s WebSession_Response) NewAdditionalHeaders(n int32) (WebSession_Response_Header_List, error) {
-	l, err := NewWebSession_Response_Header_List(s.Struct.Segment(), n)
+	l, err := NewWebSession_Response_Header_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return WebSession_Response_Header_List{}, err
 	}
-	err = s.Struct.SetPtr(8, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(8, l.ToPtr())
 	return l, err
 }
 
 // WebSession_Response_List is a list of WebSession_Response.
-type WebSession_Response_List struct{ capnp.List }
+type WebSession_Response_List = capnp.StructList[WebSession_Response]
 
 // NewWebSession_Response creates a new list of WebSession_Response.
 func NewWebSession_Response_List(s *capnp.Segment, sz int32) (WebSession_Response_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 9}, sz)
-	return WebSession_Response_List{l}, err
-}
-
-func (s WebSession_Response_List) At(i int) WebSession_Response {
-	return WebSession_Response{s.List.Struct(i)}
-}
-
-func (s WebSession_Response_List) Set(i int, v WebSession_Response) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Response_List) String() string {
-	str, _ := text.MarshalList(0x8193ac6cb5429c83, s.List)
-	return str
+	return capnp.StructList[WebSession_Response](l), err
 }
 
 // WebSession_Response_Future is a wrapper for a WebSession_Response promised by a client call.
@@ -2742,7 +2973,7 @@ type WebSession_Response_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_Future) Struct() (WebSession_Response, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response{s}, err
+	return WebSession_Response(s), err
 }
 
 func (p WebSession_Response_Future) CachePolicy() WebSession_CachePolicy_Future {
@@ -2758,7 +2989,7 @@ type WebSession_Response_content_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_content_Future) Struct() (WebSession_Response_content, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_content{s}, err
+	return WebSession_Response_content(s), err
 }
 
 func (p WebSession_Response_content_Future) ETag() WebSession_ETag_Future {
@@ -2774,11 +3005,11 @@ type WebSession_Response_content_body_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_content_body_Future) Struct() (WebSession_Response_content_body, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_content_body{s}, err
+	return WebSession_Response_content_body(s), err
 }
 
 func (p WebSession_Response_content_body_Future) Stream() util.Handle {
-	return util.Handle{Client: p.Future.Field(4, nil).Client()}
+	return util.Handle(p.Future.Field(4, nil).Client())
 }
 
 func (p WebSession_Response_content_Future) Disposition() WebSession_Response_content_disposition_Future {
@@ -2790,7 +3021,7 @@ type WebSession_Response_content_disposition_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_content_disposition_Future) Struct() (WebSession_Response_content_disposition, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_content_disposition{s}, err
+	return WebSession_Response_content_disposition(s), err
 }
 
 func (p WebSession_Response_Future) NoContent() WebSession_Response_noContent_Future {
@@ -2802,7 +3033,7 @@ type WebSession_Response_noContent_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_noContent_Future) Struct() (WebSession_Response_noContent, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_noContent{s}, err
+	return WebSession_Response_noContent(s), err
 }
 
 func (p WebSession_Response_noContent_Future) ETag() WebSession_ETag_Future {
@@ -2818,7 +3049,7 @@ type WebSession_Response_preconditionFailed_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_preconditionFailed_Future) Struct() (WebSession_Response_preconditionFailed, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_preconditionFailed{s}, err
+	return WebSession_Response_preconditionFailed(s), err
 }
 
 func (p WebSession_Response_preconditionFailed_Future) MatchingETag() WebSession_ETag_Future {
@@ -2834,7 +3065,7 @@ type WebSession_Response_redirect_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_redirect_Future) Struct() (WebSession_Response_redirect, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_redirect{s}, err
+	return WebSession_Response_redirect(s), err
 }
 
 func (p WebSession_Response_Future) ClientError() WebSession_Response_clientError_Future {
@@ -2846,7 +3077,7 @@ type WebSession_Response_clientError_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_clientError_Future) Struct() (WebSession_Response_clientError, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_clientError{s}, err
+	return WebSession_Response_clientError(s), err
 }
 
 func (p WebSession_Response_clientError_Future) NonHtmlBody() WebSession_Response_ErrorBody_Future {
@@ -2862,7 +3093,7 @@ type WebSession_Response_serverError_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_serverError_Future) Struct() (WebSession_Response_serverError, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_serverError{s}, err
+	return WebSession_Response_serverError(s), err
 }
 
 func (p WebSession_Response_serverError_Future) NonHtmlBody() WebSession_Response_ErrorBody_Future {
@@ -2932,21 +3163,10 @@ func WebSession_Response_SuccessCodeFromString(c string) WebSession_Response_Suc
 	}
 }
 
-type WebSession_Response_SuccessCode_List struct{ capnp.List }
+type WebSession_Response_SuccessCode_List = capnp.EnumList[WebSession_Response_SuccessCode]
 
 func NewWebSession_Response_SuccessCode_List(s *capnp.Segment, sz int32) (WebSession_Response_SuccessCode_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return WebSession_Response_SuccessCode_List{l.List}, err
-}
-
-func (l WebSession_Response_SuccessCode_List) At(i int) WebSession_Response_SuccessCode {
-	ul := capnp.UInt16List{List: l.List}
-	return WebSession_Response_SuccessCode(ul.At(i))
-}
-
-func (l WebSession_Response_SuccessCode_List) Set(i int, v WebSession_Response_SuccessCode) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
+	return capnp.NewEnumList[WebSession_Response_SuccessCode](s, sz)
 }
 
 type WebSession_Response_ClientErrorCode uint16
@@ -3042,104 +3262,102 @@ func WebSession_Response_ClientErrorCodeFromString(c string) WebSession_Response
 	}
 }
 
-type WebSession_Response_ClientErrorCode_List struct{ capnp.List }
+type WebSession_Response_ClientErrorCode_List = capnp.EnumList[WebSession_Response_ClientErrorCode]
 
 func NewWebSession_Response_ClientErrorCode_List(s *capnp.Segment, sz int32) (WebSession_Response_ClientErrorCode_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return WebSession_Response_ClientErrorCode_List{l.List}, err
+	return capnp.NewEnumList[WebSession_Response_ClientErrorCode](s, sz)
 }
 
-func (l WebSession_Response_ClientErrorCode_List) At(i int) WebSession_Response_ClientErrorCode {
-	ul := capnp.UInt16List{List: l.List}
-	return WebSession_Response_ClientErrorCode(ul.At(i))
-}
-
-func (l WebSession_Response_ClientErrorCode_List) Set(i int, v WebSession_Response_ClientErrorCode) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type WebSession_Response_Header struct{ capnp.Struct }
+type WebSession_Response_Header capnp.Struct
 
 // WebSession_Response_Header_TypeID is the unique identifier for the type WebSession_Response_Header.
 const WebSession_Response_Header_TypeID = 0xb4b873147ab5ce5e
 
 func NewWebSession_Response_Header(s *capnp.Segment) (WebSession_Response_Header, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_Response_Header{st}, err
+	return WebSession_Response_Header(st), err
 }
 
 func NewRootWebSession_Response_Header(s *capnp.Segment) (WebSession_Response_Header, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_Response_Header{st}, err
+	return WebSession_Response_Header(st), err
 }
 
 func ReadRootWebSession_Response_Header(msg *capnp.Message) (WebSession_Response_Header, error) {
 	root, err := msg.Root()
-	return WebSession_Response_Header{root.Struct()}, err
+	return WebSession_Response_Header(root.Struct()), err
 }
 
 func (s WebSession_Response_Header) String() string {
-	str, _ := text.Marshal(0xb4b873147ab5ce5e, s.Struct)
+	str, _ := text.Marshal(0xb4b873147ab5ce5e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Response_Header) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Response_Header) DecodeFromPtr(p capnp.Ptr) WebSession_Response_Header {
+	return WebSession_Response_Header(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Response_Header) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Response_Header) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_Header) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_Header) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_Header) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_Header) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Response_Header) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_Header) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_Response_Header) Value() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_Header) HasValue() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_Header) ValueBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_Header) SetValue(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 // WebSession_Response_Header_List is a list of WebSession_Response_Header.
-type WebSession_Response_Header_List struct{ capnp.List }
+type WebSession_Response_Header_List = capnp.StructList[WebSession_Response_Header]
 
 // NewWebSession_Response_Header creates a new list of WebSession_Response_Header.
 func NewWebSession_Response_Header_List(s *capnp.Segment, sz int32) (WebSession_Response_Header_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSession_Response_Header_List{l}, err
-}
-
-func (s WebSession_Response_Header_List) At(i int) WebSession_Response_Header {
-	return WebSession_Response_Header{s.List.Struct(i)}
-}
-
-func (s WebSession_Response_Header_List) Set(i int, v WebSession_Response_Header) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Response_Header_List) String() string {
-	str, _ := text.MarshalList(0xb4b873147ab5ce5e, s.List)
-	return str
+	return capnp.StructList[WebSession_Response_Header](l), err
 }
 
 // WebSession_Response_Header_Future is a wrapper for a WebSession_Response_Header promised by a client call.
@@ -3147,121 +3365,130 @@ type WebSession_Response_Header_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_Header_Future) Struct() (WebSession_Response_Header, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_Header{s}, err
+	return WebSession_Response_Header(s), err
 }
 
-type WebSession_Response_ErrorBody struct{ capnp.Struct }
+type WebSession_Response_ErrorBody capnp.Struct
 
 // WebSession_Response_ErrorBody_TypeID is the unique identifier for the type WebSession_Response_ErrorBody.
 const WebSession_Response_ErrorBody_TypeID = 0x9497e63b399a2c01
 
 func NewWebSession_Response_ErrorBody(s *capnp.Segment) (WebSession_Response_ErrorBody, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_Response_ErrorBody{st}, err
+	return WebSession_Response_ErrorBody(st), err
 }
 
 func NewRootWebSession_Response_ErrorBody(s *capnp.Segment) (WebSession_Response_ErrorBody, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_Response_ErrorBody{st}, err
+	return WebSession_Response_ErrorBody(st), err
 }
 
 func ReadRootWebSession_Response_ErrorBody(msg *capnp.Message) (WebSession_Response_ErrorBody, error) {
 	root, err := msg.Root()
-	return WebSession_Response_ErrorBody{root.Struct()}, err
+	return WebSession_Response_ErrorBody(root.Struct()), err
 }
 
 func (s WebSession_Response_ErrorBody) String() string {
-	str, _ := text.Marshal(0x9497e63b399a2c01, s.Struct)
+	str, _ := text.Marshal(0x9497e63b399a2c01, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Response_ErrorBody) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Response_ErrorBody) DecodeFromPtr(p capnp.Ptr) WebSession_Response_ErrorBody {
+	return WebSession_Response_ErrorBody(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Response_ErrorBody) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Response_ErrorBody) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Response_ErrorBody) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Response_ErrorBody) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Response_ErrorBody) Data() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s WebSession_Response_ErrorBody) HasData() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Response_ErrorBody) SetData(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s WebSession_Response_ErrorBody) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_ErrorBody) HasEncoding() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_Response_ErrorBody) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_ErrorBody) SetEncoding(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_Response_ErrorBody) Language() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_ErrorBody) HasLanguage() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_Response_ErrorBody) LanguageBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_ErrorBody) SetLanguage(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s WebSession_Response_ErrorBody) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s WebSession_Response_ErrorBody) HasMimeType() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_Response_ErrorBody) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_Response_ErrorBody) SetMimeType(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 // WebSession_Response_ErrorBody_List is a list of WebSession_Response_ErrorBody.
-type WebSession_Response_ErrorBody_List struct{ capnp.List }
+type WebSession_Response_ErrorBody_List = capnp.StructList[WebSession_Response_ErrorBody]
 
 // NewWebSession_Response_ErrorBody creates a new list of WebSession_Response_ErrorBody.
 func NewWebSession_Response_ErrorBody_List(s *capnp.Segment, sz int32) (WebSession_Response_ErrorBody_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return WebSession_Response_ErrorBody_List{l}, err
-}
-
-func (s WebSession_Response_ErrorBody_List) At(i int) WebSession_Response_ErrorBody {
-	return WebSession_Response_ErrorBody{s.List.Struct(i)}
-}
-
-func (s WebSession_Response_ErrorBody_List) Set(i int, v WebSession_Response_ErrorBody) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Response_ErrorBody_List) String() string {
-	str, _ := text.MarshalList(0x9497e63b399a2c01, s.List)
-	return str
+	return capnp.StructList[WebSession_Response_ErrorBody](l), err
 }
 
 // WebSession_Response_ErrorBody_Future is a wrapper for a WebSession_Response_ErrorBody promised by a client call.
@@ -3269,10 +3496,10 @@ type WebSession_Response_ErrorBody_Future struct{ *capnp.Future }
 
 func (p WebSession_Response_ErrorBody_Future) Struct() (WebSession_Response_ErrorBody, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Response_ErrorBody{s}, err
+	return WebSession_Response_ErrorBody(s), err
 }
 
-type WebSession_RequestStream struct{ Client *capnp.Client }
+type WebSession_RequestStream capnp.Client
 
 // WebSession_RequestStream_TypeID is the unique identifier for the type WebSession_RequestStream.
 const WebSession_RequestStream_TypeID = 0x99ffc2f3f69a6a9f
@@ -3288,9 +3515,9 @@ func (c WebSession_RequestStream) GetResponse(ctx context.Context, params func(W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_RequestStream_getResponse_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_RequestStream_getResponse_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return WebSession_Response_Future{Future: ans.Future()}, release
 }
 func (c WebSession_RequestStream) Write(ctx context.Context, params func(util.ByteStream_write_Params) error) (stream.StreamResult_Future, capnp.ReleaseFunc) {
@@ -3304,9 +3531,9 @@ func (c WebSession_RequestStream) Write(ctx context.Context, params func(util.By
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_write_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_write_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return stream.StreamResult_Future{Future: ans.Future()}, release
 }
 func (c WebSession_RequestStream) Done(ctx context.Context, params func(util.ByteStream_done_Params) error) (util.ByteStream_done_Results_Future, capnp.ReleaseFunc) {
@@ -3320,9 +3547,9 @@ func (c WebSession_RequestStream) Done(ctx context.Context, params func(util.Byt
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_done_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_done_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return util.ByteStream_done_Results_Future{Future: ans.Future()}, release
 }
 func (c WebSession_RequestStream) ExpectSize(ctx context.Context, params func(util.ByteStream_expectSize_Params) error) (util.ByteStream_expectSize_Results_Future, capnp.ReleaseFunc) {
@@ -3336,20 +3563,30 @@ func (c WebSession_RequestStream) ExpectSize(ctx context.Context, params func(ut
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 8, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(util.ByteStream_expectSize_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
 func (c WebSession_RequestStream) AddRef() WebSession_RequestStream {
-	return WebSession_RequestStream{
-		Client: c.Client.AddRef(),
-	}
+	return WebSession_RequestStream(capnp.Client(c).AddRef())
 }
 
 func (c WebSession_RequestStream) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c WebSession_RequestStream) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (WebSession_RequestStream) DecodeFromPtr(p capnp.Ptr) WebSession_RequestStream {
+	return WebSession_RequestStream(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c WebSession_RequestStream) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A WebSession_RequestStream_Server is a WebSession_RequestStream with a local implementation.
@@ -3364,15 +3601,15 @@ type WebSession_RequestStream_Server interface {
 }
 
 // WebSession_RequestStream_NewServer creates a new Server from an implementation of WebSession_RequestStream_Server.
-func WebSession_RequestStream_NewServer(s WebSession_RequestStream_Server, policy *server.Policy) *server.Server {
+func WebSession_RequestStream_NewServer(s WebSession_RequestStream_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(WebSession_RequestStream_Methods(nil, s), s, c, policy)
+	return server.New(WebSession_RequestStream_Methods(nil, s), s, c)
 }
 
 // WebSession_RequestStream_ServerToClient creates a new Client from an implementation of WebSession_RequestStream_Server.
 // The caller is responsible for calling Release on the returned Client.
-func WebSession_RequestStream_ServerToClient(s WebSession_RequestStream_Server, policy *server.Policy) WebSession_RequestStream {
-	return WebSession_RequestStream{Client: capnp.NewClient(WebSession_RequestStream_NewServer(s, policy))}
+func WebSession_RequestStream_ServerToClient(s WebSession_RequestStream_Server) WebSession_RequestStream {
+	return WebSession_RequestStream(capnp.NewClient(WebSession_RequestStream_NewServer(s)))
 }
 
 // WebSession_RequestStream_Methods appends Methods to a slice that invoke the methods on s.
@@ -3441,60 +3678,79 @@ type WebSession_RequestStream_getResponse struct {
 
 // Args returns the call's arguments.
 func (c WebSession_RequestStream_getResponse) Args() WebSession_RequestStream_getResponse_Params {
-	return WebSession_RequestStream_getResponse_Params{Struct: c.Call.Args()}
+	return WebSession_RequestStream_getResponse_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_RequestStream_getResponse) AllocResults() (WebSession_Response, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 9})
-	return WebSession_Response{Struct: r}, err
+	return WebSession_Response(r), err
 }
 
-type WebSession_RequestStream_getResponse_Params struct{ capnp.Struct }
+// WebSession_RequestStream_List is a list of WebSession_RequestStream.
+type WebSession_RequestStream_List = capnp.CapList[WebSession_RequestStream]
+
+// NewWebSession_RequestStream creates a new list of WebSession_RequestStream.
+func NewWebSession_RequestStream_List(s *capnp.Segment, sz int32) (WebSession_RequestStream_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[WebSession_RequestStream](l), err
+}
+
+type WebSession_RequestStream_getResponse_Params capnp.Struct
 
 // WebSession_RequestStream_getResponse_Params_TypeID is the unique identifier for the type WebSession_RequestStream_getResponse_Params.
 const WebSession_RequestStream_getResponse_Params_TypeID = 0xe9a02a3219bdbd70
 
 func NewWebSession_RequestStream_getResponse_Params(s *capnp.Segment) (WebSession_RequestStream_getResponse_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSession_RequestStream_getResponse_Params{st}, err
+	return WebSession_RequestStream_getResponse_Params(st), err
 }
 
 func NewRootWebSession_RequestStream_getResponse_Params(s *capnp.Segment) (WebSession_RequestStream_getResponse_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return WebSession_RequestStream_getResponse_Params{st}, err
+	return WebSession_RequestStream_getResponse_Params(st), err
 }
 
 func ReadRootWebSession_RequestStream_getResponse_Params(msg *capnp.Message) (WebSession_RequestStream_getResponse_Params, error) {
 	root, err := msg.Root()
-	return WebSession_RequestStream_getResponse_Params{root.Struct()}, err
+	return WebSession_RequestStream_getResponse_Params(root.Struct()), err
 }
 
 func (s WebSession_RequestStream_getResponse_Params) String() string {
-	str, _ := text.Marshal(0xe9a02a3219bdbd70, s.Struct)
+	str, _ := text.Marshal(0xe9a02a3219bdbd70, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_RequestStream_getResponse_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_RequestStream_getResponse_Params) DecodeFromPtr(p capnp.Ptr) WebSession_RequestStream_getResponse_Params {
+	return WebSession_RequestStream_getResponse_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_RequestStream_getResponse_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_RequestStream_getResponse_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_RequestStream_getResponse_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_RequestStream_getResponse_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // WebSession_RequestStream_getResponse_Params_List is a list of WebSession_RequestStream_getResponse_Params.
-type WebSession_RequestStream_getResponse_Params_List struct{ capnp.List }
+type WebSession_RequestStream_getResponse_Params_List = capnp.StructList[WebSession_RequestStream_getResponse_Params]
 
 // NewWebSession_RequestStream_getResponse_Params creates a new list of WebSession_RequestStream_getResponse_Params.
 func NewWebSession_RequestStream_getResponse_Params_List(s *capnp.Segment, sz int32) (WebSession_RequestStream_getResponse_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return WebSession_RequestStream_getResponse_Params_List{l}, err
-}
-
-func (s WebSession_RequestStream_getResponse_Params_List) At(i int) WebSession_RequestStream_getResponse_Params {
-	return WebSession_RequestStream_getResponse_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_RequestStream_getResponse_Params_List) Set(i int, v WebSession_RequestStream_getResponse_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_RequestStream_getResponse_Params_List) String() string {
-	str, _ := text.MarshalList(0xe9a02a3219bdbd70, s.List)
-	return str
+	return capnp.StructList[WebSession_RequestStream_getResponse_Params](l), err
 }
 
 // WebSession_RequestStream_getResponse_Params_Future is a wrapper for a WebSession_RequestStream_getResponse_Params promised by a client call.
@@ -3502,10 +3758,10 @@ type WebSession_RequestStream_getResponse_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_RequestStream_getResponse_Params_Future) Struct() (WebSession_RequestStream_getResponse_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_RequestStream_getResponse_Params{s}, err
+	return WebSession_RequestStream_getResponse_Params(s), err
 }
 
-type WebSession_WebSocketStream struct{ Client *capnp.Client }
+type WebSession_WebSocketStream capnp.Client
 
 // WebSession_WebSocketStream_TypeID is the unique identifier for the type WebSession_WebSocketStream.
 const WebSession_WebSocketStream_TypeID = 0xf001fc1d5e574a07
@@ -3521,20 +3777,30 @@ func (c WebSession_WebSocketStream) SendBytes(ctx context.Context, params func(W
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_WebSocketStream_sendBytes_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(WebSession_WebSocketStream_sendBytes_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return stream.StreamResult_Future{Future: ans.Future()}, release
 }
 
 func (c WebSession_WebSocketStream) AddRef() WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{
-		Client: c.Client.AddRef(),
-	}
+	return WebSession_WebSocketStream(capnp.Client(c).AddRef())
 }
 
 func (c WebSession_WebSocketStream) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c WebSession_WebSocketStream) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (WebSession_WebSocketStream) DecodeFromPtr(p capnp.Ptr) WebSession_WebSocketStream {
+	return WebSession_WebSocketStream(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c WebSession_WebSocketStream) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A WebSession_WebSocketStream_Server is a WebSession_WebSocketStream with a local implementation.
@@ -3543,15 +3809,15 @@ type WebSession_WebSocketStream_Server interface {
 }
 
 // WebSession_WebSocketStream_NewServer creates a new Server from an implementation of WebSession_WebSocketStream_Server.
-func WebSession_WebSocketStream_NewServer(s WebSession_WebSocketStream_Server, policy *server.Policy) *server.Server {
+func WebSession_WebSocketStream_NewServer(s WebSession_WebSocketStream_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(WebSession_WebSocketStream_Methods(nil, s), s, c, policy)
+	return server.New(WebSession_WebSocketStream_Methods(nil, s), s, c)
 }
 
 // WebSession_WebSocketStream_ServerToClient creates a new Client from an implementation of WebSession_WebSocketStream_Server.
 // The caller is responsible for calling Release on the returned Client.
-func WebSession_WebSocketStream_ServerToClient(s WebSession_WebSocketStream_Server, policy *server.Policy) WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{Client: capnp.NewClient(WebSession_WebSocketStream_NewServer(s, policy))}
+func WebSession_WebSocketStream_ServerToClient(s WebSession_WebSocketStream_Server) WebSession_WebSocketStream {
+	return WebSession_WebSocketStream(capnp.NewClient(WebSession_WebSocketStream_NewServer(s)))
 }
 
 // WebSession_WebSocketStream_Methods appends Methods to a slice that invoke the methods on s.
@@ -3584,73 +3850,91 @@ type WebSession_WebSocketStream_sendBytes struct {
 
 // Args returns the call's arguments.
 func (c WebSession_WebSocketStream_sendBytes) Args() WebSession_WebSocketStream_sendBytes_Params {
-	return WebSession_WebSocketStream_sendBytes_Params{Struct: c.Call.Args()}
+	return WebSession_WebSocketStream_sendBytes_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c WebSession_WebSocketStream_sendBytes) AllocResults() (stream.StreamResult, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return stream.StreamResult{Struct: r}, err
+	return stream.StreamResult(r), err
 }
 
-type WebSession_WebSocketStream_sendBytes_Params struct{ capnp.Struct }
+// WebSession_WebSocketStream_List is a list of WebSession_WebSocketStream.
+type WebSession_WebSocketStream_List = capnp.CapList[WebSession_WebSocketStream]
+
+// NewWebSession_WebSocketStream creates a new list of WebSession_WebSocketStream.
+func NewWebSession_WebSocketStream_List(s *capnp.Segment, sz int32) (WebSession_WebSocketStream_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[WebSession_WebSocketStream](l), err
+}
+
+type WebSession_WebSocketStream_sendBytes_Params capnp.Struct
 
 // WebSession_WebSocketStream_sendBytes_Params_TypeID is the unique identifier for the type WebSession_WebSocketStream_sendBytes_Params.
 const WebSession_WebSocketStream_sendBytes_Params_TypeID = 0x9a712ce3fcad8cd8
 
 func NewWebSession_WebSocketStream_sendBytes_Params(s *capnp.Segment) (WebSession_WebSocketStream_sendBytes_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_WebSocketStream_sendBytes_Params{st}, err
+	return WebSession_WebSocketStream_sendBytes_Params(st), err
 }
 
 func NewRootWebSession_WebSocketStream_sendBytes_Params(s *capnp.Segment) (WebSession_WebSocketStream_sendBytes_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_WebSocketStream_sendBytes_Params{st}, err
+	return WebSession_WebSocketStream_sendBytes_Params(st), err
 }
 
 func ReadRootWebSession_WebSocketStream_sendBytes_Params(msg *capnp.Message) (WebSession_WebSocketStream_sendBytes_Params, error) {
 	root, err := msg.Root()
-	return WebSession_WebSocketStream_sendBytes_Params{root.Struct()}, err
+	return WebSession_WebSocketStream_sendBytes_Params(root.Struct()), err
 }
 
 func (s WebSession_WebSocketStream_sendBytes_Params) String() string {
-	str, _ := text.Marshal(0x9a712ce3fcad8cd8, s.Struct)
+	str, _ := text.Marshal(0x9a712ce3fcad8cd8, capnp.Struct(s))
 	return str
 }
 
-func (s WebSession_WebSocketStream_sendBytes_Params) Message() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+func (s WebSession_WebSocketStream_sendBytes_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_WebSocketStream_sendBytes_Params) DecodeFromPtr(p capnp.Ptr) WebSession_WebSocketStream_sendBytes_Params {
+	return WebSession_WebSocketStream_sendBytes_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_WebSocketStream_sendBytes_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_WebSocketStream_sendBytes_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_WebSocketStream_sendBytes_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_WebSocketStream_sendBytes_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+func (s WebSession_WebSocketStream_sendBytes_Params) Msg() ([]byte, error) {
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
-func (s WebSession_WebSocketStream_sendBytes_Params) HasMessage() bool {
-	return s.Struct.HasPtr(0)
+func (s WebSession_WebSocketStream_sendBytes_Params) HasMsg() bool {
+	return capnp.Struct(s).HasPtr(0)
 }
 
-func (s WebSession_WebSocketStream_sendBytes_Params) SetMessage(v []byte) error {
-	return s.Struct.SetData(0, v)
+func (s WebSession_WebSocketStream_sendBytes_Params) SetMsg(v []byte) error {
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // WebSession_WebSocketStream_sendBytes_Params_List is a list of WebSession_WebSocketStream_sendBytes_Params.
-type WebSession_WebSocketStream_sendBytes_Params_List struct{ capnp.List }
+type WebSession_WebSocketStream_sendBytes_Params_List = capnp.StructList[WebSession_WebSocketStream_sendBytes_Params]
 
 // NewWebSession_WebSocketStream_sendBytes_Params creates a new list of WebSession_WebSocketStream_sendBytes_Params.
 func NewWebSession_WebSocketStream_sendBytes_Params_List(s *capnp.Segment, sz int32) (WebSession_WebSocketStream_sendBytes_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSession_WebSocketStream_sendBytes_Params_List{l}, err
-}
-
-func (s WebSession_WebSocketStream_sendBytes_Params_List) At(i int) WebSession_WebSocketStream_sendBytes_Params {
-	return WebSession_WebSocketStream_sendBytes_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_WebSocketStream_sendBytes_Params_List) Set(i int, v WebSession_WebSocketStream_sendBytes_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_WebSocketStream_sendBytes_Params_List) String() string {
-	str, _ := text.MarshalList(0x9a712ce3fcad8cd8, s.List)
-	return str
+	return capnp.StructList[WebSession_WebSocketStream_sendBytes_Params](l), err
 }
 
 // WebSession_WebSocketStream_sendBytes_Params_Future is a wrapper for a WebSession_WebSocketStream_sendBytes_Params promised by a client call.
@@ -3658,86 +3942,95 @@ type WebSession_WebSocketStream_sendBytes_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_WebSocketStream_sendBytes_Params_Future) Struct() (WebSession_WebSocketStream_sendBytes_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_WebSocketStream_sendBytes_Params{s}, err
+	return WebSession_WebSocketStream_sendBytes_Params(s), err
 }
 
-type WebSession_CachePolicy struct{ capnp.Struct }
+type WebSession_CachePolicy capnp.Struct
 
 // WebSession_CachePolicy_TypeID is the unique identifier for the type WebSession_CachePolicy.
 const WebSession_CachePolicy_TypeID = 0xb37b21e300864885
 
 func NewWebSession_CachePolicy(s *capnp.Segment) (WebSession_CachePolicy, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return WebSession_CachePolicy{st}, err
+	return WebSession_CachePolicy(st), err
 }
 
 func NewRootWebSession_CachePolicy(s *capnp.Segment) (WebSession_CachePolicy, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0})
-	return WebSession_CachePolicy{st}, err
+	return WebSession_CachePolicy(st), err
 }
 
 func ReadRootWebSession_CachePolicy(msg *capnp.Message) (WebSession_CachePolicy, error) {
 	root, err := msg.Root()
-	return WebSession_CachePolicy{root.Struct()}, err
+	return WebSession_CachePolicy(root.Struct()), err
 }
 
 func (s WebSession_CachePolicy) String() string {
-	str, _ := text.Marshal(0xb37b21e300864885, s.Struct)
+	str, _ := text.Marshal(0xb37b21e300864885, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_CachePolicy) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_CachePolicy) DecodeFromPtr(p capnp.Ptr) WebSession_CachePolicy {
+	return WebSession_CachePolicy(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_CachePolicy) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_CachePolicy) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_CachePolicy) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_CachePolicy) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_CachePolicy) WithCheck() WebSession_CachePolicy_Scope {
-	return WebSession_CachePolicy_Scope(s.Struct.Uint16(0))
+	return WebSession_CachePolicy_Scope(capnp.Struct(s).Uint16(0))
 }
 
 func (s WebSession_CachePolicy) SetWithCheck(v WebSession_CachePolicy_Scope) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 func (s WebSession_CachePolicy) Permanent() WebSession_CachePolicy_Scope {
-	return WebSession_CachePolicy_Scope(s.Struct.Uint16(2))
+	return WebSession_CachePolicy_Scope(capnp.Struct(s).Uint16(2))
 }
 
 func (s WebSession_CachePolicy) SetPermanent(v WebSession_CachePolicy_Scope) {
-	s.Struct.SetUint16(2, uint16(v))
+	capnp.Struct(s).SetUint16(2, uint16(v))
 }
 
 func (s WebSession_CachePolicy) VariesOnCookie() bool {
-	return s.Struct.Bit(32)
+	return capnp.Struct(s).Bit(32)
 }
 
 func (s WebSession_CachePolicy) SetVariesOnCookie(v bool) {
-	s.Struct.SetBit(32, v)
+	capnp.Struct(s).SetBit(32, v)
 }
 
 func (s WebSession_CachePolicy) VariesOnAccept() bool {
-	return s.Struct.Bit(33)
+	return capnp.Struct(s).Bit(33)
 }
 
 func (s WebSession_CachePolicy) SetVariesOnAccept(v bool) {
-	s.Struct.SetBit(33, v)
+	capnp.Struct(s).SetBit(33, v)
 }
 
 // WebSession_CachePolicy_List is a list of WebSession_CachePolicy.
-type WebSession_CachePolicy_List struct{ capnp.List }
+type WebSession_CachePolicy_List = capnp.StructList[WebSession_CachePolicy]
 
 // NewWebSession_CachePolicy creates a new list of WebSession_CachePolicy.
 func NewWebSession_CachePolicy_List(s *capnp.Segment, sz int32) (WebSession_CachePolicy_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 0}, sz)
-	return WebSession_CachePolicy_List{l}, err
-}
-
-func (s WebSession_CachePolicy_List) At(i int) WebSession_CachePolicy {
-	return WebSession_CachePolicy{s.List.Struct(i)}
-}
-
-func (s WebSession_CachePolicy_List) Set(i int, v WebSession_CachePolicy) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_CachePolicy_List) String() string {
-	str, _ := text.MarshalList(0xb37b21e300864885, s.List)
-	return str
+	return capnp.StructList[WebSession_CachePolicy](l), err
 }
 
 // WebSession_CachePolicy_Future is a wrapper for a WebSession_CachePolicy promised by a client call.
@@ -3745,7 +4038,7 @@ type WebSession_CachePolicy_Future struct{ *capnp.Future }
 
 func (p WebSession_CachePolicy_Future) Struct() (WebSession_CachePolicy, error) {
 	s, err := p.Future.Struct()
-	return WebSession_CachePolicy{s}, err
+	return WebSession_CachePolicy(s), err
 }
 
 type WebSession_CachePolicy_Scope uint16
@@ -3801,116 +4094,114 @@ func WebSession_CachePolicy_ScopeFromString(c string) WebSession_CachePolicy_Sco
 	}
 }
 
-type WebSession_CachePolicy_Scope_List struct{ capnp.List }
+type WebSession_CachePolicy_Scope_List = capnp.EnumList[WebSession_CachePolicy_Scope]
 
 func NewWebSession_CachePolicy_Scope_List(s *capnp.Segment, sz int32) (WebSession_CachePolicy_Scope_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return WebSession_CachePolicy_Scope_List{l.List}, err
+	return capnp.NewEnumList[WebSession_CachePolicy_Scope](s, sz)
 }
 
-func (l WebSession_CachePolicy_Scope_List) At(i int) WebSession_CachePolicy_Scope {
-	ul := capnp.UInt16List{List: l.List}
-	return WebSession_CachePolicy_Scope(ul.At(i))
-}
-
-func (l WebSession_CachePolicy_Scope_List) Set(i int, v WebSession_CachePolicy_Scope) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type WebSession_Options struct{ capnp.Struct }
+type WebSession_Options capnp.Struct
 
 // WebSession_Options_TypeID is the unique identifier for the type WebSession_Options.
 const WebSession_Options_TypeID = 0xe9ff06beec4e73d6
 
 func NewWebSession_Options(s *capnp.Segment) (WebSession_Options, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_Options{st}, err
+	return WebSession_Options(st), err
 }
 
 func NewRootWebSession_Options(s *capnp.Segment) (WebSession_Options, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return WebSession_Options{st}, err
+	return WebSession_Options(st), err
 }
 
 func ReadRootWebSession_Options(msg *capnp.Message) (WebSession_Options, error) {
 	root, err := msg.Root()
-	return WebSession_Options{root.Struct()}, err
+	return WebSession_Options(root.Struct()), err
 }
 
 func (s WebSession_Options) String() string {
-	str, _ := text.Marshal(0xe9ff06beec4e73d6, s.Struct)
+	str, _ := text.Marshal(0xe9ff06beec4e73d6, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_Options) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_Options) DecodeFromPtr(p capnp.Ptr) WebSession_Options {
+	return WebSession_Options(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_Options) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_Options) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_Options) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_Options) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_Options) DavClass1() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_Options) SetDavClass1(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_Options) DavClass2() bool {
-	return s.Struct.Bit(1)
+	return capnp.Struct(s).Bit(1)
 }
 
 func (s WebSession_Options) SetDavClass2(v bool) {
-	s.Struct.SetBit(1, v)
+	capnp.Struct(s).SetBit(1, v)
 }
 
 func (s WebSession_Options) DavClass3() bool {
-	return s.Struct.Bit(2)
+	return capnp.Struct(s).Bit(2)
 }
 
 func (s WebSession_Options) SetDavClass3(v bool) {
-	s.Struct.SetBit(2, v)
+	capnp.Struct(s).SetBit(2, v)
 }
 
 func (s WebSession_Options) DavExtensions() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(0)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return capnp.TextList(p.List()), err
 }
 
 func (s WebSession_Options) HasDavExtensions() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_Options) SetDavExtensions(v capnp.TextList) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewDavExtensions sets the davExtensions field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s WebSession_Options) NewDavExtensions(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // WebSession_Options_List is a list of WebSession_Options.
-type WebSession_Options_List struct{ capnp.List }
+type WebSession_Options_List = capnp.StructList[WebSession_Options]
 
 // NewWebSession_Options creates a new list of WebSession_Options.
 func NewWebSession_Options_List(s *capnp.Segment, sz int32) (WebSession_Options_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return WebSession_Options_List{l}, err
-}
-
-func (s WebSession_Options_List) At(i int) WebSession_Options {
-	return WebSession_Options{s.List.Struct(i)}
-}
-
-func (s WebSession_Options_List) Set(i int, v WebSession_Options) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_Options_List) String() string {
-	str, _ := text.MarshalList(0xe9ff06beec4e73d6, s.List)
-	return str
+	return capnp.StructList[WebSession_Options](l), err
 }
 
 // WebSession_Options_Future is a wrapper for a WebSession_Options promised by a client call.
@@ -3918,7 +4209,7 @@ type WebSession_Options_Future struct{ *capnp.Future }
 
 func (p WebSession_Options_Future) Struct() (WebSession_Options, error) {
 	s, err := p.Future.Struct()
-	return WebSession_Options{s}, err
+	return WebSession_Options(s), err
 }
 
 type WebSession_PropfindDepth uint16
@@ -3964,118 +4255,116 @@ func WebSession_PropfindDepthFromString(c string) WebSession_PropfindDepth {
 	}
 }
 
-type WebSession_PropfindDepth_List struct{ capnp.List }
+type WebSession_PropfindDepth_List = capnp.EnumList[WebSession_PropfindDepth]
 
 func NewWebSession_PropfindDepth_List(s *capnp.Segment, sz int32) (WebSession_PropfindDepth_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return WebSession_PropfindDepth_List{l.List}, err
+	return capnp.NewEnumList[WebSession_PropfindDepth](s, sz)
 }
 
-func (l WebSession_PropfindDepth_List) At(i int) WebSession_PropfindDepth {
-	ul := capnp.UInt16List{List: l.List}
-	return WebSession_PropfindDepth(ul.At(i))
-}
-
-func (l WebSession_PropfindDepth_List) Set(i int, v WebSession_PropfindDepth) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type WebSession_get_Params struct{ capnp.Struct }
+type WebSession_get_Params capnp.Struct
 
 // WebSession_get_Params_TypeID is the unique identifier for the type WebSession_get_Params.
 const WebSession_get_Params_TypeID = 0xcd94acddf4778328
 
 func NewWebSession_get_Params(s *capnp.Segment) (WebSession_get_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return WebSession_get_Params{st}, err
+	return WebSession_get_Params(st), err
 }
 
 func NewRootWebSession_get_Params(s *capnp.Segment) (WebSession_get_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return WebSession_get_Params{st}, err
+	return WebSession_get_Params(st), err
 }
 
 func ReadRootWebSession_get_Params(msg *capnp.Message) (WebSession_get_Params, error) {
 	root, err := msg.Root()
-	return WebSession_get_Params{root.Struct()}, err
+	return WebSession_get_Params(root.Struct()), err
 }
 
 func (s WebSession_get_Params) String() string {
-	str, _ := text.Marshal(0xcd94acddf4778328, s.Struct)
+	str, _ := text.Marshal(0xcd94acddf4778328, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_get_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_get_Params) DecodeFromPtr(p capnp.Ptr) WebSession_get_Params {
+	return WebSession_get_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_get_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_get_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_get_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_get_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_get_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_get_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_get_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_get_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_get_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_get_Params) HasContext() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_get_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_get_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_get_Params) IgnoreBody() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_get_Params) SetIgnoreBody(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 // WebSession_get_Params_List is a list of WebSession_get_Params.
-type WebSession_get_Params_List struct{ capnp.List }
+type WebSession_get_Params_List = capnp.StructList[WebSession_get_Params]
 
 // NewWebSession_get_Params creates a new list of WebSession_get_Params.
 func NewWebSession_get_Params_List(s *capnp.Segment, sz int32) (WebSession_get_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
-	return WebSession_get_Params_List{l}, err
-}
-
-func (s WebSession_get_Params_List) At(i int) WebSession_get_Params {
-	return WebSession_get_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_get_Params_List) Set(i int, v WebSession_get_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_get_Params_List) String() string {
-	str, _ := text.MarshalList(0xcd94acddf4778328, s.List)
-	return str
+	return capnp.StructList[WebSession_get_Params](l), err
 }
 
 // WebSession_get_Params_Future is a wrapper for a WebSession_get_Params promised by a client call.
@@ -4083,124 +4372,133 @@ type WebSession_get_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_get_Params_Future) Struct() (WebSession_get_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_get_Params{s}, err
+	return WebSession_get_Params(s), err
 }
 
 func (p WebSession_get_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
-type WebSession_post_Params struct{ capnp.Struct }
+type WebSession_post_Params capnp.Struct
 
 // WebSession_post_Params_TypeID is the unique identifier for the type WebSession_post_Params.
 const WebSession_post_Params_TypeID = 0xaa6ef20a62c1cafd
 
 func NewWebSession_post_Params(s *capnp.Segment) (WebSession_post_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_post_Params{st}, err
+	return WebSession_post_Params(st), err
 }
 
 func NewRootWebSession_post_Params(s *capnp.Segment) (WebSession_post_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_post_Params{st}, err
+	return WebSession_post_Params(st), err
 }
 
 func ReadRootWebSession_post_Params(msg *capnp.Message) (WebSession_post_Params, error) {
 	root, err := msg.Root()
-	return WebSession_post_Params{root.Struct()}, err
+	return WebSession_post_Params(root.Struct()), err
 }
 
 func (s WebSession_post_Params) String() string {
-	str, _ := text.Marshal(0xaa6ef20a62c1cafd, s.Struct)
+	str, _ := text.Marshal(0xaa6ef20a62c1cafd, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_post_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_post_Params) DecodeFromPtr(p capnp.Ptr) WebSession_post_Params {
+	return WebSession_post_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_post_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_post_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_post_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_post_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_post_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_post_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_post_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_post_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_post_Params) Content() (WebSession_PostContent, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_PostContent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_PostContent(p.Struct()), err
 }
 
 func (s WebSession_post_Params) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_post_Params) SetContent(v WebSession_PostContent) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContent sets the content field to a newly
 // allocated WebSession_PostContent struct, preferring placement in s's segment.
 func (s WebSession_post_Params) NewContent() (WebSession_PostContent, error) {
-	ss, err := NewWebSession_PostContent(s.Struct.Segment())
+	ss, err := NewWebSession_PostContent(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_PostContent{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_post_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_post_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_post_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_post_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_post_Params_List is a list of WebSession_post_Params.
-type WebSession_post_Params_List struct{ capnp.List }
+type WebSession_post_Params_List = capnp.StructList[WebSession_post_Params]
 
 // NewWebSession_post_Params creates a new list of WebSession_post_Params.
 func NewWebSession_post_Params_List(s *capnp.Segment, sz int32) (WebSession_post_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_post_Params_List{l}, err
-}
-
-func (s WebSession_post_Params_List) At(i int) WebSession_post_Params {
-	return WebSession_post_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_post_Params_List) Set(i int, v WebSession_post_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_post_Params_List) String() string {
-	str, _ := text.MarshalList(0xaa6ef20a62c1cafd, s.List)
-	return str
+	return capnp.StructList[WebSession_post_Params](l), err
 }
 
 // WebSession_post_Params_Future is a wrapper for a WebSession_post_Params promised by a client call.
@@ -4208,7 +4506,7 @@ type WebSession_post_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_post_Params_Future) Struct() (WebSession_post_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_post_Params{s}, err
+	return WebSession_post_Params(s), err
 }
 
 func (p WebSession_post_Params_Future) Content() WebSession_PostContent_Future {
@@ -4219,135 +4517,144 @@ func (p WebSession_post_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_openWebSocket_Params struct{ capnp.Struct }
+type WebSession_openWebSocket_Params capnp.Struct
 
 // WebSession_openWebSocket_Params_TypeID is the unique identifier for the type WebSession_openWebSocket_Params.
 const WebSession_openWebSocket_Params_TypeID = 0xc7c9c9b19d935e79
 
 func NewWebSession_openWebSocket_Params(s *capnp.Segment) (WebSession_openWebSocket_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_openWebSocket_Params{st}, err
+	return WebSession_openWebSocket_Params(st), err
 }
 
 func NewRootWebSession_openWebSocket_Params(s *capnp.Segment) (WebSession_openWebSocket_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_openWebSocket_Params{st}, err
+	return WebSession_openWebSocket_Params(st), err
 }
 
 func ReadRootWebSession_openWebSocket_Params(msg *capnp.Message) (WebSession_openWebSocket_Params, error) {
 	root, err := msg.Root()
-	return WebSession_openWebSocket_Params{root.Struct()}, err
+	return WebSession_openWebSocket_Params(root.Struct()), err
 }
 
 func (s WebSession_openWebSocket_Params) String() string {
-	str, _ := text.Marshal(0xc7c9c9b19d935e79, s.Struct)
+	str, _ := text.Marshal(0xc7c9c9b19d935e79, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_openWebSocket_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_openWebSocket_Params) DecodeFromPtr(p capnp.Ptr) WebSession_openWebSocket_Params {
+	return WebSession_openWebSocket_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_openWebSocket_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_openWebSocket_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_openWebSocket_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_openWebSocket_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_openWebSocket_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_openWebSocket_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_openWebSocket_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_openWebSocket_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_openWebSocket_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_openWebSocket_Params) HasContext() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_openWebSocket_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_openWebSocket_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_openWebSocket_Params) Protocol() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(2)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return capnp.TextList(p.List()), err
 }
 
 func (s WebSession_openWebSocket_Params) HasProtocol() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_openWebSocket_Params) SetProtocol(v capnp.TextList) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewProtocol sets the protocol field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s WebSession_openWebSocket_Params) NewProtocol(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_openWebSocket_Params) ClientStream() WebSession_WebSocketStream {
-	p, _ := s.Struct.Ptr(3)
-	return WebSession_WebSocketStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(3)
+	return WebSession_WebSocketStream(p.Interface().Client())
 }
 
 func (s WebSession_openWebSocket_Params) HasClientStream() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_openWebSocket_Params) SetClientStream(v WebSession_WebSocketStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(3, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(3, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(3, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(3, in.ToPtr())
 }
 
 // WebSession_openWebSocket_Params_List is a list of WebSession_openWebSocket_Params.
-type WebSession_openWebSocket_Params_List struct{ capnp.List }
+type WebSession_openWebSocket_Params_List = capnp.StructList[WebSession_openWebSocket_Params]
 
 // NewWebSession_openWebSocket_Params creates a new list of WebSession_openWebSocket_Params.
 func NewWebSession_openWebSocket_Params_List(s *capnp.Segment, sz int32) (WebSession_openWebSocket_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return WebSession_openWebSocket_Params_List{l}, err
-}
-
-func (s WebSession_openWebSocket_Params_List) At(i int) WebSession_openWebSocket_Params {
-	return WebSession_openWebSocket_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_openWebSocket_Params_List) Set(i int, v WebSession_openWebSocket_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_openWebSocket_Params_List) String() string {
-	str, _ := text.MarshalList(0xc7c9c9b19d935e79, s.List)
-	return str
+	return capnp.StructList[WebSession_openWebSocket_Params](l), err
 }
 
 // WebSession_openWebSocket_Params_Future is a wrapper for a WebSession_openWebSocket_Params promised by a client call.
@@ -4355,7 +4662,7 @@ type WebSession_openWebSocket_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_openWebSocket_Params_Future) Struct() (WebSession_openWebSocket_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_openWebSocket_Params{s}, err
+	return WebSession_openWebSocket_Params(s), err
 }
 
 func (p WebSession_openWebSocket_Params_Future) Context() WebSession_Context_Future {
@@ -4363,96 +4670,105 @@ func (p WebSession_openWebSocket_Params_Future) Context() WebSession_Context_Fut
 }
 
 func (p WebSession_openWebSocket_Params_Future) ClientStream() WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{Client: p.Future.Field(3, nil).Client()}
+	return WebSession_WebSocketStream(p.Future.Field(3, nil).Client())
 }
 
-type WebSession_openWebSocket_Results struct{ capnp.Struct }
+type WebSession_openWebSocket_Results capnp.Struct
 
 // WebSession_openWebSocket_Results_TypeID is the unique identifier for the type WebSession_openWebSocket_Results.
 const WebSession_openWebSocket_Results_TypeID = 0xcc561276d31b392b
 
 func NewWebSession_openWebSocket_Results(s *capnp.Segment) (WebSession_openWebSocket_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_openWebSocket_Results{st}, err
+	return WebSession_openWebSocket_Results(st), err
 }
 
 func NewRootWebSession_openWebSocket_Results(s *capnp.Segment) (WebSession_openWebSocket_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_openWebSocket_Results{st}, err
+	return WebSession_openWebSocket_Results(st), err
 }
 
 func ReadRootWebSession_openWebSocket_Results(msg *capnp.Message) (WebSession_openWebSocket_Results, error) {
 	root, err := msg.Root()
-	return WebSession_openWebSocket_Results{root.Struct()}, err
+	return WebSession_openWebSocket_Results(root.Struct()), err
 }
 
 func (s WebSession_openWebSocket_Results) String() string {
-	str, _ := text.Marshal(0xcc561276d31b392b, s.Struct)
+	str, _ := text.Marshal(0xcc561276d31b392b, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_openWebSocket_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_openWebSocket_Results) DecodeFromPtr(p capnp.Ptr) WebSession_openWebSocket_Results {
+	return WebSession_openWebSocket_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_openWebSocket_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_openWebSocket_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_openWebSocket_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_openWebSocket_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_openWebSocket_Results) Protocol() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(0)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return capnp.TextList(p.List()), err
 }
 
 func (s WebSession_openWebSocket_Results) HasProtocol() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_openWebSocket_Results) SetProtocol(v capnp.TextList) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewProtocol sets the protocol field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s WebSession_openWebSocket_Results) NewProtocol(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s WebSession_openWebSocket_Results) ServerStream() WebSession_WebSocketStream {
-	p, _ := s.Struct.Ptr(1)
-	return WebSession_WebSocketStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(1)
+	return WebSession_WebSocketStream(p.Interface().Client())
 }
 
 func (s WebSession_openWebSocket_Results) HasServerStream() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_openWebSocket_Results) SetServerStream(v WebSession_WebSocketStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(1, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(1, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(1, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(1, in.ToPtr())
 }
 
 // WebSession_openWebSocket_Results_List is a list of WebSession_openWebSocket_Results.
-type WebSession_openWebSocket_Results_List struct{ capnp.List }
+type WebSession_openWebSocket_Results_List = capnp.StructList[WebSession_openWebSocket_Results]
 
 // NewWebSession_openWebSocket_Results creates a new list of WebSession_openWebSocket_Results.
 func NewWebSession_openWebSocket_Results_List(s *capnp.Segment, sz int32) (WebSession_openWebSocket_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSession_openWebSocket_Results_List{l}, err
-}
-
-func (s WebSession_openWebSocket_Results_List) At(i int) WebSession_openWebSocket_Results {
-	return WebSession_openWebSocket_Results{s.List.Struct(i)}
-}
-
-func (s WebSession_openWebSocket_Results_List) Set(i int, v WebSession_openWebSocket_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_openWebSocket_Results_List) String() string {
-	str, _ := text.MarshalList(0xcc561276d31b392b, s.List)
-	return str
+	return capnp.StructList[WebSession_openWebSocket_Results](l), err
 }
 
 // WebSession_openWebSocket_Results_Future is a wrapper for a WebSession_openWebSocket_Results promised by a client call.
@@ -4460,124 +4776,133 @@ type WebSession_openWebSocket_Results_Future struct{ *capnp.Future }
 
 func (p WebSession_openWebSocket_Results_Future) Struct() (WebSession_openWebSocket_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSession_openWebSocket_Results{s}, err
+	return WebSession_openWebSocket_Results(s), err
 }
 
 func (p WebSession_openWebSocket_Results_Future) ServerStream() WebSession_WebSocketStream {
-	return WebSession_WebSocketStream{Client: p.Future.Field(1, nil).Client()}
+	return WebSession_WebSocketStream(p.Future.Field(1, nil).Client())
 }
 
-type WebSession_put_Params struct{ capnp.Struct }
+type WebSession_put_Params capnp.Struct
 
 // WebSession_put_Params_TypeID is the unique identifier for the type WebSession_put_Params.
 const WebSession_put_Params_TypeID = 0xf1c587295608596e
 
 func NewWebSession_put_Params(s *capnp.Segment) (WebSession_put_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_put_Params{st}, err
+	return WebSession_put_Params(st), err
 }
 
 func NewRootWebSession_put_Params(s *capnp.Segment) (WebSession_put_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_put_Params{st}, err
+	return WebSession_put_Params(st), err
 }
 
 func ReadRootWebSession_put_Params(msg *capnp.Message) (WebSession_put_Params, error) {
 	root, err := msg.Root()
-	return WebSession_put_Params{root.Struct()}, err
+	return WebSession_put_Params(root.Struct()), err
 }
 
 func (s WebSession_put_Params) String() string {
-	str, _ := text.Marshal(0xf1c587295608596e, s.Struct)
+	str, _ := text.Marshal(0xf1c587295608596e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_put_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_put_Params) DecodeFromPtr(p capnp.Ptr) WebSession_put_Params {
+	return WebSession_put_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_put_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_put_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_put_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_put_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_put_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_put_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_put_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_put_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_put_Params) Content() (WebSession_PutContent, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_PutContent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_PutContent(p.Struct()), err
 }
 
 func (s WebSession_put_Params) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_put_Params) SetContent(v WebSession_PutContent) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContent sets the content field to a newly
 // allocated WebSession_PutContent struct, preferring placement in s's segment.
 func (s WebSession_put_Params) NewContent() (WebSession_PutContent, error) {
-	ss, err := NewWebSession_PutContent(s.Struct.Segment())
+	ss, err := NewWebSession_PutContent(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_PutContent{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_put_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_put_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_put_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_put_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_put_Params_List is a list of WebSession_put_Params.
-type WebSession_put_Params_List struct{ capnp.List }
+type WebSession_put_Params_List = capnp.StructList[WebSession_put_Params]
 
 // NewWebSession_put_Params creates a new list of WebSession_put_Params.
 func NewWebSession_put_Params_List(s *capnp.Segment, sz int32) (WebSession_put_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_put_Params_List{l}, err
-}
-
-func (s WebSession_put_Params_List) At(i int) WebSession_put_Params {
-	return WebSession_put_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_put_Params_List) Set(i int, v WebSession_put_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_put_Params_List) String() string {
-	str, _ := text.MarshalList(0xf1c587295608596e, s.List)
-	return str
+	return capnp.StructList[WebSession_put_Params](l), err
 }
 
 // WebSession_put_Params_Future is a wrapper for a WebSession_put_Params promised by a client call.
@@ -4585,7 +4910,7 @@ type WebSession_put_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_put_Params_Future) Struct() (WebSession_put_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_put_Params{s}, err
+	return WebSession_put_Params(s), err
 }
 
 func (p WebSession_put_Params_Future) Content() WebSession_PutContent_Future {
@@ -4596,93 +4921,102 @@ func (p WebSession_put_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_delete_Params struct{ capnp.Struct }
+type WebSession_delete_Params capnp.Struct
 
 // WebSession_delete_Params_TypeID is the unique identifier for the type WebSession_delete_Params.
 const WebSession_delete_Params_TypeID = 0xeba76bffb27b1975
 
 func NewWebSession_delete_Params(s *capnp.Segment) (WebSession_delete_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_delete_Params{st}, err
+	return WebSession_delete_Params(st), err
 }
 
 func NewRootWebSession_delete_Params(s *capnp.Segment) (WebSession_delete_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_delete_Params{st}, err
+	return WebSession_delete_Params(st), err
 }
 
 func ReadRootWebSession_delete_Params(msg *capnp.Message) (WebSession_delete_Params, error) {
 	root, err := msg.Root()
-	return WebSession_delete_Params{root.Struct()}, err
+	return WebSession_delete_Params(root.Struct()), err
 }
 
 func (s WebSession_delete_Params) String() string {
-	str, _ := text.Marshal(0xeba76bffb27b1975, s.Struct)
+	str, _ := text.Marshal(0xeba76bffb27b1975, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_delete_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_delete_Params) DecodeFromPtr(p capnp.Ptr) WebSession_delete_Params {
+	return WebSession_delete_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_delete_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_delete_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_delete_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_delete_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_delete_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_delete_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_delete_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_delete_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_delete_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_delete_Params) HasContext() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_delete_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_delete_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_delete_Params_List is a list of WebSession_delete_Params.
-type WebSession_delete_Params_List struct{ capnp.List }
+type WebSession_delete_Params_List = capnp.StructList[WebSession_delete_Params]
 
 // NewWebSession_delete_Params creates a new list of WebSession_delete_Params.
 func NewWebSession_delete_Params_List(s *capnp.Segment, sz int32) (WebSession_delete_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSession_delete_Params_List{l}, err
-}
-
-func (s WebSession_delete_Params_List) At(i int) WebSession_delete_Params {
-	return WebSession_delete_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_delete_Params_List) Set(i int, v WebSession_delete_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_delete_Params_List) String() string {
-	str, _ := text.MarshalList(0xeba76bffb27b1975, s.List)
-	return str
+	return capnp.StructList[WebSession_delete_Params](l), err
 }
 
 // WebSession_delete_Params_Future is a wrapper for a WebSession_delete_Params promised by a client call.
@@ -4690,136 +5024,145 @@ type WebSession_delete_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_delete_Params_Future) Struct() (WebSession_delete_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_delete_Params{s}, err
+	return WebSession_delete_Params(s), err
 }
 
 func (p WebSession_delete_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
-type WebSession_postStreaming_Params struct{ capnp.Struct }
+type WebSession_postStreaming_Params capnp.Struct
 
 // WebSession_postStreaming_Params_TypeID is the unique identifier for the type WebSession_postStreaming_Params.
 const WebSession_postStreaming_Params_TypeID = 0xd26a7affce43b1c0
 
 func NewWebSession_postStreaming_Params(s *capnp.Segment) (WebSession_postStreaming_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_postStreaming_Params{st}, err
+	return WebSession_postStreaming_Params(st), err
 }
 
 func NewRootWebSession_postStreaming_Params(s *capnp.Segment) (WebSession_postStreaming_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_postStreaming_Params{st}, err
+	return WebSession_postStreaming_Params(st), err
 }
 
 func ReadRootWebSession_postStreaming_Params(msg *capnp.Message) (WebSession_postStreaming_Params, error) {
 	root, err := msg.Root()
-	return WebSession_postStreaming_Params{root.Struct()}, err
+	return WebSession_postStreaming_Params(root.Struct()), err
 }
 
 func (s WebSession_postStreaming_Params) String() string {
-	str, _ := text.Marshal(0xd26a7affce43b1c0, s.Struct)
+	str, _ := text.Marshal(0xd26a7affce43b1c0, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_postStreaming_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_postStreaming_Params) DecodeFromPtr(p capnp.Ptr) WebSession_postStreaming_Params {
+	return WebSession_postStreaming_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_postStreaming_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_postStreaming_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_postStreaming_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_postStreaming_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_postStreaming_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_postStreaming_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_postStreaming_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_postStreaming_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_postStreaming_Params) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_postStreaming_Params) HasMimeType() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_postStreaming_Params) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_postStreaming_Params) SetMimeType(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_postStreaming_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_postStreaming_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_postStreaming_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_postStreaming_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_postStreaming_Params) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s WebSession_postStreaming_Params) HasEncoding() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_postStreaming_Params) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_postStreaming_Params) SetEncoding(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 // WebSession_postStreaming_Params_List is a list of WebSession_postStreaming_Params.
-type WebSession_postStreaming_Params_List struct{ capnp.List }
+type WebSession_postStreaming_Params_List = capnp.StructList[WebSession_postStreaming_Params]
 
 // NewWebSession_postStreaming_Params creates a new list of WebSession_postStreaming_Params.
 func NewWebSession_postStreaming_Params_List(s *capnp.Segment, sz int32) (WebSession_postStreaming_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return WebSession_postStreaming_Params_List{l}, err
-}
-
-func (s WebSession_postStreaming_Params_List) At(i int) WebSession_postStreaming_Params {
-	return WebSession_postStreaming_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_postStreaming_Params_List) Set(i int, v WebSession_postStreaming_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_postStreaming_Params_List) String() string {
-	str, _ := text.MarshalList(0xd26a7affce43b1c0, s.List)
-	return str
+	return capnp.StructList[WebSession_postStreaming_Params](l), err
 }
 
 // WebSession_postStreaming_Params_Future is a wrapper for a WebSession_postStreaming_Params promised by a client call.
@@ -4827,76 +5170,85 @@ type WebSession_postStreaming_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_postStreaming_Params_Future) Struct() (WebSession_postStreaming_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_postStreaming_Params{s}, err
+	return WebSession_postStreaming_Params(s), err
 }
 
 func (p WebSession_postStreaming_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_postStreaming_Results struct{ capnp.Struct }
+type WebSession_postStreaming_Results capnp.Struct
 
 // WebSession_postStreaming_Results_TypeID is the unique identifier for the type WebSession_postStreaming_Results.
 const WebSession_postStreaming_Results_TypeID = 0xbf0e0653dc266205
 
 func NewWebSession_postStreaming_Results(s *capnp.Segment) (WebSession_postStreaming_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_postStreaming_Results{st}, err
+	return WebSession_postStreaming_Results(st), err
 }
 
 func NewRootWebSession_postStreaming_Results(s *capnp.Segment) (WebSession_postStreaming_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_postStreaming_Results{st}, err
+	return WebSession_postStreaming_Results(st), err
 }
 
 func ReadRootWebSession_postStreaming_Results(msg *capnp.Message) (WebSession_postStreaming_Results, error) {
 	root, err := msg.Root()
-	return WebSession_postStreaming_Results{root.Struct()}, err
+	return WebSession_postStreaming_Results(root.Struct()), err
 }
 
 func (s WebSession_postStreaming_Results) String() string {
-	str, _ := text.Marshal(0xbf0e0653dc266205, s.Struct)
+	str, _ := text.Marshal(0xbf0e0653dc266205, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_postStreaming_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_postStreaming_Results) DecodeFromPtr(p capnp.Ptr) WebSession_postStreaming_Results {
+	return WebSession_postStreaming_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_postStreaming_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_postStreaming_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_postStreaming_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_postStreaming_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_postStreaming_Results) Stream() WebSession_RequestStream {
-	p, _ := s.Struct.Ptr(0)
-	return WebSession_RequestStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return WebSession_RequestStream(p.Interface().Client())
 }
 
 func (s WebSession_postStreaming_Results) HasStream() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_postStreaming_Results) SetStream(v WebSession_RequestStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // WebSession_postStreaming_Results_List is a list of WebSession_postStreaming_Results.
-type WebSession_postStreaming_Results_List struct{ capnp.List }
+type WebSession_postStreaming_Results_List = capnp.StructList[WebSession_postStreaming_Results]
 
 // NewWebSession_postStreaming_Results creates a new list of WebSession_postStreaming_Results.
 func NewWebSession_postStreaming_Results_List(s *capnp.Segment, sz int32) (WebSession_postStreaming_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSession_postStreaming_Results_List{l}, err
-}
-
-func (s WebSession_postStreaming_Results_List) At(i int) WebSession_postStreaming_Results {
-	return WebSession_postStreaming_Results{s.List.Struct(i)}
-}
-
-func (s WebSession_postStreaming_Results_List) Set(i int, v WebSession_postStreaming_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_postStreaming_Results_List) String() string {
-	str, _ := text.MarshalList(0xbf0e0653dc266205, s.List)
-	return str
+	return capnp.StructList[WebSession_postStreaming_Results](l), err
 }
 
 // WebSession_postStreaming_Results_Future is a wrapper for a WebSession_postStreaming_Results promised by a client call.
@@ -4904,136 +5256,145 @@ type WebSession_postStreaming_Results_Future struct{ *capnp.Future }
 
 func (p WebSession_postStreaming_Results_Future) Struct() (WebSession_postStreaming_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSession_postStreaming_Results{s}, err
+	return WebSession_postStreaming_Results(s), err
 }
 
 func (p WebSession_postStreaming_Results_Future) Stream() WebSession_RequestStream {
-	return WebSession_RequestStream{Client: p.Future.Field(0, nil).Client()}
+	return WebSession_RequestStream(p.Future.Field(0, nil).Client())
 }
 
-type WebSession_putStreaming_Params struct{ capnp.Struct }
+type WebSession_putStreaming_Params capnp.Struct
 
 // WebSession_putStreaming_Params_TypeID is the unique identifier for the type WebSession_putStreaming_Params.
 const WebSession_putStreaming_Params_TypeID = 0xa1ece076a7105939
 
 func NewWebSession_putStreaming_Params(s *capnp.Segment) (WebSession_putStreaming_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_putStreaming_Params{st}, err
+	return WebSession_putStreaming_Params(st), err
 }
 
 func NewRootWebSession_putStreaming_Params(s *capnp.Segment) (WebSession_putStreaming_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4})
-	return WebSession_putStreaming_Params{st}, err
+	return WebSession_putStreaming_Params(st), err
 }
 
 func ReadRootWebSession_putStreaming_Params(msg *capnp.Message) (WebSession_putStreaming_Params, error) {
 	root, err := msg.Root()
-	return WebSession_putStreaming_Params{root.Struct()}, err
+	return WebSession_putStreaming_Params(root.Struct()), err
 }
 
 func (s WebSession_putStreaming_Params) String() string {
-	str, _ := text.Marshal(0xa1ece076a7105939, s.Struct)
+	str, _ := text.Marshal(0xa1ece076a7105939, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_putStreaming_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_putStreaming_Params) DecodeFromPtr(p capnp.Ptr) WebSession_putStreaming_Params {
+	return WebSession_putStreaming_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_putStreaming_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_putStreaming_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_putStreaming_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_putStreaming_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_putStreaming_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_putStreaming_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_putStreaming_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_putStreaming_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_putStreaming_Params) MimeType() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_putStreaming_Params) HasMimeType() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_putStreaming_Params) MimeTypeBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_putStreaming_Params) SetMimeType(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_putStreaming_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_putStreaming_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_putStreaming_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_putStreaming_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_putStreaming_Params) Encoding() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s WebSession_putStreaming_Params) HasEncoding() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s WebSession_putStreaming_Params) EncodingBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_putStreaming_Params) SetEncoding(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 // WebSession_putStreaming_Params_List is a list of WebSession_putStreaming_Params.
-type WebSession_putStreaming_Params_List struct{ capnp.List }
+type WebSession_putStreaming_Params_List = capnp.StructList[WebSession_putStreaming_Params]
 
 // NewWebSession_putStreaming_Params creates a new list of WebSession_putStreaming_Params.
 func NewWebSession_putStreaming_Params_List(s *capnp.Segment, sz int32) (WebSession_putStreaming_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 4}, sz)
-	return WebSession_putStreaming_Params_List{l}, err
-}
-
-func (s WebSession_putStreaming_Params_List) At(i int) WebSession_putStreaming_Params {
-	return WebSession_putStreaming_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_putStreaming_Params_List) Set(i int, v WebSession_putStreaming_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_putStreaming_Params_List) String() string {
-	str, _ := text.MarshalList(0xa1ece076a7105939, s.List)
-	return str
+	return capnp.StructList[WebSession_putStreaming_Params](l), err
 }
 
 // WebSession_putStreaming_Params_Future is a wrapper for a WebSession_putStreaming_Params promised by a client call.
@@ -5041,76 +5402,85 @@ type WebSession_putStreaming_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_putStreaming_Params_Future) Struct() (WebSession_putStreaming_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_putStreaming_Params{s}, err
+	return WebSession_putStreaming_Params(s), err
 }
 
 func (p WebSession_putStreaming_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_putStreaming_Results struct{ capnp.Struct }
+type WebSession_putStreaming_Results capnp.Struct
 
 // WebSession_putStreaming_Results_TypeID is the unique identifier for the type WebSession_putStreaming_Results.
 const WebSession_putStreaming_Results_TypeID = 0xc60d14bf989d4454
 
 func NewWebSession_putStreaming_Results(s *capnp.Segment) (WebSession_putStreaming_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_putStreaming_Results{st}, err
+	return WebSession_putStreaming_Results(st), err
 }
 
 func NewRootWebSession_putStreaming_Results(s *capnp.Segment) (WebSession_putStreaming_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return WebSession_putStreaming_Results{st}, err
+	return WebSession_putStreaming_Results(st), err
 }
 
 func ReadRootWebSession_putStreaming_Results(msg *capnp.Message) (WebSession_putStreaming_Results, error) {
 	root, err := msg.Root()
-	return WebSession_putStreaming_Results{root.Struct()}, err
+	return WebSession_putStreaming_Results(root.Struct()), err
 }
 
 func (s WebSession_putStreaming_Results) String() string {
-	str, _ := text.Marshal(0xc60d14bf989d4454, s.Struct)
+	str, _ := text.Marshal(0xc60d14bf989d4454, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_putStreaming_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_putStreaming_Results) DecodeFromPtr(p capnp.Ptr) WebSession_putStreaming_Results {
+	return WebSession_putStreaming_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_putStreaming_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_putStreaming_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_putStreaming_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_putStreaming_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_putStreaming_Results) Stream() WebSession_RequestStream {
-	p, _ := s.Struct.Ptr(0)
-	return WebSession_RequestStream{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return WebSession_RequestStream(p.Interface().Client())
 }
 
 func (s WebSession_putStreaming_Results) HasStream() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_putStreaming_Results) SetStream(v WebSession_RequestStream) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 // WebSession_putStreaming_Results_List is a list of WebSession_putStreaming_Results.
-type WebSession_putStreaming_Results_List struct{ capnp.List }
+type WebSession_putStreaming_Results_List = capnp.StructList[WebSession_putStreaming_Results]
 
 // NewWebSession_putStreaming_Results creates a new list of WebSession_putStreaming_Results.
 func NewWebSession_putStreaming_Results_List(s *capnp.Segment, sz int32) (WebSession_putStreaming_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return WebSession_putStreaming_Results_List{l}, err
-}
-
-func (s WebSession_putStreaming_Results_List) At(i int) WebSession_putStreaming_Results {
-	return WebSession_putStreaming_Results{s.List.Struct(i)}
-}
-
-func (s WebSession_putStreaming_Results_List) Set(i int, v WebSession_putStreaming_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_putStreaming_Results_List) String() string {
-	str, _ := text.MarshalList(0xc60d14bf989d4454, s.List)
-	return str
+	return capnp.StructList[WebSession_putStreaming_Results](l), err
 }
 
 // WebSession_putStreaming_Results_Future is a wrapper for a WebSession_putStreaming_Results promised by a client call.
@@ -5118,126 +5488,135 @@ type WebSession_putStreaming_Results_Future struct{ *capnp.Future }
 
 func (p WebSession_putStreaming_Results_Future) Struct() (WebSession_putStreaming_Results, error) {
 	s, err := p.Future.Struct()
-	return WebSession_putStreaming_Results{s}, err
+	return WebSession_putStreaming_Results(s), err
 }
 
 func (p WebSession_putStreaming_Results_Future) Stream() WebSession_RequestStream {
-	return WebSession_RequestStream{Client: p.Future.Field(0, nil).Client()}
+	return WebSession_RequestStream(p.Future.Field(0, nil).Client())
 }
 
-type WebSession_propfind_Params struct{ capnp.Struct }
+type WebSession_propfind_Params capnp.Struct
 
 // WebSession_propfind_Params_TypeID is the unique identifier for the type WebSession_propfind_Params.
 const WebSession_propfind_Params_TypeID = 0xca2d58de88f0b32e
 
 func NewWebSession_propfind_Params(s *capnp.Segment) (WebSession_propfind_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_propfind_Params{st}, err
+	return WebSession_propfind_Params(st), err
 }
 
 func NewRootWebSession_propfind_Params(s *capnp.Segment) (WebSession_propfind_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_propfind_Params{st}, err
+	return WebSession_propfind_Params(st), err
 }
 
 func ReadRootWebSession_propfind_Params(msg *capnp.Message) (WebSession_propfind_Params, error) {
 	root, err := msg.Root()
-	return WebSession_propfind_Params{root.Struct()}, err
+	return WebSession_propfind_Params(root.Struct()), err
 }
 
 func (s WebSession_propfind_Params) String() string {
-	str, _ := text.Marshal(0xca2d58de88f0b32e, s.Struct)
+	str, _ := text.Marshal(0xca2d58de88f0b32e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_propfind_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_propfind_Params) DecodeFromPtr(p capnp.Ptr) WebSession_propfind_Params {
+	return WebSession_propfind_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_propfind_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_propfind_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_propfind_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_propfind_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_propfind_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_propfind_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_propfind_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_propfind_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_propfind_Params) XmlContent() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_propfind_Params) HasXmlContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_propfind_Params) XmlContentBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_propfind_Params) SetXmlContent(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_propfind_Params) Depth() WebSession_PropfindDepth {
-	return WebSession_PropfindDepth(s.Struct.Uint16(0))
+	return WebSession_PropfindDepth(capnp.Struct(s).Uint16(0))
 }
 
 func (s WebSession_propfind_Params) SetDepth(v WebSession_PropfindDepth) {
-	s.Struct.SetUint16(0, uint16(v))
+	capnp.Struct(s).SetUint16(0, uint16(v))
 }
 
 func (s WebSession_propfind_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_propfind_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_propfind_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_propfind_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_propfind_Params_List is a list of WebSession_propfind_Params.
-type WebSession_propfind_Params_List struct{ capnp.List }
+type WebSession_propfind_Params_List = capnp.StructList[WebSession_propfind_Params]
 
 // NewWebSession_propfind_Params creates a new list of WebSession_propfind_Params.
 func NewWebSession_propfind_Params_List(s *capnp.Segment, sz int32) (WebSession_propfind_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return WebSession_propfind_Params_List{l}, err
-}
-
-func (s WebSession_propfind_Params_List) At(i int) WebSession_propfind_Params {
-	return WebSession_propfind_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_propfind_Params_List) Set(i int, v WebSession_propfind_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_propfind_Params_List) String() string {
-	str, _ := text.MarshalList(0xca2d58de88f0b32e, s.List)
-	return str
+	return capnp.StructList[WebSession_propfind_Params](l), err
 }
 
 // WebSession_propfind_Params_Future is a wrapper for a WebSession_propfind_Params promised by a client call.
@@ -5245,118 +5624,127 @@ type WebSession_propfind_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_propfind_Params_Future) Struct() (WebSession_propfind_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_propfind_Params{s}, err
+	return WebSession_propfind_Params(s), err
 }
 
 func (p WebSession_propfind_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_proppatch_Params struct{ capnp.Struct }
+type WebSession_proppatch_Params capnp.Struct
 
 // WebSession_proppatch_Params_TypeID is the unique identifier for the type WebSession_proppatch_Params.
 const WebSession_proppatch_Params_TypeID = 0x9e582e7e054088ae
 
 func NewWebSession_proppatch_Params(s *capnp.Segment) (WebSession_proppatch_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_proppatch_Params{st}, err
+	return WebSession_proppatch_Params(st), err
 }
 
 func NewRootWebSession_proppatch_Params(s *capnp.Segment) (WebSession_proppatch_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_proppatch_Params{st}, err
+	return WebSession_proppatch_Params(st), err
 }
 
 func ReadRootWebSession_proppatch_Params(msg *capnp.Message) (WebSession_proppatch_Params, error) {
 	root, err := msg.Root()
-	return WebSession_proppatch_Params{root.Struct()}, err
+	return WebSession_proppatch_Params(root.Struct()), err
 }
 
 func (s WebSession_proppatch_Params) String() string {
-	str, _ := text.Marshal(0x9e582e7e054088ae, s.Struct)
+	str, _ := text.Marshal(0x9e582e7e054088ae, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_proppatch_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_proppatch_Params) DecodeFromPtr(p capnp.Ptr) WebSession_proppatch_Params {
+	return WebSession_proppatch_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_proppatch_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_proppatch_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_proppatch_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_proppatch_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_proppatch_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_proppatch_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_proppatch_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_proppatch_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_proppatch_Params) XmlContent() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_proppatch_Params) HasXmlContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_proppatch_Params) XmlContentBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_proppatch_Params) SetXmlContent(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_proppatch_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_proppatch_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_proppatch_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_proppatch_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_proppatch_Params_List is a list of WebSession_proppatch_Params.
-type WebSession_proppatch_Params_List struct{ capnp.List }
+type WebSession_proppatch_Params_List = capnp.StructList[WebSession_proppatch_Params]
 
 // NewWebSession_proppatch_Params creates a new list of WebSession_proppatch_Params.
 func NewWebSession_proppatch_Params_List(s *capnp.Segment, sz int32) (WebSession_proppatch_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_proppatch_Params_List{l}, err
-}
-
-func (s WebSession_proppatch_Params_List) At(i int) WebSession_proppatch_Params {
-	return WebSession_proppatch_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_proppatch_Params_List) Set(i int, v WebSession_proppatch_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_proppatch_Params_List) String() string {
-	str, _ := text.MarshalList(0x9e582e7e054088ae, s.List)
-	return str
+	return capnp.StructList[WebSession_proppatch_Params](l), err
 }
 
 // WebSession_proppatch_Params_Future is a wrapper for a WebSession_proppatch_Params promised by a client call.
@@ -5364,124 +5752,133 @@ type WebSession_proppatch_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_proppatch_Params_Future) Struct() (WebSession_proppatch_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_proppatch_Params{s}, err
+	return WebSession_proppatch_Params(s), err
 }
 
 func (p WebSession_proppatch_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_mkcol_Params struct{ capnp.Struct }
+type WebSession_mkcol_Params capnp.Struct
 
 // WebSession_mkcol_Params_TypeID is the unique identifier for the type WebSession_mkcol_Params.
 const WebSession_mkcol_Params_TypeID = 0xf64da2416445f8b6
 
 func NewWebSession_mkcol_Params(s *capnp.Segment) (WebSession_mkcol_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_mkcol_Params{st}, err
+	return WebSession_mkcol_Params(st), err
 }
 
 func NewRootWebSession_mkcol_Params(s *capnp.Segment) (WebSession_mkcol_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_mkcol_Params{st}, err
+	return WebSession_mkcol_Params(st), err
 }
 
 func ReadRootWebSession_mkcol_Params(msg *capnp.Message) (WebSession_mkcol_Params, error) {
 	root, err := msg.Root()
-	return WebSession_mkcol_Params{root.Struct()}, err
+	return WebSession_mkcol_Params(root.Struct()), err
 }
 
 func (s WebSession_mkcol_Params) String() string {
-	str, _ := text.Marshal(0xf64da2416445f8b6, s.Struct)
+	str, _ := text.Marshal(0xf64da2416445f8b6, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_mkcol_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_mkcol_Params) DecodeFromPtr(p capnp.Ptr) WebSession_mkcol_Params {
+	return WebSession_mkcol_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_mkcol_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_mkcol_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_mkcol_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_mkcol_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_mkcol_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_mkcol_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_mkcol_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_mkcol_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_mkcol_Params) Content() (WebSession_PostContent, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_PostContent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_PostContent(p.Struct()), err
 }
 
 func (s WebSession_mkcol_Params) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_mkcol_Params) SetContent(v WebSession_PostContent) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContent sets the content field to a newly
 // allocated WebSession_PostContent struct, preferring placement in s's segment.
 func (s WebSession_mkcol_Params) NewContent() (WebSession_PostContent, error) {
-	ss, err := NewWebSession_PostContent(s.Struct.Segment())
+	ss, err := NewWebSession_PostContent(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_PostContent{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_mkcol_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_mkcol_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_mkcol_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_mkcol_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_mkcol_Params_List is a list of WebSession_mkcol_Params.
-type WebSession_mkcol_Params_List struct{ capnp.List }
+type WebSession_mkcol_Params_List = capnp.StructList[WebSession_mkcol_Params]
 
 // NewWebSession_mkcol_Params creates a new list of WebSession_mkcol_Params.
 func NewWebSession_mkcol_Params_List(s *capnp.Segment, sz int32) (WebSession_mkcol_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_mkcol_Params_List{l}, err
-}
-
-func (s WebSession_mkcol_Params_List) At(i int) WebSession_mkcol_Params {
-	return WebSession_mkcol_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_mkcol_Params_List) Set(i int, v WebSession_mkcol_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_mkcol_Params_List) String() string {
-	str, _ := text.MarshalList(0xf64da2416445f8b6, s.List)
-	return str
+	return capnp.StructList[WebSession_mkcol_Params](l), err
 }
 
 // WebSession_mkcol_Params_Future is a wrapper for a WebSession_mkcol_Params promised by a client call.
@@ -5489,7 +5886,7 @@ type WebSession_mkcol_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_mkcol_Params_Future) Struct() (WebSession_mkcol_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_mkcol_Params{s}, err
+	return WebSession_mkcol_Params(s), err
 }
 
 func (p WebSession_mkcol_Params_Future) Content() WebSession_PostContent_Future {
@@ -5500,127 +5897,136 @@ func (p WebSession_mkcol_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_copy_Params struct{ capnp.Struct }
+type WebSession_copy_Params capnp.Struct
 
 // WebSession_copy_Params_TypeID is the unique identifier for the type WebSession_copy_Params.
 const WebSession_copy_Params_TypeID = 0x8139673a82bfe07d
 
 func NewWebSession_copy_Params(s *capnp.Segment) (WebSession_copy_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_copy_Params{st}, err
+	return WebSession_copy_Params(st), err
 }
 
 func NewRootWebSession_copy_Params(s *capnp.Segment) (WebSession_copy_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_copy_Params{st}, err
+	return WebSession_copy_Params(st), err
 }
 
 func ReadRootWebSession_copy_Params(msg *capnp.Message) (WebSession_copy_Params, error) {
 	root, err := msg.Root()
-	return WebSession_copy_Params{root.Struct()}, err
+	return WebSession_copy_Params(root.Struct()), err
 }
 
 func (s WebSession_copy_Params) String() string {
-	str, _ := text.Marshal(0x8139673a82bfe07d, s.Struct)
+	str, _ := text.Marshal(0x8139673a82bfe07d, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_copy_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_copy_Params) DecodeFromPtr(p capnp.Ptr) WebSession_copy_Params {
+	return WebSession_copy_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_copy_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_copy_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_copy_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_copy_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_copy_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_copy_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_copy_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_copy_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_copy_Params) Destination() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_copy_Params) HasDestination() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_copy_Params) DestinationBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_copy_Params) SetDestination(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_copy_Params) NoOverwrite() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_copy_Params) SetNoOverwrite(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_copy_Params) Shallow() bool {
-	return s.Struct.Bit(1)
+	return capnp.Struct(s).Bit(1)
 }
 
 func (s WebSession_copy_Params) SetShallow(v bool) {
-	s.Struct.SetBit(1, v)
+	capnp.Struct(s).SetBit(1, v)
 }
 
 func (s WebSession_copy_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_copy_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_copy_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_copy_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_copy_Params_List is a list of WebSession_copy_Params.
-type WebSession_copy_Params_List struct{ capnp.List }
+type WebSession_copy_Params_List = capnp.StructList[WebSession_copy_Params]
 
 // NewWebSession_copy_Params creates a new list of WebSession_copy_Params.
 func NewWebSession_copy_Params_List(s *capnp.Segment, sz int32) (WebSession_copy_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return WebSession_copy_Params_List{l}, err
-}
-
-func (s WebSession_copy_Params_List) At(i int) WebSession_copy_Params {
-	return WebSession_copy_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_copy_Params_List) Set(i int, v WebSession_copy_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_copy_Params_List) String() string {
-	str, _ := text.MarshalList(0x8139673a82bfe07d, s.List)
-	return str
+	return capnp.StructList[WebSession_copy_Params](l), err
 }
 
 // WebSession_copy_Params_Future is a wrapper for a WebSession_copy_Params promised by a client call.
@@ -5628,126 +6034,135 @@ type WebSession_copy_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_copy_Params_Future) Struct() (WebSession_copy_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_copy_Params{s}, err
+	return WebSession_copy_Params(s), err
 }
 
 func (p WebSession_copy_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_move_Params struct{ capnp.Struct }
+type WebSession_move_Params capnp.Struct
 
 // WebSession_move_Params_TypeID is the unique identifier for the type WebSession_move_Params.
 const WebSession_move_Params_TypeID = 0x81f5066b5576a609
 
 func NewWebSession_move_Params(s *capnp.Segment) (WebSession_move_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_move_Params{st}, err
+	return WebSession_move_Params(st), err
 }
 
 func NewRootWebSession_move_Params(s *capnp.Segment) (WebSession_move_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_move_Params{st}, err
+	return WebSession_move_Params(st), err
 }
 
 func ReadRootWebSession_move_Params(msg *capnp.Message) (WebSession_move_Params, error) {
 	root, err := msg.Root()
-	return WebSession_move_Params{root.Struct()}, err
+	return WebSession_move_Params(root.Struct()), err
 }
 
 func (s WebSession_move_Params) String() string {
-	str, _ := text.Marshal(0x81f5066b5576a609, s.Struct)
+	str, _ := text.Marshal(0x81f5066b5576a609, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_move_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_move_Params) DecodeFromPtr(p capnp.Ptr) WebSession_move_Params {
+	return WebSession_move_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_move_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_move_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_move_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_move_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_move_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_move_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_move_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_move_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_move_Params) Destination() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_move_Params) HasDestination() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_move_Params) DestinationBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_move_Params) SetDestination(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_move_Params) NoOverwrite() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_move_Params) SetNoOverwrite(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_move_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_move_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_move_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_move_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_move_Params_List is a list of WebSession_move_Params.
-type WebSession_move_Params_List struct{ capnp.List }
+type WebSession_move_Params_List = capnp.StructList[WebSession_move_Params]
 
 // NewWebSession_move_Params creates a new list of WebSession_move_Params.
 func NewWebSession_move_Params_List(s *capnp.Segment, sz int32) (WebSession_move_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return WebSession_move_Params_List{l}, err
-}
-
-func (s WebSession_move_Params_List) At(i int) WebSession_move_Params {
-	return WebSession_move_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_move_Params_List) Set(i int, v WebSession_move_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_move_Params_List) String() string {
-	str, _ := text.MarshalList(0x81f5066b5576a609, s.List)
-	return str
+	return capnp.StructList[WebSession_move_Params](l), err
 }
 
 // WebSession_move_Params_Future is a wrapper for a WebSession_move_Params promised by a client call.
@@ -5755,126 +6170,135 @@ type WebSession_move_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_move_Params_Future) Struct() (WebSession_move_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_move_Params{s}, err
+	return WebSession_move_Params(s), err
 }
 
 func (p WebSession_move_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_lock_Params struct{ capnp.Struct }
+type WebSession_lock_Params capnp.Struct
 
 // WebSession_lock_Params_TypeID is the unique identifier for the type WebSession_lock_Params.
 const WebSession_lock_Params_TypeID = 0x9398280f1359570a
 
 func NewWebSession_lock_Params(s *capnp.Segment) (WebSession_lock_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_lock_Params{st}, err
+	return WebSession_lock_Params(st), err
 }
 
 func NewRootWebSession_lock_Params(s *capnp.Segment) (WebSession_lock_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return WebSession_lock_Params{st}, err
+	return WebSession_lock_Params(st), err
 }
 
 func ReadRootWebSession_lock_Params(msg *capnp.Message) (WebSession_lock_Params, error) {
 	root, err := msg.Root()
-	return WebSession_lock_Params{root.Struct()}, err
+	return WebSession_lock_Params(root.Struct()), err
 }
 
 func (s WebSession_lock_Params) String() string {
-	str, _ := text.Marshal(0x9398280f1359570a, s.Struct)
+	str, _ := text.Marshal(0x9398280f1359570a, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_lock_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_lock_Params) DecodeFromPtr(p capnp.Ptr) WebSession_lock_Params {
+	return WebSession_lock_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_lock_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_lock_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_lock_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_lock_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_lock_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_lock_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_lock_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_lock_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_lock_Params) XmlContent() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_lock_Params) HasXmlContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_lock_Params) XmlContentBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_lock_Params) SetXmlContent(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_lock_Params) Shallow() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s WebSession_lock_Params) SetShallow(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s WebSession_lock_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_lock_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_lock_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_lock_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_lock_Params_List is a list of WebSession_lock_Params.
-type WebSession_lock_Params_List struct{ capnp.List }
+type WebSession_lock_Params_List = capnp.StructList[WebSession_lock_Params]
 
 // NewWebSession_lock_Params creates a new list of WebSession_lock_Params.
 func NewWebSession_lock_Params_List(s *capnp.Segment, sz int32) (WebSession_lock_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return WebSession_lock_Params_List{l}, err
-}
-
-func (s WebSession_lock_Params_List) At(i int) WebSession_lock_Params {
-	return WebSession_lock_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_lock_Params_List) Set(i int, v WebSession_lock_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_lock_Params_List) String() string {
-	str, _ := text.MarshalList(0x9398280f1359570a, s.List)
-	return str
+	return capnp.StructList[WebSession_lock_Params](l), err
 }
 
 // WebSession_lock_Params_Future is a wrapper for a WebSession_lock_Params promised by a client call.
@@ -5882,118 +6306,127 @@ type WebSession_lock_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_lock_Params_Future) Struct() (WebSession_lock_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_lock_Params{s}, err
+	return WebSession_lock_Params(s), err
 }
 
 func (p WebSession_lock_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_unlock_Params struct{ capnp.Struct }
+type WebSession_unlock_Params capnp.Struct
 
 // WebSession_unlock_Params_TypeID is the unique identifier for the type WebSession_unlock_Params.
 const WebSession_unlock_Params_TypeID = 0xd684c6a791b97dbc
 
 func NewWebSession_unlock_Params(s *capnp.Segment) (WebSession_unlock_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_unlock_Params{st}, err
+	return WebSession_unlock_Params(st), err
 }
 
 func NewRootWebSession_unlock_Params(s *capnp.Segment) (WebSession_unlock_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_unlock_Params{st}, err
+	return WebSession_unlock_Params(st), err
 }
 
 func ReadRootWebSession_unlock_Params(msg *capnp.Message) (WebSession_unlock_Params, error) {
 	root, err := msg.Root()
-	return WebSession_unlock_Params{root.Struct()}, err
+	return WebSession_unlock_Params(root.Struct()), err
 }
 
 func (s WebSession_unlock_Params) String() string {
-	str, _ := text.Marshal(0xd684c6a791b97dbc, s.Struct)
+	str, _ := text.Marshal(0xd684c6a791b97dbc, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_unlock_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_unlock_Params) DecodeFromPtr(p capnp.Ptr) WebSession_unlock_Params {
+	return WebSession_unlock_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_unlock_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_unlock_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_unlock_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_unlock_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_unlock_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_unlock_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_unlock_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_unlock_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_unlock_Params) LockToken() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_unlock_Params) HasLockToken() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_unlock_Params) LockTokenBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_unlock_Params) SetLockToken(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_unlock_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_unlock_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_unlock_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_unlock_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_unlock_Params_List is a list of WebSession_unlock_Params.
-type WebSession_unlock_Params_List struct{ capnp.List }
+type WebSession_unlock_Params_List = capnp.StructList[WebSession_unlock_Params]
 
 // NewWebSession_unlock_Params creates a new list of WebSession_unlock_Params.
 func NewWebSession_unlock_Params_List(s *capnp.Segment, sz int32) (WebSession_unlock_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_unlock_Params_List{l}, err
-}
-
-func (s WebSession_unlock_Params_List) At(i int) WebSession_unlock_Params {
-	return WebSession_unlock_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_unlock_Params_List) Set(i int, v WebSession_unlock_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_unlock_Params_List) String() string {
-	str, _ := text.MarshalList(0xd684c6a791b97dbc, s.List)
-	return str
+	return capnp.StructList[WebSession_unlock_Params](l), err
 }
 
 // WebSession_unlock_Params_Future is a wrapper for a WebSession_unlock_Params promised by a client call.
@@ -6001,118 +6434,127 @@ type WebSession_unlock_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_unlock_Params_Future) Struct() (WebSession_unlock_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_unlock_Params{s}, err
+	return WebSession_unlock_Params(s), err
 }
 
 func (p WebSession_unlock_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_acl_Params struct{ capnp.Struct }
+type WebSession_acl_Params capnp.Struct
 
 // WebSession_acl_Params_TypeID is the unique identifier for the type WebSession_acl_Params.
 const WebSession_acl_Params_TypeID = 0x9f79c33e20119e8d
 
 func NewWebSession_acl_Params(s *capnp.Segment) (WebSession_acl_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_acl_Params{st}, err
+	return WebSession_acl_Params(st), err
 }
 
 func NewRootWebSession_acl_Params(s *capnp.Segment) (WebSession_acl_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_acl_Params{st}, err
+	return WebSession_acl_Params(st), err
 }
 
 func ReadRootWebSession_acl_Params(msg *capnp.Message) (WebSession_acl_Params, error) {
 	root, err := msg.Root()
-	return WebSession_acl_Params{root.Struct()}, err
+	return WebSession_acl_Params(root.Struct()), err
 }
 
 func (s WebSession_acl_Params) String() string {
-	str, _ := text.Marshal(0x9f79c33e20119e8d, s.Struct)
+	str, _ := text.Marshal(0x9f79c33e20119e8d, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_acl_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_acl_Params) DecodeFromPtr(p capnp.Ptr) WebSession_acl_Params {
+	return WebSession_acl_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_acl_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_acl_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_acl_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_acl_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_acl_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_acl_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_acl_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_acl_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_acl_Params) XmlContent() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s WebSession_acl_Params) HasXmlContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_acl_Params) XmlContentBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_acl_Params) SetXmlContent(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s WebSession_acl_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_acl_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_acl_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_acl_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_acl_Params_List is a list of WebSession_acl_Params.
-type WebSession_acl_Params_List struct{ capnp.List }
+type WebSession_acl_Params_List = capnp.StructList[WebSession_acl_Params]
 
 // NewWebSession_acl_Params creates a new list of WebSession_acl_Params.
 func NewWebSession_acl_Params_List(s *capnp.Segment, sz int32) (WebSession_acl_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_acl_Params_List{l}, err
-}
-
-func (s WebSession_acl_Params_List) At(i int) WebSession_acl_Params {
-	return WebSession_acl_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_acl_Params_List) Set(i int, v WebSession_acl_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_acl_Params_List) String() string {
-	str, _ := text.MarshalList(0x9f79c33e20119e8d, s.List)
-	return str
+	return capnp.StructList[WebSession_acl_Params](l), err
 }
 
 // WebSession_acl_Params_Future is a wrapper for a WebSession_acl_Params promised by a client call.
@@ -6120,124 +6562,133 @@ type WebSession_acl_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_acl_Params_Future) Struct() (WebSession_acl_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_acl_Params{s}, err
+	return WebSession_acl_Params(s), err
 }
 
 func (p WebSession_acl_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_report_Params struct{ capnp.Struct }
+type WebSession_report_Params capnp.Struct
 
 // WebSession_report_Params_TypeID is the unique identifier for the type WebSession_report_Params.
 const WebSession_report_Params_TypeID = 0xc0643ea68efc60ae
 
 func NewWebSession_report_Params(s *capnp.Segment) (WebSession_report_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_report_Params{st}, err
+	return WebSession_report_Params(st), err
 }
 
 func NewRootWebSession_report_Params(s *capnp.Segment) (WebSession_report_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_report_Params{st}, err
+	return WebSession_report_Params(st), err
 }
 
 func ReadRootWebSession_report_Params(msg *capnp.Message) (WebSession_report_Params, error) {
 	root, err := msg.Root()
-	return WebSession_report_Params{root.Struct()}, err
+	return WebSession_report_Params(root.Struct()), err
 }
 
 func (s WebSession_report_Params) String() string {
-	str, _ := text.Marshal(0xc0643ea68efc60ae, s.Struct)
+	str, _ := text.Marshal(0xc0643ea68efc60ae, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_report_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_report_Params) DecodeFromPtr(p capnp.Ptr) WebSession_report_Params {
+	return WebSession_report_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_report_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_report_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_report_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_report_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_report_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_report_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_report_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_report_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_report_Params) Content() (WebSession_PostContent, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_PostContent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_PostContent(p.Struct()), err
 }
 
 func (s WebSession_report_Params) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_report_Params) SetContent(v WebSession_PostContent) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContent sets the content field to a newly
 // allocated WebSession_PostContent struct, preferring placement in s's segment.
 func (s WebSession_report_Params) NewContent() (WebSession_PostContent, error) {
-	ss, err := NewWebSession_PostContent(s.Struct.Segment())
+	ss, err := NewWebSession_PostContent(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_PostContent{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_report_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_report_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_report_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_report_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_report_Params_List is a list of WebSession_report_Params.
-type WebSession_report_Params_List struct{ capnp.List }
+type WebSession_report_Params_List = capnp.StructList[WebSession_report_Params]
 
 // NewWebSession_report_Params creates a new list of WebSession_report_Params.
 func NewWebSession_report_Params_List(s *capnp.Segment, sz int32) (WebSession_report_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_report_Params_List{l}, err
-}
-
-func (s WebSession_report_Params_List) At(i int) WebSession_report_Params {
-	return WebSession_report_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_report_Params_List) Set(i int, v WebSession_report_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_report_Params_List) String() string {
-	str, _ := text.MarshalList(0xc0643ea68efc60ae, s.List)
-	return str
+	return capnp.StructList[WebSession_report_Params](l), err
 }
 
 // WebSession_report_Params_Future is a wrapper for a WebSession_report_Params promised by a client call.
@@ -6245,7 +6696,7 @@ type WebSession_report_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_report_Params_Future) Struct() (WebSession_report_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_report_Params{s}, err
+	return WebSession_report_Params(s), err
 }
 
 func (p WebSession_report_Params_Future) Content() WebSession_PostContent_Future {
@@ -6256,93 +6707,102 @@ func (p WebSession_report_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-type WebSession_options_Params struct{ capnp.Struct }
+type WebSession_options_Params capnp.Struct
 
 // WebSession_options_Params_TypeID is the unique identifier for the type WebSession_options_Params.
 const WebSession_options_Params_TypeID = 0xd2e47e8eac54ea7e
 
 func NewWebSession_options_Params(s *capnp.Segment) (WebSession_options_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_options_Params{st}, err
+	return WebSession_options_Params(st), err
 }
 
 func NewRootWebSession_options_Params(s *capnp.Segment) (WebSession_options_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return WebSession_options_Params{st}, err
+	return WebSession_options_Params(st), err
 }
 
 func ReadRootWebSession_options_Params(msg *capnp.Message) (WebSession_options_Params, error) {
 	root, err := msg.Root()
-	return WebSession_options_Params{root.Struct()}, err
+	return WebSession_options_Params(root.Struct()), err
 }
 
 func (s WebSession_options_Params) String() string {
-	str, _ := text.Marshal(0xd2e47e8eac54ea7e, s.Struct)
+	str, _ := text.Marshal(0xd2e47e8eac54ea7e, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_options_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_options_Params) DecodeFromPtr(p capnp.Ptr) WebSession_options_Params {
+	return WebSession_options_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_options_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_options_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_options_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_options_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_options_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_options_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_options_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_options_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_options_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_options_Params) HasContext() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_options_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_options_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_options_Params_List is a list of WebSession_options_Params.
-type WebSession_options_Params_List struct{ capnp.List }
+type WebSession_options_Params_List = capnp.StructList[WebSession_options_Params]
 
 // NewWebSession_options_Params creates a new list of WebSession_options_Params.
 func NewWebSession_options_Params_List(s *capnp.Segment, sz int32) (WebSession_options_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return WebSession_options_Params_List{l}, err
-}
-
-func (s WebSession_options_Params_List) At(i int) WebSession_options_Params {
-	return WebSession_options_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_options_Params_List) Set(i int, v WebSession_options_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_options_Params_List) String() string {
-	str, _ := text.MarshalList(0xd2e47e8eac54ea7e, s.List)
-	return str
+	return capnp.StructList[WebSession_options_Params](l), err
 }
 
 // WebSession_options_Params_Future is a wrapper for a WebSession_options_Params promised by a client call.
@@ -6350,124 +6810,133 @@ type WebSession_options_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_options_Params_Future) Struct() (WebSession_options_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_options_Params{s}, err
+	return WebSession_options_Params(s), err
 }
 
 func (p WebSession_options_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(1, nil)}
 }
 
-type WebSession_patch_Params struct{ capnp.Struct }
+type WebSession_patch_Params capnp.Struct
 
 // WebSession_patch_Params_TypeID is the unique identifier for the type WebSession_patch_Params.
 const WebSession_patch_Params_TypeID = 0xadef95edc22ca880
 
 func NewWebSession_patch_Params(s *capnp.Segment) (WebSession_patch_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_patch_Params{st}, err
+	return WebSession_patch_Params(st), err
 }
 
 func NewRootWebSession_patch_Params(s *capnp.Segment) (WebSession_patch_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return WebSession_patch_Params{st}, err
+	return WebSession_patch_Params(st), err
 }
 
 func ReadRootWebSession_patch_Params(msg *capnp.Message) (WebSession_patch_Params, error) {
 	root, err := msg.Root()
-	return WebSession_patch_Params{root.Struct()}, err
+	return WebSession_patch_Params(root.Struct()), err
 }
 
 func (s WebSession_patch_Params) String() string {
-	str, _ := text.Marshal(0xadef95edc22ca880, s.Struct)
+	str, _ := text.Marshal(0xadef95edc22ca880, capnp.Struct(s))
 	return str
 }
 
+func (s WebSession_patch_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (WebSession_patch_Params) DecodeFromPtr(p capnp.Ptr) WebSession_patch_Params {
+	return WebSession_patch_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s WebSession_patch_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s WebSession_patch_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s WebSession_patch_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s WebSession_patch_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s WebSession_patch_Params) Path() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s WebSession_patch_Params) HasPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s WebSession_patch_Params) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s WebSession_patch_Params) SetPath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s WebSession_patch_Params) Content() (WebSession_PostContent, error) {
-	p, err := s.Struct.Ptr(1)
-	return WebSession_PostContent{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return WebSession_PostContent(p.Struct()), err
 }
 
 func (s WebSession_patch_Params) HasContent() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s WebSession_patch_Params) SetContent(v WebSession_PostContent) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContent sets the content field to a newly
 // allocated WebSession_PostContent struct, preferring placement in s's segment.
 func (s WebSession_patch_Params) NewContent() (WebSession_PostContent, error) {
-	ss, err := NewWebSession_PostContent(s.Struct.Segment())
+	ss, err := NewWebSession_PostContent(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_PostContent{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s WebSession_patch_Params) Context() (WebSession_Context, error) {
-	p, err := s.Struct.Ptr(2)
-	return WebSession_Context{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return WebSession_Context(p.Struct()), err
 }
 
 func (s WebSession_patch_Params) HasContext() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s WebSession_patch_Params) SetContext(v WebSession_Context) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewContext sets the context field to a newly
 // allocated WebSession_Context struct, preferring placement in s's segment.
 func (s WebSession_patch_Params) NewContext() (WebSession_Context, error) {
-	ss, err := NewWebSession_Context(s.Struct.Segment())
+	ss, err := NewWebSession_Context(capnp.Struct(s).Segment())
 	if err != nil {
 		return WebSession_Context{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // WebSession_patch_Params_List is a list of WebSession_patch_Params.
-type WebSession_patch_Params_List struct{ capnp.List }
+type WebSession_patch_Params_List = capnp.StructList[WebSession_patch_Params]
 
 // NewWebSession_patch_Params creates a new list of WebSession_patch_Params.
 func NewWebSession_patch_Params_List(s *capnp.Segment, sz int32) (WebSession_patch_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return WebSession_patch_Params_List{l}, err
-}
-
-func (s WebSession_patch_Params_List) At(i int) WebSession_patch_Params {
-	return WebSession_patch_Params{s.List.Struct(i)}
-}
-
-func (s WebSession_patch_Params_List) Set(i int, v WebSession_patch_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s WebSession_patch_Params_List) String() string {
-	str, _ := text.MarshalList(0xadef95edc22ca880, s.List)
-	return str
+	return capnp.StructList[WebSession_patch_Params](l), err
 }
 
 // WebSession_patch_Params_Future is a wrapper for a WebSession_patch_Params promised by a client call.
@@ -6475,7 +6944,7 @@ type WebSession_patch_Params_Future struct{ *capnp.Future }
 
 func (p WebSession_patch_Params_Future) Struct() (WebSession_patch_Params, error) {
 	s, err := p.Future.Struct()
-	return WebSession_patch_Params{s}, err
+	return WebSession_patch_Params(s), err
 }
 
 func (p WebSession_patch_Params_Future) Content() WebSession_PostContent_Future {
@@ -6486,369 +6955,370 @@ func (p WebSession_patch_Params_Future) Context() WebSession_Context_Future {
 	return WebSession_Context_Future{Future: p.Future.Field(2, nil)}
 }
 
-const schema_a8cb0f2f1a756b32 = "x\xda\xcc{}x\\U\xb5\xf7Z\xe7\xcc\xe44\xa5" +
-	"a\xb2{\x02R\xda0i\xe9W\xd2N\xa0\x09\x01\xdb" +
-	"W\xc8W\x03m^Js\xf2Ai^\xab\x9c\x99\xd9" +
-	"MN2s\xce\xe4\x9c3m\xa6\x82\x85\x00\xaf\x88\x8a" +
-	"RZ\xa5}\x00\x05E\x10\xca+\xdf\xafx\xadP\xaf" +
-	"\xa8E@\xe1\x8a\x1f\xf7^\x14\x1f\xe5*J\xaf\x14\x01" +
-	"\xed\x158\xf7\xd9\xfb\xcc\xf9H\x98NB\xbd\xf7>\xfc" +
-	"\x97\xd9g\xed\xb5\xd7^\xfb\xb7\xd6^\x1f;g\xc6I" +
-	"\x9b\xb0*\xfa\xab\xf9\x00}k1Z\xe1\\\xfe\xe2c" +
-	"\x13k\x86V_\x09J-\"@T\x94\x00\x9a\x9f\xaf" +
-	"\xeaF\xc0\xe6_W\xc5\x11\xd0Y\xfeb\xd5\x9b\xd1\x81" +
-	"\xbe+\x81\xd4\x0b\x7f\xb9f\xdd\xff\xfd\xcd\xc2\x8f=\x08" +
-	"\xd8|\xf4\xc4\x1d(W\xc5$\x00\xb92\xb6\x13\xd0\xb9" +
-	"\xea\xe6\x8e\x873\xfbotY9\xcf\xdc\xd5\xb2\xe16" +
-	"\"\xdd\x01]\x95R\x05b\xf3\xfaX\x13\xca\x9bc\x9b" +
-	"\x00\x9ao\x8b9\x8co\xe5W\xb7\x0d\x8cV\xbc1y" +
-	"\xe9v\xc2\x96\x967\x90\xdf\x01\xfe\xea\xb3\xd7>\xf7\x94" +
-	"$O\x90\xa5B\xc0\x1c\xb0\xb9~\xee.\x94\xdb\xe7\xb2" +
-	"\x95\xcf\x9d\xfbu@\xe7G\xbb\xff*\x8c=b_\x05" +
-	"\xcaR\x0c\xc9qR\xa5\x84\x00\xcd\x87\xe5\x09\xc6\xf2\xa8" +
-	"\xbc\x1d\xd0\xe9:\xed\xad\x7f\xfe\xd4O^\xf9Ti\xd2" +
-	"\xcd5;\x18)\xada\\qc\xe4\xc2\x7f\x99\xff\xe5" +
-	"\xeba\xea\xfa\x95'=\x80\xf2\xc2\x93\x98\xb8\xb5'\xb5" +
-	"\xb2\xad\xcc\xde\xb4Y\x8e-\xbf\xe9\xc6I[\xb9\xed\x14" +
-	"\xbe\x95{O\xf9\x1dc\xb6r\xdf\xea\xff\xf5o_\xd8" +
-	"\x0ddih\xd9h\x84\x11^3o\x02\xe5\xbd\xf3\xd8" +
-	"~\xf6\xccc\xc4\xe7\xd5\x9c\xb0\xf4gwn\xfc\x02(" +
-	"K\x10\x9d\xa1\xef\xdf\xf3\xca\x8a\x97\x9e|\x03\x06*$" +
-	"\x8c\x024\xe7O}\x80\x1d\xcf5\xa7\xf2\xe3\xf9\xe2\xc8" +
-	"\xbe7\xff\xfc\x1dg/\x90Z1\xd0:`\xf3\xc1\xf9" +
-	"\x83(??\x9f\xb1}v\xfe\x05\xf2\xdb\xf3?\x00\xe0" +
-	"\xfc\xfc\xd3\xf7\xbe\xf5\x9b\x95c\xfb\x80$\x98\xa0\xc8\xd6" +
-	"?<\xff5&(.h\x05t\xfe\xdf\xb5m\xd1\x8f" +
-	"7^r+\x90Z\x7f'\x0b\x17\x98\x8c \xb1\x80\xa9" +
-	"\xa5\xe2\xe4\x83\xbbz\x96\xdey+\x90\xb9\x11\xa7i4" +
-	"\x7f\xea\x19\xb1\x1f\xde\xc5\xd6;\xb4\xa0\x1b\xe5\x17\x16H" +
-	"\x00}?_ b\xdfo\x17\x08\x08\xe0|\xe6VR" +
-	"w\xde?\x16\xbe\x18f\xf8\xfc\x82\x0e\xc6\xf0\x05\xcep" +
-	"\xf5\xe6\xea;\xb7\xbd\xf8\xcamE\x02\xae\x92B\xedu" +
-	"\x8c\xe0\x93\xb5L\x1d\xfe\xa6\xc8\\1\xbc\xa2LO\xfb" +
-	"\x83<v\xda\xef\x00\x9a\xcf\x8d\x7f\"\"/\\\xc4v" +
-	"\xd8)<\xf2\x8bo\xd3\xcb\xefbg!\x04s\xdd\x85" +
-	"\xc9\xa2E(/\\\xc4\x8fn\x11W\xdf\xdbO\x1eL" +
-	"\xce~M\xbf;,\xdeI\xa7\xf3\x93[x:\x13\xef" +
-	"\xe8\xc1\xcb\x92\xf3\x85\xa3wO\x81\xb5\xab\xbaGO\xef" +
-	"E\xf9\xe9\xd3\x99\x8e\x0f\x9d\xce\xf0u\xd7\xdf\x0ao\xdf" +
-	"\xf7\xe1\xef\xdeS\x1a_\xf5\x8b\x99\"\x9b[\x16\x7f\x96" +
-	"-}\xc5]+\xbfsx\xcf\x9f\xee\x0d/\xbdwI" +
-	"/[\xfa\x8e%l\xe9O\\{Of\xce\xecu_" +
-	"\x07ent\xd6\xa4\x9d\x9f\xbb\xf4\x0f\xf2\xfa\xa5L\xd5" +
-	"k\x97\x8a\x08\xe8\xd9\xe5d\x19\xb9*[\x96v\xa3\xbc" +
-	"~\xe9\x07\x00de)S\xe7\xfc\xaf<\xb8\xb7\xeb\xbb" +
-	"7?\x08\xa4V\x98\x04\x98\x96e\x83(\xaf_\xc66" +
-	"\xd3\xb5l#\xa0\xf3\x91g\x1e\xdeQc}\xe3\xa1)" +
-	"\xa0\x158h\x97\x8d\xa0\xbc\x97\x13\xefY\xc6v^\x7f" +
-	"\xb5\xfd\xc3\xa7^\x7f\xe9! KB\x98u\x89\x8f," +
-	"K\xa2\x1c]\xce\x88q9#>\xef\x91\x91\xf6\xfd\x8d" +
-	"?\xff\xffl\xebS\xcfh\xcb\xf2n\x94\xc78qv" +
-	"9S\xc3\x1fS\xe7\xf7\xe7~\xbf\xff\x9b@\x96D\x02" +
-	"\xce\x80\xcdU\xf5w\xa3\xbc\xa4\x9e\xa9\xa1\xae^\xc4\xbe" +
-	"\x0f\xd5s\xc4\xfd\xf2T\xeb\xcbW\xb5\xb4|\x0b\x94\xb9" +
-	"\x88\x81\xda\xdc\x13{\xa1~\x0d\xca\x87\xd9\x1c\xf9\xe5z" +
-	"&\xca\xf6u\xe37?\xf2\x7fF\x0f\x80\xb2\x18\x85\x00" +
-	"=\x03\xa2\x84\"@sWC\x92\x1d\x88\xd2\xc0$\xf9" +
-	"\xfd\xf7k\xdfy\xec\x9a;\x0e\x94\xc4\xc2\x91\x06\x13\xe5" +
-	"\xe8\x0a\xbe\xc9\x15\x8cs4\xb9\xf4_\xfb*N|\xac" +
-	"x\xbe\x9cH]\xb1\x8f\xb1\x1b[\xc1m\xed\xd2\xb7\xae" +
-	"\xff\xeay\xe9\xc7\xc3\x00\xb8a\xc5 #\xb8e\x05[" +
-	"\xaf\x7f\xed-7=VS\xf5\xbd0\x87\x96\x95\xbb\x18" +
-	"A\xd7J\xc6\xa1\xf0\x91\x1bo\xb9\xff\xd0\xa1\xef\x87m" +
-	"\x87\xba\x04\xf9\x95\xec\xb0\x1b\x1f|\xf5\xda_^\x92x" +
-	"r\x92gR\x13#\x8c\"\x9b`\x14+V\xcf\xff\xa7" +
-	"ms/~\xaa\xc8\x82\x9fWW#\x97r\xa0\x91m" +
-	"c\xf9U\xdb_\x7fa\xff\xee\xa7=\x16\x9c\xe2P#" +
-	"\xb7\xe0g\x1b\x99\x98\x97\xd0\x83\x8f\xbet\xc2\xca\xe7J" +
-	"\xaa%{\xc6\\\x94/?\x83\xa9\xa5p\x06\xe3\xf7\xf8" +
-	"\xfd\x9d\xcf8;F\x9e\x0b\xcb\xfc\xfc\x19\\\xe6\x97\xce" +
-	"`\x12}\xfc\x0f\xfd\xfb\xaf\xff\xf8o\x9f\x0bKt\xf0" +
-	"L~\x0cO\x9f\xc98|\xeb\xf2Go\xb8\xf3{W" +
-	"\xff4\xac\xb7\xfaU\\o-\xab\x98@\x9f\xbf\xef\xcd" +
-	"M_\x98\x1f\xfdY)x=\xbbj\x11\xca\xbf^\xc5" +
-	"\xe4y\x81\x137\xdd@W\xbfs\xe4\xeb%\x89\xf74" +
-	"u\xa0|G\x13#\xbe\xad\x89\x11\xaf\xfd\xc6\x15\x97\xa5" +
-	"\xef\xdb\xf9\x8b\xd2\xf6\xdd\xde\xcc\xb7\xa143\xd2\xdc\x81" +
-	"\x03\xf3\x9a\x1a\xbe\xf42\x90\x15\x08\xae-\xbe\xd1\xfc\x1a" +
-	"B\xc4\xf9\xa9u\xd1+\xdf\xaep^.\xa9\xaf\x97\x9b" +
-	"\x1bP>\xda\xcc\x96|\xa3\x99\xa9#?\xefc\x0f8" +
-	"\xa3w\xfe1\xac\x8e\x97\xcf\xe2\xbb}\xe3,\xa6\x8e\xef" +
-	"|\xf2f\xf9\xe5\xd9\xd7\x1d\x06\xa5\x11C\x1eh\xa0R" +
-	"B\x01\xa0Yi\xe1\x87\xa9\xb60\xda\x89\xfd+\x1fi" +
-	"\xef\xfa\xc0\x9f\x80,\x8dL\xba\xd4\x0e\xb4<\x80\xf2\xf3" +
-	"-\xcc\x96~\xdc\"b\xdf+-\xdc\x96\xa4\xeeM\x1f" +
-	"\xa9}\x0b_}\xd7\xedr\xb4e\x04\xe5\xaa\xb3\xf9\xf5" +
-	"\x7f\xf6\x05r\x0b\xfb\xcb9\xf4\xf4\xbeJT.x\xb5" +
-	"\xb4vj\xcf\xe6\xdaI\x9c\xcd\x04\xd17\xcf\xba\xb8\xfe" +
-	"\x13O\x1c\x99\x84\xfd\xb39\xa8\xf6\x9e\xcd\xd4\x17\x8b]" +
-	"z\xfd\x82?E_/\xcdk\xd59Or+8\x87" +
-	"Y\x81\xef\x13\xa6\xe8\xb3\x821\xd5\xcei@\xb9p\xce" +
-	"2\xc6\xff\x9cM\xcc\xef>\xf2\xd7\xaet\xfb\xed\x1b\xde" +
-	"\x0c/=o5\xf7\xbbKV\xb3\xa57\xff\xc3i\xe7" +
-	"\x1emN\xfc\xa5\x94BQl>\xb0\xfa9\x8e\xfd\xd5" +
-	"\xdb\xe1\xcf\xcev\x9aLX\xd4\xb2\"\x9a\xa17\xa6\xd4" +
-	"\x9c\x9e[\xb3\x89&\xfb\xa8e\xf1\x01#WX\xdc\xa3" +
-	"\x9aj\xd6\x02Pj\xc4\x08@\x04\x01\xc8\xe5\x0d\x00\xca" +
-	"\xb8\x88\xca\xd5\x02\x12\xc4\x1afX\xe4\xca$\x80r\x85" +
-	"\x88\xca\xa7\x05D\xa1\x86\x1d\x1e\xf9$\x1b\xbbVDe" +
-	"\xb7\x80D\xc4\x1a\xe6\x93\xc8\x0d\x1d\x00\xca\xa7ETn" +
-	"\x12\x90D\x84\x1a\x8c\x00\x90=l\xf0s\"*7\x0b" +
-	"\x18\xcb\xa9\xf60\xce\x01\x01\xe7\x00:ij\xd9\x9a\xae" +
-	"\xda i\x86\xee\x8f\xea\xc6\xc6m\xd4\xdcn\x82\xa4\xd9" +
-	"\x14\x11\x04D\xc0\x9d\xd6\xb0\x9a\xc9\x18\xdb\xfd\xdf)C" +
-	"\xb7\xe9\xb8\x8d\xd5a\xc7\x8b\xd5\xcco\x96\xddx\xa7\x9a" +
-	"\x1a\xa6=FFK\x15Z\x1b\xfbRF\x8e\xf6 *" +
-	"\xee\x9eZ\x1a\x18\x0f\x92\x18\x04@\x81\xd4w\x00\xa0H" +
-	"\x16\x9a\x00\x18!\xb5\xbd\x001\xdd\xd0\xa9\x93\xa3&g" +
-	"\x06\xa2\xa1\xef\xccQs\xc0\xa2&\x1bl\xcf\xe5.\xa6" +
-	"\x107\xd92N^\xd7\xb6Q\xd3R\x013\xbe@b" +
-	"I\x81z\xa9\x15\xcf\x19\xbaE\x95\x1a\x0c\"\xcb\x85\xc9" +
-	"P\x98\xb7p\"t\xe3-\\\x13\x8a\xd9j{C\x86" +
-	"S;\xe1\xf4\xe5S)jY\x9d \x19i\xeatf" +
-	"4\xaa\xdb]&\x9a\x86\xd9i\xa4)\xb4\xae\xa3j\x9a" +
-	"\x9aN\x97i\x1af\x87\x91\x06,8\xc3|h\xd30" +
-	"j6\xcdh\x96\x0d\xcab\x1f\x0d\x87\x07\x01\x94WD" +
-	"\xec\x9b\x85\x02VE\x1d\x07C\x81\xaa\x1c\xc5n\x10\xaa" +
-	"\x84w\x9c0\x16\xc9\x91\x0e\x10\xaa*\xdef\x83\xbeO" +
-	"\"\xbfH\x82P%\xbd\xc5\x06}S$O\xb0A\xf1" +
-	"ol\xd0\x0f\x94\xc9\xfd\xbd \x10\xac\xa8\xc1j\x00r" +
-	"\x0b\x03\xd9\xcd\"*w\x09X\x15\xf9\x0fF\xe9[\x1f" +
-	"\xb9c\x1f\x08d\xd6\xac\x1a\xaca \xdb\x05\xa0\xdc$" +
-	"\xa2\xf2\x90\x80\x8eE\xedN\xc3\x18\xd5@\xa4\x16\x9e\x08" +
-	"\xd8#\"V\x077( \x1btL\x9a\xd6L\x9a\xb2" +
-	"\x01\xc0E\x93n;\xa9\xa2\xc6@2\x0d\xd3\xb1\xa8\xb9" +
-	"\x8d\x9a\xde/\xdd\xe8\xe4T\x80\xb6\x93*\xa2\x08$-" +
-	"U\xc0\xea \xfb\xe0\x08\xcc\x994e\xe8i\x0dm\xcd" +
-	"\xd0\xcfW\xb5\x8cH\xd3\x8e\x9aNk\xec7\xaa\x19\xf7" +
-	"\x140$\x9b\x7f\xbcE\xd9\xcac8kl\xa3\x81\xf1" +
-	"V\xfb\xc7\xa52\xe3\xfd\xb0\x88\xcap\xc8x)\xd3a" +
-	"ZD%\x17\x18o\x96\x8deDT\xc6\x99\xf1\x0a\xae" +
-	"\xf1\xe6\x99\x9d\xe6DT.\xfb{\xectz\xbb\x8c\x1e" +
-	"\xcb\x0c\xb8\x154z\x106\xd2\xc8Ms\x01\x97x\xc3" +
-	"\xa9dC\x1c\x91\x8cu\x90\xb18\x0adO7\xd9\x1b" +
-	"G\x91\x1c\xec%O\xc41B\x0e\xef G\xe2\x18\x95" +
-	"\xe7aR\xae\xc58V\xc8]\x98\x94\xd7c\\4F" +
-	"\x95\x08\x0a\xa1\x905\"`\xfb)L$\xe8A\xc4\x1f" +
-	"\x10<U\xdc\xf8\xbf\x19\x06L\xaa\xda4]\x96\xfa\x10" +
-	"\xc1\x8e\x9d\x9d.!\x80\xa3\xa6R4\xc7\xff\x84\x12\xd3" +
-	"\x16\xf8\xd3\x9e$\xd8\xed\xb4\xfb\xc4\x18\xc6R\xd9\x89O" +
-	"\x11\x1ct.2\xea85\x88\xba\x0d\xe0\xe4T\xd3\xd6" +
-	"\xd4L'\xb4\xba\xa0-\xcb\xe0\x19\x82\x13N\x8f;\xa3" +
-	"\x0e\xddE\x19\xe2\x9dl>ck}\xb6\x0a\x92\x9d\xb7" +
-	"\xca\xb2\xf8\x11\xc1\x11g\x03#O\xf4\xd9\x10S\xed\xbc" +
-	"\x05\xe0\xe8\x86\xbd\xc1Hk[A\xd2J\xea\xcc\x9f/" +
-	"\x9e\x89\x8c\xc1E\x86]\xc7&@l\xab\xc6u7C" +
-	"8x\x9a\xb2A\x99\xc5\x80^\x831\x00R?\x01\xa0" +
-	",\x17Q9\xab\x88t\x19\x80\xacb\xf0_)\xa2\xf2" +
-	"A\xe6\x03\x86\x8d|&\xddK\xd1\xa2\xf6\xf9\x86\x99\x05" +
-	"\x0f\xa11\xda\xaf\x0eau\x10\x1b\xce\xe8\xda\xf0\xe51" +
-	"i\xab\xeb6\x949\xae8\xcc\xc6\xba\x98=\xad\x15Q" +
-	"\xe9\x11\x90\x08X\x83'0\xc8v\x03(\x17\x8a\xa8\\" +
-	"R\x94q\x0e\x00\x19`\x94\xfd\"*\x97\x0a\xe8hV" +
-	"\x0f5\xb3\xaa\x0e\x12\xd5mO>'c\xa4T\xe6(" +
-	"\x00\xc0\xb75k\xbbf\xa7\x86\xfb\x0d\x90.\xa0\x01\xe5" +
-	"\x0cU\xe8]\x03\xa6\x11\xe7\xd7\x00\xb3\xaa\xb3\xb8U\xed" +
-	"\x19dV\x84E+\x12\xc8\xe1nfE\xa2<\x0f\xaf" +
-	"\x93\x17b\x1c#\xf2\x064e\x05\x99e\x15\xb0[\xbe" +
-	"\x9c[\xd6\x1d\xd8 \xdf\x81q\x9c%\x1f\xc2\x07\xe4g" +
-	"1\x8e\x952\x0a\xbb\xe4J!\x8e\xb3\xe5\x16\xe1n\xf9" +
-	"\\!\x8e'\xc8\x9a\xd0+g\x858J\xf2\x1ea\x9f" +
-	"|\x8b\x10\xc79\xf2!\xe1v\xf9Y!\xee$\xd5t" +
-	"/\x1d\xcbS\x10\xad\xb2\x00\x16?\x87\x04\x93N\x87\x9a" +
-	"\xaec\xf4 Q\x8b\xd9\xc0V\xc3Lj\xe94\x05\xd4" +
-	"\xcb\xce\xbe\x11\x09\xf6:\xe7\x07\xd4.r\xcf7\xf2\xfa" +
-	"tF+\xee\xe6s\x19n\x199 \x03m\x96\xda\xc3" +
-	"F\xfa\"\x03\xedv\x16\x8d0 \x97\xe0Q\xe7\xf3\xd8" +
-	"\x83\x04\xf79\x1b\xf8\xac\xba\x8b\xd0\xb0\xeb\xf8<\x91[" +
-	"\x80n\xd8\xdc'@\xdcV\x93\x19ZV\x98\xcf#\xc1" +
-	"\x1d\\\x186\x05Zs|\x0a\x80\x932\xf4\xad\x19\x8d" +
-	"\xdfbe\x19\xecE\xe6\x83:}j\x8c\x0d\x19:-" +
-	"\xe7\xec\xc4}H\xb0!v\x81\xa1\xb3uLvZ\x96" +
-	"\xdd\x85\xba\xad\xd9\x85~\xc3\x88_\xa8\x9aC\xa5\x18," +
-	"\xf6\x19\xdc\x82\x04\x9ftz\xdd\x99uB\x17\x9fZ\xd7" +
-	"o\x18u|.\xbf\x83\xf9\xb7\x014\xb5~\xc3\xb8\xd0" +
-	"\xd0q\xa8\xac>oE\x82w{\x1c\x138\xd0\xbb\x9e" +
-	"\xb3\x8b]h\xe8C\x00N^\xb7\xf2\xb9\x9ca\xa2M" +
-	"\xd3\x1bhZSc\xfd\x85\x1c-\xcb\xf1\x8bH\xf0\x9b" +
-	"\xce@hb\x1d\x9b\xd9\xaa\xd6\xb1\xa9\x00\x8e\x96m\xef" +
-	"\xa7j\xce\x98\xc6U\x8b\xb7s7\xb7~Y\xb6N\xad" +
-	"\xb3)\xc4\xd4\x9c\xc1\xbdu\x89X\xa0\xac@7#\xc1" +
-	"\xdb\x9d\x9e\xf0\xb4\xba\xf3UM\xcap\xcc\xe4\xf5\x9ci" +
-	"\xa4\xa8\x85\x16;\xff.\xdd\x964\xbbP\x96\xdfW\xb9" +
-	"\xca\x06&\xcd\xab\xeb\xd2c\xec,Bn\xb8\xb4\xdb\xcb" +
-	"\x18\xa9\xd1\x99G\x1a\x83%\"\x0d\x16T\x0c\x8b\xa8\xd8" +
-	"\xa1Hc\xac#\x08?&G\x1a\xe3\xd9\x8c\x7f\xd5y" +
-	"\x83\xc7\x11\xfaO\xe3\x10\xbd\xf0\xb7\xc0\x144\xed\xae\xba" +
-	"\x83]\x11\xc1\xdbVw8\x80\x12\x8b\x01\x14\x1b\xb4E" +
-	"T\xae\x100\x96Vm\x15\xab@\xc0*@\x87\xea)" +
-	"#\xad1\x88\x06.=\xa3\xeaCyu\x88\x86\xc7\xb2" +
-	"Z\x96\xba\xb0\x0b\xc6\xca\xef\xa9\xd3\xd5E#\xbb\xd4\x8a" +
-	"\x98\x89\xf30\x93\xe5ts\x1c\xc7M\xc1\xc2Y]\x15" +
-	"\xbe\xe3\xd4`\x94\xa5uk\x00\x94\xcbDT\xae\x15\xb0" +
-	"V|\xdb\x89\xd4`\x05\x00\xb9f\x04@\xb9ZD\xe5" +
-	"K\x02\xd6F\xdeb\xc3\x12\x8b\xc5\xcdb,\xfe\x0d\x01" +
-	"\xab\x84\xbf958\x0b\x80<\xcc\xee\xb3\x87DT\x1e" +
-	"\x17\x90\xa7GP\xd1J\xc75\xcb\xb6\xa0\xc2\xc9\xaav" +
-	"j\x98Z\x1b!\xa6\xd3\x8d[\x83h7|\xf5\xb2h" +
-	"\xb7Hw\x11\xc4\x8d\xf2\x84i\x83Z\xba\xdd5\x0e\x12" +
-	"KT*\xa6\xbd\xb3\xb9\x9b\xe8\xb3M*\xaaYv\xd4" +
-	"\x111\xcaL\xb2X\xff@/w'$\x09\x02\xa9\x94" +
-	"\x9c!js\x90\x80\xa4[\xb4\x0d\x95\x08\xa2\xf3\xd1\xdf" +
-	"\xfc\xa8~\xfb\x077=\x0d!c\xa9(\xb9\x1e\xfb\xd3" +
-	"H\x8dR\xbe\xa2\x9am\xb4\xa8\x9e\xee(\xd8\xd4Z\xdc" +
-	"\x13\xe7&\xa4D|\xa8U1\x13\x98%\xa2R#\xe0" +
-	"\xce,\xb5,u\x88\xfap)\xbf\xad\x9ci\xe4rL" +
-	"c>\xdb9>\xdb.v\xd0m\"*\x17\x86\x10\xbc" +
-	"\x9e\xd9\xe5:\x11\x95\xfe\x10\x82\x95\x8e :\x99\x81\x0d" +
-	"\xbe\xa7t{\xd8\xb6s}6\x0b\x14\xdbu\xdd\xb0y" +
-	"4\xb3>\xedF\x93\x95 `e\xe0\xac\xa6\xf5@j" +
-	"*\xe39\xa0\xf7\xc7>K\xdba._<uM\x1f" +
-	"\x9a\xb9\xc3,\xe9Z&y\xcc\xa2k\x19\xeb>Vn" +
-	"V\xc2e\x94\xd9D)G\xe4mL\x98\xba\xb1\x18\xdb" +
-	"\x99\xf2A\x0c\x97-\xb55\x01OB;B\xf5r5" +
-	"\x19*X\xaa\x83\x81\xed\x12\xb5!\xc8\xbd\xc9\x965A" +
-	"\xe3\x82l\x1e\x09*\xd7d\xf3uA1\x8dl\xe9\x0e" +
-	"\xf5\x8f\xb6\x98\xa1r\xdf\x96\x09/\xdb&[\x92A\xc5" +
-	"\x92l\xe9\x085\x106\x9b\xad\xee!\xec,:H\xa7" +
-	"\xc7\xb0l\xf67\x8f\xb5\x9d\x9e\xbc\xed\x9f}\xac\xab_" +
-	"\x1dj\xe5\x05\x03\x1a$i<r\xf0\x7fb\x97\xaf8" +
-	"\xc7\xbbF\x80\xff\xed\xba\x18\x88\xf3\xc3w<\x17 \x14" +
-	"\xd1\x00^\xb9I\xd2R\x85\x9d\x1bs\xcc\x12,\xa7\xc7" +
-	"4r[5=\x0d\xf1\xb54g\x0f+\xeb\xb8[\xf2" +
-	"\xca\xd9\xbe[\x92W\x09\x8b@\x90\x97\x08\x12\x06\xed\xa0" +
-	"\xe0\xeb<\xa1\x01\x04\xb9J\x90P\xf2\xcb\xed\xe8\x15\xcd" +
-	"e\x14L\x10\xe4\xa3(\xa1\xe0\x974\x83\xb9\x87\x91q" +
-	"\xfe5J(\xfae\xdc\xe0\xeb\xf3\xb8\x06\x04\xf9\x10J" +
-	"\x18\xf5\x8b\xe2\xe85\x0d\xe4\x03\xc88?\x8c\x12V\xf8" +
-	"-2\xf4\x1a\x02\xf2\xd7p\x04\x04\xf96\x94p\x96_" +
-	"\xe3\x0f8\xef\xc1n\x10\xe4\xcf\xa0\x84\x95~C/\xf8" +
-	"z%\xf6\x82 \x17P\xc2\xd9~-4\xf8\x9a\xc5&" +
-	"\x10d\x15%<\xc1\xef\x0e\x07_\x07\x90ic=J" +
-	"8\xc7o\xe0\x06_\xcf\xe5_W\xa1\x84U~O4" +
-	"\xf8\xba\x84\x7f\x9d\x87\x12\x9e\xe8\x97\xf0\x83\xafU\\\x1b" +
-	"\x88\x12\xc6\xfc\x9eapu\xbc\xb1\x08\x04\xf2\xb2\x84\xd5" +
-	"~\xd3$\xf8\xf6\xc2\x1a\x10\xc8\xb3\x12\x12\xbfs\x80\x1e" +
-	"^\xc9\x13\x1d \x90G%\x8c\xf8\xdd\xb6`\xde\xbdM" +
-	" \x90\xdb$i\x88\xdam\x18\xcb\x19\x96\xdd\x86\x8e\x91" +
-	"\xa3:\x83\x17\xc4\xf9\x1d\xd3\x86R.o\xb7ak\x9a" +
-	"f\xa8M\xdb\xd0at\x0cu\x10\xe7^\x88\x8d\x14\x9d" +
-	"\x12\xc4\xbc\x01\x0fx\x00\xc5_\xec\"\x01\x1cn\xc3x" +
-	"v4ed\xda0\x962r\x856\x8ce\x8dm\xb4" +
-	"\x0dc,\x00l\xc3\xd6\xbc\xee\xfe!\xa9\xa9L\x1b\xb6" +
-	"\x9a4g\x98v\x1b\xee4\\D\xb7a\x9c\xdfH\xc5" +
-	"+\xd38\xf9\xe1K\xfe\xbd\xbd\xe9\xcd\xb0w\x17\x8f\x11" +
-	"\xbe\x18\xd2\xa8\xe6\x96`\xa7\xa9A7\x05\xc1\x0a\x0a\x18" +
-	"j\x8f\x91k\x98*\xc5j7\xa8\x99\x14\x99E\x047" +
-	"\xa4\xc97\x84\xdc\xa7\xaef\xa9\xe7\xfc\xe2\xdb\xd4L\xde" +
-	"\xff\xb5\x93\x8e\xe74\x93Z\x0e\xbb\xc06\xea\x99\x02s" +
-	"\x93^\xd9`\x92\xd7\x9d\xe6\x866,;\xb8\x04\xa6\xbb" +
-	"\xb5:\xc2\xb5\x83\xe2%\xb0\xa1#\xb8\xca&\xad\xecU" +
-	"*\xb1:p\xbd\xaeo?\xee\x8a\xb8\xe7\xe3\xfa\x0b9" +
-	"\xb7\xe26\xcb\x17\xb8\xbe;(\xb3py\x11\xc9\xaa5" +
-	"\xa1*K\x89\xdb\xa7u\xecb\xae\xd3\xd9 \x1c\x9c}" +
-	"E\xeb\xcc++)#\xee\xd6\xb3\x16\x88\x11\xae\x1d\xa6" +
-	"\x88\x87\xbb\x83\xf8\x92k\x87\xdd\x86\x07\xd8\xe0\xb7DT" +
-	"~P\xbc\"Y\x8c\xfb\x04\x1b\xfc\xae\x88\xca\x8f\x05\xc4" +
-	"(\x86\xbaO\xe4\xe9\x06\x10\xaa\x85\x1a\x9c\xcd\x18\x0e\x06" +
-	"\x0c\xb1\x02C=\x15r\x80E\x81\x11\xa9\x06\x09\x00\xf9" +
-	"\x1a;\xab\xaf\x88\xa8\xdc'\xfc]\xf1{,i\xa4\x0b" +
-	"\x8e\xc5\xa3\xa1N\x03\xc44\xc5\x98W\xe5\x07\xc4\x18\x8b" +
-	"j5+gX\x9a[^=\xbe\xf2T1\x1ed\x90" +
-	"C\xeb}\x848ajP\xc8\xcb\x87,\x0e\xac\x0e\xba" +
-	"\xe1\xef\xa5g\xc3\xab\x1c\xe1\xa7?\xd8\x14\xe7]\x9cp" +
-	"\xac\xd5\x0b\xa0\\*\xa2\x92\x09mZ\xeb\x0d\x85UB" +
-	"\x9d\xbb\xe9\xb1\x1d\x81_ \xe2B\x17]\x85\x1d\x81\xfb" +
-	"q\xb6k\xf6p\xe70M\x01\x8eb,X\xb6xr" +
-	"9^\xbe\xe3e\xdc\x12_\xb7\xa9\xa6F\xad\x8d:\x14" +
-	"\x83\x0b\xbfn\x17|pm\xef]\x05\xbd\xd2j\xf0\xc2" +
-	"\x86\xb54'\xda\xc3\xccR\xe7\xf0]\xd4v\x93\x85q" +
-	"D\xd2\xde\xc0\xfbV\xab\x17\x018\x9a\xbeU\xd3y\x86" +
-	"\xef\x96\x85\x9e\xb9\xe1\xc8;\x85;\xd3\xaf\xb9\xd5\x81\x1a" +
-	"\xe4\xc5H\xec\x0d\xe8\xf0\xa3\x00\xb1\x1d\xd44$C\xa7" +
-	"35\xd9u4\xa6\xa6\xa99\xc5i0\xcc-\x16Q" +
-	"93\xa4\xfeDS\xe0I\xcax\xe0\xe9\x80P\xccv" +
-	"\xd7QU\xfa\x9f\\\xd7\x0b\x1ey\xed\x9c+>\xb0\xb0" +
-	"\xee\x901y\xab\x86\x8d)\xc8D\x18e\x8f\x88\xca\x87" +
-	"\x852a\xbbn\x97\xad\x1a\xcc\xac\x1a\xe0\xf5\xf44\x9b" +
-	"\xc62\x9ae3\x83+&\xd5\x8c\xd1\x89\xec\xec\xb7\x91" +
-	"\x96]\xe4\xdc\x09\xd2n\x92\xaeA\xb2\xbe\x97l\x18$" +
-	"J\x92\x0cL\x90\xcd\x83dK/Q'\x08\xbd\x8ed" +
-	"\x93dl\xc4\x19OX\xaa\x9e\xb6l4\xcclB\xcd" +
-	"\xe5\x12\xd8\xe0\x18\xa9\x84m\xd8jFHd\xa8>d" +
-	"\x0f\x83\x91J\xa4\x86\xf3\xfah<ai;\xa83\x9e" +
-	"0R\x89\xac\xad\x81\x98\xa5\x8cx\xab\x96\xa1\x1a`\xda" +
-	"\xf1\xe8@\xa4\xc5\x1f45\x0a\x92\x95\xcf\xfa\x9f\x84\x84" +
-	"\xb1u\xabEm\xc63\xa3\xee(\x18b\xcer\xc6\x13" +
-	"\xc3C\xaa9\x94\x00lp\xc6\x13\xb9a5ijb" +
-	"J\xb5\x0d3\xd1\x00\xe3\x89b)\x91\xa6\x13\xccf\x01" +
-	"\x9c\xf1D\xca2\xb7\xda\x06H\xa3T/\xfeJ\xd8\x10" +
-	"3\xd8\xcf\x12a\xc9:?k]K\xadT\xab\xa9\xe5" +
-	"lc*\xc4N\x0d V\x0aa\xa2\x96F\x09\x04\x94" +
-	"\x00\xe3\xb6fgf\x8ek\xe6\x1f\x1aY\xf8!\x99\x94" +
-	";p^\xbb\x11\xa6\xb8\xf0Z|\xc7)\xb6\xda\xd7w" +
-	"\x07\x10\xab\x15\xdef\xc3\x91) +\xd6c\x1c5i" +
-	"\x19\x99\xbc\xcd\xb1\x16\x05\x01\xa3\xbc\xf0\x9aQmm\x1b" +
-	"\x1f\xe3)\xf9\x8c\xc3\x84.=\x15\xe7\xb0\x9c\xa2\x1as" +
-	"\x9aP\xa1\x88\xeeNpgO\x1f.D\x8f\x19[\x05" +
-	"\x99v/\xb5\xf2\x19\xd1\x9eTYY\x13TVZ-" +
-	"N\x89$H&\x01\x91L\xbbW7\xbe\xe5\xf7\xa9\x98" +
-	"}?\xdd\xa73(>p\x95\xd8x\xfc*)\xbd\x86" +
-	"\x97~\xf0\xe4\xc3\x8f4\xa6+pt\x84nbO3" +
-	"Zw\xf1&\xbe:T\xe0\xb8r$xbRB]" +
-	"%\x95\x923\x0d\xdbH\x19\x19\x86\xe1I\xde\x0d\x8b}" +
-	"\xfc>\x1bb\xc5\xcd\xfa\xf5\x83\x19\x9d\xbf\x97'-\xee" +
-	"Qc\xbc\xc2v<\x95\xef\xa6\xbf\xbb\xf2\x1dO\xd3\x9c" +
-	"=\x8c\xb1\xa0\xb0\xe1F\x16\xc7\x0d\x94\xc9\x87\xe8\x1bO" +
-	"\x89\x80\x7fmhw\xed#\x01\xe8\xcb)\xdd}.q" +
-	"\xdcJ\x1f\xa2\xf6\x8c+}!\x8b\xf3\xf4\xbda\xf0\x18" +
-	"\x85\xbe2\xda\xd2\x86t\xc3\xa4\x1d,,/\xbc+\x08" +
-	"+\x9d\xb1v\xf5\xab8\xd5\xf55\x95\xb8\x15\x1a\x02w" +
-	"89\xd4\x88m\xa7\xea\xe8\x0c[\xb8\x93\x9d\xddL\x8d" +
-	"\xee}UU\x8c\x1c\x03\x88\xbcn\xc0\xb6$1\xfb\x9a" +
-	".\x8a\xeb\x08Eq3<\xdb\xf2\x02\xb8\x05\x8d\x19{" +
-	"\xf8\xde\xf7TYf\xac\xfb\x8dQ\x0a\xa8\xbf\x07AK" +
-	"\xe3\xad\xa8\xa1\x99\x04\x9d\xbd\xa1\xf7\x06\x9e\x90\x03\xb7\x03" +
-	"(\x97\xb8\xe7\xee$U\x8b\xf6\xa8,8\x0a\xce)o" +
-	"Q\xb3}\xc8Ma\xbc1\xf7Y\x8b\x9a\xc4\x0c\xbd\x90" +
-	"g\xb9\xd2P\xf0\x90\xca\xb3\xf6i\"\xe6\xbc\x1f0\xbf" +
-	"\x8f\xe3\xe5\xa0\xf6\xe0?\x91@\xd3{\xd8!1i\x07" +
-	"\xa7H;\x8bI;1E\xd1'M}\xd819\xdd" +
-	"\x0f^\xf2y\x09?\xb5R,\xbcD\xcd\xd0\xd7\xd9\xd9" +
-	"\x0c\x84\xdeT\xf1\x81\x0e\x90\x8ct\x01\xab\x83\x97~S" +
-	"\xb0R1]\xc3K\xcd6z\xcd,\xdd\xa2^\xa7h" +
-	"\x1a\xacm\xcc\xd91f\x96\xa1\xae(b\x89t\x1aq" +
-	"J:\xcdN\x0c\x91\x8c\xf5\x06\xfe\x04\x8b>\xa6`\x16" +
-	"\xb3\xe9\xdd\x02:iu[gF\xb5,\xc0U\xbe\x07" +
-	"\x0c\xc6\x9aJ\x8c5\x87\xc7\xba\xc6m\xaaC\x9c\xc9\xfa" +
-	"\x1e\xe1\xe8\x16I}s\xffot7\xd3\x01\xcd\xc5l" +
-	"c\xd2\x10\xd3\x05&\xc7\x02\xc7\x89\xb8\x95\xcb\xf05\xc2" +
-	"\x02\xfdb;6\xb1&t\x93$\x0b6\xb5<\xc0\x07" +
-	"\xa1\xdc\x8b\x1d\x97^\xba\x7f\xf1\xeb7\xcd,\x94\xf3\x85" +
-	"\x09\xd2\xc48=V\x9ax2\x89\xee\"U\x83%S" +
-	"\xc0I)^\xf9\x03\x08\xf5Fyt\x10tc\xbd\x7f" +
-	"\xfcA\xfd\xfe\xc7\xb77\xef\xfb\xe8^Bz\xddn\xac" +
-	"\xd7?\x05\xb4\xda\xb0\x07g\xbc-\xef\xd9&7\xe6Y" +
-	"b\xa4\x1ak\xb0\xf2]\x8f\xc6\x84\x1a<\x19\x80\xacb" +
-	"v{\xa6\x88\xca\x87\x84\xff\x0a\xc3\x8c\x1c+@?\x9e" +
-	"\xd0\xe6=%\x13~\xf3m\xc6\xc9DEy5z/" +
-	"W\xbc\x87+\xeec'W\x9dsYV1\xc2\x8b\xdb" +
-	"\xa8\x9c\"\x14[\xf8\xcc\xf7\xf2nZ\x99\xfa\xe5\xb1\xfa" +
-	"\x00z\x8cI\xab\xcc\xc2\xf0?\xecT\xae\x09\xfd\x8fM" +
-	"t\xc2{\xbe\xfc\xee'\xcb\xa7\xf8J\xdd\xcbT\xb5\xdb" +
-	"\xad\xdb\xfaJ\xbdw\x07\x80\xb2\xdf}\xbb\xe0+\xf5a" +
-	"fX\xf7\x89\xa8<% \x89\x16\xdd\xd5\xa1]\x00\xca" +
-	"S\"*\xbf\x17\x10#\x18\xfa\x977\xf2\xd2u \x10" +
-	"1\xeab\xe9y\xc6\xf1'\"*\xaf\x0aL\xd5,}" +
-	"\x0f=\xe7]|\xd6\xfd\xf7\xfc\xf6\xca/\xed\x0e\x9e\x1a" +
-	"\x17[\x86\xad}\x9e\xc9\x06\xcf\x0a\xb8\xc9\xb6\xbawn" +
-	"\xc0\xc2o\x92\x16Y\x94}>\xeck\xacH\xec\xbd\x06" +
-	"A\xef\xfc\xfc\xb7\xaa]:\xb4\xba\xb7d0\xdbo\xc1" +
-	"\xce\xec\xf1\xf1h\xca\xc8\xbc\x0fK\xcd\x153s\xbc^" +
-	"\xb1]3Pg\xce\x81\xd7Y\xaa\x98wX3\xd9\xfd" +
-	"Fk\xb8\x03Lt\x075\x8cV\xdd0\xb3j\x06*" +
-	"\x9c\xb4\xb1]\xcf\x18j:\x14j\xfcg\x00\x00\x00\xff" +
-	"\xff\x99O;$"
+const schema_a8cb0f2f1a756b32 = "x\xda\xcc{{x\x1c\xc5\x95\xef9\xdd#\xb5m," +
+	"F\xe5\x1e\x1e\x06\x8b\x91\x1d\xd9\xd8\xb2G`\xc96\xb1" +
+	"n@/\x04\xb6.\xc6j=0\xd6\x8d\x13zf\xca" +
+	"RK3\xdd\xa3\xee\x1e[\xe3@\x0c\x02\xdf\x10\x02$" +
+	"\x18;\xc1\xfe\x80\xc4$\x04\x02f\x83\x01\xb3!\x1b\x07" +
+	"\xcc\x86$&@6l^\xecn\xb2\xe4K\xd8\x84\x04" +
+	"o\x80\x05\x126\xe0\xde\xaf\xaa\xa7\x1f\x12\xe3\x91pv" +
+	"\xf7\xe3?M\xf5\xa9S\xa7N\xfd\xce\xa9\xf3(\x9d\xbb" +
+	"\x92\xb4F\x96W\x9d7\x0f\x84\xde5XQ\xe9\\\xf5" +
+	"\xe2\xe3\xe3\xcd\x83\xab\xaf\x01\xa5\x06\x11\xa0B\x94\x00\x9a" +
+	"\xf0\xe4.\x04l\xaa:9\x8e\x80\xce\xe2\x17\xab\xde\xaa" +
+	"\xe8\xef\xbd\x06\xc8\x12\xe1O;\xd6\xfc\xff_\xcf\xff\xc4" +
+	"\xc3\x80M\x0b\xa3\xdbP^\x1d\x95\x00\xe4\x95\xd1\xed\x80" +
+	"\xce\xb5\xb7\xb7\x1f\xcc\xec\xbf\xd5e\xe5<w\xef\xcau" +
+	"\xfb\x88t7t\xce\x94*\x11\x9b\xf2\xd1F\x94wD" +
+	"7\x004=\x1bu\x18\xdf\x99_\xdd\xd2?R\xf9\xe6" +
+	"\xc4\xa5\xb3\x84--\x17\xc8o\x01\xff\xf5\xb3\xd7?\xff" +
+	"\x8c$\x8f\x93EB\xc0\x1c\xb0\xa9\x7f\xceN\x94\xb3s" +
+	"\xd8\xca\xda\x9c\xaf\x03:?\xdc\xf5ga\xf4Q\xfbZ" +
+	"P\x16aH\x8eSfJ\x08\xd0476\xceX." +
+	"\x8cm\x05t:\xcfz\xe7\x9f>\xf3\xe3W>S\x9a" +
+	"tGl\x1b#\xbd%\xc6\xb8\xe2\xfa\xc8%\xff|\xe6" +
+	"\x97o\x86\xc9\xeb\xaf<\xe5!\x94\xd7\x9d\xc2\xc4]{" +
+	"J\x0b\xdb\xca\xac\x0d\x1b\xe5\xe8\xe2\xdbn\x9d\xb0\x95g" +
+	"O\xe7[y\xe1\xf4\xdf2f\xcb\xf6\xae\xfe?\xff\xf6" +
+	"\x85]@\x16\x85\x96\xad\x880\xc2\x03s\xc7Q~j" +
+	".\xdb\xcf\xe1\xb9\x8c\xf8\x82\xd8I\x8b~v\xcf\xfa/" +
+	"\x80\xb2\x10\xd1\x19\xfc\xde\xfd\xaf,}\xe9\xe97\xa1\xbf" +
+	"R\xc2\x0a\x80\xa6}g<\xc4\x8e\xe7\xc0\x19\xfcx\xbe" +
+	"8\xbc\xf7\xad\xffx\xd2\xd9\x03\xa4F\x0c\xb4\x0e\xd8t" +
+	"\xf4\xcc\x01\x94q\x1ec\xfb\xee\x99\x17\xcbK\xe6\x9d\x06" +
+	"\xe0\xfc\xfc\xc6\x07\xde\xf9\xf5\xb2\xd1\xbd@\x12LPd" +
+	"\xeb\xcf\x9d\xf7:\x1341\xaf\x05\xd0\xf9\x9b\xeb[+" +
+	">\xd9p\xf9\x9d@j\xfc\x9d\x8c\xce3\x19\xc1U\xf3" +
+	"\x98Z*O=\xbc\xb3{\xd1=w\x02\x99\x13q\x1a" +
+	"G\xf2g\x9c\x13\xfd\xc1\xbdl\xbd\xb95]('j" +
+	"$\x80\xde\xc55\"\xf6\xae\xa8\x11\x10\xc0\xb9\xe9NR" +
+	"{\xc1\xdf\x17\xbe\x18f\xb8\xb0\xa6\x9d\xafX\xc3\x18\xae" +
+	"\xdeX}\xcf\x96\x17_\xd9W$\xe0*9Rs\x03" +
+	"\xd7]\x0dS\x87\xbf)2G\x0c\xaf(\x1f<\xeb\xf7" +
+	"\xf2\xe1\xb3~\x0b\xd0tS\xfcS\x11yt\x01\xdba" +
+	"\x87\xf0\xe8\x0b\xdf\xa6W\xdd\xcb\xceB\x08\xe6\xba\x0b\xab" +
+	"\x0b\x16\xa0<\xba\x80#m\x01W\xdf\xbbO\x1fN\xce" +
+	"z]\xbf/,\x1e\xfd\x10?\xb9\xd1\x0f1\xf1\xde>" +
+	"|e\xf2L\xe1\xed\xfb&\xc1\xdaU\xdd\xcc\xba\x1e\x94" +
+	"k\xea\x98\x8e\xe7\xd61|\xdd\xfb\x97\xc2\xbb\x0f~\xf4" +
+	";\xf7\x97\xc6W\xa1\x8e)\xb2iG\xddg\xd9\xd2W" +
+	"\xdf\xbb\xec\xc9\xa3\xbb\xff\xf8@x\xe9\x97\x17\xf6\xb0\xa5" +
+	"\xdf\\\xc8\x96\xfe\xd4\xf5\xf7gf\xcfZ\xf3uP\xe6" +
+	"T\xcc\x98\xb0\xf3\x9b\x16\xfd^\xde\xb3\x88\xa9z\xd7\"" +
+	"\x11\x01=\xbb\x9c(#W\xe5\x8eE](\xefYt" +
+	"\x1a\x80\xbco\x11S\xe7\x99_yxO\xe7wn\x7f" +
+	"\x18H\x8d0\x010;\xce\x1e@y\xcf\xd9l3\xbb" +
+	"\xcf^\x0f\xe8|\xec\xb9\x83\xdbb\xd67\x1e\x99\x04Z" +
+	"\x81\xb1\xfd\xc9\xd9\xc3(\xbf\xcc\x89_:\x9b\xed|\xc9" +
+	"u\xf6\x0f\x9ey\xe3\xa5G\x80,\x0ca\xd6%n[" +
+	"\x9cD\xb9\x7f1#V\x163\xe2\x0b\x1e\x1dn\xdb\xdf" +
+	"\xf0\xf3\xbfe[\x9f|F\x0f,\xeeB\xf90'>" +
+	"\xb4\x98\xa9\xe1\x0f\xa9\x8b\xfar\xbf\xdb\xffM \x0b#" +
+	"\x01g\xc0\xa6MK\xeeC9\xbf\x84\xa9!\xb7D\xc4" +
+	"\xde\x1b\x97p\xc4\xfd\xf2\x0c\xeb\xcb\xd7\xae\\\xf9-P" +
+	"\xe6 \x06jsO,Q\xdf\x8c\xf2\xf9\xf5\x8c\xfb\xea" +
+	"z&\xca\xd65c\xb7?\xfa\xffF\x0e\x81R\x87B" +
+	"\x80\x9e~QB\x11\xa0iw}\x92\x1d\xc8\xbez&" +
+	"\xc9\xef\xbeWs\xec\xf1\x1dw\x1f*\x89\x85\xb6\xa5&" +
+	"\xca\xfdK\xf9&\x972\xce\x15\xc9E\xff\xd2[y\xf2" +
+	"\xe3\xc5\xf3\xe5D\x07\x96\xeee\xec\x0e/\xe5\xb6v\xc5" +
+	";7\x7f\xf5\x82\xf4\x13a\x00\xfcj\xe9\x00#8\xba" +
+	"\x94\xad\xd7w\xe1\x1d\xb7=\x1e\xab\xfan\x98\xc3\x8ee" +
+	";\x19\xc1\xeee\x8cC\xe1c\xb7\xdeq\xe0\xc8\x91\xef" +
+	"\x85m\xe7\xa0K\xf0\xd42v\xd8\x0d\x0f\xbfz\xfd/" +
+	"/O<=\xc13\x1dH\x0c3\x8aC\x09F\xb1t" +
+	"\xf5\x99\xff\xb8e\xcee\xcf\x14Y\xf0\xf3\xda\xdd\xc0\xa5" +
+	"\xbc\xbb\x81mc\xf1\xb5[\xdf\xf8\xc5\xfe]\xcfz," +
+	"8\xc5\xdcs\xb8\x05\xcf?\x87\x89y9=\xfc\xd8K" +
+	"'-{\xbe\xa4Z\x0e\x9d3\x07\xe5g\xcfaj9" +
+	"r\x0e\xe3\xf7\xc4\x81\x8e\xe7\x9cm\xc3\xcf\x87e^x" +
+	".\x97y\xe5\xb9L\xa2O\xfe\xbeo\xff\xcd\x9f\xfc\xcd" +
+	"\xf3a\x89\xc8r~\x0c5\xcb\x19\x87o]\xf5\xd8-" +
+	"\xf7|\xf7\xba\x9f\x86\xf5VX\xce\xf5\xb6c9\x13\xe8" +
+	"\xf3\x0f\xbe\xb5\xe1\x0bgV\xfc\xac\x14\xbc\xe67.@" +
+	"yy#\x93'\xd1\xc8\x88\x1bo\xa1\xab\x8f\xbd\xf6\xf5" +
+	"\x92\xc4/5\xb6\xa3\xfc&'~\x8d\x13_\xf8\x8d\xab" +
+	"\xafL?\xb8\xfd\x85\xd2\xf6}K\x13\xdf\xc6\xbe&F" +
+	"\x9a;thnc\xfd\x97^\x06\xb2\x14\xc1\xb5\xc5\xce" +
+	"\x15\xaf#D\x9c\x9fZ\x97\xbe\xf2\xedJ\xe7\xe5\x92\xfa" +
+	"Z\xbd\xa2\x1e\xe5\xb5+\xd8\x92\x9d+\x98:\xf2s?" +
+	"\xf1\x903r\xcf\x1f\xc2\xeaX\xbd\x92\xef\xb6s%S" +
+	"\xc7\x93\x9f\xbe]~y\xd6\x0dGAi\xc0\x90\x07\xea" +
+	"\x9f)\xa1\xc0\xae\x8b\x95\xfc0\x0fp\xda\xf1\xfd\xcb\x1e" +
+	"m\xeb<\xed\x8f@\x16E&\\jU\xab\x1eBy" +
+	"\xe1*fK\xb5\xabD\xec\xfd\xc8*nKR\xd7\x86" +
+	"\x8f\xd5\xbc\x83\xaf\xbe\xe7vY\xbbj\x18\xe5M\x8c^" +
+	"\xde\xb8\xeaby\x07\xfb\xcb9\xf2\xec\xde\x99\xa8\\\xfc" +
+	"ji\xeddWq\xed\\\xb5\x8a\x09\xa2o\x9cq\xd9" +
+	"\x92O=\xf5\xda\x04\xec\xaf\xe2\xa0zy\x15S_4" +
+	"z\xc5\xcd\xf3\xfeX\xf1Fi^\xd7\x9c\xf74\xb7\x82" +
+	"\xf3\x98\x15\xf8>a\x92>+\x19\xd3\xc7\xce\xabG\xf9" +
+	"\xc8yg3\xfe\xe7m`~\xf7\xd1?w\xa6\xdb\xee" +
+	"Z\xf7Vxim5\xf7\xbb\xf9\xd5l\xe9\x8d\x7fw" +
+	"\xd6\xf9o7%\xfeTJ\xa1(6U5?\xcf\xb1" +
+	"\xdf\xbc\x15\x8e9[i2aQ\xcb\x8ah\x86\xde\x90" +
+	"Rsz\xaey\x03M\xf6R\xcb\xe2\x03F\xaeP\xd7" +
+	"\xad\x9aj\xd6\x02Pbb\x04 \x82\x00\xe4\xaaz\x00" +
+	"eLD\xe5:\x01\x09b\x8c\x19\x16\xb9&\x09\xa0\\" +
+	"-\xa2r\xa3\x80(\xc4\xd8\xe1\x91O\xb3\xb1\xebET" +
+	"v\x09HD\x8c1\x9fDni\x07Pn\x14Q\xb9" +
+	"M@\x12\x11b\x18\x01 \xbb\xd9\xe0\xe7DTn\x17" +
+	"0\x9aS\xed!\x9c\x0d\x02\xce\x06t\xd2\xd4\xb25]" +
+	"\xb5A\xd2\x0c\xdd\x1f\xd5\x8d\xf5[\xa8\xb9\xd5\x04I\xb3" +
+	")\"\x08\x88\x80\xdb\xad!5\x931\xb6\xfa\xbfS\x86" +
+	"n\xd31\x1b\xab\xc3\x8e\x17\xab\x99\xdf,\xbb\xf1\x0e5" +
+	"5D\xbb\x8d\x8c\x96*\xb44\xf4\xa6\x8c\x1c\xedFT" +
+	"\xdc=\xad\xacg<Hb\x00\x00\x05\xb2\xa4\x1d\x00E" +
+	"2\xdf\x04\xc0\x08\xa9\xe9\x01\x88\xea\x86N\x9d\x1c59" +
+	"3\x10\x0d}{\x8e\x9a\xfd\x165\xd9`[.w\x19" +
+	"\x85\xb8\xc9\x96q\xf2\xba\xb6\x85\x9a\x96\x0a\x98\xf1\x05\x12" +
+	"K\x0a\xd4C\xadx\xce\xd0-\xaa\xc40\x88,\xe7'" +
+	"Ca\xde\xfc\xf1\xd0\x8d7\xbf9\x14\xb3\xd5\xf4\x84\x0c" +
+	"\xa7f\xdc\xe9\xcd\xa7R\xd4\xb2:@2\xd2\xd4\xe9\xc8" +
+	"hT\xb7;M4\x0d\xb3\xc3HShYC\xd54" +
+	"5\x9dN\xd34\xccv#\x0dXp\x86\xf8\xd0\x86!" +
+	"\xd4l\x9a\xd1,\x1b\x94:\x1f\x0dG\x07\x00\x94WD" +
+	"\xec\x9d\x81\x02VU8\x0e\x86\x02U\xb9\x02\xbb@\xa8" +
+	"\x12\x8e9a,\x92\xd7\xdaA\xa8\xaa|\x97\x0d\xfa>" +
+	"\x89\xbc\x90\x04\xa1Jz\x87\x0d\xfa\xa6H\x9eb\x83\xe2" +
+	"_\xd8\xa0\x1f(\x93\x03= \x10\xac\x8ca5\x00\xb9" +
+	"\x83\x81\xecv\x11\x95{\x05\xac\x8a\xfc'\xa3\xf4\xad\x8f" +
+	"\xdc\xbd\x17\x042cF\x0cc\x0cd;\x01\x94\xdbD" +
+	"T\x1e\x11\xd0\xb1\xa8\xdda\x18#\x1a\x88\xd4\xc2\x93\x01" +
+	"\xbbE\xc4\xea\xe0\x06\x05d\x83\x8eI\xd3\x9aIS6" +
+	"\x00\xb8h\xd2m'U\xd4\x18H\xa6a:\x165\xb7" +
+	"P\xd3\xfb\xa5\x1b\x1d\x9c\x0a\xd0vRE\x14\x81\xa4\xa5" +
+	"\x0aX\x1dd\x1f\x1c\x819\x93\xa6\x0c=\xad\xa1\xad\x19" +
+	"\xfaE\xaa\x96\x11i\xdaQ\xd3i\x8d\xfdF5\xe3\x9e" +
+	"\x02\x86d\xf3\x8f\xb7([y\x0cg\x8d-40\xde" +
+	"j\xff\xb8Tf\xbc\x1f\x15Q\x19\x0a\x19/e:L" +
+	"\x8b\xa8\xe4\x02\xe3\xcd\xb2\xb1\x8c\x88\xca\x183^\xc15" +
+	"\xde<\xb3\xd3\x9c\x88\xca\x95\x7f\x8d\x9dNm\x97\x15\xc7" +
+	"3\x03n\x05\x0d\x1e\x84\x8d4r\xd3\x9c\xc7%^w" +
+	"\x06Y\x17G$\xa3\xedd4\x8e\x02\xd9\xddE\xf6\xc4" +
+	"Q$\x87{\xc8Sq\x8c\x90\xa3\xdb\xc8kq\xac\x90" +
+	"\xe7bR\xae\xc18V\xca\x9d\x98\x94\xd7b\\4F" +
+	"\x94\x08\x0a\xa1\x905\"`\xdb\xe9L$\xe8F\xc4\xef" +
+	"\x13<C\\\xff\x7f\x19\x06L\xaa\xda4]\x96\xfa\x08" +
+	"\xc1\xf6\xed\x1d.!\x80\xa3\xa6R4\xc7\xff\x84\x12\xd3" +
+	"\xe6\xf9\xd3\x9e&\xd8\xe5\xb4\xf9\xc4\x18\xc6R\xd9\x89\xcf" +
+	"\x10\x1cp.5j95\x88\xba\x0d\xe0\xe4T\xd3\xd6" +
+	"\xd4L\x07\xb4\xb8\xa0-\xcb\xe09\x82\xe3N\xb7;\xa3" +
+	"\x16\xddE\x19\xe2\x9dl>ck\xbd\xb6\x0a\x92\x9d\xb7" +
+	"\xca\xb2\xf8!\xc1ag\x1d#O\xf4\xda\x10U\xed\xbc" +
+	"\x05\xe0\xe8\x86\xbd\xceHk\x9bA\xd2J\xea\xcc\x9f/" +
+	"\x9e\x8b\x8c\xc1\xa5\x86]\xcb&@t\xb3\xc6u7M" +
+	"8x\x9a\xb2A\x99\xc1\x80\x1e\xc3(\x00Y2\x0e\xa0" +
+	",\x16QYQD\xba\x0c@\x963\xf8/\x13Q\xf9" +
+	"0\xf3\x01CF>\x93\xee\xa1hQ\xfb\"\xc3\xcc\x82" +
+	"\x87\xd0(\xedS\x07\xb1:\x88\x0d\xa7um\xf8\xf2\x98" +
+	"\xb4\xc5u\x1b\xcalW\x1cfc\x9d\xcc\x9e.\x14Q" +
+	"\xe9\x16\x90\x08\x18\xc3\x93\x18d\xbb\x00\x94KDT." +
+	"/\xca8\x1b\x80\xf43\xca>\x11\x95+\x04t4\xab" +
+	"\x9b\x9aYU\x07\x89\xea\xb6'\x9f\x931R*s\x14" +
+	"\x00\xe0\xdb\x9a\xb5U\xb3SC}\x06H\x17\xd3\x80r" +
+	"\x9a*\xf4\xae\x01\xd3\x88\xf3k\x80Y\xd5\x0anU\xbb" +
+	"\x07\x98\x15a\xd1\x8a\x04r\xb4\x8bY\x91(\xcf\xc5\x1b" +
+	"\xe4\xf9\x18\xc7\x88\xbc\x0eMYAfY\x05\xec\x92\xaf" +
+	"\xe2\x96u7\xd6\xcbwc\x1cg\xc8G\xf0!\xf9G" +
+	"\x18\xc7\x992\x0a;\xe5\x99B\x1cg\xc9+\x85\xfb\xe4" +
+	"\xf3\x858\x9e$kB\x8f\x9c\x15\xe2(\xc9\xbb\x85\xbd" +
+	"\xf2\x1dB\x1cg\xcbG\x84\xbb\xe4\x1f\x09q'\xa9\xa6" +
+	"{\xe8h\x9e\x82h\x95\x05\xb0\xf89$\x98t\xda\xd5" +
+	"t-\xa3\x07\x89Z\xcc\x066\x1bfRK\xa7)\xa0" +
+	"^v\xf6\xadH\xb0\xc7\xb9(\xa0v\x91{\x91\x91\xd7" +
+	"\xa72Zq\x17\x9f\xcbp\xcb\xc8\x01\x19h\xb3\xd4\x1e" +
+	"2\xd2\x97\x1ah\xb7\xb1h\x84\x01\xb9\x04\x8fZ\x9f\xc7" +
+	"n$\xb8\xd7Y\xc7g\xd5^\x8a\x86]\xcb\xe7\x89\xdc" +
+	"\x02t\xc3\xe6>\x01\xe2\xb6\x9a\xcc\xd0\xb2\xc2|\x1e\x09" +
+	"n\xe3\xc2\xb0)\xd0\x92\xe3S\x00\x9c\x94\xa1o\xceh" +
+	"\xfc\x16+\xcb`\x0f2\x1f\xd4\xe1Sct\xd0\xd0i" +
+	"9g'\xeeE\x82\xf5\xd1\x8b\x0d\x9d\xadc\xb2\xd3\xb2" +
+	"\xecN\xd4m\xcd.\xf4\x19F\xfc\x12\xd5\x1c,\xc5\xa0" +
+	"\xcegp\x07\x12|\xda\xe9qg\xd6\x0a\x9d|jm" +
+	"\x9fa\xd4\xf2\xb9\xfc\x0e\xe6\xdf\xfa\xd1\xd4\xfa\x0c\xe3\x12" +
+	"C\xc7\xc1\xb2\xfa\xbc\x13\x09\xde\xe7qL`\x7f\xcfZ" +
+	"\xce.z\x89\xa1\x0f\x028y\xdd\xca\xe7r\x86\x896" +
+	"M\xaf\xa3iM\x8d\xf6\x15r\xb4,\xc7/\"\xc1o" +
+	":\xfd\xa1\x89\xb5lf\x8bZ\xcb\xa6\x028Z\xb6\xad" +
+	"\x8f\xaa9c\x0aW-\xde\xc5\xdd\xdc\xda\xb3\xb3\xb5j" +
+	"\xadM!\xaa\xe6\x0c\xee\xadK\xc4\x02e\x05\xba\x1d\x09" +
+	"\xde\xe5t\x87\xa7\xd5^\xa4jR\x86c&\xaf\xe7L" +
+	"#E-\xb4\xd8\xf9w\xea\xb6\xa4\xd9\x85\xb2\xfc\xbe\xca" +
+	"U\xd6?a^m\xa7\x1eeg\x11r\xc3\xa5\xdd^" +
+	"\xc6H\x8dL?\xd2\x18(\x11i\xb0\xa0bHD\xc5" +
+	"\x0eE\x1a\xa3\xedA\xf811\xd2\x18\xcbf\xfc\xab\xce" +
+	"\x1b<\x81\xd0\x7f\x0a\x87\xe8\x85\xbf\x05\xa6\xa0)w\xd5" +
+	"\x15\xec\x8a\x08\xde\xb6\xba\xc2\x01\x94X\x0c\xa0\xd8\xa0-" +
+	"\xa2r\xb5\x80\xd1\xb4j\xabX\x05\x02V\x01:TO" +
+	"\x19i\x8dA4p\xe9\x19U\x1f\xcc\xab\x834<\x96" +
+	"\xd5\xb2\xd4\x85]0V~O\x1d\xae.\x1a\xd8\xa5V" +
+	"\xc4L\x9c\x87\x99,\xa7\x9b\xed8n\x0a\x16\xce\xea\xaa" +
+	"\xf0\x98\x13\xc3\x0a\x96\xd65\x03(W\x8a\xa8\\/`" +
+	"\x8d\xf8\xae\x13\x89a%\x00\xd91\x0c\xa0\\'\xa2\xf2" +
+	"%\x01k\"\xef\xb0a\x89\xc5\xe2f1\x16\xff\x86\x80" +
+	"U\xc2_\x9c\x18\xce\x00 \x07\xd9}\xf6\x88\x88\xca\x13" +
+	"\x02\xf2\xf4\x08*[\xe8\x98f\xd9\x16T:Y\xd5N" +
+	"\x0dQk=Du\xba~s\x10\xed\x86\xaf^\x16\xed" +
+	"\x16\xe9.\x85\xb8Q\x9e0mPK\xb7;\xc7@b" +
+	"\x89J\xe5\x94w6w\x13\xbd\xb6IE5\xcb\x8e:" +
+	"\"V0\x93,\xd6?\xd0\xcb\xdd\x09I\x82@fJ" +
+	"\xce \xb59H@\xd2-\xda\x8aJ\x04\xd1\xf9\xf8\xaf" +
+	"\x7f\xb8d\xeb\x877<\x0b!c\xa9,\xb9\x1e\xfb\xd3" +
+	"H\x8dP\xbe\xa2\x9am\xb0\xa8\x9en/\xd8\xd4\xaa\xeb" +
+	"\x8es\x13R\">\xd4\xaa\xdaIU\xdc\x0bV\xb6g" +
+	"\xa9e\xa9Eg\xfa\xdaM\xe7\x9c6\xe7\x8a\xc7\x9et" +
+	"\xed\xb8\x1ay\xd8\x80\x0b\xa4\xac5\x08\xe0#\xaa\xfc\xce" +
+	"s\xa6\x91\xcb1\xa5\xfa+\xcf\xf6W\xeedXh\x15" +
+	"Q\xb9$\x04\xf2\xb5\xcct\xd7\x88\xa8\xf4\x85@\xae\xb4" +
+	"\x07\x01\xcc4\xcc\xf4}e\xe4C\xb6\x9d\xeb\xb5Y," +
+	"\xd9\xa6\xeb\x86\xcd\x03\x9e\xb5i7\xe0\x9c\x09\x02\xce\x0c" +
+	"\xfc\xd9\x94NJMe<\x1f\xf5\xc1\xd8giS\xcd" +
+	"\xe5\x8b\xc0\xd0\xf4\xc1\xe9\xfb\xd4\x92\xdeg\x82S-z" +
+	"\x9f\xd1\xae\xe3\xa5o%\xbcJ\x99M\x94\xf2U\xde\xc6" +
+	"\x84\xc9\x1b\x8b\xb2\x9d)\x1f\xc6peSk\x0ex\x12" +
+	"\xda\x1e*\xa9\xab\xc9PMS\x1d\x08\xcc\x9b\xa8\xf5A" +
+	"zN65\x07\xbd\x0d\xb2q8(n\x93\x8d7\x04" +
+	"\xf56\xb2\xa9+\xd4b\xdad\x86*\x82\x9b\xc6\xbd\x84" +
+	"\x9clJ\x06EM\xb2\xa9=\xd4c\xd8h\xb6\xb8\x87" +
+	"\xb0\xbd\xe8C\x9dn\xc3\xb2\xd9\xdf<\x1cw\xba\xf3\xb6" +
+	"\x7f\xf6\xd1\xce>u\xb0\x85\xd7\x14h\x90\xc7\xf1\xe0\xc2" +
+	"\xff\x89\x9d\xbe\xe2\x1c\xef\xa6\x01\xfe\xb7\xeb\x85 \xce\x0f" +
+	"\xdf\xf1\xbc\x84PD\x03x\x15)IK\x15\xb6\xaf\xcf" +
+	"1K\xb0\x9cn\xd3\xc8m\xd6\xf44\xc4/\xa49{" +
+	"HY\xc3=\x97W\xf1\xf6=\x97\xbc\\X\x00\x82\xbc" +
+	"P\x900\xe8\x18\x05_\xe7\x0a\xf5 \xc8U\x82\x84\x92" +
+	"_\x91G\xaf\xae.\xa3`\x82 \xbf\x8d\x12\x0a~\xd5" +
+	"3\x98{\x14\x19\xe7_\xa1\x84\xa2_\xe9\x0d\xbe\xfe\x04" +
+	"\x9bA\x90\x8f\xa0\x84\x15~\xdd\x1c\xbd\xbe\x82|\x08\x19" +
+	"\xe7\x83(a\xa5\xdfEC\xafg \x7f\x0d\x87A\x90" +
+	"\xf7\xa1\x843\xfc6@\xc0y7v\x81 \xdf\x84\x12" +
+	"\xce\xf4{~\xc1\xd7k\xb0\x07\x04\xb9\x80\x12\xce\xf2\xcb" +
+	"\xa5\xc1\xd7,6\x82 \xab(\xe1I~\x039\xf8\xda" +
+	"\x8fL\x1bkQ\xc2\xd9~\x8f7\xf8z>\xff\xba\x1c" +
+	"%\xac\xf2\xdb\xa6\xc1\xd7\x85\xfc\xeb\\\x94\xf0d\xbf\xca" +
+	"\x1f|\xad\xe2\xda@\x940\xea\xb7\x15\x83\xdb\xe5\xcd\x05" +
+	" \x90\x97%\xac\xf6\xfb*\xc1\xb7_4\x83@~$" +
+	"!\xf1\x9b\x0b\xe8\xe1\x95<\xd5\x0e\x02yL\xc2\x88\xdf" +
+	"\x90\x0b\xe6=\xd0\x08\x02\xd9'I\x83\xd4n\xc5h\xce" +
+	"\xb0\xecVt\x8c\x1c\xd5\x19\xbc \xce\xaf\xa1V\x94r" +
+	"y\xbb\x15[\xd24Cm\xda\x8a\x0e\xa3c\xa8\x838" +
+	"\xf7Bl\xa4\xe8\x94 \xea\x0dx\xc0\x03(\xfeb\x17" +
+	"\x09\xe0P+\xc6\xb3#)#\xd3\x8a\xd1\x94\x91+\xb4" +
+	"b4kl\xa1\xad\x18e1b+\xb6\xe4u\xf7\x0f" +
+	"IMeZ\xb1\xc5\xa49\xc3\xb4[q\xbb\xe1\"\xba" +
+	"\x15\xe3\xfcF*\xde\xaa\xc6\xa9\x07/\xff\xf7\xb6\xc6\xb7" +
+	"\xc2\xde]<N\x84cH#\x9a[\xa5\x9d\xa2L\xdd" +
+	"\x18\xc43(`\xa8\x83Fv0U\x8a\xd5n\xdc3" +
+	"!x\x8b\x08n\xd4\x93\xaf\x0f\xb9O]\xcdR\xcf\xf9" +
+	"\xc5\xb7\xa8\x99\xbc\xffk;\x1d\xcbi&\xb5\x1cv\x81" +
+	"\xad\xd73\x05\xe6&\xbd\xca\xc2\x04\xaf;\xc5\x0dmX" +
+	"vp\x09Luk\xb5\x87\xcb\x0b\xc5K`]{p" +
+	"\x95MX\xd9+fbu\xe0z]\xdf~\xc2Es" +
+	"\xcf\xc7\xf5\x15rnQn\x86/\xf0\x92\xae\xa0\x12\xc3" +
+	"\xe5E$\xcb\x9bC\x85\x98\x12\xb7O\xcb\xe8e\\\xa7" +
+	"\xb3@8<\xeb\xea\x96\xe9\x17_RF\xdc-y\xcd" +
+	"\x13#\\;L\x11\x07\xbb\x82\x10\x94k\x87\xdd\x86\x87" +
+	"\xd8\xe0\xb7DT\xbe_\xbc\"Y\x18\xfc\x14\x1b\xfc\x8e" +
+	"\x88\xca?\x08\x88\x15\x18jP\x91g\xebA\xa8\x16b" +
+	"8\x8b1\x1c\x08\x18b%\x86\xda.\xe4\x10\x0b\x14#" +
+	"R\x0c\x09\x00\xf9\x1a;\xab\xaf\x88\xa8<(\xfcU!" +
+	"~4i\xa4\x0b\x8e\xc5\xa3\xa1\x0e\x03\xc44\xc5\xa8\xd7" +
+	"\x08\x00\xc4(\x0b|5+gX\x9a[\x81=\xb1\x0a" +
+	"V1\x1ed\x90C\xeb\x03\x848arP\xc8+\x8c" +
+	",\x0e\xac\x0e\x1a\xe6\xef\xa7\xad\xc3\x0b!\xe1\xd7A\xd8" +
+	"\x18\xe7\x8d\x9ep\xac\xd5\x03\xa0\\!\xa2\x92\x09mZ" +
+	"\xeb\x09\x85UB\xad\xbb\xe9\xd1m\x81_ \xe2|\x17" +
+	"]\x85m\x81\xfbq\xb6j\xf6P\xc7\x10M\x01\x8e`" +
+	"4X\xb6xr9^\xe1\xe3\x95\xde\x12_\xb7\xa8\xa6" +
+	"F\xad\xf5:\x14\x83\x0b\xbf\xb4\x17|pm\xef=5" +
+	"\xbf\xd2j\xf0\xc2\x86\x0biN\xb4\x87\x98\xa5\xce\xe6\xbb" +
+	"\xa8\xe9\"\xf3\xe3\x88\xa4\xad\x9e\xb7\xb6V/\x00p4" +
+	"}\xb3\xa6\xf3\"\x80[9z\xee\x96\xd7\x8e\x15\xeeI" +
+	"\xbf\xee&\x1e\xb1b\xe2\xd1\x13\xd0\xe1\xc7\x01\xa2\xdb\xa8" +
+	"iH\x86N\xa7k\xb2khTMSs\x92\xd3`" +
+	"\x98\xab\x13Q97\xa4\xfeDc\xe0I\xcax\xe0\xa9" +
+	"\x80PL\x88\xd7PU\xfa\xdf\\\xd7\x0b\x1eyy\x9d" +
+	"+>\xb0\xb0\xae\x901y\xab\x86\x8d)\xc8D\x18e" +
+	"\xb7\x88\xcaG\x852a\xbbn\x97-,L\xaf`\xe0" +
+	"\xb5\xfd4\x9bF3\x9ae3\x83+\xe6\xdd\x8c\xd1\xc9" +
+	"\xec\xec\xb7\x90\x95;\xc9\xf9\xe3\xa4\xcd$\x9d\x03dm" +
+	"\x0fY7@\x94$\xe9\x1f'\x1b\x07\xc8\xa6\x1e\xa2\x8e" +
+	"\x13z\x03\xc9&\xc9\xe8\xb03\x96\xb0T=m\xd9h" +
+	"\x98\xd9\x84\x9a\xcb%\xb0\xde1R\x09\xdb\xb0\xd5\x8c\x90" +
+	"\xc8P}\xd0\x1e\x02#\x95H\x0d\xe5\xf5\x91x\xc2\xd2" +
+	"\xb6Qg,a\xa4\x12Y[\x031K\x19\xf1f-" +
+	"C5\xc0\xb4\xe3\xd1\x81H\x8b?hj\x04$+\x9f" +
+	"\xf5?\x09\x09c\xf3f\x8b\xda\x8cgF\xddV0\xc4" +
+	"\x9c\xe5\x8c%\x86\x06Us0\x01X\xef\x8c%rC" +
+	"j\xd2\xd4\xc4\x94j\x1bf\xa2\x1e\xc6\x12\xc5j#M" +
+	"'\x98\xcd\x028c\x89\x94en\xb6\x0d\x90F\xa8^" +
+	"\xfc\x95\xb0!j\xb0\x9f%\xc2\x925~\xd6z!\xb5" +
+	"R-\xa6\x96\xb3\x8d\xc9\x10;#\x80X)\x84\x89Z" +
+	"\x1a%\x10P\x02\x8c\xdb\x9a\x9d\x99>\xae\x99\x7fh`" +
+	"\xe1\x87dR\xee\xc0yyG\x98\xe4\xc2k\xf0\x98S" +
+	"\xec\xc6\xaf\xed\x0a V#\xbc\xcb\x86#\x93@V," +
+	"\xd98j\xd222y\x9bc\xad\x02\x04\xac\xe0\xb5\xd9" +
+	"\x8cjk[\xf8\x18O\xc9\xa7\x1d&t\xea\xa98\x87" +
+	"\xe5$\xd5\x98S\x84\x0aEtw\x80;{\xeap\xa1" +
+	"\xe2\xb8\xb1U\x90i\xf7P+\x9f\x11\xed\x09\xc5\x17\xb6" +
+	"\xe8\x0c\x11\x95\x98\x80-\x16\xa7D\x12$\x93\x80H\xa6" +
+	"\xdc\xab\x1b\xdf\xf2\xfbT\xcc~\x90\xee\xd3i\x14\x1f\xb8" +
+	"Jl<q\x95\x94^\xc3K?x\xf2\xe1G\x1aS" +
+	"\x158\xdaC7\xb1\xa7\x19\xad\xabx\x13_\x17*p" +
+	"\\3\x1c\xbcB)\xa1\xae\x92J\xc9\x99\x86m\xa4\x8c" +
+	"\x0c\xc3\xf0\x04\xef\x86\xc5V\x7f\xaf\x0d\xd1\xe2f\xfd\xfa" +
+	"\xc1\xb4\xce\xdf\xcb\x93\xea\xba\xd5(\xaf\xb0\x9dHq\xbc" +
+	"\xf1\xaf.\x8e\xc7\xd34g\x0fa4(l\xb8\x91\xc5" +
+	"\x09\x03e\xe2!\xfa\xc6S\"\xe0\xbf0\xb4\xbb\xb6\xe1" +
+	"\x00\xf4\xe5\x94\xee\xbe\xa88a\xa5\x0fR{\xda\x95\xbe" +
+	"\x90\xc5y\xfa^7p\x9cB_\x19mi\x83\xbaa" +
+	"\xd2v\x16\x96\x17\xde\x13\x84\x95\xceX;\xfbT\x9c\xec" +
+	"\xfa\x1aK\xdc\x0a\xf5\x81;\x9c\x18jD\xb7Rud" +
+	"\x9a]\xde\x89\xcen\xbaF\xf7\x81\xaa*F\x8e\x03D" +
+	"^7`[\x92\x98}M\x15\xc5\xb5\x87\xa2\xb8i\x9e" +
+	"my\x01\xdc\x82\xc6\xb4=|\xcf\xfb\xaa,3\xd6}" +
+	"\xc6\x08\x05\xd4\xdf\x87\xa0\xa5\xf1V\xd4\xd0t\x82\xce\x9e" +
+	"\xd0\x93\x04O\xc8\xfe\xbb\x00\x94\xcb\xddsw\x92\xaaE" +
+	"\xbbU\x16\x1c\x05\xe7\x94\xb7\xa8\xd96\xe8\xa60\xde\x98" +
+	"\xfb\xf2EMb\x86^\xc2\xb3\\i0xk\xe5Y" +
+	"\xfb\x14\x11s\xde\x0f\x98?\xc0\xf1rP{\xf0_Q" +
+	"\xa0\xe9\xbd\xfd\x90\x98\xb4\x03\x93\xa4\x9d\xc1\xa4\x1d\x9f\xa4" +
+	"\xe8S&\xbf\xfd\x98\x98\xee\x07\x8f\xfd\xbc\x84\x9fZ)" +
+	"\x16^\xa2f\xe8k\xecl\x06B\xcf\xae\xf8@;H" +
+	"F\xba\x80\xd5\xc1c\xc0IX\xa9\x9c\xaa'\xa6f\x1b" +
+	"\xbc~\x97nQ\xafS4\x05\xd6\xd6\xe7\xec(3\xcb" +
+	"P\xe3\x14\xb1D:\x8d8)\x9df'\x86HF{" +
+	"\x02\x7f\x82E\x1fS0\x8b\xd9\xf4.\x01\x9d\xb4\xba\xa5" +
+	"#\xa3Z\x16\xe0r\xdf\x03\x06c\x8d%\xc6\x9a\xc2c" +
+	"\x9dc6\xd5!\xced}\x9fpt\x8b\xa4\xbe\xb9\xff" +
+	"\x0f\xba\x9b\xa9\x80\xe6b\xb6!i\x88\xe9\x02\x93c\x9e" +
+	"\xe3D\xdc\xcae\xf8\x1aa\x81~\xb1c\x9bh\x0e\xdd" +
+	"$\xc9\x82M-\x0f\xf0A(\xf7b\xfb\x15W\xec\xaf" +
+	"{\xe3\xb6\xe9\x85r\xbe0A\x9a\x18\xa7\xc7K\x13O" +
+	"%\x15;I\xd5@\xc9\x14pB\x8aW\xfe\x00B\xed" +
+	"S\x1e\x1d\x04\x0d[\xef\x7f\x83P?\xf0\xc4\xd6\xa6\xbd" +
+	"\x1f\xdfCH\x8f\xdb\xb0\xf5Z\xac\x80V+v\xe3\xb4" +
+	"\xb7\xe5\xbd\xec\xe4\xc6<C\x8cTc\x0cg\xbe\xe7]" +
+	"\x99\x10\xc3S\x01\xc8rf\xb7\xe7\x8a\xa8|D\xf8\xef" +
+	"0\xcc\xc8\xf1\x02\xf4\x13\x09m\xdeW2\xe17\xdf\xa6" +
+	"\x9dLT\x96W\xa3\xf7\xb8\xc5{\xdb\xe2\xbe\x87r\xd5" +
+	"9\x87e\x15\xc3\xbc\xb8\x8d\xca\xe9B\xb1\xcb\xcf|/" +
+	"\xef\xa6\x95\xa9_\x1e\xaf\x0f\xa0G\x99\xb4\xca\x0c\x0c\xff" +
+	"O\xcf\xcc\xe6\xd0\xbf\xe1T\x8c{/\x9c\xdf\xfb\xaa\xf9" +
+	"t_\xa9{\x98\xaav\xb9u[_\xa9\x0fl\x03P" +
+	"\xf6\xbb\xcf\x1b|\xa5\x1ed\x86\xf5\xa0\x88\xca3\x02\x92" +
+	"\x8a\xa2\xbb:\xb2\x13@yFD\xe5w\x02b\x04C" +
+	"\xff\x15G^\xba\x01\x04\"V\xb8X\xfa\x09\xe3\xf8c" +
+	"\x11\x95W\x05\xa6j\x96\xbe\x87^\xfc\xd6\xad8p\xff" +
+	"o\xae\xf9\xd2\xae\xe05r\xb1e\xd8\xd2\xeb\x99l\xf0" +
+	"\xf2\x80\x9bl\x8b{\xe7\x06,\xfc&i\x91E\xd9\x17" +
+	"\xc6\xbe\xc6\x8a\xc4\xde\x83\x11\xf4\xce\xcf\x7f\xce\xda\xa9C" +
+	"\x8b{K\x06\xb3\xfd\x16\xec\xf4\xde'\x8f\xa4\x8c\xcc\x07" +
+	"\xb0\xd4\\9=\xc7\xeb\x15\xdb5\x03u\xe6\x1cx\x9d" +
+	"\xa5\x8ay\x87\xe6\x89\xee\xb7\"\xc6\x1d`\xa2+\xa8a" +
+	"\xb4\xe8\x86\x99U3P\xe9\xa4\x8d\xadz\xc6P\xd3\xa1" +
+	"P\xe3\xbf\x02\x00\x00\xff\xff\":@\x8c"
 
 func init() {
 	schemas.Register(schema_a8cb0f2f1a756b32,

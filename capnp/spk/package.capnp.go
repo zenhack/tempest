@@ -26,183 +26,192 @@ var (
 	MagicNumber = []byte{143, 198, 205, 239, 69, 26, 234, 150}
 )
 
-type PackageDefinition struct{ capnp.Struct }
+type PackageDefinition capnp.Struct
 
 // PackageDefinition_TypeID is the unique identifier for the type PackageDefinition.
 const PackageDefinition_TypeID = 0x9f149fa71489be0b
 
 func NewPackageDefinition(s *capnp.Segment) (PackageDefinition, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 6})
-	return PackageDefinition{st}, err
+	return PackageDefinition(st), err
 }
 
 func NewRootPackageDefinition(s *capnp.Segment) (PackageDefinition, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 6})
-	return PackageDefinition{st}, err
+	return PackageDefinition(st), err
 }
 
 func ReadRootPackageDefinition(msg *capnp.Message) (PackageDefinition, error) {
 	root, err := msg.Root()
-	return PackageDefinition{root.Struct()}, err
+	return PackageDefinition(root.Struct()), err
 }
 
 func (s PackageDefinition) String() string {
-	str, _ := text.Marshal(0x9f149fa71489be0b, s.Struct)
+	str, _ := text.Marshal(0x9f149fa71489be0b, capnp.Struct(s))
 	return str
 }
 
+func (s PackageDefinition) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PackageDefinition) DecodeFromPtr(p capnp.Ptr) PackageDefinition {
+	return PackageDefinition(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PackageDefinition) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PackageDefinition) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PackageDefinition) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PackageDefinition) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PackageDefinition) Id() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s PackageDefinition) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PackageDefinition) IdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s PackageDefinition) SetId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s PackageDefinition) Manifest() (Manifest, error) {
-	p, err := s.Struct.Ptr(1)
-	return Manifest{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return Manifest(p.Struct()), err
 }
 
 func (s PackageDefinition) HasManifest() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s PackageDefinition) SetManifest(v Manifest) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewManifest sets the manifest field to a newly
 // allocated Manifest struct, preferring placement in s's segment.
 func (s PackageDefinition) NewManifest() (Manifest, error) {
-	ss, err := NewManifest(s.Struct.Segment())
+	ss, err := NewManifest(capnp.Struct(s).Segment())
 	if err != nil {
 		return Manifest{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s PackageDefinition) SourceMap() (SourceMap, error) {
-	p, err := s.Struct.Ptr(2)
-	return SourceMap{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return SourceMap(p.Struct()), err
 }
 
 func (s PackageDefinition) HasSourceMap() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s PackageDefinition) SetSourceMap(v SourceMap) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewSourceMap sets the sourceMap field to a newly
 // allocated SourceMap struct, preferring placement in s's segment.
 func (s PackageDefinition) NewSourceMap() (SourceMap, error) {
-	ss, err := NewSourceMap(s.Struct.Segment())
+	ss, err := NewSourceMap(capnp.Struct(s).Segment())
 	if err != nil {
 		return SourceMap{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s PackageDefinition) FileList() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s PackageDefinition) HasFileList() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s PackageDefinition) FileListBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s PackageDefinition) SetFileList(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s PackageDefinition) AlwaysInclude() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(4)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return capnp.TextList(p.List()), err
 }
 
 func (s PackageDefinition) HasAlwaysInclude() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s PackageDefinition) SetAlwaysInclude(v capnp.TextList) error {
-	return s.Struct.SetPtr(4, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(4, v.ToPtr())
 }
 
 // NewAlwaysInclude sets the alwaysInclude field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s PackageDefinition) NewAlwaysInclude(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(4, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, l.ToPtr())
 	return l, err
 }
 
 func (s PackageDefinition) BridgeConfig() (BridgeConfig, error) {
-	p, err := s.Struct.Ptr(5)
-	return BridgeConfig{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(5)
+	return BridgeConfig(p.Struct()), err
 }
 
 func (s PackageDefinition) HasBridgeConfig() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s PackageDefinition) SetBridgeConfig(v BridgeConfig) error {
-	return s.Struct.SetPtr(5, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(5, capnp.Struct(v).ToPtr())
 }
 
 // NewBridgeConfig sets the bridgeConfig field to a newly
 // allocated BridgeConfig struct, preferring placement in s's segment.
 func (s PackageDefinition) NewBridgeConfig() (BridgeConfig, error) {
-	ss, err := NewBridgeConfig(s.Struct.Segment())
+	ss, err := NewBridgeConfig(capnp.Struct(s).Segment())
 	if err != nil {
 		return BridgeConfig{}, err
 	}
-	err = s.Struct.SetPtr(5, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(5, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // PackageDefinition_List is a list of PackageDefinition.
-type PackageDefinition_List struct{ capnp.List }
+type PackageDefinition_List = capnp.StructList[PackageDefinition]
 
 // NewPackageDefinition creates a new list of PackageDefinition.
 func NewPackageDefinition_List(s *capnp.Segment, sz int32) (PackageDefinition_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 6}, sz)
-	return PackageDefinition_List{l}, err
-}
-
-func (s PackageDefinition_List) At(i int) PackageDefinition {
-	return PackageDefinition{s.List.Struct(i)}
-}
-
-func (s PackageDefinition_List) Set(i int, v PackageDefinition) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PackageDefinition_List) String() string {
-	str, _ := text.MarshalList(0x9f149fa71489be0b, s.List)
-	return str
+	return capnp.StructList[PackageDefinition](l), err
 }
 
 // PackageDefinition_Future is a wrapper for a PackageDefinition promised by a client call.
@@ -210,7 +219,7 @@ type PackageDefinition_Future struct{ *capnp.Future }
 
 func (p PackageDefinition_Future) Struct() (PackageDefinition, error) {
 	s, err := p.Future.Struct()
-	return PackageDefinition{s}, err
+	return PackageDefinition(s), err
 }
 
 func (p PackageDefinition_Future) Manifest() Manifest_Future {
@@ -225,199 +234,212 @@ func (p PackageDefinition_Future) BridgeConfig() BridgeConfig_Future {
 	return BridgeConfig_Future{Future: p.Future.Field(5, nil)}
 }
 
-type Manifest struct{ capnp.Struct }
+type Manifest capnp.Struct
 
 // Manifest_TypeID is the unique identifier for the type Manifest.
 const Manifest_TypeID = 0x855f296a69e6e1ca
 
 func NewManifest(s *capnp.Segment) (Manifest, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 5})
-	return Manifest{st}, err
+	return Manifest(st), err
 }
 
 func NewRootManifest(s *capnp.Segment) (Manifest, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 5})
-	return Manifest{st}, err
+	return Manifest(st), err
 }
 
 func ReadRootManifest(msg *capnp.Message) (Manifest, error) {
 	root, err := msg.Root()
-	return Manifest{root.Struct()}, err
+	return Manifest(root.Struct()), err
 }
 
 func (s Manifest) String() string {
-	str, _ := text.Marshal(0x855f296a69e6e1ca, s.Struct)
+	str, _ := text.Marshal(0x855f296a69e6e1ca, capnp.Struct(s))
 	return str
 }
 
+func (s Manifest) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Manifest) DecodeFromPtr(p capnp.Ptr) Manifest {
+	return Manifest(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Manifest) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Manifest) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Manifest) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Manifest) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Manifest) AppTitle() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(3)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Manifest) HasAppTitle() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s Manifest) SetAppTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(3, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(3, capnp.Struct(v).ToPtr())
 }
 
 // NewAppTitle sets the appTitle field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Manifest) NewAppTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest) AppVersion() uint32 {
-	return s.Struct.Uint32(8)
+	return capnp.Struct(s).Uint32(8)
 }
 
 func (s Manifest) SetAppVersion(v uint32) {
-	s.Struct.SetUint32(8, v)
+	capnp.Struct(s).SetUint32(8, v)
 }
 
 func (s Manifest) MinUpgradableAppVersion() uint32 {
-	return s.Struct.Uint32(12)
+	return capnp.Struct(s).Uint32(12)
 }
 
 func (s Manifest) SetMinUpgradableAppVersion(v uint32) {
-	s.Struct.SetUint32(12, v)
+	capnp.Struct(s).SetUint32(12, v)
 }
 
 func (s Manifest) AppMarketingVersion() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(2)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Manifest) HasAppMarketingVersion() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Manifest) SetAppMarketingVersion(v util.LocalizedText) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewAppMarketingVersion sets the appMarketingVersion field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Manifest) NewAppMarketingVersion() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest) MinApiVersion() uint32 {
-	return s.Struct.Uint32(0)
+	return capnp.Struct(s).Uint32(0)
 }
 
 func (s Manifest) SetMinApiVersion(v uint32) {
-	s.Struct.SetUint32(0, v)
+	capnp.Struct(s).SetUint32(0, v)
 }
 
 func (s Manifest) MaxApiVersion() uint32 {
-	return s.Struct.Uint32(4)
+	return capnp.Struct(s).Uint32(4)
 }
 
 func (s Manifest) SetMaxApiVersion(v uint32) {
-	s.Struct.SetUint32(4, v)
+	capnp.Struct(s).SetUint32(4, v)
 }
 
 func (s Manifest) Metadata() (Metadata, error) {
-	p, err := s.Struct.Ptr(4)
-	return Metadata{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return Metadata(p.Struct()), err
 }
 
 func (s Manifest) HasMetadata() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s Manifest) SetMetadata(v Metadata) error {
-	return s.Struct.SetPtr(4, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(4, capnp.Struct(v).ToPtr())
 }
 
 // NewMetadata sets the metadata field to a newly
 // allocated Metadata struct, preferring placement in s's segment.
 func (s Manifest) NewMetadata() (Metadata, error) {
-	ss, err := NewMetadata(s.Struct.Segment())
+	ss, err := NewMetadata(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata{}, err
 	}
-	err = s.Struct.SetPtr(4, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest) Actions() (Manifest_Action_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return Manifest_Action_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return Manifest_Action_List(p.List()), err
 }
 
 func (s Manifest) HasActions() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Manifest) SetActions(v Manifest_Action_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewActions sets the actions field to a newly
 // allocated Manifest_Action_List, preferring placement in s's segment.
 func (s Manifest) NewActions(n int32) (Manifest_Action_List, error) {
-	l, err := NewManifest_Action_List(s.Struct.Segment(), n)
+	l, err := NewManifest_Action_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Manifest_Action_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s Manifest) ContinueCommand() (Manifest_Command, error) {
-	p, err := s.Struct.Ptr(1)
-	return Manifest_Command{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return Manifest_Command(p.Struct()), err
 }
 
 func (s Manifest) HasContinueCommand() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Manifest) SetContinueCommand(v Manifest_Command) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewContinueCommand sets the continueCommand field to a newly
 // allocated Manifest_Command struct, preferring placement in s's segment.
 func (s Manifest) NewContinueCommand() (Manifest_Command, error) {
-	ss, err := NewManifest_Command(s.Struct.Segment())
+	ss, err := NewManifest_Command(capnp.Struct(s).Segment())
 	if err != nil {
 		return Manifest_Command{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // Manifest_List is a list of Manifest.
-type Manifest_List struct{ capnp.List }
+type Manifest_List = capnp.StructList[Manifest]
 
 // NewManifest creates a new list of Manifest.
 func NewManifest_List(s *capnp.Segment, sz int32) (Manifest_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 5}, sz)
-	return Manifest_List{l}, err
-}
-
-func (s Manifest_List) At(i int) Manifest { return Manifest{s.List.Struct(i)} }
-
-func (s Manifest_List) Set(i int, v Manifest) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Manifest_List) String() string {
-	str, _ := text.MarshalList(0x855f296a69e6e1ca, s.List)
-	return str
+	return capnp.StructList[Manifest](l), err
 }
 
 // Manifest_Future is a wrapper for a Manifest promised by a client call.
@@ -425,7 +447,7 @@ type Manifest_Future struct{ *capnp.Future }
 
 func (p Manifest_Future) Struct() (Manifest, error) {
 	s, err := p.Future.Struct()
-	return Manifest{s}, err
+	return Manifest(s), err
 }
 
 func (p Manifest_Future) AppTitle() util.LocalizedText_Future {
@@ -444,115 +466,126 @@ func (p Manifest_Future) ContinueCommand() Manifest_Command_Future {
 	return Manifest_Command_Future{Future: p.Future.Field(1, nil)}
 }
 
-type Manifest_Command struct{ capnp.Struct }
+type Manifest_Command capnp.Struct
 
 // Manifest_Command_TypeID is the unique identifier for the type Manifest_Command.
 const Manifest_Command_TypeID = 0xc64951b2a02886cf
 
 func NewManifest_Command(s *capnp.Segment) (Manifest_Command, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return Manifest_Command{st}, err
+	return Manifest_Command(st), err
 }
 
 func NewRootManifest_Command(s *capnp.Segment) (Manifest_Command, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return Manifest_Command{st}, err
+	return Manifest_Command(st), err
 }
 
 func ReadRootManifest_Command(msg *capnp.Message) (Manifest_Command, error) {
 	root, err := msg.Root()
-	return Manifest_Command{root.Struct()}, err
+	return Manifest_Command(root.Struct()), err
 }
 
 func (s Manifest_Command) String() string {
-	str, _ := text.Marshal(0xc64951b2a02886cf, s.Struct)
+	str, _ := text.Marshal(0xc64951b2a02886cf, capnp.Struct(s))
 	return str
 }
 
+func (s Manifest_Command) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Manifest_Command) DecodeFromPtr(p capnp.Ptr) Manifest_Command {
+	return Manifest_Command(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Manifest_Command) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Manifest_Command) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Manifest_Command) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Manifest_Command) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Manifest_Command) Argv() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(1)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return capnp.TextList(p.List()), err
 }
 
 func (s Manifest_Command) HasArgv() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Manifest_Command) SetArgv(v capnp.TextList) error {
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewArgv sets the argv field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s Manifest_Command) NewArgv(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 func (s Manifest_Command) Environ() (util.KeyValue_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return util.KeyValue_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return util.KeyValue_List(p.List()), err
 }
 
 func (s Manifest_Command) HasEnviron() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Manifest_Command) SetEnviron(v util.KeyValue_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewEnviron sets the environ field to a newly
 // allocated util.KeyValue_List, preferring placement in s's segment.
 func (s Manifest_Command) NewEnviron(n int32) (util.KeyValue_List, error) {
-	l, err := util.NewKeyValue_List(s.Struct.Segment(), n)
+	l, err := util.NewKeyValue_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return util.KeyValue_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 func (s Manifest_Command) DeprecatedExecutablePath() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s Manifest_Command) HasDeprecatedExecutablePath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Manifest_Command) DeprecatedExecutablePathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s Manifest_Command) SetDeprecatedExecutablePath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // Manifest_Command_List is a list of Manifest_Command.
-type Manifest_Command_List struct{ capnp.List }
+type Manifest_Command_List = capnp.StructList[Manifest_Command]
 
 // NewManifest_Command creates a new list of Manifest_Command.
 func NewManifest_Command_List(s *capnp.Segment, sz int32) (Manifest_Command_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return Manifest_Command_List{l}, err
-}
-
-func (s Manifest_Command_List) At(i int) Manifest_Command { return Manifest_Command{s.List.Struct(i)} }
-
-func (s Manifest_Command_List) Set(i int, v Manifest_Command) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Manifest_Command_List) String() string {
-	str, _ := text.MarshalList(0xc64951b2a02886cf, s.List)
-	return str
+	return capnp.StructList[Manifest_Command](l), err
 }
 
 // Manifest_Command_Future is a wrapper for a Manifest_Command promised by a client call.
@@ -560,10 +593,10 @@ type Manifest_Command_Future struct{ *capnp.Future }
 
 func (p Manifest_Command_Future) Struct() (Manifest_Command, error) {
 	s, err := p.Future.Struct()
-	return Manifest_Command{s}, err
+	return Manifest_Command(s), err
 }
 
-type Manifest_Action struct{ capnp.Struct }
+type Manifest_Action capnp.Struct
 type Manifest_Action_input Manifest_Action
 type Manifest_Action_input_Which uint16
 
@@ -589,180 +622,202 @@ const Manifest_Action_TypeID = 0xe5c59b9296375a00
 
 func NewManifest_Action(s *capnp.Segment) (Manifest_Action, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
-	return Manifest_Action{st}, err
+	return Manifest_Action(st), err
 }
 
 func NewRootManifest_Action(s *capnp.Segment) (Manifest_Action, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5})
-	return Manifest_Action{st}, err
+	return Manifest_Action(st), err
 }
 
 func ReadRootManifest_Action(msg *capnp.Message) (Manifest_Action, error) {
 	root, err := msg.Root()
-	return Manifest_Action{root.Struct()}, err
+	return Manifest_Action(root.Struct()), err
 }
 
 func (s Manifest_Action) String() string {
-	str, _ := text.Marshal(0xe5c59b9296375a00, s.Struct)
+	str, _ := text.Marshal(0xe5c59b9296375a00, capnp.Struct(s))
 	return str
 }
 
+func (s Manifest_Action) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Manifest_Action) DecodeFromPtr(p capnp.Ptr) Manifest_Action {
+	return Manifest_Action(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Manifest_Action) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Manifest_Action) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Manifest_Action) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Manifest_Action) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Manifest_Action) Input() Manifest_Action_input { return Manifest_Action_input(s) }
 
 func (s Manifest_Action_input) Which() Manifest_Action_input_Which {
-	return Manifest_Action_input_Which(s.Struct.Uint16(0))
+	return Manifest_Action_input_Which(capnp.Struct(s).Uint16(0))
+}
+func (s Manifest_Action_input) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Manifest_Action_input) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Manifest_Action_input) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s Manifest_Action_input) SetNone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s Manifest_Action_input) Capability() (powerbox.PowerboxDescriptor_List, error) {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != capability")
 	}
-	p, err := s.Struct.Ptr(0)
-	return powerbox.PowerboxDescriptor_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return powerbox.PowerboxDescriptor_List(p.List()), err
 }
 
 func (s Manifest_Action_input) HasCapability() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Manifest_Action_input) SetCapability(v powerbox.PowerboxDescriptor_List) error {
-	s.Struct.SetUint16(0, 1)
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	capnp.Struct(s).SetUint16(0, 1)
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewCapability sets the capability field to a newly
 // allocated powerbox.PowerboxDescriptor_List, preferring placement in s's segment.
 func (s Manifest_Action_input) NewCapability(n int32) (powerbox.PowerboxDescriptor_List, error) {
-	s.Struct.SetUint16(0, 1)
-	l, err := powerbox.NewPowerboxDescriptor_List(s.Struct.Segment(), n)
+	capnp.Struct(s).SetUint16(0, 1)
+	l, err := powerbox.NewPowerboxDescriptor_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return powerbox.PowerboxDescriptor_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 func (s Manifest_Action) Command() (Manifest_Command, error) {
-	p, err := s.Struct.Ptr(1)
-	return Manifest_Command{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return Manifest_Command(p.Struct()), err
 }
 
 func (s Manifest_Action) HasCommand() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Manifest_Action) SetCommand(v Manifest_Command) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewCommand sets the command field to a newly
 // allocated Manifest_Command struct, preferring placement in s's segment.
 func (s Manifest_Action) NewCommand() (Manifest_Command, error) {
-	ss, err := NewManifest_Command(s.Struct.Segment())
+	ss, err := NewManifest_Command(capnp.Struct(s).Segment())
 	if err != nil {
 		return Manifest_Command{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest_Action) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(2)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Manifest_Action) HasTitle() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Manifest_Action) SetTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Manifest_Action) NewTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest_Action) NounPhrase() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(4)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Manifest_Action) HasNounPhrase() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s Manifest_Action) SetNounPhrase(v util.LocalizedText) error {
-	return s.Struct.SetPtr(4, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(4, capnp.Struct(v).ToPtr())
 }
 
 // NewNounPhrase sets the nounPhrase field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Manifest_Action) NewNounPhrase() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(4, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Manifest_Action) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(3)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Manifest_Action) HasDescription() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s Manifest_Action) SetDescription(v util.LocalizedText) error {
-	return s.Struct.SetPtr(3, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(3, capnp.Struct(v).ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Manifest_Action) NewDescription() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // Manifest_Action_List is a list of Manifest_Action.
-type Manifest_Action_List struct{ capnp.List }
+type Manifest_Action_List = capnp.StructList[Manifest_Action]
 
 // NewManifest_Action creates a new list of Manifest_Action.
 func NewManifest_Action_List(s *capnp.Segment, sz int32) (Manifest_Action_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 5}, sz)
-	return Manifest_Action_List{l}, err
-}
-
-func (s Manifest_Action_List) At(i int) Manifest_Action { return Manifest_Action{s.List.Struct(i)} }
-
-func (s Manifest_Action_List) Set(i int, v Manifest_Action) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Manifest_Action_List) String() string {
-	str, _ := text.MarshalList(0xe5c59b9296375a00, s.List)
-	return str
+	return capnp.StructList[Manifest_Action](l), err
 }
 
 // Manifest_Action_Future is a wrapper for a Manifest_Action promised by a client call.
@@ -770,7 +825,7 @@ type Manifest_Action_Future struct{ *capnp.Future }
 
 func (p Manifest_Action_Future) Struct() (Manifest_Action, error) {
 	s, err := p.Future.Struct()
-	return Manifest_Action{s}, err
+	return Manifest_Action(s), err
 }
 
 func (p Manifest_Action_Future) Input() Manifest_Action_input_Future {
@@ -782,7 +837,7 @@ type Manifest_Action_input_Future struct{ *capnp.Future }
 
 func (p Manifest_Action_input_Future) Struct() (Manifest_Action_input, error) {
 	s, err := p.Future.Struct()
-	return Manifest_Action_input{s}, err
+	return Manifest_Action_input(s), err
 }
 
 func (p Manifest_Action_Future) Command() Manifest_Command_Future {
@@ -801,71 +856,84 @@ func (p Manifest_Action_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
 
-type SourceMap struct{ capnp.Struct }
+type SourceMap capnp.Struct
 
 // SourceMap_TypeID is the unique identifier for the type SourceMap.
 const SourceMap_TypeID = 0xe3d7ba482b2e470b
 
 func NewSourceMap(s *capnp.Segment) (SourceMap, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SourceMap{st}, err
+	return SourceMap(st), err
 }
 
 func NewRootSourceMap(s *capnp.Segment) (SourceMap, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return SourceMap{st}, err
+	return SourceMap(st), err
 }
 
 func ReadRootSourceMap(msg *capnp.Message) (SourceMap, error) {
 	root, err := msg.Root()
-	return SourceMap{root.Struct()}, err
+	return SourceMap(root.Struct()), err
 }
 
 func (s SourceMap) String() string {
-	str, _ := text.Marshal(0xe3d7ba482b2e470b, s.Struct)
+	str, _ := text.Marshal(0xe3d7ba482b2e470b, capnp.Struct(s))
 	return str
 }
 
+func (s SourceMap) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SourceMap) DecodeFromPtr(p capnp.Ptr) SourceMap {
+	return SourceMap(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SourceMap) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SourceMap) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SourceMap) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SourceMap) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SourceMap) SearchPath() (SourceMap_Mapping_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return SourceMap_Mapping_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return SourceMap_Mapping_List(p.List()), err
 }
 
 func (s SourceMap) HasSearchPath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SourceMap) SetSearchPath(v SourceMap_Mapping_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewSearchPath sets the searchPath field to a newly
 // allocated SourceMap_Mapping_List, preferring placement in s's segment.
 func (s SourceMap) NewSearchPath(n int32) (SourceMap_Mapping_List, error) {
-	l, err := NewSourceMap_Mapping_List(s.Struct.Segment(), n)
+	l, err := NewSourceMap_Mapping_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return SourceMap_Mapping_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // SourceMap_List is a list of SourceMap.
-type SourceMap_List struct{ capnp.List }
+type SourceMap_List = capnp.StructList[SourceMap]
 
 // NewSourceMap creates a new list of SourceMap.
 func NewSourceMap_List(s *capnp.Segment, sz int32) (SourceMap_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return SourceMap_List{l}, err
-}
-
-func (s SourceMap_List) At(i int) SourceMap { return SourceMap{s.List.Struct(i)} }
-
-func (s SourceMap_List) Set(i int, v SourceMap) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s SourceMap_List) String() string {
-	str, _ := text.MarshalList(0xe3d7ba482b2e470b, s.List)
-	return str
+	return capnp.StructList[SourceMap](l), err
 }
 
 // SourceMap_Future is a wrapper for a SourceMap promised by a client call.
@@ -873,114 +941,123 @@ type SourceMap_Future struct{ *capnp.Future }
 
 func (p SourceMap_Future) Struct() (SourceMap, error) {
 	s, err := p.Future.Struct()
-	return SourceMap{s}, err
+	return SourceMap(s), err
 }
 
-type SourceMap_Mapping struct{ capnp.Struct }
+type SourceMap_Mapping capnp.Struct
 
 // SourceMap_Mapping_TypeID is the unique identifier for the type SourceMap_Mapping.
 const SourceMap_Mapping_TypeID = 0x87dcf1b1edcb3eaf
 
 func NewSourceMap_Mapping(s *capnp.Segment) (SourceMap_Mapping, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SourceMap_Mapping{st}, err
+	return SourceMap_Mapping(st), err
 }
 
 func NewRootSourceMap_Mapping(s *capnp.Segment) (SourceMap_Mapping, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3})
-	return SourceMap_Mapping{st}, err
+	return SourceMap_Mapping(st), err
 }
 
 func ReadRootSourceMap_Mapping(msg *capnp.Message) (SourceMap_Mapping, error) {
 	root, err := msg.Root()
-	return SourceMap_Mapping{root.Struct()}, err
+	return SourceMap_Mapping(root.Struct()), err
 }
 
 func (s SourceMap_Mapping) String() string {
-	str, _ := text.Marshal(0x87dcf1b1edcb3eaf, s.Struct)
+	str, _ := text.Marshal(0x87dcf1b1edcb3eaf, capnp.Struct(s))
 	return str
 }
 
+func (s SourceMap_Mapping) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (SourceMap_Mapping) DecodeFromPtr(p capnp.Ptr) SourceMap_Mapping {
+	return SourceMap_Mapping(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s SourceMap_Mapping) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s SourceMap_Mapping) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s SourceMap_Mapping) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s SourceMap_Mapping) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s SourceMap_Mapping) PackagePath() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s SourceMap_Mapping) HasPackagePath() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s SourceMap_Mapping) PackagePathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s SourceMap_Mapping) SetPackagePath(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s SourceMap_Mapping) SourcePath() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s SourceMap_Mapping) HasSourcePath() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s SourceMap_Mapping) SourcePathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s SourceMap_Mapping) SetSourcePath(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s SourceMap_Mapping) HidePaths() (capnp.TextList, error) {
-	p, err := s.Struct.Ptr(2)
-	return capnp.TextList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return capnp.TextList(p.List()), err
 }
 
 func (s SourceMap_Mapping) HasHidePaths() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s SourceMap_Mapping) SetHidePaths(v capnp.TextList) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewHidePaths sets the hidePaths field to a newly
 // allocated capnp.TextList, preferring placement in s's segment.
 func (s SourceMap_Mapping) NewHidePaths(n int32) (capnp.TextList, error) {
-	l, err := capnp.NewTextList(s.Struct.Segment(), n)
+	l, err := capnp.NewTextList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.TextList{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // SourceMap_Mapping_List is a list of SourceMap_Mapping.
-type SourceMap_Mapping_List struct{ capnp.List }
+type SourceMap_Mapping_List = capnp.StructList[SourceMap_Mapping]
 
 // NewSourceMap_Mapping creates a new list of SourceMap_Mapping.
 func NewSourceMap_Mapping_List(s *capnp.Segment, sz int32) (SourceMap_Mapping_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 3}, sz)
-	return SourceMap_Mapping_List{l}, err
-}
-
-func (s SourceMap_Mapping_List) At(i int) SourceMap_Mapping {
-	return SourceMap_Mapping{s.List.Struct(i)}
-}
-
-func (s SourceMap_Mapping_List) Set(i int, v SourceMap_Mapping) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s SourceMap_Mapping_List) String() string {
-	str, _ := text.MarshalList(0x87dcf1b1edcb3eaf, s.List)
-	return str
+	return capnp.StructList[SourceMap_Mapping](l), err
 }
 
 // SourceMap_Mapping_Future is a wrapper for a SourceMap_Mapping promised by a client call.
@@ -988,132 +1065,145 @@ type SourceMap_Mapping_Future struct{ *capnp.Future }
 
 func (p SourceMap_Mapping_Future) Struct() (SourceMap_Mapping, error) {
 	s, err := p.Future.Struct()
-	return SourceMap_Mapping{s}, err
+	return SourceMap_Mapping(s), err
 }
 
-type BridgeConfig struct{ capnp.Struct }
+type BridgeConfig capnp.Struct
 
 // BridgeConfig_TypeID is the unique identifier for the type BridgeConfig.
 const BridgeConfig_TypeID = 0xdd8c82383168c096
 
 func NewBridgeConfig(s *capnp.Segment) (BridgeConfig, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return BridgeConfig{st}, err
+	return BridgeConfig(st), err
 }
 
 func NewRootBridgeConfig(s *capnp.Segment) (BridgeConfig, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3})
-	return BridgeConfig{st}, err
+	return BridgeConfig(st), err
 }
 
 func ReadRootBridgeConfig(msg *capnp.Message) (BridgeConfig, error) {
 	root, err := msg.Root()
-	return BridgeConfig{root.Struct()}, err
+	return BridgeConfig(root.Struct()), err
 }
 
 func (s BridgeConfig) String() string {
-	str, _ := text.Marshal(0xdd8c82383168c096, s.Struct)
+	str, _ := text.Marshal(0xdd8c82383168c096, capnp.Struct(s))
 	return str
 }
 
+func (s BridgeConfig) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (BridgeConfig) DecodeFromPtr(p capnp.Ptr) BridgeConfig {
+	return BridgeConfig(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s BridgeConfig) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s BridgeConfig) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s BridgeConfig) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s BridgeConfig) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s BridgeConfig) ViewInfo() (grain.UiView_ViewInfo, error) {
-	p, err := s.Struct.Ptr(0)
-	return grain.UiView_ViewInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return grain.UiView_ViewInfo(p.Struct()), err
 }
 
 func (s BridgeConfig) HasViewInfo() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s BridgeConfig) SetViewInfo(v grain.UiView_ViewInfo) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewViewInfo sets the viewInfo field to a newly
 // allocated grain.UiView_ViewInfo struct, preferring placement in s's segment.
 func (s BridgeConfig) NewViewInfo() (grain.UiView_ViewInfo, error) {
-	ss, err := grain.NewUiView_ViewInfo(s.Struct.Segment())
+	ss, err := grain.NewUiView_ViewInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return grain.UiView_ViewInfo{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s BridgeConfig) ApiPath() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s BridgeConfig) HasApiPath() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s BridgeConfig) ApiPathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s BridgeConfig) SetApiPath(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s BridgeConfig) SaveIdentityCaps() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s BridgeConfig) SetSaveIdentityCaps(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 func (s BridgeConfig) ExpectAppHooks() bool {
-	return s.Struct.Bit(1)
+	return capnp.Struct(s).Bit(1)
 }
 
 func (s BridgeConfig) SetExpectAppHooks(v bool) {
-	s.Struct.SetBit(1, v)
+	capnp.Struct(s).SetBit(1, v)
 }
 
 func (s BridgeConfig) PowerboxApis() (BridgeConfig_PowerboxApi_List, error) {
-	p, err := s.Struct.Ptr(2)
-	return BridgeConfig_PowerboxApi_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return BridgeConfig_PowerboxApi_List(p.List()), err
 }
 
 func (s BridgeConfig) HasPowerboxApis() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s BridgeConfig) SetPowerboxApis(v BridgeConfig_PowerboxApi_List) error {
-	return s.Struct.SetPtr(2, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(2, v.ToPtr())
 }
 
 // NewPowerboxApis sets the powerboxApis field to a newly
 // allocated BridgeConfig_PowerboxApi_List, preferring placement in s's segment.
 func (s BridgeConfig) NewPowerboxApis(n int32) (BridgeConfig_PowerboxApi_List, error) {
-	l, err := NewBridgeConfig_PowerboxApi_List(s.Struct.Segment(), n)
+	l, err := NewBridgeConfig_PowerboxApi_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return BridgeConfig_PowerboxApi_List{}, err
 	}
-	err = s.Struct.SetPtr(2, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
 
 // BridgeConfig_List is a list of BridgeConfig.
-type BridgeConfig_List struct{ capnp.List }
+type BridgeConfig_List = capnp.StructList[BridgeConfig]
 
 // NewBridgeConfig creates a new list of BridgeConfig.
 func NewBridgeConfig_List(s *capnp.Segment, sz int32) (BridgeConfig_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 3}, sz)
-	return BridgeConfig_List{l}, err
-}
-
-func (s BridgeConfig_List) At(i int) BridgeConfig { return BridgeConfig{s.List.Struct(i)} }
-
-func (s BridgeConfig_List) Set(i int, v BridgeConfig) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s BridgeConfig_List) String() string {
-	str, _ := text.MarshalList(0xdd8c82383168c096, s.List)
-	return str
+	return capnp.StructList[BridgeConfig](l), err
 }
 
 // BridgeConfig_Future is a wrapper for a BridgeConfig promised by a client call.
@@ -1121,166 +1211,175 @@ type BridgeConfig_Future struct{ *capnp.Future }
 
 func (p BridgeConfig_Future) Struct() (BridgeConfig, error) {
 	s, err := p.Future.Struct()
-	return BridgeConfig{s}, err
+	return BridgeConfig(s), err
 }
 
 func (p BridgeConfig_Future) ViewInfo() grain.UiView_ViewInfo_Future {
 	return grain.UiView_ViewInfo_Future{Future: p.Future.Field(0, nil)}
 }
 
-type BridgeConfig_PowerboxApi struct{ capnp.Struct }
+type BridgeConfig_PowerboxApi capnp.Struct
 
 // BridgeConfig_PowerboxApi_TypeID is the unique identifier for the type BridgeConfig_PowerboxApi.
 const BridgeConfig_PowerboxApi_TypeID = 0xc9702c7dbfc6d7e4
 
 func NewBridgeConfig_PowerboxApi(s *capnp.Segment) (BridgeConfig_PowerboxApi, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5})
-	return BridgeConfig_PowerboxApi{st}, err
+	return BridgeConfig_PowerboxApi(st), err
 }
 
 func NewRootBridgeConfig_PowerboxApi(s *capnp.Segment) (BridgeConfig_PowerboxApi, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5})
-	return BridgeConfig_PowerboxApi{st}, err
+	return BridgeConfig_PowerboxApi(st), err
 }
 
 func ReadRootBridgeConfig_PowerboxApi(msg *capnp.Message) (BridgeConfig_PowerboxApi, error) {
 	root, err := msg.Root()
-	return BridgeConfig_PowerboxApi{root.Struct()}, err
+	return BridgeConfig_PowerboxApi(root.Struct()), err
 }
 
 func (s BridgeConfig_PowerboxApi) String() string {
-	str, _ := text.Marshal(0xc9702c7dbfc6d7e4, s.Struct)
+	str, _ := text.Marshal(0xc9702c7dbfc6d7e4, capnp.Struct(s))
 	return str
 }
 
+func (s BridgeConfig_PowerboxApi) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (BridgeConfig_PowerboxApi) DecodeFromPtr(p capnp.Ptr) BridgeConfig_PowerboxApi {
+	return BridgeConfig_PowerboxApi(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s BridgeConfig_PowerboxApi) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s BridgeConfig_PowerboxApi) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s BridgeConfig_PowerboxApi) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s BridgeConfig_PowerboxApi) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s BridgeConfig_PowerboxApi) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s BridgeConfig_PowerboxApi) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s BridgeConfig_PowerboxApi) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s BridgeConfig_PowerboxApi) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s BridgeConfig_PowerboxApi) DisplayInfo() (powerbox.PowerboxDisplayInfo, error) {
-	p, err := s.Struct.Ptr(1)
-	return powerbox.PowerboxDisplayInfo{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return powerbox.PowerboxDisplayInfo(p.Struct()), err
 }
 
 func (s BridgeConfig_PowerboxApi) HasDisplayInfo() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s BridgeConfig_PowerboxApi) SetDisplayInfo(v powerbox.PowerboxDisplayInfo) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewDisplayInfo sets the displayInfo field to a newly
 // allocated powerbox.PowerboxDisplayInfo struct, preferring placement in s's segment.
 func (s BridgeConfig_PowerboxApi) NewDisplayInfo() (powerbox.PowerboxDisplayInfo, error) {
-	ss, err := powerbox.NewPowerboxDisplayInfo(s.Struct.Segment())
+	ss, err := powerbox.NewPowerboxDisplayInfo(capnp.Struct(s).Segment())
 	if err != nil {
 		return powerbox.PowerboxDisplayInfo{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s BridgeConfig_PowerboxApi) Path() (string, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
 }
 
 func (s BridgeConfig_PowerboxApi) HasPath() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s BridgeConfig_PowerboxApi) PathBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(2)
+	p, err := capnp.Struct(s).Ptr(2)
 	return p.TextBytes(), err
 }
 
 func (s BridgeConfig_PowerboxApi) SetPath(v string) error {
-	return s.Struct.SetText(2, v)
+	return capnp.Struct(s).SetText(2, v)
 }
 
 func (s BridgeConfig_PowerboxApi) Tag() (apisession.ApiSession_PowerboxTag, error) {
-	p, err := s.Struct.Ptr(3)
-	return apisession.ApiSession_PowerboxTag{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return apisession.ApiSession_PowerboxTag(p.Struct()), err
 }
 
 func (s BridgeConfig_PowerboxApi) HasTag() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s BridgeConfig_PowerboxApi) SetTag(v apisession.ApiSession_PowerboxTag) error {
-	return s.Struct.SetPtr(3, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(3, capnp.Struct(v).ToPtr())
 }
 
 // NewTag sets the tag field to a newly
 // allocated apisession.ApiSession_PowerboxTag struct, preferring placement in s's segment.
 func (s BridgeConfig_PowerboxApi) NewTag() (apisession.ApiSession_PowerboxTag, error) {
-	ss, err := apisession.NewApiSession_PowerboxTag(s.Struct.Segment())
+	ss, err := apisession.NewApiSession_PowerboxTag(capnp.Struct(s).Segment())
 	if err != nil {
 		return apisession.ApiSession_PowerboxTag{}, err
 	}
-	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s BridgeConfig_PowerboxApi) Permissions() (capnp.BitList, error) {
-	p, err := s.Struct.Ptr(4)
-	return capnp.BitList{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(4)
+	return capnp.BitList(p.List()), err
 }
 
 func (s BridgeConfig_PowerboxApi) HasPermissions() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s BridgeConfig_PowerboxApi) SetPermissions(v capnp.BitList) error {
-	return s.Struct.SetPtr(4, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(4, v.ToPtr())
 }
 
 // NewPermissions sets the permissions field to a newly
 // allocated capnp.BitList, preferring placement in s's segment.
 func (s BridgeConfig_PowerboxApi) NewPermissions(n int32) (capnp.BitList, error) {
-	l, err := capnp.NewBitList(s.Struct.Segment(), n)
+	l, err := capnp.NewBitList(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return capnp.BitList{}, err
 	}
-	err = s.Struct.SetPtr(4, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(4, l.ToPtr())
 	return l, err
 }
 
 // BridgeConfig_PowerboxApi_List is a list of BridgeConfig_PowerboxApi.
-type BridgeConfig_PowerboxApi_List struct{ capnp.List }
+type BridgeConfig_PowerboxApi_List = capnp.StructList[BridgeConfig_PowerboxApi]
 
 // NewBridgeConfig_PowerboxApi creates a new list of BridgeConfig_PowerboxApi.
 func NewBridgeConfig_PowerboxApi_List(s *capnp.Segment, sz int32) (BridgeConfig_PowerboxApi_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 5}, sz)
-	return BridgeConfig_PowerboxApi_List{l}, err
-}
-
-func (s BridgeConfig_PowerboxApi_List) At(i int) BridgeConfig_PowerboxApi {
-	return BridgeConfig_PowerboxApi{s.List.Struct(i)}
-}
-
-func (s BridgeConfig_PowerboxApi_List) Set(i int, v BridgeConfig_PowerboxApi) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s BridgeConfig_PowerboxApi_List) String() string {
-	str, _ := text.MarshalList(0xc9702c7dbfc6d7e4, s.List)
-	return str
+	return capnp.StructList[BridgeConfig_PowerboxApi](l), err
 }
 
 // BridgeConfig_PowerboxApi_Future is a wrapper for a BridgeConfig_PowerboxApi promised by a client call.
@@ -1288,7 +1387,7 @@ type BridgeConfig_PowerboxApi_Future struct{ *capnp.Future }
 
 func (p BridgeConfig_PowerboxApi_Future) Struct() (BridgeConfig_PowerboxApi, error) {
 	s, err := p.Future.Struct()
-	return BridgeConfig_PowerboxApi{s}, err
+	return BridgeConfig_PowerboxApi(s), err
 }
 
 func (p BridgeConfig_PowerboxApi_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
@@ -1299,7 +1398,7 @@ func (p BridgeConfig_PowerboxApi_Future) Tag() apisession.ApiSession_PowerboxTag
 	return apisession.ApiSession_PowerboxTag_Future{Future: p.Future.Field(3, nil)}
 }
 
-type Metadata struct{ capnp.Struct }
+type Metadata capnp.Struct
 type Metadata_icons Metadata
 type Metadata_license Metadata
 type Metadata_author Metadata
@@ -1333,468 +1432,514 @@ const Metadata_TypeID = 0xe0c5892a5448f4ee
 
 func NewMetadata(s *capnp.Segment) (Metadata, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 17})
-	return Metadata{st}, err
+	return Metadata(st), err
 }
 
 func NewRootMetadata(s *capnp.Segment) (Metadata, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 17})
-	return Metadata{st}, err
+	return Metadata(st), err
 }
 
 func ReadRootMetadata(msg *capnp.Message) (Metadata, error) {
 	root, err := msg.Root()
-	return Metadata{root.Struct()}, err
+	return Metadata(root.Struct()), err
 }
 
 func (s Metadata) String() string {
-	str, _ := text.Marshal(0xe0c5892a5448f4ee, s.Struct)
+	str, _ := text.Marshal(0xe0c5892a5448f4ee, capnp.Struct(s))
 	return str
 }
 
+func (s Metadata) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Metadata) DecodeFromPtr(p capnp.Ptr) Metadata {
+	return Metadata(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Metadata) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Metadata) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Metadata) Icons() Metadata_icons { return Metadata_icons(s) }
 
+func (s Metadata_icons) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_icons) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_icons) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Metadata_icons) AppGrid() (Metadata_Icon, error) {
-	p, err := s.Struct.Ptr(0)
-	return Metadata_Icon{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return Metadata_Icon(p.Struct()), err
 }
 
 func (s Metadata_icons) HasAppGrid() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Metadata_icons) SetAppGrid(v Metadata_Icon) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewAppGrid sets the appGrid field to a newly
 // allocated Metadata_Icon struct, preferring placement in s's segment.
 func (s Metadata_icons) NewAppGrid() (Metadata_Icon, error) {
-	ss, err := NewMetadata_Icon(s.Struct.Segment())
+	ss, err := NewMetadata_Icon(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata_Icon{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata_icons) Grain() (Metadata_Icon, error) {
-	p, err := s.Struct.Ptr(1)
-	return Metadata_Icon{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return Metadata_Icon(p.Struct()), err
 }
 
 func (s Metadata_icons) HasGrain() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Metadata_icons) SetGrain(v Metadata_Icon) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewGrain sets the grain field to a newly
 // allocated Metadata_Icon struct, preferring placement in s's segment.
 func (s Metadata_icons) NewGrain() (Metadata_Icon, error) {
-	ss, err := NewMetadata_Icon(s.Struct.Segment())
+	ss, err := NewMetadata_Icon(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata_Icon{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata_icons) Market() (Metadata_Icon, error) {
-	p, err := s.Struct.Ptr(2)
-	return Metadata_Icon{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return Metadata_Icon(p.Struct()), err
 }
 
 func (s Metadata_icons) HasMarket() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s Metadata_icons) SetMarket(v Metadata_Icon) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewMarket sets the market field to a newly
 // allocated Metadata_Icon struct, preferring placement in s's segment.
 func (s Metadata_icons) NewMarket() (Metadata_Icon, error) {
-	ss, err := NewMetadata_Icon(s.Struct.Segment())
+	ss, err := NewMetadata_Icon(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata_Icon{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata_icons) MarketBig() (Metadata_Icon, error) {
-	p, err := s.Struct.Ptr(15)
-	return Metadata_Icon{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(15)
+	return Metadata_Icon(p.Struct()), err
 }
 
 func (s Metadata_icons) HasMarketBig() bool {
-	return s.Struct.HasPtr(15)
+	return capnp.Struct(s).HasPtr(15)
 }
 
 func (s Metadata_icons) SetMarketBig(v Metadata_Icon) error {
-	return s.Struct.SetPtr(15, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(15, capnp.Struct(v).ToPtr())
 }
 
 // NewMarketBig sets the marketBig field to a newly
 // allocated Metadata_Icon struct, preferring placement in s's segment.
 func (s Metadata_icons) NewMarketBig() (Metadata_Icon, error) {
-	ss, err := NewMetadata_Icon(s.Struct.Segment())
+	ss, err := NewMetadata_Icon(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata_Icon{}, err
 	}
-	err = s.Struct.SetPtr(15, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(15, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata) Website() (string, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.Text(), err
 }
 
 func (s Metadata) HasWebsite() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s Metadata) WebsiteBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(3)
+	p, err := capnp.Struct(s).Ptr(3)
 	return p.TextBytes(), err
 }
 
 func (s Metadata) SetWebsite(v string) error {
-	return s.Struct.SetText(3, v)
+	return capnp.Struct(s).SetText(3, v)
 }
 
 func (s Metadata) CodeUrl() (string, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.Text(), err
 }
 
 func (s Metadata) HasCodeUrl() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s Metadata) CodeUrlBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.TextBytes(), err
 }
 
 func (s Metadata) SetCodeUrl(v string) error {
-	return s.Struct.SetText(4, v)
+	return capnp.Struct(s).SetText(4, v)
 }
 
 func (s Metadata) License() Metadata_license { return Metadata_license(s) }
 
 func (s Metadata_license) Which() Metadata_license_Which {
-	return Metadata_license_Which(s.Struct.Uint16(0))
+	return Metadata_license_Which(capnp.Struct(s).Uint16(0))
+}
+func (s Metadata_license) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_license) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_license) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s Metadata_license) SetNone() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s Metadata_license) OpenSource() OpenSourceLicense {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != openSource")
 	}
-	return OpenSourceLicense(s.Struct.Uint16(2))
+	return OpenSourceLicense(capnp.Struct(s).Uint16(2))
 }
 
 func (s Metadata_license) SetOpenSource(v OpenSourceLicense) {
-	s.Struct.SetUint16(0, 1)
-	s.Struct.SetUint16(2, uint16(v))
+	capnp.Struct(s).SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(2, uint16(v))
 }
 
 func (s Metadata_license) Proprietary() (util.LocalizedText, error) {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != proprietary")
 	}
-	p, err := s.Struct.Ptr(5)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(5)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata_license) HasProprietary() bool {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s Metadata_license) SetProprietary(v util.LocalizedText) error {
-	s.Struct.SetUint16(0, 2)
-	return s.Struct.SetPtr(5, v.Struct.ToPtr())
+	capnp.Struct(s).SetUint16(0, 2)
+	return capnp.Struct(s).SetPtr(5, capnp.Struct(v).ToPtr())
 }
 
 // NewProprietary sets the proprietary field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata_license) NewProprietary() (util.LocalizedText, error) {
-	s.Struct.SetUint16(0, 2)
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	capnp.Struct(s).SetUint16(0, 2)
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(5, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(5, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata_license) PublicDomain() (util.LocalizedText, error) {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		panic("Which() != publicDomain")
 	}
-	p, err := s.Struct.Ptr(5)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(5)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata_license) HasPublicDomain() bool {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		return false
 	}
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s Metadata_license) SetPublicDomain(v util.LocalizedText) error {
-	s.Struct.SetUint16(0, 3)
-	return s.Struct.SetPtr(5, v.Struct.ToPtr())
+	capnp.Struct(s).SetUint16(0, 3)
+	return capnp.Struct(s).SetPtr(5, capnp.Struct(v).ToPtr())
 }
 
 // NewPublicDomain sets the publicDomain field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata_license) NewPublicDomain() (util.LocalizedText, error) {
-	s.Struct.SetUint16(0, 3)
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	capnp.Struct(s).SetUint16(0, 3)
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(5, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(5, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata_license) Notices() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(6)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(6)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata_license) HasNotices() bool {
-	return s.Struct.HasPtr(6)
+	return capnp.Struct(s).HasPtr(6)
 }
 
 func (s Metadata_license) SetNotices(v util.LocalizedText) error {
-	return s.Struct.SetPtr(6, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(6, capnp.Struct(v).ToPtr())
 }
 
 // NewNotices sets the notices field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata_license) NewNotices() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(6, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(6, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata) Categories() (Category_List, error) {
-	p, err := s.Struct.Ptr(7)
-	return Category_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(7)
+	return Category_List(p.List()), err
 }
 
 func (s Metadata) HasCategories() bool {
-	return s.Struct.HasPtr(7)
+	return capnp.Struct(s).HasPtr(7)
 }
 
 func (s Metadata) SetCategories(v Category_List) error {
-	return s.Struct.SetPtr(7, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(7, v.ToPtr())
 }
 
 // NewCategories sets the categories field to a newly
 // allocated Category_List, preferring placement in s's segment.
 func (s Metadata) NewCategories(n int32) (Category_List, error) {
-	l, err := NewCategory_List(s.Struct.Segment(), n)
+	l, err := NewCategory_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Category_List{}, err
 	}
-	err = s.Struct.SetPtr(7, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(7, l.ToPtr())
 	return l, err
 }
 
 func (s Metadata) Author() Metadata_author { return Metadata_author(s) }
 
+func (s Metadata_author) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_author) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_author) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Metadata_author) UpstreamAuthor() (string, error) {
-	p, err := s.Struct.Ptr(16)
+	p, err := capnp.Struct(s).Ptr(16)
 	return p.Text(), err
 }
 
 func (s Metadata_author) HasUpstreamAuthor() bool {
-	return s.Struct.HasPtr(16)
+	return capnp.Struct(s).HasPtr(16)
 }
 
 func (s Metadata_author) UpstreamAuthorBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(16)
+	p, err := capnp.Struct(s).Ptr(16)
 	return p.TextBytes(), err
 }
 
 func (s Metadata_author) SetUpstreamAuthor(v string) error {
-	return s.Struct.SetText(16, v)
+	return capnp.Struct(s).SetText(16, v)
 }
 
 func (s Metadata_author) ContactEmail() (string, error) {
-	p, err := s.Struct.Ptr(8)
+	p, err := capnp.Struct(s).Ptr(8)
 	return p.Text(), err
 }
 
 func (s Metadata_author) HasContactEmail() bool {
-	return s.Struct.HasPtr(8)
+	return capnp.Struct(s).HasPtr(8)
 }
 
 func (s Metadata_author) ContactEmailBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(8)
+	p, err := capnp.Struct(s).Ptr(8)
 	return p.TextBytes(), err
 }
 
 func (s Metadata_author) SetContactEmail(v string) error {
-	return s.Struct.SetText(8, v)
+	return capnp.Struct(s).SetText(8, v)
 }
 
 func (s Metadata_author) PgpSignature() ([]byte, error) {
-	p, err := s.Struct.Ptr(9)
+	p, err := capnp.Struct(s).Ptr(9)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata_author) HasPgpSignature() bool {
-	return s.Struct.HasPtr(9)
+	return capnp.Struct(s).HasPtr(9)
 }
 
 func (s Metadata_author) SetPgpSignature(v []byte) error {
-	return s.Struct.SetData(9, v)
+	return capnp.Struct(s).SetData(9, v)
 }
 
 func (s Metadata) PgpKeyring() ([]byte, error) {
-	p, err := s.Struct.Ptr(10)
+	p, err := capnp.Struct(s).Ptr(10)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata) HasPgpKeyring() bool {
-	return s.Struct.HasPtr(10)
+	return capnp.Struct(s).HasPtr(10)
 }
 
 func (s Metadata) SetPgpKeyring(v []byte) error {
-	return s.Struct.SetData(10, v)
+	return capnp.Struct(s).SetData(10, v)
 }
 
 func (s Metadata) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(11)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(11)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata) HasDescription() bool {
-	return s.Struct.HasPtr(11)
+	return capnp.Struct(s).HasPtr(11)
 }
 
 func (s Metadata) SetDescription(v util.LocalizedText) error {
-	return s.Struct.SetPtr(11, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(11, capnp.Struct(v).ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata) NewDescription() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(11, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(11, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata) ShortDescription() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(12)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(12)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata) HasShortDescription() bool {
-	return s.Struct.HasPtr(12)
+	return capnp.Struct(s).HasPtr(12)
 }
 
 func (s Metadata) SetShortDescription(v util.LocalizedText) error {
-	return s.Struct.SetPtr(12, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(12, capnp.Struct(v).ToPtr())
 }
 
 // NewShortDescription sets the shortDescription field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata) NewShortDescription() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(12, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(12, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s Metadata) Screenshots() (Metadata_Screenshot_List, error) {
-	p, err := s.Struct.Ptr(13)
-	return Metadata_Screenshot_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(13)
+	return Metadata_Screenshot_List(p.List()), err
 }
 
 func (s Metadata) HasScreenshots() bool {
-	return s.Struct.HasPtr(13)
+	return capnp.Struct(s).HasPtr(13)
 }
 
 func (s Metadata) SetScreenshots(v Metadata_Screenshot_List) error {
-	return s.Struct.SetPtr(13, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(13, v.ToPtr())
 }
 
 // NewScreenshots sets the screenshots field to a newly
 // allocated Metadata_Screenshot_List, preferring placement in s's segment.
 func (s Metadata) NewScreenshots(n int32) (Metadata_Screenshot_List, error) {
-	l, err := NewMetadata_Screenshot_List(s.Struct.Segment(), n)
+	l, err := NewMetadata_Screenshot_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Metadata_Screenshot_List{}, err
 	}
-	err = s.Struct.SetPtr(13, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(13, l.ToPtr())
 	return l, err
 }
 
 func (s Metadata) ChangeLog() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(14)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(14)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s Metadata) HasChangeLog() bool {
-	return s.Struct.HasPtr(14)
+	return capnp.Struct(s).HasPtr(14)
 }
 
 func (s Metadata) SetChangeLog(v util.LocalizedText) error {
-	return s.Struct.SetPtr(14, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(14, capnp.Struct(v).ToPtr())
 }
 
 // NewChangeLog sets the changeLog field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s Metadata) NewChangeLog() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(14, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(14, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // Metadata_List is a list of Metadata.
-type Metadata_List struct{ capnp.List }
+type Metadata_List = capnp.StructList[Metadata]
 
 // NewMetadata creates a new list of Metadata.
 func NewMetadata_List(s *capnp.Segment, sz int32) (Metadata_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 17}, sz)
-	return Metadata_List{l}, err
-}
-
-func (s Metadata_List) At(i int) Metadata { return Metadata{s.List.Struct(i)} }
-
-func (s Metadata_List) Set(i int, v Metadata) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Metadata_List) String() string {
-	str, _ := text.MarshalList(0xe0c5892a5448f4ee, s.List)
-	return str
+	return capnp.StructList[Metadata](l), err
 }
 
 // Metadata_Future is a wrapper for a Metadata promised by a client call.
@@ -1802,7 +1947,7 @@ type Metadata_Future struct{ *capnp.Future }
 
 func (p Metadata_Future) Struct() (Metadata, error) {
 	s, err := p.Future.Struct()
-	return Metadata{s}, err
+	return Metadata(s), err
 }
 
 func (p Metadata_Future) Icons() Metadata_icons_Future { return Metadata_icons_Future{p.Future} }
@@ -1812,7 +1957,7 @@ type Metadata_icons_Future struct{ *capnp.Future }
 
 func (p Metadata_icons_Future) Struct() (Metadata_icons, error) {
 	s, err := p.Future.Struct()
-	return Metadata_icons{s}, err
+	return Metadata_icons(s), err
 }
 
 func (p Metadata_icons_Future) AppGrid() Metadata_Icon_Future {
@@ -1838,7 +1983,7 @@ type Metadata_license_Future struct{ *capnp.Future }
 
 func (p Metadata_license_Future) Struct() (Metadata_license, error) {
 	s, err := p.Future.Struct()
-	return Metadata_license{s}, err
+	return Metadata_license(s), err
 }
 
 func (p Metadata_license_Future) Proprietary() util.LocalizedText_Future {
@@ -1860,7 +2005,7 @@ type Metadata_author_Future struct{ *capnp.Future }
 
 func (p Metadata_author_Future) Struct() (Metadata_author, error) {
 	s, err := p.Future.Struct()
-	return Metadata_author{s}, err
+	return Metadata_author(s), err
 }
 
 func (p Metadata_Future) Description() util.LocalizedText_Future {
@@ -1875,7 +2020,7 @@ func (p Metadata_Future) ChangeLog() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(14, nil)}
 }
 
-type Metadata_Icon struct{ capnp.Struct }
+type Metadata_Icon capnp.Struct
 type Metadata_Icon_png Metadata_Icon
 type Metadata_Icon_Which uint16
 
@@ -1904,105 +2049,130 @@ const Metadata_Icon_TypeID = 0xe492a2981208ad0b
 
 func NewMetadata_Icon(s *capnp.Segment) (Metadata_Icon, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return Metadata_Icon{st}, err
+	return Metadata_Icon(st), err
 }
 
 func NewRootMetadata_Icon(s *capnp.Segment) (Metadata_Icon, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return Metadata_Icon{st}, err
+	return Metadata_Icon(st), err
 }
 
 func ReadRootMetadata_Icon(msg *capnp.Message) (Metadata_Icon, error) {
 	root, err := msg.Root()
-	return Metadata_Icon{root.Struct()}, err
+	return Metadata_Icon(root.Struct()), err
 }
 
 func (s Metadata_Icon) String() string {
-	str, _ := text.Marshal(0xe492a2981208ad0b, s.Struct)
+	str, _ := text.Marshal(0xe492a2981208ad0b, capnp.Struct(s))
 	return str
 }
 
+func (s Metadata_Icon) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Metadata_Icon) DecodeFromPtr(p capnp.Ptr) Metadata_Icon {
+	return Metadata_Icon(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Metadata_Icon) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s Metadata_Icon) Which() Metadata_Icon_Which {
-	return Metadata_Icon_Which(s.Struct.Uint16(0))
+	return Metadata_Icon_Which(capnp.Struct(s).Uint16(0))
+}
+func (s Metadata_Icon) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_Icon) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_Icon) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s Metadata_Icon) SetUnknown() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 
 }
 
 func (s Metadata_Icon) Svg() (string, error) {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != svg")
 	}
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s Metadata_Icon) HasSvg() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Metadata_Icon) SvgBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s Metadata_Icon) SetSvg(v string) error {
-	s.Struct.SetUint16(0, 1)
-	return s.Struct.SetText(0, v)
+	capnp.Struct(s).SetUint16(0, 1)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s Metadata_Icon) Png() Metadata_Icon_png { return Metadata_Icon_png(s) }
 
 func (s Metadata_Icon) SetPng() {
-	s.Struct.SetUint16(0, 2)
+	capnp.Struct(s).SetUint16(0, 2)
 }
 
+func (s Metadata_Icon_png) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_Icon_png) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_Icon_png) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Metadata_Icon_png) Dpi1x() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata_Icon_png) HasDpi1x() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Metadata_Icon_png) SetDpi1x(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s Metadata_Icon_png) Dpi2x() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata_Icon_png) HasDpi2x() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Metadata_Icon_png) SetDpi2x(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 // Metadata_Icon_List is a list of Metadata_Icon.
-type Metadata_Icon_List struct{ capnp.List }
+type Metadata_Icon_List = capnp.StructList[Metadata_Icon]
 
 // NewMetadata_Icon creates a new list of Metadata_Icon.
 func NewMetadata_Icon_List(s *capnp.Segment, sz int32) (Metadata_Icon_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
-	return Metadata_Icon_List{l}, err
-}
-
-func (s Metadata_Icon_List) At(i int) Metadata_Icon { return Metadata_Icon{s.List.Struct(i)} }
-
-func (s Metadata_Icon_List) Set(i int, v Metadata_Icon) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Metadata_Icon_List) String() string {
-	str, _ := text.MarshalList(0xe492a2981208ad0b, s.List)
-	return str
+	return capnp.StructList[Metadata_Icon](l), err
 }
 
 // Metadata_Icon_Future is a wrapper for a Metadata_Icon promised by a client call.
@@ -2010,7 +2180,7 @@ type Metadata_Icon_Future struct{ *capnp.Future }
 
 func (p Metadata_Icon_Future) Struct() (Metadata_Icon, error) {
 	s, err := p.Future.Struct()
-	return Metadata_Icon{s}, err
+	return Metadata_Icon(s), err
 }
 
 func (p Metadata_Icon_Future) Png() Metadata_Icon_png_Future {
@@ -2022,10 +2192,10 @@ type Metadata_Icon_png_Future struct{ *capnp.Future }
 
 func (p Metadata_Icon_png_Future) Struct() (Metadata_Icon_png, error) {
 	s, err := p.Future.Struct()
-	return Metadata_Icon_png{s}, err
+	return Metadata_Icon_png(s), err
 }
 
-type Metadata_Screenshot struct{ capnp.Struct }
+type Metadata_Screenshot capnp.Struct
 type Metadata_Screenshot_Which uint16
 
 const (
@@ -2053,108 +2223,118 @@ const Metadata_Screenshot_TypeID = 0x8bc9f4365959348e
 
 func NewMetadata_Screenshot(s *capnp.Segment) (Metadata_Screenshot, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
-	return Metadata_Screenshot{st}, err
+	return Metadata_Screenshot(st), err
 }
 
 func NewRootMetadata_Screenshot(s *capnp.Segment) (Metadata_Screenshot, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1})
-	return Metadata_Screenshot{st}, err
+	return Metadata_Screenshot(st), err
 }
 
 func ReadRootMetadata_Screenshot(msg *capnp.Message) (Metadata_Screenshot, error) {
 	root, err := msg.Root()
-	return Metadata_Screenshot{root.Struct()}, err
+	return Metadata_Screenshot(root.Struct()), err
 }
 
 func (s Metadata_Screenshot) String() string {
-	str, _ := text.Marshal(0x8bc9f4365959348e, s.Struct)
+	str, _ := text.Marshal(0x8bc9f4365959348e, capnp.Struct(s))
 	return str
 }
 
+func (s Metadata_Screenshot) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Metadata_Screenshot) DecodeFromPtr(p capnp.Ptr) Metadata_Screenshot {
+	return Metadata_Screenshot(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Metadata_Screenshot) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s Metadata_Screenshot) Which() Metadata_Screenshot_Which {
-	return Metadata_Screenshot_Which(s.Struct.Uint16(8))
+	return Metadata_Screenshot_Which(capnp.Struct(s).Uint16(8))
+}
+func (s Metadata_Screenshot) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Metadata_Screenshot) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Metadata_Screenshot) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s Metadata_Screenshot) Width() uint32 {
-	return s.Struct.Uint32(0)
+	return capnp.Struct(s).Uint32(0)
 }
 
 func (s Metadata_Screenshot) SetWidth(v uint32) {
-	s.Struct.SetUint32(0, v)
+	capnp.Struct(s).SetUint32(0, v)
 }
 
 func (s Metadata_Screenshot) Height() uint32 {
-	return s.Struct.Uint32(4)
+	return capnp.Struct(s).Uint32(4)
 }
 
 func (s Metadata_Screenshot) SetHeight(v uint32) {
-	s.Struct.SetUint32(4, v)
+	capnp.Struct(s).SetUint32(4, v)
 }
 
 func (s Metadata_Screenshot) SetUnknown() {
-	s.Struct.SetUint16(8, 0)
+	capnp.Struct(s).SetUint16(8, 0)
 
 }
 
 func (s Metadata_Screenshot) Png() ([]byte, error) {
-	if s.Struct.Uint16(8) != 1 {
+	if capnp.Struct(s).Uint16(8) != 1 {
 		panic("Which() != png")
 	}
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata_Screenshot) HasPng() bool {
-	if s.Struct.Uint16(8) != 1 {
+	if capnp.Struct(s).Uint16(8) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Metadata_Screenshot) SetPng(v []byte) error {
-	s.Struct.SetUint16(8, 1)
-	return s.Struct.SetData(0, v)
+	capnp.Struct(s).SetUint16(8, 1)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s Metadata_Screenshot) Jpeg() ([]byte, error) {
-	if s.Struct.Uint16(8) != 2 {
+	if capnp.Struct(s).Uint16(8) != 2 {
 		panic("Which() != jpeg")
 	}
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s Metadata_Screenshot) HasJpeg() bool {
-	if s.Struct.Uint16(8) != 2 {
+	if capnp.Struct(s).Uint16(8) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Metadata_Screenshot) SetJpeg(v []byte) error {
-	s.Struct.SetUint16(8, 2)
-	return s.Struct.SetData(0, v)
+	capnp.Struct(s).SetUint16(8, 2)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 // Metadata_Screenshot_List is a list of Metadata_Screenshot.
-type Metadata_Screenshot_List struct{ capnp.List }
+type Metadata_Screenshot_List = capnp.StructList[Metadata_Screenshot]
 
 // NewMetadata_Screenshot creates a new list of Metadata_Screenshot.
 func NewMetadata_Screenshot_List(s *capnp.Segment, sz int32) (Metadata_Screenshot_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 1}, sz)
-	return Metadata_Screenshot_List{l}, err
-}
-
-func (s Metadata_Screenshot_List) At(i int) Metadata_Screenshot {
-	return Metadata_Screenshot{s.List.Struct(i)}
-}
-
-func (s Metadata_Screenshot_List) Set(i int, v Metadata_Screenshot) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Metadata_Screenshot_List) String() string {
-	str, _ := text.MarshalList(0x8bc9f4365959348e, s.List)
-	return str
+	return capnp.StructList[Metadata_Screenshot](l), err
 }
 
 // Metadata_Screenshot_Future is a wrapper for a Metadata_Screenshot promised by a client call.
@@ -2162,94 +2342,107 @@ type Metadata_Screenshot_Future struct{ *capnp.Future }
 
 func (p Metadata_Screenshot_Future) Struct() (Metadata_Screenshot, error) {
 	s, err := p.Future.Struct()
-	return Metadata_Screenshot{s}, err
+	return Metadata_Screenshot(s), err
 }
 
-type OsiLicenseInfo struct{ capnp.Struct }
+type OsiLicenseInfo capnp.Struct
 
 // OsiLicenseInfo_TypeID is the unique identifier for the type OsiLicenseInfo.
 const OsiLicenseInfo_TypeID = 0xb755d258845a4a8f
 
 func NewOsiLicenseInfo(s *capnp.Segment) (OsiLicenseInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return OsiLicenseInfo{st}, err
+	return OsiLicenseInfo(st), err
 }
 
 func NewRootOsiLicenseInfo(s *capnp.Segment) (OsiLicenseInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2})
-	return OsiLicenseInfo{st}, err
+	return OsiLicenseInfo(st), err
 }
 
 func ReadRootOsiLicenseInfo(msg *capnp.Message) (OsiLicenseInfo, error) {
 	root, err := msg.Root()
-	return OsiLicenseInfo{root.Struct()}, err
+	return OsiLicenseInfo(root.Struct()), err
 }
 
 func (s OsiLicenseInfo) String() string {
-	str, _ := text.Marshal(0xb755d258845a4a8f, s.Struct)
+	str, _ := text.Marshal(0xb755d258845a4a8f, capnp.Struct(s))
 	return str
 }
 
+func (s OsiLicenseInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (OsiLicenseInfo) DecodeFromPtr(p capnp.Ptr) OsiLicenseInfo {
+	return OsiLicenseInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s OsiLicenseInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s OsiLicenseInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s OsiLicenseInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s OsiLicenseInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s OsiLicenseInfo) Id() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s OsiLicenseInfo) HasId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s OsiLicenseInfo) IdBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s OsiLicenseInfo) SetId(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s OsiLicenseInfo) Title() (string, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s OsiLicenseInfo) HasTitle() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s OsiLicenseInfo) TitleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s OsiLicenseInfo) SetTitle(v string) error {
-	return s.Struct.SetText(1, v)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s OsiLicenseInfo) RequireSource() bool {
-	return s.Struct.Bit(0)
+	return capnp.Struct(s).Bit(0)
 }
 
 func (s OsiLicenseInfo) SetRequireSource(v bool) {
-	s.Struct.SetBit(0, v)
+	capnp.Struct(s).SetBit(0, v)
 }
 
 // OsiLicenseInfo_List is a list of OsiLicenseInfo.
-type OsiLicenseInfo_List struct{ capnp.List }
+type OsiLicenseInfo_List = capnp.StructList[OsiLicenseInfo]
 
 // NewOsiLicenseInfo creates a new list of OsiLicenseInfo.
 func NewOsiLicenseInfo_List(s *capnp.Segment, sz int32) (OsiLicenseInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 2}, sz)
-	return OsiLicenseInfo_List{l}, err
-}
-
-func (s OsiLicenseInfo_List) At(i int) OsiLicenseInfo { return OsiLicenseInfo{s.List.Struct(i)} }
-
-func (s OsiLicenseInfo_List) Set(i int, v OsiLicenseInfo) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s OsiLicenseInfo_List) String() string {
-	str, _ := text.MarshalList(0xb755d258845a4a8f, s.List)
-	return str
+	return capnp.StructList[OsiLicenseInfo](l), err
 }
 
 // OsiLicenseInfo_Future is a wrapper for a OsiLicenseInfo promised by a client call.
@@ -2257,7 +2450,7 @@ type OsiLicenseInfo_Future struct{ *capnp.Future }
 
 func (p OsiLicenseInfo_Future) Struct() (OsiLicenseInfo, error) {
 	s, err := p.Future.Struct()
-	return OsiLicenseInfo{s}, err
+	return OsiLicenseInfo(s), err
 }
 
 type OpenSourceLicense uint16
@@ -2383,96 +2576,98 @@ func OpenSourceLicenseFromString(c string) OpenSourceLicense {
 	}
 }
 
-type OpenSourceLicense_List struct{ capnp.List }
+type OpenSourceLicense_List = capnp.EnumList[OpenSourceLicense]
 
 func NewOpenSourceLicense_List(s *capnp.Segment, sz int32) (OpenSourceLicense_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return OpenSourceLicense_List{l.List}, err
+	return capnp.NewEnumList[OpenSourceLicense](s, sz)
 }
 
-func (l OpenSourceLicense_List) At(i int) OpenSourceLicense {
-	ul := capnp.UInt16List{List: l.List}
-	return OpenSourceLicense(ul.At(i))
-}
-
-func (l OpenSourceLicense_List) Set(i int, v OpenSourceLicense) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type AppId struct{ capnp.Struct }
+type AppId capnp.Struct
 
 // AppId_TypeID is the unique identifier for the type AppId.
 const AppId_TypeID = 0x880c6c7782a33310
 
 func NewAppId(s *capnp.Segment) (AppId, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0})
-	return AppId{st}, err
+	return AppId(st), err
 }
 
 func NewRootAppId(s *capnp.Segment) (AppId, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0})
-	return AppId{st}, err
+	return AppId(st), err
 }
 
 func ReadRootAppId(msg *capnp.Message) (AppId, error) {
 	root, err := msg.Root()
-	return AppId{root.Struct()}, err
+	return AppId(root.Struct()), err
 }
 
 func (s AppId) String() string {
-	str, _ := text.Marshal(0x880c6c7782a33310, s.Struct)
+	str, _ := text.Marshal(0x880c6c7782a33310, capnp.Struct(s))
 	return str
 }
 
+func (s AppId) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (AppId) DecodeFromPtr(p capnp.Ptr) AppId {
+	return AppId(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s AppId) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s AppId) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s AppId) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s AppId) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s AppId) Id0() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s AppId) SetId0(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s AppId) Id1() uint64 {
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s AppId) SetId1(v uint64) {
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 func (s AppId) Id2() uint64 {
-	return s.Struct.Uint64(16)
+	return capnp.Struct(s).Uint64(16)
 }
 
 func (s AppId) SetId2(v uint64) {
-	s.Struct.SetUint64(16, v)
+	capnp.Struct(s).SetUint64(16, v)
 }
 
 func (s AppId) Id3() uint64 {
-	return s.Struct.Uint64(24)
+	return capnp.Struct(s).Uint64(24)
 }
 
 func (s AppId) SetId3(v uint64) {
-	s.Struct.SetUint64(24, v)
+	capnp.Struct(s).SetUint64(24, v)
 }
 
 // AppId_List is a list of AppId.
-type AppId_List struct{ capnp.List }
+type AppId_List = capnp.StructList[AppId]
 
 // NewAppId creates a new list of AppId.
 func NewAppId_List(s *capnp.Segment, sz int32) (AppId_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 32, PointerCount: 0}, sz)
-	return AppId_List{l}, err
-}
-
-func (s AppId_List) At(i int) AppId { return AppId{s.List.Struct(i)} }
-
-func (s AppId_List) Set(i int, v AppId) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s AppId_List) String() string {
-	str, _ := text.MarshalList(0x880c6c7782a33310, s.List)
-	return str
+	return capnp.StructList[AppId](l), err
 }
 
 // AppId_Future is a wrapper for a AppId promised by a client call.
@@ -2480,66 +2675,79 @@ type AppId_Future struct{ *capnp.Future }
 
 func (p AppId_Future) Struct() (AppId, error) {
 	s, err := p.Future.Struct()
-	return AppId{s}, err
+	return AppId(s), err
 }
 
-type PackageId struct{ capnp.Struct }
+type PackageId capnp.Struct
 
 // PackageId_TypeID is the unique identifier for the type PackageId.
 const PackageId_TypeID = 0xe2e344d346ffda6b
 
 func NewPackageId(s *capnp.Segment) (PackageId, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	return PackageId{st}, err
+	return PackageId(st), err
 }
 
 func NewRootPackageId(s *capnp.Segment) (PackageId, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0})
-	return PackageId{st}, err
+	return PackageId(st), err
 }
 
 func ReadRootPackageId(msg *capnp.Message) (PackageId, error) {
 	root, err := msg.Root()
-	return PackageId{root.Struct()}, err
+	return PackageId(root.Struct()), err
 }
 
 func (s PackageId) String() string {
-	str, _ := text.Marshal(0xe2e344d346ffda6b, s.Struct)
+	str, _ := text.Marshal(0xe2e344d346ffda6b, capnp.Struct(s))
 	return str
 }
 
+func (s PackageId) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PackageId) DecodeFromPtr(p capnp.Ptr) PackageId {
+	return PackageId(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PackageId) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PackageId) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PackageId) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PackageId) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PackageId) Id0() uint64 {
-	return s.Struct.Uint64(0)
+	return capnp.Struct(s).Uint64(0)
 }
 
 func (s PackageId) SetId0(v uint64) {
-	s.Struct.SetUint64(0, v)
+	capnp.Struct(s).SetUint64(0, v)
 }
 
 func (s PackageId) Id1() uint64 {
-	return s.Struct.Uint64(8)
+	return capnp.Struct(s).Uint64(8)
 }
 
 func (s PackageId) SetId1(v uint64) {
-	s.Struct.SetUint64(8, v)
+	capnp.Struct(s).SetUint64(8, v)
 }
 
 // PackageId_List is a list of PackageId.
-type PackageId_List struct{ capnp.List }
+type PackageId_List = capnp.StructList[PackageId]
 
 // NewPackageId creates a new list of PackageId.
 func NewPackageId_List(s *capnp.Segment, sz int32) (PackageId_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 0}, sz)
-	return PackageId_List{l}, err
-}
-
-func (s PackageId_List) At(i int) PackageId { return PackageId{s.List.Struct(i)} }
-
-func (s PackageId_List) Set(i int, v PackageId) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s PackageId_List) String() string {
-	str, _ := text.MarshalList(0xe2e344d346ffda6b, s.List)
-	return str
+	return capnp.StructList[PackageId](l), err
 }
 
 // PackageId_Future is a wrapper for a PackageId promised by a client call.
@@ -2547,196 +2755,209 @@ type PackageId_Future struct{ *capnp.Future }
 
 func (p PackageId_Future) Struct() (PackageId, error) {
 	s, err := p.Future.Struct()
-	return PackageId{s}, err
+	return PackageId(s), err
 }
 
-type VerifiedInfo struct{ capnp.Struct }
+type VerifiedInfo capnp.Struct
 
 // VerifiedInfo_TypeID is the unique identifier for the type VerifiedInfo.
 const VerifiedInfo_TypeID = 0x987ef3040a0342a9
 
 func NewVerifiedInfo(s *capnp.Segment) (VerifiedInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return VerifiedInfo{st}, err
+	return VerifiedInfo(st), err
 }
 
 func NewRootVerifiedInfo(s *capnp.Segment) (VerifiedInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6})
-	return VerifiedInfo{st}, err
+	return VerifiedInfo(st), err
 }
 
 func ReadRootVerifiedInfo(msg *capnp.Message) (VerifiedInfo, error) {
 	root, err := msg.Root()
-	return VerifiedInfo{root.Struct()}, err
+	return VerifiedInfo(root.Struct()), err
 }
 
 func (s VerifiedInfo) String() string {
-	str, _ := text.Marshal(0x987ef3040a0342a9, s.Struct)
+	str, _ := text.Marshal(0x987ef3040a0342a9, capnp.Struct(s))
 	return str
 }
 
+func (s VerifiedInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (VerifiedInfo) DecodeFromPtr(p capnp.Ptr) VerifiedInfo {
+	return VerifiedInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s VerifiedInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s VerifiedInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s VerifiedInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s VerifiedInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s VerifiedInfo) AppId() (AppId, error) {
-	p, err := s.Struct.Ptr(0)
-	return AppId{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return AppId(p.Struct()), err
 }
 
 func (s VerifiedInfo) HasAppId() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s VerifiedInfo) SetAppId(v AppId) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewAppId sets the appId field to a newly
 // allocated AppId struct, preferring placement in s's segment.
 func (s VerifiedInfo) NewAppId() (AppId, error) {
-	ss, err := NewAppId(s.Struct.Segment())
+	ss, err := NewAppId(capnp.Struct(s).Segment())
 	if err != nil {
 		return AppId{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s VerifiedInfo) PackageId() (PackageId, error) {
-	p, err := s.Struct.Ptr(1)
-	return PackageId{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return PackageId(p.Struct()), err
 }
 
 func (s VerifiedInfo) HasPackageId() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s VerifiedInfo) SetPackageId(v PackageId) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewPackageId sets the packageId field to a newly
 // allocated PackageId struct, preferring placement in s's segment.
 func (s VerifiedInfo) NewPackageId() (PackageId, error) {
-	ss, err := NewPackageId(s.Struct.Segment())
+	ss, err := NewPackageId(capnp.Struct(s).Segment())
 	if err != nil {
 		return PackageId{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s VerifiedInfo) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(2)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(2)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s VerifiedInfo) HasTitle() bool {
-	return s.Struct.HasPtr(2)
+	return capnp.Struct(s).HasPtr(2)
 }
 
 func (s VerifiedInfo) SetTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(2, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(2, capnp.Struct(v).ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s VerifiedInfo) NewTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(2, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(2, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s VerifiedInfo) Version() uint32 {
-	return s.Struct.Uint32(0)
+	return capnp.Struct(s).Uint32(0)
 }
 
 func (s VerifiedInfo) SetVersion(v uint32) {
-	s.Struct.SetUint32(0, v)
+	capnp.Struct(s).SetUint32(0, v)
 }
 
 func (s VerifiedInfo) MarketingVersion() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(3)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(3)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s VerifiedInfo) HasMarketingVersion() bool {
-	return s.Struct.HasPtr(3)
+	return capnp.Struct(s).HasPtr(3)
 }
 
 func (s VerifiedInfo) SetMarketingVersion(v util.LocalizedText) error {
-	return s.Struct.SetPtr(3, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(3, capnp.Struct(v).ToPtr())
 }
 
 // NewMarketingVersion sets the marketingVersion field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s VerifiedInfo) NewMarketingVersion() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(3, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(3, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s VerifiedInfo) AuthorPgpKeyFingerprint() (string, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.Text(), err
 }
 
 func (s VerifiedInfo) HasAuthorPgpKeyFingerprint() bool {
-	return s.Struct.HasPtr(4)
+	return capnp.Struct(s).HasPtr(4)
 }
 
 func (s VerifiedInfo) AuthorPgpKeyFingerprintBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(4)
+	p, err := capnp.Struct(s).Ptr(4)
 	return p.TextBytes(), err
 }
 
 func (s VerifiedInfo) SetAuthorPgpKeyFingerprint(v string) error {
-	return s.Struct.SetText(4, v)
+	return capnp.Struct(s).SetText(4, v)
 }
 
 func (s VerifiedInfo) Metadata() (Metadata, error) {
-	p, err := s.Struct.Ptr(5)
-	return Metadata{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(5)
+	return Metadata(p.Struct()), err
 }
 
 func (s VerifiedInfo) HasMetadata() bool {
-	return s.Struct.HasPtr(5)
+	return capnp.Struct(s).HasPtr(5)
 }
 
 func (s VerifiedInfo) SetMetadata(v Metadata) error {
-	return s.Struct.SetPtr(5, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(5, capnp.Struct(v).ToPtr())
 }
 
 // NewMetadata sets the metadata field to a newly
 // allocated Metadata struct, preferring placement in s's segment.
 func (s VerifiedInfo) NewMetadata() (Metadata, error) {
-	ss, err := NewMetadata(s.Struct.Segment())
+	ss, err := NewMetadata(capnp.Struct(s).Segment())
 	if err != nil {
 		return Metadata{}, err
 	}
-	err = s.Struct.SetPtr(5, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(5, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // VerifiedInfo_List is a list of VerifiedInfo.
-type VerifiedInfo_List struct{ capnp.List }
+type VerifiedInfo_List = capnp.StructList[VerifiedInfo]
 
 // NewVerifiedInfo creates a new list of VerifiedInfo.
 func NewVerifiedInfo_List(s *capnp.Segment, sz int32) (VerifiedInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 6}, sz)
-	return VerifiedInfo_List{l}, err
-}
-
-func (s VerifiedInfo_List) At(i int) VerifiedInfo { return VerifiedInfo{s.List.Struct(i)} }
-
-func (s VerifiedInfo_List) Set(i int, v VerifiedInfo) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s VerifiedInfo_List) String() string {
-	str, _ := text.MarshalList(0x987ef3040a0342a9, s.List)
-	return str
+	return capnp.StructList[VerifiedInfo](l), err
 }
 
 // VerifiedInfo_Future is a wrapper for a VerifiedInfo promised by a client call.
@@ -2744,7 +2965,7 @@ type VerifiedInfo_Future struct{ *capnp.Future }
 
 func (p VerifiedInfo_Future) Struct() (VerifiedInfo, error) {
 	s, err := p.Future.Struct()
-	return VerifiedInfo{s}, err
+	return VerifiedInfo(s), err
 }
 
 func (p VerifiedInfo_Future) AppId() AppId_Future {
@@ -2767,65 +2988,78 @@ func (p VerifiedInfo_Future) Metadata() Metadata_Future {
 	return Metadata_Future{Future: p.Future.Field(5, nil)}
 }
 
-type CategoryInfo struct{ capnp.Struct }
+type CategoryInfo capnp.Struct
 
 // CategoryInfo_TypeID is the unique identifier for the type CategoryInfo.
 const CategoryInfo_TypeID = 0xb9d2951d34ca391c
 
 func NewCategoryInfo(s *capnp.Segment) (CategoryInfo, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return CategoryInfo{st}, err
+	return CategoryInfo(st), err
 }
 
 func NewRootCategoryInfo(s *capnp.Segment) (CategoryInfo, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return CategoryInfo{st}, err
+	return CategoryInfo(st), err
 }
 
 func ReadRootCategoryInfo(msg *capnp.Message) (CategoryInfo, error) {
 	root, err := msg.Root()
-	return CategoryInfo{root.Struct()}, err
+	return CategoryInfo(root.Struct()), err
 }
 
 func (s CategoryInfo) String() string {
-	str, _ := text.Marshal(0xb9d2951d34ca391c, s.Struct)
+	str, _ := text.Marshal(0xb9d2951d34ca391c, capnp.Struct(s))
 	return str
 }
 
+func (s CategoryInfo) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (CategoryInfo) DecodeFromPtr(p capnp.Ptr) CategoryInfo {
+	return CategoryInfo(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s CategoryInfo) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s CategoryInfo) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s CategoryInfo) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s CategoryInfo) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s CategoryInfo) Title() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s CategoryInfo) HasTitle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s CategoryInfo) TitleBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s CategoryInfo) SetTitle(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 // CategoryInfo_List is a list of CategoryInfo.
-type CategoryInfo_List struct{ capnp.List }
+type CategoryInfo_List = capnp.StructList[CategoryInfo]
 
 // NewCategoryInfo creates a new list of CategoryInfo.
 func NewCategoryInfo_List(s *capnp.Segment, sz int32) (CategoryInfo_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return CategoryInfo_List{l}, err
-}
-
-func (s CategoryInfo_List) At(i int) CategoryInfo { return CategoryInfo{s.List.Struct(i)} }
-
-func (s CategoryInfo_List) Set(i int, v CategoryInfo) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s CategoryInfo_List) String() string {
-	str, _ := text.MarshalList(0xb9d2951d34ca391c, s.List)
-	return str
+	return capnp.StructList[CategoryInfo](l), err
 }
 
 // CategoryInfo_Future is a wrapper for a CategoryInfo promised by a client call.
@@ -2833,7 +3067,7 @@ type CategoryInfo_Future struct{ *capnp.Future }
 
 func (p CategoryInfo_Future) Struct() (CategoryInfo, error) {
 	s, err := p.Future.Struct()
-	return CategoryInfo{s}, err
+	return CategoryInfo(s), err
 }
 
 type Category uint16
@@ -2919,90 +3153,92 @@ func CategoryFromString(c string) Category {
 	}
 }
 
-type Category_List struct{ capnp.List }
+type Category_List = capnp.EnumList[Category]
 
 func NewCategory_List(s *capnp.Segment, sz int32) (Category_List, error) {
-	l, err := capnp.NewUInt16List(s, sz)
-	return Category_List{l.List}, err
+	return capnp.NewEnumList[Category](s, sz)
 }
 
-func (l Category_List) At(i int) Category {
-	ul := capnp.UInt16List{List: l.List}
-	return Category(ul.At(i))
-}
-
-func (l Category_List) Set(i int, v Category) {
-	ul := capnp.UInt16List{List: l.List}
-	ul.Set(i, uint16(v))
-}
-
-type KeyFile struct{ capnp.Struct }
+type KeyFile capnp.Struct
 
 // KeyFile_TypeID is the unique identifier for the type KeyFile.
 const KeyFile_TypeID = 0xe47ce2b3aab90f74
 
 func NewKeyFile(s *capnp.Segment) (KeyFile, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return KeyFile{st}, err
+	return KeyFile(st), err
 }
 
 func NewRootKeyFile(s *capnp.Segment) (KeyFile, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return KeyFile{st}, err
+	return KeyFile(st), err
 }
 
 func ReadRootKeyFile(msg *capnp.Message) (KeyFile, error) {
 	root, err := msg.Root()
-	return KeyFile{root.Struct()}, err
+	return KeyFile(root.Struct()), err
 }
 
 func (s KeyFile) String() string {
-	str, _ := text.Marshal(0xe47ce2b3aab90f74, s.Struct)
+	str, _ := text.Marshal(0xe47ce2b3aab90f74, capnp.Struct(s))
 	return str
 }
 
+func (s KeyFile) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (KeyFile) DecodeFromPtr(p capnp.Ptr) KeyFile {
+	return KeyFile(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s KeyFile) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s KeyFile) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s KeyFile) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s KeyFile) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s KeyFile) PublicKey() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s KeyFile) HasPublicKey() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s KeyFile) SetPublicKey(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s KeyFile) PrivateKey() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s KeyFile) HasPrivateKey() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s KeyFile) SetPrivateKey(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 // KeyFile_List is a list of KeyFile.
-type KeyFile_List struct{ capnp.List }
+type KeyFile_List = capnp.StructList[KeyFile]
 
 // NewKeyFile creates a new list of KeyFile.
 func NewKeyFile_List(s *capnp.Segment, sz int32) (KeyFile_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return KeyFile_List{l}, err
-}
-
-func (s KeyFile_List) At(i int) KeyFile { return KeyFile{s.List.Struct(i)} }
-
-func (s KeyFile_List) Set(i int, v KeyFile) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s KeyFile_List) String() string {
-	str, _ := text.MarshalList(0xe47ce2b3aab90f74, s.List)
-	return str
+	return capnp.StructList[KeyFile](l), err
 }
 
 // KeyFile_Future is a wrapper for a KeyFile promised by a client call.
@@ -3010,76 +3246,89 @@ type KeyFile_Future struct{ *capnp.Future }
 
 func (p KeyFile_Future) Struct() (KeyFile, error) {
 	s, err := p.Future.Struct()
-	return KeyFile{s}, err
+	return KeyFile(s), err
 }
 
-type Signature struct{ capnp.Struct }
+type Signature capnp.Struct
 
 // Signature_TypeID is the unique identifier for the type Signature.
 const Signature_TypeID = 0xeca8b9277cb36488
 
 func NewSignature(s *capnp.Segment) (Signature, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Signature{st}, err
+	return Signature(st), err
 }
 
 func NewRootSignature(s *capnp.Segment) (Signature, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return Signature{st}, err
+	return Signature(st), err
 }
 
 func ReadRootSignature(msg *capnp.Message) (Signature, error) {
 	root, err := msg.Root()
-	return Signature{root.Struct()}, err
+	return Signature(root.Struct()), err
 }
 
 func (s Signature) String() string {
-	str, _ := text.Marshal(0xeca8b9277cb36488, s.Struct)
+	str, _ := text.Marshal(0xeca8b9277cb36488, capnp.Struct(s))
 	return str
 }
 
+func (s Signature) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Signature) DecodeFromPtr(p capnp.Ptr) Signature {
+	return Signature(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Signature) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Signature) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Signature) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Signature) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Signature) PublicKey() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return []byte(p.Data()), err
 }
 
 func (s Signature) HasPublicKey() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Signature) SetPublicKey(v []byte) error {
-	return s.Struct.SetData(0, v)
+	return capnp.Struct(s).SetData(0, v)
 }
 
 func (s Signature) Signature() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s Signature) HasSignature() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Signature) SetSignature(v []byte) error {
-	return s.Struct.SetData(1, v)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 // Signature_List is a list of Signature.
-type Signature_List struct{ capnp.List }
+type Signature_List = capnp.StructList[Signature]
 
 // NewSignature creates a new list of Signature.
 func NewSignature_List(s *capnp.Segment, sz int32) (Signature_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return Signature_List{l}, err
-}
-
-func (s Signature_List) At(i int) Signature { return Signature{s.List.Struct(i)} }
-
-func (s Signature_List) Set(i int, v Signature) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Signature_List) String() string {
-	str, _ := text.MarshalList(0xeca8b9277cb36488, s.List)
-	return str
+	return capnp.StructList[Signature](l), err
 }
 
 // Signature_Future is a wrapper for a Signature promised by a client call.
@@ -3087,74 +3336,87 @@ type Signature_Future struct{ *capnp.Future }
 
 func (p Signature_Future) Struct() (Signature, error) {
 	s, err := p.Future.Struct()
-	return Signature{s}, err
+	return Signature(s), err
 }
 
-type Archive struct{ capnp.Struct }
+type Archive capnp.Struct
 
 // Archive_TypeID is the unique identifier for the type Archive.
 const Archive_TypeID = 0xf153ba7dee1c9118
 
 func NewArchive(s *capnp.Segment) (Archive, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Archive{st}, err
+	return Archive(st), err
 }
 
 func NewRootArchive(s *capnp.Segment) (Archive, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return Archive{st}, err
+	return Archive(st), err
 }
 
 func ReadRootArchive(msg *capnp.Message) (Archive, error) {
 	root, err := msg.Root()
-	return Archive{root.Struct()}, err
+	return Archive(root.Struct()), err
 }
 
 func (s Archive) String() string {
-	str, _ := text.Marshal(0xf153ba7dee1c9118, s.Struct)
+	str, _ := text.Marshal(0xf153ba7dee1c9118, capnp.Struct(s))
 	return str
 }
 
+func (s Archive) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Archive) DecodeFromPtr(p capnp.Ptr) Archive {
+	return Archive(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Archive) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Archive) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Archive) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Archive) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s Archive) Files() (Archive_File_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return Archive_File_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return Archive_File_List(p.List()), err
 }
 
 func (s Archive) HasFiles() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Archive) SetFiles(v Archive_File_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewFiles sets the files field to a newly
 // allocated Archive_File_List, preferring placement in s's segment.
 func (s Archive) NewFiles(n int32) (Archive_File_List, error) {
-	l, err := NewArchive_File_List(s.Struct.Segment(), n)
+	l, err := NewArchive_File_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Archive_File_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // Archive_List is a list of Archive.
-type Archive_List struct{ capnp.List }
+type Archive_List = capnp.StructList[Archive]
 
 // NewArchive creates a new list of Archive.
 func NewArchive_List(s *capnp.Segment, sz int32) (Archive_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return Archive_List{l}, err
-}
-
-func (s Archive_List) At(i int) Archive { return Archive{s.List.Struct(i)} }
-
-func (s Archive_List) Set(i int, v Archive) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Archive_List) String() string {
-	str, _ := text.MarshalList(0xf153ba7dee1c9118, s.List)
-	return str
+	return capnp.StructList[Archive](l), err
 }
 
 // Archive_Future is a wrapper for a Archive promised by a client call.
@@ -3162,10 +3424,10 @@ type Archive_Future struct{ *capnp.Future }
 
 func (p Archive_Future) Struct() (Archive, error) {
 	s, err := p.Future.Struct()
-	return Archive{s}, err
+	return Archive(s), err
 }
 
-type Archive_File struct{ capnp.Struct }
+type Archive_File capnp.Struct
 type Archive_File_Which uint16
 
 const (
@@ -3196,166 +3458,180 @@ const Archive_File_TypeID = 0xd92313d72a1ab4d0
 
 func NewArchive_File(s *capnp.Segment) (Archive_File, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 2})
-	return Archive_File{st}, err
+	return Archive_File(st), err
 }
 
 func NewRootArchive_File(s *capnp.Segment) (Archive_File, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 16, PointerCount: 2})
-	return Archive_File{st}, err
+	return Archive_File(st), err
 }
 
 func ReadRootArchive_File(msg *capnp.Message) (Archive_File, error) {
 	root, err := msg.Root()
-	return Archive_File{root.Struct()}, err
+	return Archive_File(root.Struct()), err
 }
 
 func (s Archive_File) String() string {
-	str, _ := text.Marshal(0xd92313d72a1ab4d0, s.Struct)
+	str, _ := text.Marshal(0xd92313d72a1ab4d0, capnp.Struct(s))
 	return str
 }
 
+func (s Archive_File) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Archive_File) DecodeFromPtr(p capnp.Ptr) Archive_File {
+	return Archive_File(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Archive_File) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s Archive_File) Which() Archive_File_Which {
-	return Archive_File_Which(s.Struct.Uint16(0))
+	return Archive_File_Which(capnp.Struct(s).Uint16(0))
+}
+func (s Archive_File) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Archive_File) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Archive_File) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s Archive_File) Name() (string, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
 }
 
 func (s Archive_File) HasName() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s Archive_File) NameBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(0)
+	p, err := capnp.Struct(s).Ptr(0)
 	return p.TextBytes(), err
 }
 
 func (s Archive_File) SetName(v string) error {
-	return s.Struct.SetText(0, v)
+	return capnp.Struct(s).SetText(0, v)
 }
 
 func (s Archive_File) LastModificationTimeNs() int64 {
-	return int64(s.Struct.Uint64(8))
+	return int64(capnp.Struct(s).Uint64(8))
 }
 
 func (s Archive_File) SetLastModificationTimeNs(v int64) {
-	s.Struct.SetUint64(8, uint64(v))
+	capnp.Struct(s).SetUint64(8, uint64(v))
 }
 
 func (s Archive_File) Regular() ([]byte, error) {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		panic("Which() != regular")
 	}
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s Archive_File) HasRegular() bool {
-	if s.Struct.Uint16(0) != 0 {
+	if capnp.Struct(s).Uint16(0) != 0 {
 		return false
 	}
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Archive_File) SetRegular(v []byte) error {
-	s.Struct.SetUint16(0, 0)
-	return s.Struct.SetData(1, v)
+	capnp.Struct(s).SetUint16(0, 0)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 func (s Archive_File) Executable() ([]byte, error) {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != executable")
 	}
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return []byte(p.Data()), err
 }
 
 func (s Archive_File) HasExecutable() bool {
-	if s.Struct.Uint16(0) != 1 {
+	if capnp.Struct(s).Uint16(0) != 1 {
 		return false
 	}
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Archive_File) SetExecutable(v []byte) error {
-	s.Struct.SetUint16(0, 1)
-	return s.Struct.SetData(1, v)
+	capnp.Struct(s).SetUint16(0, 1)
+	return capnp.Struct(s).SetData(1, v)
 }
 
 func (s Archive_File) Symlink() (string, error) {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		panic("Which() != symlink")
 	}
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.Text(), err
 }
 
 func (s Archive_File) HasSymlink() bool {
-	if s.Struct.Uint16(0) != 2 {
+	if capnp.Struct(s).Uint16(0) != 2 {
 		return false
 	}
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Archive_File) SymlinkBytes() ([]byte, error) {
-	p, err := s.Struct.Ptr(1)
+	p, err := capnp.Struct(s).Ptr(1)
 	return p.TextBytes(), err
 }
 
 func (s Archive_File) SetSymlink(v string) error {
-	s.Struct.SetUint16(0, 2)
-	return s.Struct.SetText(1, v)
+	capnp.Struct(s).SetUint16(0, 2)
+	return capnp.Struct(s).SetText(1, v)
 }
 
 func (s Archive_File) Directory() (Archive_File_List, error) {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		panic("Which() != directory")
 	}
-	p, err := s.Struct.Ptr(1)
-	return Archive_File_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return Archive_File_List(p.List()), err
 }
 
 func (s Archive_File) HasDirectory() bool {
-	if s.Struct.Uint16(0) != 3 {
+	if capnp.Struct(s).Uint16(0) != 3 {
 		return false
 	}
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s Archive_File) SetDirectory(v Archive_File_List) error {
-	s.Struct.SetUint16(0, 3)
-	return s.Struct.SetPtr(1, v.List.ToPtr())
+	capnp.Struct(s).SetUint16(0, 3)
+	return capnp.Struct(s).SetPtr(1, v.ToPtr())
 }
 
 // NewDirectory sets the directory field to a newly
 // allocated Archive_File_List, preferring placement in s's segment.
 func (s Archive_File) NewDirectory(n int32) (Archive_File_List, error) {
-	s.Struct.SetUint16(0, 3)
-	l, err := NewArchive_File_List(s.Struct.Segment(), n)
+	capnp.Struct(s).SetUint16(0, 3)
+	l, err := NewArchive_File_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return Archive_File_List{}, err
 	}
-	err = s.Struct.SetPtr(1, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
 
 // Archive_File_List is a list of Archive_File.
-type Archive_File_List struct{ capnp.List }
+type Archive_File_List = capnp.StructList[Archive_File]
 
 // NewArchive_File creates a new list of Archive_File.
 func NewArchive_File_List(s *capnp.Segment, sz int32) (Archive_File_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 16, PointerCount: 2}, sz)
-	return Archive_File_List{l}, err
-}
-
-func (s Archive_File_List) At(i int) Archive_File { return Archive_File{s.List.Struct(i)} }
-
-func (s Archive_File_List) Set(i int, v Archive_File) error { return s.List.SetStruct(i, v.Struct) }
-
-func (s Archive_File_List) String() string {
-	str, _ := text.MarshalList(0xd92313d72a1ab4d0, s.List)
-	return str
+	return capnp.StructList[Archive_File](l), err
 }
 
 // Archive_File_Future is a wrapper for a Archive_File promised by a client call.
@@ -3363,7 +3639,7 @@ type Archive_File_Future struct{ *capnp.Future }
 
 func (p Archive_File_Future) Struct() (Archive_File, error) {
 	s, err := p.Future.Struct()
-	return Archive_File{s}, err
+	return Archive_File(s), err
 }
 
 const schema_df9bc20172856a3a = "x\xda\x94Z\x0fp\x14U\x9a\xff\xbe\xee\x99L\x82\x84" +
@@ -3373,278 +3649,278 @@ const schema_df9bc20172856a3a = "x\xda\x94Z\x0fp\x14U\x9a\xff\xbe\xee\x99L\x82\x
 	"Oo\xa5\x14v\xad\x95;=\x17]j\x85\x92]\x97" +
 	":=\xd1\xb5\xdc\xf5\x8eS\xa9\xa5V\xfc\xb3Wg\x89" +
 	"W\xee\xb9w\xbb[b_\xbd\xee\x9e\xee\xce$1\\" +
-	"QEu\xbf\xf9\xfa{\xdf\xff\xef\xf7\xbd\x97e(\\" +
-	"\xc3-\x8f\xaeK\x01d\xdf\xe7\xa2\x0d\xf6\xf1o}\xb1" +
-	"\xb4\xf9\xdf\x8f\xde\x01\xc2\x9c\x88\xdd3|\x97\x81\xc7\xbe" +
-	"\xfbk\x00\x14wIo\x8b\x0fK1\x80\xec\x03\x12\x8f" +
-	"\xd9\xc7%\x0e\x01\xec\xd7O\xff\x86\x0e/\xf9\xeb\xbb@" +
-	"\x9e\x83\\@\x1f\x8d\xc6\x00\xc4=\xd2\x11\xf11\xe92" +
-	"\x80\xee\x9fI6\x02\xda\xcf]\xfd\xc6\x99\x83\x9f\xff\xea" +
-	"oAX\x80\xf6y\xeb\xba.Y\x7f\xe4\x9d\x0f!\xca" +
-	"\xc7\x00\xba\xffp!\x87b\xb4\x8d}\x87m\xcf\x01\xda" +
-	"-\xdd\xdf\xbbc{y\xf6\xdd\x8cuH\x94\x08\xa38" +
-	"\xd4\xb6_<\xea\xd0\x1en\xfb\x0f@\xfb\xdb+n\xbe" +
-	"y\xd5\x17\xc7\xef\x05y>r\xf6g_\xac\xdf\xdc\xb1" +
-	"\xeb\x95\xf7a-\xc6x\x8ct\xef\xbeh.\x8a{/" +
-	"b\xbb<v\x91\xc4\x04\x89\xbe\xdd0t\xd1)y7" +
-	"\xc8s\xa2\x8d\x13\xd4<\xd0~R<\xd4\x1e\x13\x0f\xb5" +
-	"K\xd9_\xb5\xf3\x8c\xf8\xe5\xd3\x0d\x07\xb3\xdf\xf8\xf6w" +
-	"@\x98\xc3M\xa0}\xb3\xfd\x88x\xa2\x9d\xb1\xfde{" +
-	"\x9cQ\xd2w\xe7\xf1\x9d\xbd#\x0fMf\xbbv\xf1\xf3" +
-	"\xe2\xe0bf\xbd\xf5\x8b\x1d\xa6/\xde\xfa?\x0b\x0f\xbe" +
-	"\xf1\xc2#Lb\x0c$\x9e'\xc4\x10@\xbcb\xf1o" +
-	"\x01\xc5\xd5\x8b\x99\x1d\x0e\xa4\xf9Y\x91\xff\xfe\xc6\xa3\xcc" +
-	"\x0e\x182q\x03S\xff\xf4\xe2\x93\xe2\x19\xc6\xb7\xfb?" +
-	"\x17\xdf\xcf\xf8\xde\xf4\xc6\xab\xad\x0d\xdb\xce>:5\xdf" +
-	"]K>\x01\x14w/a6\xfb\xbb\xd7\xe9\xc6\x91\xeb" +
-	"\xb7\xff}\x1d\xe5\x16!\x86\x11\x00\x91t\xfc\x11\xb0\x9b" +
-	"v8\xf6:\xef'\xbb\x12?x\"\xf1\x04\x08s\xea" +
-	"E\xe8\xbe\xeb\x12\x0e\xc5=\x97\xb0\xc7\xdd\x97\xdc\xc8\xa8" +
-	"\xef\xdf\xb0\xf5\xce\x9b\xde\xde\xf2\xe3z\x899&\xf1\xd9" +
-	"\xa5\x9f\x88M\x9d\xec)\xda\xc9\xd4[x\xc5\xeb+\x16" +
-	"=\xfc\xf6\xe1:\xd6\xc8(\xf6u\x9e\x14\x9fuh\x0f" +
-	"t\xa6\x00\xed\xb7\xbeu\xf1\x93\xcf\xcb\xfd\xaf\x820\x1f" +
-	"\x83\xd0s\xe2G<\xde\xf9G\xf1\x84C\xfbK\x87\xef" +
-	"G\xef\xbc\xfa\xd3\xb1\xa5\xfaq\x10\xfe\x14\xedG^." +
-	"-\xbf\xfc\x8e\xfbN\xb9\x81\xd9\xfdpW\x0f\x8aOu" +
-	"\xb1\xc7}]\x8e\x82V\xfc\xde\xa5_\xf4\xa9\xef\xd6\xfb" +
-	"\xb8\xfb\xf8\xa5\x1c\x8a'.u\x9c|\xe9[\x8c\xf4\x17" +
-	"?\xba\xa0\xe3\x1d\xf1\xa2\xf7@\xfe\x13\xe4\xec\x05{\x16" +
-	"~6v$\xfb9\xac\xe5b\xccl\x9d+O\x8aW" +
-	"\xacd\xe4+W\xba\xc6\xd8sd\xef\xd1\xd2\xd1\xf7@" +
-	"\x98\x1f\x09d\x06\xec\xde\xb7*\x8d\xe2\xc1U,&\x9e" +
-	"Y\xc5c\xf6\xc5UNF\xf9\xa2\xd6\x19\xcfQ\xf2\xc0" +
-	"\xaa\x93\xe2\xa1U\xf3YF\xadr\xe4\xf6\xddVG-" +
-	"0\xea\xdf]vD<{\xd9b\x80\xeey\x97k\x1c" +
-	"\xa0\xbd\xed\xa4}\xed\xbf\xae\xf9\xf0\x83\xbaluR\xaa" +
-	"\xdasL\x1c\xebaO\xa3=\xdb!\x94\x9eS\xf8\xe5" +
-	"D\xcf1\xf1T\xcf|\x00\xf1\xe3\x9e\x94c\xbd\xc3\xff" +
-	"\xf0\xc2\x07\xb7}TG\xeb\xf8\xfb\xfc+\x9f\x17/\xbc" +
-	"\x92=-\xba\xd2\xe1\xfbl\xe3\xdcG\xf7?\xf8Q]" +
-	"\xd8\xad\xe5b<\x80x\xfb\x95\x1f\x88\xbb\x1d\xea]W" +
-	">\x07\xf8\xd5\xd6\xcb\x1ey\xf0\xbb\xaf|\xec\xd0\x06\x0e" +
-	"w\xaaK\xf4\xaa\xdf\x8a\xc2U\xcc\xd2\xcdW9\xb6\xb8" +
-	"\xbb\xf0\xc2m\x8b\x0f?\xfd\xe9TR4\xad>&\x0a" +
-	"\xab\xd9S\xf3j&\x85\xef\xb6)\xb4\xbbu\xf5\xf3\xe2" +
-	"\xe8j\xa6\xdd\xed\xab\x99v\x97\xc7s\xff\xf4\x83\x85\x8f" +
-	"\xff\x01\xe4?C_\xa2-\xd1\x18r\x00\xdd\x07W\xb7" +
-	"!\xa0x\xd8\xe1\xfa\xc4u\xabW\xdd\xba\xf3\xd7gA" +
-	"^\x88!M\xe7q,\xf9\xba\x97\\\xcd1\xd2\xce\xab" +
-	"\xb7\x83\x1d\xfa\xf7\x90\xad+\xf9mJ\x91tqyE" +
-	"W\xf5\x9e\x8aR\xa4\xf9\xeb\xaa\x95\x1cA#\x83\x88\xcd" +
-	"\xc0a3\x80\x80i\xfb\xfeW\xdf\xfc\xaf\xb5\x17|\xf2" +
-	"\x08W\xfb\xc4\xfdbPI\xa9t\x88\x98\x96<\x1b\xc3" +
-	"\x11'\xdc\x13J\x99y\xe9\x9a\xec\x82\xd0c\x9bt'" +
-	"\x19\xa0\x15\x8aV\xbfz\xa3f\x14L\x80\xf1>\xadR" +
-	"Q\xd4B\xaa7oQM\x95\xdb\xf9\x08F\"\x08 " +
-	"\x9c1\x00\xe4Oy\x94\x7f\xcf\xa1\x10\xc5\x04\xb2\xc5\xdf" +
-	"\xb1\xc5/x\xdc\x84\x1cb,\xc1\xac!\x9cM\x03\xc8" +
-	"\xbf\xe71\x9b@\x0e\x85FL s\xaa\x80w\x00d" +
-	"[\x90\xc7\xecB\xb6\x8e\\\xc2)1\xe7\xe3V\x80\xec" +
-	"\x02\xb6\xde\xce\xd69>\x81Q\x00\xf1B<\x06\x90m" +
-	"g\xeb\xcb\xd8:\xcf%\xb0\x81\xe5\x16\xee\x07\xc8.c" +
-	"\xebW!\x87-|\xc2\xf1\xd7\x15\xb8\x01 {9[" +
-	"^\xc3\xc8\x1b\"\x09l\x04\x10{\x9d\xf5k\xd8\xfa\x00" +
-	"rhW\xa8\xda\xab\xd3\x1b\x08H\x86I5\x15\x1b\x81" +
-	"\xc3F@\xbb\xa2\xec\x98j}\\q\xcc`\xe2\x1c\xc0" +
-	"\x0c\x8f\xd8R3\x1f [\xb2\xf3\x9ajQ\xb5J\xd0" +
-	"3\x1b`K`m@l\x01\xb4\x15]\xbf\x81\x18&" +
-	"\x05>\xbc\x1fU\xb7\xe8EC\xe1\x0aJ\xaeLz=" +
-	"\x12M\x05\x9fB\xd1\xf5A\xc5\xd8F\xd0\xa2j\x91\xfd" +
-	"\x1acr\xb5\xd8\xfd\x1f\xfc\xcde\xc6\x8f\xff\xf2\xde\x10" +
-	"\xfb\xcd\xd4*\x13\x00\x98\xe2\xd7\x0a\xb1\x94\x82b)\xee" +
-	"\xaf~\xa6y\xbf\xd6\"\x88wC(\xabU\x8d<\x19" +
-	"T\xf4\xaeAE\xd7\xa9Z\x84\x0c\xa2<\x9b\x8f\x008" +
-	"!\xb06\x07 \xaf\xe1Q\xce0\x07z!0\xb8\x15" +
-	"@\x1e\xe0Q\xbe\x89y\x8fsc`\xcb&\x00y3" +
-	"\x8f\xb2\xce\xf9\xbbd \xa6X%\x9c\x0d\x1c\xce\x06\xb4" +
-	"Mg\xb3\x8c\x02|h\xb1D\x0b$\xa3X%@\xdf" +
-	"\xe4\xec\xa79!Y\xd1\x95\xb5W\x8f\xe9\xfd\x05&_" +
-	"\x8b/\x9f\xd2\x06 \xff\x05\x8fr)$\x1fa\x8b\xb7" +
-	"\xf0(\x97C\xf2Q\xb6Xp\xe5\x13x\xde\x09Q\xa1" +
-	"\xc2\x16K<\xca\x16\x871ZX\x86M\xc0a\x13\xb0" +
-	"\xe7\xe5\xa1\xe7d\xe8\xb9\xbb\xf6\\o\xcaA\xcf\xee]" +
-	"\xd9\xbcA\x88j\x964\xb4\x98\xb0\x09_\xd8\xb1$\x80" +
-	"\xbc\x83G\xf9\xce\x90\xb0\xb7\xf7\x00\xc8\xb7\xf1(\xdf\xcd" +
-	"a3g\xdb\xae\xb4w\xb1\x8c\xfa&\x8f\xf2}\x1c6" +
-	"\xf3_\xd9\xae\xb8\xbb\x98\xb8w\xf2(?\xc0as\xe4" +
-	"\xac\xed\xe4\x93\xb0\xbb\x03@\xbe\x9bG\xf9!\x0e\xa5\xed" +
-	"\xb4`\x95j\x11\x95*\x11Z,Y~hW\xd5m" +
-	"\xaa\xb6]\x85\x86\x98\xae\x16\xbd\x02\x83\xf1a\x9d\xf8/" +
-	"\xf5E)\xafX\xa4\xa8\x19\xa3\xfd*?\xa41m\"" +
-	"\xc8\xd9\x9f\xef\xbet\xfe\xdc[\x0e\x1f\x039\xc2a\xef" +
-	"\x02\xe60\x10\xf0\x88\xdd\xe7\x11c\xbf:\xa4\xf5\xaa\xaa" +
-	"\x96\xb2\x14\x96KN \xfa\x0d\x7f\xb2c\xfb\x94\x94\xfb" +
-	"!\xdb`)r8K\x18K\x0ac\x12\x80\xb0wX" +
-	"\xd8'!\x0a\xaf\xec\x14\x8eK\xc8\x09gz\x843\x12" +
-	"\xf2b3\x1a\xa2\x80\x12F\xc4\x95\xd8#\xaeD\x09\xa3" +
-	"\xe2\x16\xdc)\xde\x8c\x126\x88c\x98\x16\xc7P\xc2F" +
-	"q/&\xc5\xbd(a\x93x\x14\x93\xe2Q\x940&" +
-	"\x9e\xc2\x0d\xe2i\x94$\xcd*\x11\xc3Q(\xc0\x85L" +
-	"\xa1\x04\xcb\x14\xb8\x06\x05LJ\xd73\x1a\x00[7\xb4" +
-	"B5oQ\x88\x8fPkt\x8a\x8f\x16\xf8\x1f\x0d\xdb" +
-	"\x99\x09\xc4\x00v^\xabT\xaa*\xcdC\xca\xb1\x87\xf9" +
-	"\xb5\xdf\xef\xb4\xfb\xea\xc8\x01R\xa6\x96\xa7J\xf9k\x85" +
-	"\xedIe\x1d\"\x00{;\xc9e\xaa\xb92\x05\xc9," +
-	"Q\xb58\xc3v7\x92\\+#\x87\x14u\xc8\x01R" +
-	"\xda\xd0\x10\xcd\x93\x19\xb6\xbb\xde!\x02\xb0\x0bd\x84\x94" +
-	"5\x9d@\xca\xd8\xaci\xe5\xafWo\x83\xbd\x86\x8c8" +
-	"d\x008n\xe6)Qg\xd8)=\x9eu\xa9\x00\xa4" +
-	"\x0a)Pe\x06\x9f\x0d2\x1a\x00\xa9\xa8T\x889\x03" +
-	"\xed:F\x03`\x17\x0dE/\xd1\xbc\x09\x003H\xbf" +
-	"\xce\xa7\x9c\x14\xc7\x9a)Q\x16\xfa\xac{\xb7\x04px" +
-	"rV\xf9\xa5B\x91\xaaVI3X\xc1\x15\xb01\x81" +
-	"\xe7\xb1\x92;\x1c*\xb9\\S\xc2\xc9\xae\xc1\xe1\xa0\xe4" +
-	"\xb6\xb4$Pd\x15w\xa7Wqo\xe1\xdc\xb6\xa4\xe4" +
-	"\xad\xb5\x10\xaf(\xb4\xecWW\xbd\xa8giQU " +
-	"nU\x0d\xe2gyU7-\x83(\x15H\xf5:\x02" +
-	"\x04\xf4\x13\x05\xbd\x81\x18t\x88\x92\x82\x9f\xfe\x0b\xfdb" +
-	"v\x88\x15\xb3\x1f\xf2(\xbf\x14*f\x87Y\x13x\x91" +
-	"G\xf9\x9fC\x95\xf7g\x8c\xf2%\x1e\xe5\xd78D\xaf" +
-	"\xf0\xbe\xc2\xea\xdb\xcb<\xca?\xe7P\x88\xf0n!;" +
-	"~\x0f\x80\xfcs\x1e\xe5w\x19\xde\x888\xa8@8q" +
-	"\x0c@~\x97G\xf9#\xd6\xe3\xa3\x0e$\x10No\x00" +
-	"\x90\xdf\xe7Q\xfe\x94CI\xd1\xf5\xfe\x02\xb6\x04\x93\xe3" +
-	"\xc4V\xd7\x0f\xc8~\xf5A\xb0\xfb\xabd\xb1\x0e:\xb9" +
-	"}\x8e\x8f\x90z\x98`l#\x16U\xb1X\xeb\xd7S" +
-	"5]\xc51c\xa6\xc8\xe9\x1b\xc9\xe8\xb5T-\x12C" +
-	"7\xa8j\x81o\xd9sk\xcb\xf5\x01B\xe3yV/" +
-	"B\x0d/=U\xc3KN\xd5\xf0z\xc2\x0d/\x9e\xc0" +
-	"\xb9\xac\xe11\x07\x95y\x94wp8\xae\xe8\xfa:\x83" +
-	"2\xe3\xf8\x98\xd53N\xd1P\xa8:y=\xe5\x1ac" +
-	"\xf2\x0f\x9e\x95\xd2\x14\xb08\xc5\xaf\xd3iWN\xd1<" +
-	"QM\xc2z\xe4l\xd6\xfa\x98\xc3\xc7:\x82.\xb9\x08" +
-	"\xbf\xb2\xd1u\xf9\xed[\x83\x8e\xb8\x88;kG\x1d\x14" +
-	"(\xec\xca\x05\xcdo\x11\xff%[n\x04\x10\xf6\xb0|" +
-	"y\x80G\xf9q\x16_\x0d\x09l\x02\x10\x1ec\xb6{" +
-	"\x88G\xf9I\x0e\xe3\xaa\xa6\x12h\xb05\x9d\xa8\x0c\x04" +
-	"\x01\x9f'\x18\x0f\x06B@\x8c3\xc9\x0dM7(\xb1" +
-	" \xa6\x18\xa3S\xf8]ge6\xbfFs\xd2n\x0a" +
-	"\xac6\xaej\x16\xcd\x13s\xaaO'\xc2\x87\x8c\xfb\xba" +
-	"\x86\x0cQ\x95:]\x93\xe5\xdb\x02\xdf\xf1\x8f]\x10\x08" +
-	"\xef;~/\xcb\x83\xc7y\x94\x9f\x0e9\xfe)\xe6\xe3" +
-	"\xef\xf3(\xff0\x84t\x9ee\x94\xcf\xf0(\xbf\xc8\x0c" +
-	"\x12q\x13\xee\x10\xc3\xf2?\xe2Q\xfe\x05K\xb8\xa8k" +
-	"\xff7\x87\x83,\xe4i!\x08`\xc5\x1d6\xdc\x00\x0e" +
-	"\x8d\xb4\x8e6\xa6\x07$\x01u\x16\x00\xb5)\xd2\xfbu" +
-	"\x88\x96\xc9\x00u\xbf\xad\xf1S\xca\xdb\x95Q\xb3_\x05" +
-	")_\xae\x16H=\xf8\xcb\x19\xb4P$}\x1a\xc4\xd5" +
-	"!\xca\x82\xca\x9f\x90\xa7\x0e\xaa\xebM:\xe0FS\xdc" +
-	"\xab\xc1a\x18\xcb\x8cw\x0d\x8f\xf2@\xc8x\xfd\xc9\xa0" +
-	"\xd0\xb2\xd9\x84C\x14\x06\x8d\xa0\xce\x86\x94\xf7\xaaEM" +
-	"t\x83\xdcZ\xa5\x06\xc9\x82\xe4h\x8d\x08\x1c\xe2d\x91" +
-	"\xfa&\x81'_\xa0f\xb6w#\x8fr\x82\xabg^" +
-	"\x9f,\x9e\xd9\xbb\xfaR\xee\xc0\xe1i\x86\x9c\xab\xd9\xeb" +
-	"\xa1\xc6\xe0)\xb6\x85eP\xc6+\x07X+\x07i\xaf" +
-	"\x1c|\x93C\xbb@t\x83\xe4\x15\x8b#\x85\xb5;H" +
-	"\xbej\xb1\x91\xc4A\xe1\xbe\x7f\xe2\x8aQ\x1c\xa9s\xca" +
-	"8QG\xa8\xa1\xa9\xfeld\xb7\xaf8\xf8\x8f\x1f\xdd" +
-	"\xfe\xe4C\xe0MGuA\x9d\xf6\x9c\xc8\\\xd8\x95\xd1" +
-	"\xb6\x13#\x95\xd3\xd8\xd8U\x07\x8c;\xa6\x02\xc6\xb9 " +
-	"\xe1\xfd\xd8\xde\xd5\x11 `?\xb6w\xb7\x055\xc0\x8f" +
-	"\xed=9\xaf\x02<\xc3\x92]\xa9\x04\x06.PS/" +
-	"+\xa3\xfd\x10S\x874l\xb1?\xbd\xe4\xc3\x9f4\xed" +
-	"\xcf>\xe5\x05V\\\x0f\xcd,1Ka\xb1\x97\xfcl" +
-	"\xec\x86\xd7\xff\xf7\xf4w\xfc\xd8#F\x85\x9a&\x85X" +
-	"hR\xc4\xba\xb1\xc5\xb3\xc1\xf5^\x85\xc9\x13/>\x9d" +
-	"\xc4\x1ep\xd49\x95f\x1c\x85\x13m\xc2\x09\x0991" +
-	"\x8ai1\x8a\x0c\xdf\xae\xc6\x0eq\xb5\x83o+\x98\x14" +
-	"+\x0e\xbe\xdd\x87[\xc5\xa7\x1c|\xfb\x1en\x15O9" +
-	"XV\xe0:D\x81cH\xb7\x97K\x8a\xbd\x1cC\xba" +
-	"U.)V9\x09g\x89\x07\xb86\xf1\x00'\xe1y" +
-	"\xe2{\xdc&\xf1\x14'\xe1lq\x1e\x9f\x16\xe7\xf1\x12" +
-	"6\x8b\x83|\x878\xc8K8G\x1c\xe3;\xc41^" +
-	"\xc2\xb8x\x88\xef\x10\x0f\xf1\x12\xb6\x88\x1f\xf3m\xe2\xc7" +
-	"\xbc\x84\x82x~\xa4C<?\"\xe1\\\xf1\xe6H\x87" +
-	"xsD\x1a\xa7\xea\x88R\xa6\x85X\x85Z\x0eZ\x0a" +
-	"\x0e@\x19Zjw\xd0R\xc6Q0\xda&Ds\xb1" +
-	"\xc1\xfe\xcd\xf6`\xff\xe6Vf\x00\x881\x13\xc0\xb8\xa2" +
-	"+\xf9\x12IN\xf1\xfd\xd2\xf0\xf7[\x85\xa6\x07\xed^" +
-	"\x87\xb63\x09|\xd72\xef\xa5u\x00]k\xb6\x8e`" +
-	"\x12 ^\xd4\xcb\xdd_'\x0b\xa2\x10M\x0b\xd1\xad\xe3" +
-	"\xeb2\x03\x9d\xdd]\xcb\xecu\xd7mi]\x97\x19h" +
-	"\x05~\xa4\x1b@R\xa6apq\x98\xc1\x06\xa1)g" +
-	"\xf7z\x1c\x00\xc0a\xc2\xde!\xd6\xca\xb8\xd89\xb3\xd0" +
-	"\xddWV\xaa\xc0\x9b\xe4\xeb\x981\xcd\x86\x85\xa6a;" +
-	"\x9d]\xd3\xd9\xdd\xd9W\x86\xb8R5\x09{m\x0d^" +
-	"]\x86\xc9\xff7\xc3\xe4D\x86\xc9\x10Cf\xa7\xe49" +
-	"\xdb)9\xd1NI\x00\xa9<\x0d\x83z;\x19\xf6\x80" +
-	"\xcbay\xcdN\xec\x1d\xa4\xd6\x11g\xc9\xe1sn\xf6" +
-	"\x1e\xa8\xb3\xf7@`\xef\x185\xf3\xe7\x14\x80\xfd\xd9>" +
-	"\xbb?\xdb\x17\x0e@[1,jZ4\x0f8c\x10" +
-	"\x0e\x0bM\xfb\xed\xde\x1a}\xdc\xb1K\xed\x15[\xbd\xb4" +
-	"\x8e\xb52\x03\x8d\xeb\xa3VIS\xcf-\xae3\x0e\xad" +
-	"\x17\xd7\xeeK}\\\xeb%\xbd{&\x15\xd3Bt\xe7" +
-	"xf}\xc6\x89\xeb\xcc\xfa\x8c\xabf\xcaa\xd2\x0d\x10" +
-	"\xafL\xed\xb2\xa5u>\x7f{|\xd0\xf3\xf9\xa0\xb6\x93" +
-	"\x96\xcbJ+\xe7L\x91\xf9\x9a\x86\x9eH\xf9B\xa1<" +
-	"S\x08m\x10\x9a:\xec\xbe5k\x06:\x97;\x9e\x8b" +
-	"\xb3g\x80\x18\xd1\xcb39=-D\x8f\x8c\xaf\xcd8" +
-	"_\xdak\xf3e\xaa\x9b\xa4\x15k\x92x\x88\x91\x89\xa1" +
-	"+S\xf1Z1A\x8c\xe5Ms\xd1\xee\xcb\xf4\xd6\xe4" +
-	"pfkMm\xcd\xf0.\xbf^\xcb2h\xae\xca\xf0" +
-	"\x96\xa7%2\xde;\xcb47S\xbau\x08\xd1\xfd\xf1" +
-	"\xade\x9a\xb3\xd9\x7f\x97\x96i\x0eu\xb5\xe8p\xf1\"" +
-	"\xac\xae\x93\xf7\x1a\xf9\x12\x1d!]\xd7R\xbeL\xea\xc0" +
-	"]G\x00\xee\x16q\xb6]\x83w\xacg?\xca\xa3\xfc" +
-	"}\x06n\x1d(\xcc\xb6\xde\xc7\xa0\xf0\x93nk[\x14" +
-	"9k\xbb\xe7\xad\xc2\x81t\x80\xfb\x16E\xbfd\xcb\xac" +
-	"\x11>\xbb\xc9C~\xafy\xcd\x95\x81\xbcW\x8e\x00\xc8" +
-	"\xaf\xf1(\xff[]w\x1c7H\xb1ZV\x0c\x7fT" +
-	"$\x1e>\x00\xbe\xec\xcf\x8f\xe3\xe6h\xa5L\xd5m\xa1" +
-	"\x96j\x90\xbc\xa5\x19\x80\xa3\x016\xf0oL<lP" +
-	"VLkP+P\x1c\xa2y\xe7`#\xb5\x99V\xc8" +
-	"u&F\x81\xc3h\xa8qF\xea\x90O\xed\xd0\xda?" +
-	"\xb3f\x03\xb6s\x0a\x17i\x99l\xe6\x00s\xf0\xb4(" +
-	"G0|'\x849\xdbA!9m\x07\xc4zu\x1a" +
-	"\xc6 \x1b\x82s8\x1f\x83\x84\x8f\xe1j@j\x17\x9b" +
-	"R\xef\xe3Q~\x94\xa1\x0d\xce\xb5\xfd\xc3\xc3\x9e\x03\x1d" +
-	"\xcc]\xb3\xfc\xce\x00s\xdb#\x94lg\xc0\xd4\x85\xcf" +
-	"\xe47O\xf7\xae[\xf9W/\xd5\xc6\x04E\xa7\x99\x09" +
-	"G\xa5\xca\x08\xe9/\x10\x15-j\x8d\xf6)\xba\xc9\x08" +
-	"k(\xb3\xa6A\xbcW\xa7\xc19u\xa0\xa6go\xb2" +
-	"C'y\xabW\x87\x94\xbe^\xd3\xb6\x99\x93`*\xd6" +
-	"\xc6\xb1\x94;\x8f\xc9\x8d\xe1\xeb\x0b\x96\xc1\xfe\x05\xab\x10" +
-	"\xdd\x1a\xef\xcfk\xaa];\xdc\x04^\xb3\xe4\xa5\xccz" +
-	"\x18\xba}\x14\xff\x1c\x93\xc0\x09\xde\x94/6c\x1a " +
-	"\xdb\x88\xb5\x9b\x01\xce\xc5f\xa2\xe0\xac\xcff\xeb\x0bX" +
-	"\xa2\xf2\x18\xba\x97\x14\xe7a\x1a8!\x12K\xe0,\x00" +
-	"\xe1,\x0b\xf6/k\x94Q\x0c\xdd\xa1\x8a\xf3\xb0\x078" +
-	"\xa1aV\xc2\xb9(\xf1)\x1b\xd9^\xb1\xf3\x128\x07" +
-	"@\x8cb\x0e \x1ba{\xb58\xb7\x13\xb3\x13\x18w" +
-	"d\xbbg\xc2\xedDSs\x82%\xb7x\xbeC\xef\xdc" +
-	"N\xac`\xeb\xb3\xe6$P\x00\x10\x97\xe3\xa6\xf0-\x84" +
-	"D\xd9`>\xbe\x9d\xe4Lj\x05\xd9\x93\xd7\x0ad\x8b" +
-	"\xe1\x9f\xbf\x8c\x97\xddre{\xe7\xa8\x14x\xe2{," +
-	"\x1e\\1\xbb\x1eK\xb9\xa7\x08\xb6^\xd47\x92QF" +
-	"\x1c\x9c\xd2\xda\x05b\xe6\x0d\xaa[0\xcd\xa5\x80Y\xd2" +
-	"\x0ck\x0d1\xd1\xa1\x9a\xee\x9c\xc2\xac\xb9/\xa6Y\xa1" +
-	"\xd0\xf1\xfd\\\xbb\xe4()j\x91\x0ch\xee8?\xdd" +
-	"\xe4\xcaM\x98\\\xfb\x0b\x0e\xb0m\xf43j\x09\x83\xe5" +
-	"\xed<\xca\xcbB\x19\xd5\xc9\x16/\xe6Q^1\xfd\x89" +
-	"{\xfd\x06\xfe%\x058\xe9\x1c\xfc9\x01\xa6\xc7\xbdk" +
-	"\x8b\xf0h\xc5\xc2`6\x8f\xf2\xc5\x1c\xda&Q\x8c|" +
-	"\xc9\xbbr\xf0\xd5\xf59\xd4M-^Bl$\xd2\xe8" +
-	"\xb5\xd4\xad\xd1!u6\x05\x92\xfb\xea,g\x9b-\xe3" +
-	"Q\xbe\x8a\xab\x1d\x06l$\xac\x0a\xfa\xe7\xe9\x06\x1dQ" +
-	",\xb2\x11x2:\xdd!\xbb\x7f\x1e\xd2\x1f\xcbk\xaa" +
-	"7\xdf\xcd\xb6mw\xc0K\x07\xa3k3~e{\xb3" +
-	"k[0\xbb6sgm\x0c\xddB\x0a\x83m\xc0\x85" +
-	"\xce\xfa\xcd\x91\xa2?\xce\xe8jq\xda\x01\xb3Wrn" +
-	"\xbe\xfc\xd1\x0cCw\xa0\xc2\x98\x93\xd7^\x03\"\xe9\xba" +
-	"\xf3&V\x02i2t\xdeT;\xd2\xab\xe4\x82\xf3&" +
-	"\x81\xf7\x8e\xf4\xaa\xcch\x96;\x8aJT\xd5\xab\xd6x" +
-	"\xde\x9dm'\xdf\xa5MwN7c>\xa8ZU\xcd" +
-	"\x94\x0c\x85!\xe7\x99c\xd89$\xb5\xaa\x06\x81sq" +
-	"\xfa\xa6\x19\x9cnz\xdc\x00\xc9$\x9f\xd7.\xb3\x0c\xc9" +
-	"A\x03ND\xfb\x9dR\xc0\x8e8\x8b\xbc\xa9N\x0a\xda" +
-	"9\x94\x86h\x99\x98\xd3w\xd8\xfa\x1b)\xdf\xb3\x8ec" +
-	"\xbb\xa8\x1a\xd3\xab\x16\xd3\xae\x16\\K:\x82\x14\x0d\x82" +
-	"\xab\x93\xf9g)\x8f\xf2\xfa\xe0\x9c,\xaf\xe8J\x8e\x96" +
-	")\xf0V\xa8\xc5\xdf\xb4\xf0_~\xfa\xbd\xf8[g\xa6" +
-	"\x13\xc0\x0f\xec\xbc\xa6v\xe9j\x11\\\xd3\xbaQ\xb4$" +
-	"YW\x1fX\x14u&\x03\x83K\x05\x9d.\xdfQ\xb3" +
-	" {K\xfao\xff\x17\x00\x00\xff\xff5\x1bG\x9f"
+	"QEu\xbf\xf9\xfa{\xdf\xff\xef\xf7\xbd\x97e\xbcp" +
+	"Mdy\xf3\xba\x14p\xd9\xf7\xb9h\x83}\xfc[_" +
+	",m\xfe\xf7\xa3w\x800'b\xf7\x0c\xdfe\xe0\xb1" +
+	"\xef\xfe\x1a\x00\xc5]\xd2\xdb\xe2\xc3R\x0c \xfb\x80\xc4" +
+	"c\xf6q\x89C\x00\xfb\xf5\xd3\xbf\xa1\xc3K\xfe\xfa." +
+	"\x90\xe7 \x17\xd0G\xa31\x00q\x8ftD|L\xba" +
+	"\x0c\xa0\xfbg\x92\x8d\x80\xf6sW\xbfq\xe6\xe0\xe7\xbf" +
+	"\xfa[\x10\x16\xa0}\xde\xba\xaeK\xd6\x1fy\xe7C\x88" +
+	"\xf21\x80\xee?\\\xc8\xa1\x18mc\xdfa\xdbs\x80" +
+	"vK\xf7\xf7\xee\xd8^\x9e}7c\x1d\x12%\xc2(" +
+	"\x0e\xb5\xed\x17\x8f:\xb4\x87\xdb\xfe\x03\xd0\xfe\xf6\x8a\x9b" +
+	"o^\xf5\xc5\xf1{A\x9e\x8f\x9c\xfd\xd9\x17\xeb7w" +
+	"\xecz\xe5}X\x8b1\x1e#\xdd\xbb/\x9a\x8b\xe2\xde" +
+	"\x8b\xd8.\x8f]$1A\xa2o7\x0c]tJ\xde" +
+	"\x0d\xf2\x9ch\xe3\x045\x0f\xb4\x9f\x14\x0f\xb5\xc7\xc4C" +
+	"\xedR\xf6W\xed<#~\xf9t\xc3\xc1\xec7\xbe\xfd" +
+	"\x1d\x10\xe6p\x13h\xdfl?\"\x9ehgl\x7f\xd9" +
+	"\x1eg\x94\xf4\xddy|g\xef\xc8C\x93\xd9\xae]\xfc" +
+	"\xbc8\xb8\x98Yo\xfdb\x87\xe9\x8b\xb7\xfe\xcf\xc2\x83" +
+	"o\xbc\xf0\x08\x93\x18\x03\x89\xe7\x091\x04\x10\xafX\xfc" +
+	"[@q\xf5bf\x87\x03i~V\xe4\xbf\xbf\xf1(" +
+	"\xb3\x03\x86L\xdc\xc0\xd4?\xbd\xf8\xa4x\x86\xf1\xed\xfe" +
+	"\xcf\xc5\xf73\xbe7\xbd\xf1jk\xc3\xb6\xb3\x8fN\xcd" +
+	"w\xd7\x92O\x00\xc5\xddK\x98\xcd\xfe\xeeu\xbaq\xe4" +
+	"\xfa\xed\x7f_G\xb9E\x88a\x04@$\x1d\x7f\x04\xec" +
+	"\xa6\x1d\x8e\xbd\xce\xfb\xc9\xae\xc4\x0f\x9eH<\x01\xc2\x9c" +
+	"z\x11\xba\xef\xba\x84Cq\xcf%\xecq\xf7%72" +
+	"\xea\xfb7l\xbd\xf3\xa6\xb7\xb7\xfc\xb8^b\x8eI|" +
+	"v\xe9'bS'{\x8av2\xf5\x16^\xf1\xfa\x8a" +
+	"E\x0f\xbf}\xb8\x8e52\x8a}\x9d'\xc5g\x1d\xda" +
+	"\x03\x9d)@\xfb\xado]\xfc\xe4\xf3r\xff\xab \xcc" +
+	"\xc7 \xf4\x9c\xf8\x11\x8fw\xfeQ<\xe1\xd0\xfe\xd2\xe1" +
+	"\xfb\xd1;\xaf\xfetl\xa9~\x1c\x84?E\xfb\x91\x97" +
+	"K\xcb/\xbf\xe3\xbeSn`v?\xdc\xd5\x83\xe2S" +
+	"]\xecq_\x97\xa3\xa0\x15\xbfw\xe9\x17}\xea\xbb\xf5" +
+	">\xee>~)\x87\xe2\x89K\x1d'_\xfa\x16#\xfd" +
+	"\xc5\x8f.\xe8xG\xbc\xe8=\x90\xff\x049{\xc1\x9e" +
+	"\x85\x9f\x8d\x1d\xc9~\x0ek\xb9\x183[\xe7\xca\x93\xe2" +
+	"\x15+\x19\xf9\xca\x95\xae1\xf6\x1c\xd9{\xb4t\xf4=" +
+	"\x10\xe6G\x02\x99\x01\xbb\xf7\xadJ\xa3xp\x15\x8b\x89" +
+	"gV\xf1\x98}q\x95\x93Q\xbe\xa8u\xc6s\x94<" +
+	"\xb0\xea\xa4xh\xd5|\x96Q\xab\x1c\xb9}\xb7\xd5Q" +
+	"\x0b\x8c\xfaw\x97\x1d\x11\xcf^\xb6\x18\xa0{\xde\xe5\x1a" +
+	"\x07ho;i_\xfb\xafk>\xfc\xa0.[\x9d\x94" +
+	"\xaa\xf6\x1c\x13\xc7z\xd8\xd3h\xcfv\x08\xa5\xe7\x14~" +
+	"9\xd1sL<\xd53\x1f@\xfc\xb8'\xe5X\xef\xf0" +
+	"?\xbc\xf0\xc1m\x1f\xd5\xd1:\xfe>\xff\xca\xe7\xc5\x0b" +
+	"\xafdO\x8b\xaet\xf8>\xdb8\xf7\xd1\xfd\x0f~T" +
+	"\x17vk\xb9\x18\x0f \xde~\xe5\x07\xe2n\x87z\xd7" +
+	"\x95\xcf\x01~\xb5\xf5\xb2G\x1e\xfc\xee+\x1f;\xb4\x81" +
+	"\xc3\x9d\xea\x12\xbd\xea\xb7\xa2p\x15\xb3t\xf3U\x8e-" +
+	"\xee.\xbcp\xdb\xe2\xc3O\x7f:\x95\x14M\xab\x8f\x89" +
+	"\xc2j\xf6\xd4\xbc\x9aI\xe1\xbbm\x0a\xedn]\xfd\xbc" +
+	"8\xba\x9aiw\xfbj\xa6\xdd\xe5\xf1\xdc?\xfd`\xe1" +
+	"\xe3\x7f\x00\xf9\xcf\xd0\x97hK4\x86\x1c@\xf7\xc1\xd5" +
+	"m\x08(\x1ev\xb8>q\xdd\xeaU\xb7\xee\xfc\xf5Y" +
+	"\x90\x17bH\xd3y\x1cK\xbe\xee%Ws\x8c\xb4\xf3" +
+	"\xea\xed`\x87\xfe=d\xebJ~\x9bR$]\\^" +
+	"\xd1U\xbd\xa7\xa2\x14i\xfe\xbaj%G\xd0\xc8 b" +
+	"3p\xd8\x0c `\xda\xbe\xff\xd57\xffk\xed\x05\x9f" +
+	"<\xc2\xd5>q\xbf\x18TR*\x1d\"\xa6%\xcf\xc6" +
+	"p\xc4\x09\xf7\x84Rf^\xba&\xbb \xf4\xd8&\xdd" +
+	"I\x06h\x85\xa2\xd5\xaf\xde\xa8\x19\x05\x13`\xbcO\xab" +
+	"T\x14\xb5\x90\xea\xcd[TS\xe5v>\x82\x91\x08\x02" +
+	"\x08g\x0c\x00\xf9S\x1e\xe5\xdfs(D1\x81l\xf1" +
+	"wl\xf1\x0b\x1e7!\x87\x18K0k\x08g\xd3\x00" +
+	"\xf2\xefy\xcc&\x90C\xa1\x11\x13\xc8\x9c*\xe0\x1d\x00" +
+	"\xd9\x16\xe41\xbb\x90\xad#\x97pJ\xcc\xf9\xb8\x15 " +
+	"\xbb\x80\xad\xb7\xb3u\x8eO`\x14@\xbc\x10\x8f\x01d" +
+	"\xdb\xd9\xfa2\xb6\xces\x09l`\xb9\x85\xfb\x01\xb2\xcb" +
+	"\xd8\xfaU\xc8a\x0b\x9fp\xfcu\x05n\x00\xc8^\xce" +
+	"\x96\xd70\xf2\x86H\x02\x1b\x01\xc4^g\xfd\x1a\xb6>" +
+	"\x80\x1c\xda\x15\xaa\xf6\xea\xf4\x06\x02\x92aRM\xc5F" +
+	"\xe0\xb0\x11\xd0\xae(;\xa6Z\x1fW\x1c3\x988\x07" +
+	"0\xc3#\xb6\xd4\xcc\x07\xc8\x96\xec\xbc\xa6ZT\xad\x12" +
+	"\xf4\xcc\x06\xd8\x12X\x1b\x10[\x00mE\xd7o \x86" +
+	"I\x81\x0f\xefG\xd5-z\xd1P\xb8\x82\x92+\x93^" +
+	"\x8fDS\xc1\xa7Pt}P1\xb6\x11\xb4\xa8Zd" +
+	"\xbf\xc6\x98\\-v\xff\x07\x7fs\x99\xf1\xe3\xbf\xbc7" +
+	"\xc4~3\xb5\xca\x04\x00\xa6\xf8\xb5B,\xa5\xa0X\x8a" +
+	"\xfb\xab\x9fi\xde\xaf\xb5\x08\xe2\xdd\x10\xcajU#O" +
+	"\x06\x15\xbdkP\xd1u\xaa\x16!\x83(\xcf\xe6#\x00" +
+	"N\x08\xac\xcd\x01\xc8kx\x943\xcc\x81^\x08\x0cn" +
+	"\x05\x90\x07x\x94ob\xde\xe3\xdc\x18\xd8\xb2\x09@\xde" +
+	"\xcc\xa3\xacs\xfe.\x19\x88)V\x09g\x03\x87\xb3\x01" +
+	"m\xd3\xd9,\xa3\x00\x1fZ,\xd1\x02\xc9(V\x09\xd0" +
+	"79\xfbiNHVte\xed\xd5cz\x7f\x81\xc9" +
+	"\xd7\xe2\xcb\xa7\xb4\x01\xc8\x7f\xc1\xa3\\\x0a\xc9G\xd8\xe2" +
+	"-<\xca\xe5\x90|\x94-\x16\\\xf9\x04\x9ewBT" +
+	"\xa8\xb0\xc5\x12\x8f\xb2\xc5a\x8c\x16\x96a\x13p\xd8\x04" +
+	"\xecyy\xe89\x19z\xee\xae=\xd7\x9br\xd0\xb3{" +
+	"W6o\x10\xa2\x9a%\x0d-&l\xc2\x17v,\x09" +
+	" \xef\xe0Q\xbe3$\xec\xed=\x00\xf2m<\xcaw" +
+	"s\xd8\xcc\xd9\xb6+\xed],\xa3\xbe\xc9\xa3|\x1f\x87" +
+	"\xcd\xfcW\xb6+\xee.&\xee\x9d<\xca\x0fp\xd8\x1c" +
+	"9k;\xf9$\xec\xee\x00\x90\xef\xe6Q~\x88Ci" +
+	";-X\xa5ZD\xa5J\x84\x16K\x96\x1f\xdaUu" +
+	"\x9b\xaamW\xa1!\xa6\xabE\xaf\xc0`|X'\xfe" +
+	"K}Q\xca+\x16)j\xc6h\xbf\xca\x0fiL\x9b" +
+	"\x08r\xf6\xe7\xbb/\x9d?\xf7\x96\xc3\xc7@\x8ep\xd8" +
+	"\xbb\x809\x0c\x04<b\xf7y\xc4\xd8\xaf\x0ei\xbd\xaa" +
+	"\xaa\xa5,\x85\xe5\x92\x13\x88~\xc3\x9f\xec\xd8>%\xe5" +
+	"~\xc86X\x8a\x1c\xce\x12\xc6\x92\xc2\x98\x04 \xec\x1d" +
+	"\x16\xf6I\x88\xc2+;\x85\xe3\x12r\xc2\x99\x1e\xe1\x8c" +
+	"\x84\xbc\xd8\x8c\x86(\xa0\x84\x11q%\xf6\x88+Q\xc2" +
+	"\xa8\xb8\x05w\x8a7\xa3\x84\x0d\xe2\x18\xa6\xc51\x94\xb0" +
+	"Q\xdc\x8bIq/J\xd8$\x1e\xc5\xa4x\x14%\x8c" +
+	"\x89\xa7p\x83x\x1a%I\xb3J\xc4p\x14\x0ap!" +
+	"S(\xc12\x05\xaeA\x01\x93\xd2\xf5\x8c\x06\xc0\xd6\x0d" +
+	"\xadP\xcd[\x14\xe2#\xd4\x1a\x9d\xe2\xa3\x05\xfeG\xc3" +
+	"vf\x021\x80\x9d\xd7*\x95\xaaJ\xf3\x90r\xeca" +
+	"~\xed\xf7;\xed\xbe:r\x80\x94\xa9\xe5\xa9R\xfeZ" +
+	"a{RY\x87\x08\xc0\xdeNr\x99j\xaeLA2" +
+	"KT-\xce\xb0\xdd\x8d$\xd7\xca\xc8!E\x1dr\x80" +
+	"\x9464D\xf3d\x86\xed\xaew\x88\x00\xec\x02\x19!" +
+	"eM'\x9026kZ\xf9\xeb\xd5\xdb`\xaf!#" +
+	"\x0e\x19\x00\x8e\x9byJ\xd4\x19vJ\x8fg]*\x00" +
+	"\xa9B\x0aT\x99\xc1g\x83\x8c\x06@**\x15b\xce" +
+	"@\xbb\x8e\xd1\x00\xd8EC\xd1K4o\x02\xc0\x0c\xd2" +
+	"\xaf\xf3)'\xc5\xb1fJ\x94\x85>\xeb\xde-\x01\x1c" +
+	"\x9e\x9cU~\xa9P\xa4\xaaU\xd2\x0cVp\x05lL" +
+	"\xe0y\xac\xe4\x0e\x87J.\xd7\x94p\xb2kp8(" +
+	"\xb9--\x09\x14Y\xc5\xdd\xe9U\xdc[8\xb7-)" +
+	"yk-\xc4+\x0a-\xfb\xd5U/\xeaYZT\x15" +
+	"\x88[U\x83\xf8Y^\xd5M\xcb J\x05R\xbd\x8e" +
+	"\x00\x01\xfdDAo \x06\x1d\xa2\xa4\xe0\xa7\xffB\xbf" +
+	"\x98\x1db\xc5\xec\x87<\xca/\x85\x8a\xd9a\xd6\x04^" +
+	"\xe4Q\xfe\xe7P\xe5\xfd\x19\xa3|\x89G\xf95\x0e\xd1" +
+	"+\xbc\xaf\xb0\xfa\xf62\x8f\xf2\xcf9\x14\"\xbc[\xc8" +
+	"\x8e\xdf\x03 \xff\x9cG\xf9]\x867\"\x0e*\x10N" +
+	"\x1c\x03\x90\xdf\xe5Q\xfe\x88\xf5\xf8\xa8\x03\x09\x84\xd3\x1b" +
+	"\x00\xe4\xf7y\x94?\xe5PRt\xbd\xbf\x80-\xc1\xe4" +
+	"8\xb1\xd5\xf5\x03\xb2_}\x10\xec\xfe*Y\xac\x83N" +
+	"n\x9f\xe3#\xa4\x1e&\x18\xdb\x88EU,\xd6\xfa\xf5" +
+	"TMWq\xcc\x98)r\xfaF2z-U\x8b\xc4" +
+	"\xd0\x0d\xaaZ\xe0[\xf6\xdc\xdar}\x80\xd0x\x9e\xd5" +
+	"\x8bP\xc3KO\xd5\xf0\x92S5\xbc\x9ep\xc3\x8b'" +
+	"p.kx\xccAe\x1e\xe5\x1d\x1c\x8e+\xba\xbe\xce" +
+	"\xa0\xcc8>f\xf5\x8cS4\x14\xaaN^O\xb9\xc6" +
+	"\x98\xfc\x83g\xa54\x05,N\xf1\xebt\xda\x95S4" +
+	"OT\x93\xb0\x1e9\x9b\xb5>\xe6\xf0\xb1\x8e\xa0K." +
+	"\xc2\xaflt]~\xfb\xd6\xa0#.\xe2\xce\xdaQ\x07" +
+	"\x05\x0a\xbbrA\xf3[\xc4\x7f\xc9\x96\x1b\x01\x84=," +
+	"_\x1e\xe0Q~\x9c\xc5WC\x02\x9b\x00\x84\xc7\x98\xed" +
+	"\x1e\xe2Q~\x92\xc3\xb8\xaa\xa9\x04\x1alM'*\x03" +
+	"A\xc0\xe7\x09\xc6\x83\x81\x10\x10\xe3LrC\xd3\x0dJ" +
+	",\x88)\xc6\xe8\x14~\xd7Y\x99\xcd\xaf\xd1\x9c\xb4\x9b" +
+	"\x02\xab\x8d\xab\x9aE\xf3\xc4\x9c\xea\xd3\x89\xf0!\xe3\xbe" +
+	"\xae!CT\xa5N\xd7d\xf9\xb6\xc0w\xfcc\x17\x04" +
+	"\xc2\xfb\x8e\xdf\xcb\xf2\xe0q\x1e\xe5\xa7C\x8e\x7f\x8a\xf9" +
+	"\xf8\xfb<\xca?\x0c!\x9dg\x19\xe53<\xca/2" +
+	"\x83D\xdc\x84;\xc4\xb0\xfc\x8fx\x94\x7f\xc1\x12.\xea" +
+	"\xda\xff\xcd\xe1 \x0byZ\x08\x02Xq\x87\x0d7\x80" +
+	"C#\xad\xa3\x8d\xe9\x01I@\x9d\x05@m\x8a\xf4~" +
+	"\x1d\xa2e2@\xddok\xfc\x94\xf2ve\xd4\xecW" +
+	"A\xca\x97\xab\x05R\x0f\xfer\x06-\x14I\x9f\x06q" +
+	"u\x88\xb2\xa0\xf2'\xe4\xa9\x83\xeaz\x93\x0e\xb8\xd1\x14" +
+	"\xf7jp\x18\xc62\xe3]\xc3\xa3<\x102^\x7f2" +
+	"(\xb4l6\xe1\x10\x85A#\xa8\xb3!\xe5\xbdjQ" +
+	"\x13\xdd \xb7V\xa9A\xb2 9Z#\x02\x878Y" +
+	"\xa4\xbeI\xe0\xc9\x17\xa8\x99\xed\xdd\xc8\xa3\x9c\xe0\xea\x99" +
+	"\xd7'\x8bg\xf6\xae\xbe\x94;px\x9a!\xe7j\xf6" +
+	"z\xa81x\x8ama\x19\x94\xf1\xca\x01\xd6\xcaA\xda" +
+	"+\x07\xdf\xe4\xd0.\x10\xdd y\xc5\xe2Ha\xed\x0e" +
+	"\x92\xafZl$qP\xb8\xef\x9f\xb8b\x14G\xea\x9c" +
+	"2N\xd4\x11jh\xaa?\x1b\xd9\xed+\x0e\xfe\xe3G" +
+	"\xb7?\xf9\x10x\xd3Q]P\xa7='2\x17ve" +
+	"\xb4\xed\xc4H\xe546v\xd5\x01\xe3\x8e\xa9\x80q." +
+	"Hx?\xb6wu\x04\x08\xd8\x8f\xed\xddmA\x0d\xf0" +
+	"c{O\xce\xab\x00\xcf\xb0dW*\x81\x81\x0b\xd4\xd4" +
+	"\xcb\xcah?\xc4\xd4!\x0d[\xecO/\xf9\xf0'M" +
+	"\xfb\xb3Oy\x81\x15\xd7C3K\xccRX\xec%?" +
+	"\x1b\xbb\xe1\xf5\xff=\xfd\x1d?\xf6\x88Q\xa1\xa6I!" +
+	"\x16\x9a\x14\xb1nl\xf1lp\xbdWa\xf2\xc4\x8bO" +
+	"'\xb1\x07\x1cuN\xa5\x19G\xe1D\x9bpBBN" +
+	"\x8cbZ\x8c\"\xc3\xb7\xab\xb1C\\\xed\xe0\xdb\x0a&" +
+	"\xc5\x8a\x83o\xf7\xe1V\xf1)\x07\xdf\xbe\x87[\xc5S" +
+	"\x0e\x96\x15\xb8\x0eQ\xe0\x18\xd2\xed\xe5\x92b/\xc7\x90" +
+	"n\x95K\x8aUN\xc2Y\xe2\x01\xaeM<\xc0Ix" +
+	"\x9e\xf8\x1e\xb7I<\xc5I8[\x9c\xc7\xa7\xc5y\xbc" +
+	"\x84\xcd\xe2 \xdf!\x0e\xf2\x12\xce\x11\xc7\xf8\x0eq\x8c" +
+	"\x970.\x1e\xe2;\xc4C\xbc\x84-\xe2\xc7|\x9b\xf8" +
+	"1/\xa1 \x9e\x1f\xe9\x10\xcf\x8fH8W\xbc9\xd2" +
+	"!\xde\x1c\x91\xc6\xa9:\xa2\x94i!V\xa1\x96\x83\x96" +
+	"\x82\x03P\x86\x96\xda\x1d\xb4\x94q\x14\x8c\xb6\x09\xd1\\" +
+	"l\xb0\x7f\xb3=\xd8\xbf\xb9\x95\x19\x00b\xcc\x040\xae" +
+	"\xe8J\xbeD\x92S|\xbf4\xfc\xfdV\xa1\xe9A\xbb" +
+	"\xd7\xa1\xedL\x02\xdf\xb5\xcc{i\x1d@\xd7\x9a\xad#" +
+	"\x98\x04\x88\x17\xf5r\xf7\xd7\xc9\x82(D\xd3Bt\xeb" +
+	"\xf8\xba\xcc@gw\xd72{\xddu[Z\xd7e\x06" +
+	"Z\x81\x1f\xe9\x06\x90\x94i\x18\\\x1cf\xb0Ah\xca" +
+	"\xd9\xbd\x1e\x07\x00p\x98\xb0w\x88\xb52.v\xce," +
+	"t\xf7\x95\x95*\xf0&\xf9:fL\xb3a\xa1i\xd8" +
+	"Ng\xd7tvw\xf6\x95!\xaeTM\xc2^[\x83" +
+	"W\x97a\xf2\xff\xcd09\x91a2\xc4\x90\xd9)y" +
+	"\xcevJN\xb4S\x12@*O\xc3\xa0\xdeN\x86=" +
+	"\xe0rX^\xb3\x13{\x07\xa9u\xc4Yr\xf8\x9c\x9b" +
+	"\xbd\x07\xea\xec=\x10\xd8;F\xcd\xfc9\x05`\x7f\xb6" +
+	"\xcf\xee\xcf\xf6\x85\x03\xd0V\x0c\x8b\x9a\x16\xcd\x03\xce\x18" +
+	"\x84\xc3B\xd3~\xbb\xb7F\x1fw\xecR{\xc5V/" +
+	"\xadc\xad\xcc@\xe3\xfa\xa8U\xd2\xd4s\x8b\xeb\x8cC" +
+	"\xeb\xc5\xb5\xfbR\x1f\xd7zI\xef\x9eI\xc5\xb4\x10\xdd" +
+	"9\x9eY\x9fq\xe2:\xb3>\xe3\xaa\x99r\x98t\x03" +
+	"\xc4+S\xbbli\x9d\xcf\xdf\x1e\x1f\xf4|>\xa8\xed" +
+	"\xa4\xe5\xb2\xd2\xca9Sd\xbe\xa6\xa1'R\xbeP(" +
+	"\xcf\x14B\x1b\x84\xa6\x0e\xbbo\xcd\x9a\x81\xce\xe5\x8e\xe7" +
+	"\xe2\xec\x19 F\xf4\xf2LNO\x0b\xd1#\xe3k3" +
+	"\xce\x97\xf6\xda|\x99\xea&i\xc5\x9a$\x1ebdb" +
+	"\xe8\xcaT\xbcVL\x10cy\xd3\\\xb4\xfb2\xbd5" +
+	"9\x9c\xd9ZS[3\xbc\xcb\xaf\xd7\xb2\x0c\x9a\xab2" +
+	"\xbc\xe5i\x89\x8c\xf7\xce2\xcd\xcd\x94n\x1dBt\x7f" +
+	"|k\x99\xe6l\xf6\xdf\xa5e\x9aC]-:\\\xbc" +
+	"\x08\xab\xeb\xe4\xbdF\xbeDGH\xd7\xb5\x94/\x93:" +
+	"p\xd7\x11\x80\xbbE\x9cm\xd7\xe0\x1d\xeb\xd9\x8f\xf2(" +
+	"\x7f\x9f\x81[\x07\x0a\xb3\xad\xf71(\xfc\xa4\xdb\xda\x16" +
+	"E\xce\xda\xeey\xabp \x1d\xe0\xbeE\xd1/\xd92" +
+	"k\x84\xcfn\xf2\x90\xdfk^se \xef\x95#\x00" +
+	"\xf2k<\xca\xffV\xd7\x1d\xc7\x0dR\xac\x96\x15\xc3\x1f" +
+	"\x15\x89\x87\x0f\x80/\xfb\xf3\xe3\xb89Z)Su[" +
+	"\xa8\xa5\x1a$oi\x06\xe0h\x80\x0d\xfc\x1b\x13\x0f\x1b" +
+	"\x94\x15\xd3\x1a\xd4\x0a\x14\x87h\xde9\xd8Hm\xa6\x15" +
+	"r\x9d\x89Q\xe00\x1aj\x9c\x91:\xe4S;\xb4\xf6" +
+	"\xcf\xac\xd9\x80\xed\x9c\xc2EZ&\x9b9\xc0\x1c<-" +
+	"\xca\x11\x0c\xdf\x09a\xcevPHN\xdb\x01\xb1^\x9d" +
+	"\x861\xc8\x86\xe0\x1c\xce\xc7 \xe1c\xb8\x1a\x90\xda\xc5" +
+	"\xa6\xd4\xfbx\x94\x1feh\x83sm\xff\xf0\xb0\xe7@" +
+	"\x07s\xd7,\xbf3\xc0\xdc\xf6\x08%\xdb\x190u\xe1" +
+	"3\xf9\xcd\xd3\xbd\xebV\xfe\xd5K\xb51A\xd1if" +
+	"\xc2Q\xa92B\xfa\x0bDE\x8bZ\xa3}\x8an2" +
+	"\xc2\x1a\xca\xaci\x10\xef\xd5ipN\x1d\xa8\xe9\xd9\x9b" +
+	"\xec\xd0I\xde\xea\xd5!\xa5\xaf\xd7\xb4m\xe6$\x98\x8a" +
+	"\xb5q,\xe5\xcecrc\xf8\xfa\x82e\xb0\x7f\xc1*" +
+	"D\xb7\xc6\xfb\xf3\x9aj\xd7\x0e7\x81\xd7,y)\xb3" +
+	"\x1e\x86n\x1f\xc5?\xc7$p\x827\xe5\x8b\xcd\x98\x06" +
+	"\xc86b\xedf\x80s\xb1\x99(8\xeb\xb3\xd9\xfa\x02" +
+	"\x96\xa8<\x86\xee%\xc5y\x98\x06N\x88\xc4\x128\x0b" +
+	"@8\xcb\x82\xfd\xcb\x1ae\x14Cw\xa8\xe2<\xec\x01" +
+	"Nh\x98\x95p.J|\xcaF\xb6W\xec\xbc\x04\xce" +
+	"\x01\x10\xa3\x98\x03\xc8F\xd8^-\xce\xed\xc4\xec\x04\xc6" +
+	"\x1d\xd9\xee\x99p;\xd1\xd4\x9c`\xc9-\x9e\xef\xd0;" +
+	"\xb7\x13+\xd8\xfa\xac9\x09\x14\x00\xc4\xe5\xb8)|\x0b" +
+	"!Q6\x98\x8fo'9\x93ZA\xf6\xe4\xb5\x02\xd9" +
+	"b\xf8\xe7/\xe3e\xb7\\\xd9\xde9*\x05\x9e\xf8\x1e" +
+	"\x8b\x07W\xcc\xae\xc7R\xee)\x82\xad\x17\xf5\x8dd\x94" +
+	"\x11\x07\xa7\xb4v\x81\x98y\x83\xea\x16Ls)`\x96" +
+	"4\xc3ZCLt\xa8\xa6;\xa70k\xee\x8biV" +
+	"(t|?\xd7.9J\x8aZ$\x03\x9a;\xceO" +
+	"7\xb9r\x13&\xd7\xfe\x82\x03l\x1b\xfd\x8cZ\xc2`" +
+	"y;\x8f\xf2\xb2PFu\xb2\xc5\x8by\x94WL\x7f" +
+	"\xe2^\xbf\x81\x7fI\x01N:\x07\x7fN\x80\xe9q\xef" +
+	"\xda\"<Z\xb10\x98\xcd\xa3|1\x87\xb6I\x14#" +
+	"_\xf2\xae\x1c|u}\x0euS\x8b\x97\x10\x1b\x894" +
+	"z-uktH\x9dM\x81\xe4\xbe:\xcb\xd9f\xcb" +
+	"x\x94\xaf\xe2j\x87\x01\x1b\x09\xab\x82\xfey\xbaAG" +
+	"\x14\x8bl\x04\x9e\x8cNw\xc8\xee\x9f\x87\xf4\xc7\xf2\x9a" +
+	"\xea\xcdw\xb3m\xdb\x1d\xf0\xd2\xc1\xe8\xda\x8c_\xd9\xde" +
+	"\xec\xda\x16\xcc\xae\xcd\xdcY\x1bC\xb7\x90\xc2`\x1bp" +
+	"\xa1\xb3~s\xa4\xe8\x8f3\xbaZ\x9cv\xc0\xec\x95\x9c" +
+	"\x9b/\x7f4\xc3\xd0\x1d\xa80\xe6\xe4\xb5\xd7\x80H\xba" +
+	"\xee\xbc\x89\x95@\x9a\x0c\x9d7\xd5\x8e\xf4*\xb9\xe0\xbc" +
+	"I\xe0\xbd#\xbd*3\x9a\xe5\x8e\xa2\x12U\xf5\xaa5" +
+	"\x9ewg\xdb\xc9wi\xd3\x9d\xd3\xcd\x98\x0f\xaaVU" +
+	"3%Ca\xc8y\xe6\x18v\x0eI\xad\xaaA\xe0\\" +
+	"\x9c\xbei\x06\xa7\x9b\x1e7@2\xc9\xe7\xb5\xcb,C" +
+	"r\xd0\x80\x13\xd1~\xa7\x14\xb0#\xce\"o\xaa\x93\x82" +
+	"v\x0e\xa5!Z&\xe6\xf4\x1d\xb6\xfeF\xca\xf7\xac\xe3" +
+	"\xd8.\xaa\xc6\xf4\xaa\xc5\xb4\xab\x05\xd7\x92\x8e E\x83" +
+	"\xe0\xead\xfeY\xca\xa3\xbc>8'\xcb+\xba\x92\xa3" +
+	"e\x0a\xbc\x15j\xf17-\xfc\x97\x9f~/\xfe\xd6\x99" +
+	"\xe9\x04\xf0\x03;\xaf\xa9]\xbaZ\x04\xd7\xb4n\x14-" +
+	"I\xd6\xd5\x07\x16E\x9d\xc9\xc0\xe0RA\xa7\xcbw\xd4" +
+	",\xc8\xde\x92\xfe\xdb\xff\x05\x00\x00\xff\xff7\x87G\xad"
 
 func init() {
 	schemas.Register(schema_df9bc20172856a3a,

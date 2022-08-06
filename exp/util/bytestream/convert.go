@@ -7,15 +7,13 @@ import (
 	"io"
 
 	"zenhack.net/go/sandstorm/capnp/util"
-
-	"capnproto.org/go/capnp/v3/server"
 )
 
 // Convert an io.WriteCloser to a util.ByteStream. WriteCloser's Write and
 // Close methods correspond to write and done, respectively. expectSize is
 // a no-op.
-func FromWriteCloser(wc io.WriteCloser, policy *server.Policy) util.ByteStream {
-	return util.ByteStream_ServerToClient(&wcByteStream{wc: wc}, policy)
+func FromWriteCloser(wc io.WriteCloser) util.ByteStream {
+	return util.ByteStream_ServerToClient(&wcByteStream{wc: wc})
 }
 
 // Implementation of util.ByteStream that wraps an io.WriteCloser; returned by

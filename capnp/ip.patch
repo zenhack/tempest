@@ -1,0 +1,13 @@
+diff --git a/capnp/ip.capnp b/capnp/ip.capnp
+index 2a18a8a..d9937c7 100644
+--- a/capnp/ip.capnp
++++ b/capnp/ip.capnp
+@@ -159,7 +159,7 @@ interface TcpPort @0xeab20e1af07806b4 {
+ interface UdpPort @0xc6212e1217d001ce {
+   # Like `TcpPort` but for datagrams.
+ 
+-  send @0 (message :Data, returnPort :UdpPort);
++  send @0 (message :Data $Go.name("msg"), returnPort :UdpPort);
+   # Send a datagram.
+   #
+   # As always with UDP, successful return does not indicate successful delivery. On the receiving

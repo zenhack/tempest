@@ -14,7 +14,7 @@ import (
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
-type PaymentSource struct{ Client *capnp.Client }
+type PaymentSource capnp.Client
 
 // PaymentSource_TypeID is the unique identifier for the type PaymentSource.
 const PaymentSource_TypeID = 0xf9692c357124ed70
@@ -30,20 +30,30 @@ func (c PaymentSource) GetTitle(ctx context.Context, params func(PaymentSource_g
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentSource_getTitle_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentSource_getTitle_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return PaymentSource_getTitle_Results_Future{Future: ans.Future()}, release
 }
 
 func (c PaymentSource) AddRef() PaymentSource {
-	return PaymentSource{
-		Client: c.Client.AddRef(),
-	}
+	return PaymentSource(capnp.Client(c).AddRef())
 }
 
 func (c PaymentSource) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PaymentSource) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PaymentSource) DecodeFromPtr(p capnp.Ptr) PaymentSource {
+	return PaymentSource(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PaymentSource) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PaymentSource_Server is a PaymentSource with a local implementation.
@@ -52,15 +62,15 @@ type PaymentSource_Server interface {
 }
 
 // PaymentSource_NewServer creates a new Server from an implementation of PaymentSource_Server.
-func PaymentSource_NewServer(s PaymentSource_Server, policy *server.Policy) *server.Server {
+func PaymentSource_NewServer(s PaymentSource_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PaymentSource_Methods(nil, s), s, c, policy)
+	return server.New(PaymentSource_Methods(nil, s), s, c)
 }
 
 // PaymentSource_ServerToClient creates a new Client from an implementation of PaymentSource_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PaymentSource_ServerToClient(s PaymentSource_Server, policy *server.Policy) PaymentSource {
-	return PaymentSource{Client: capnp.NewClient(PaymentSource_NewServer(s, policy))}
+func PaymentSource_ServerToClient(s PaymentSource_Server) PaymentSource {
+	return PaymentSource(capnp.NewClient(PaymentSource_NewServer(s)))
 }
 
 // PaymentSource_Methods appends Methods to a slice that invoke the methods on s.
@@ -93,60 +103,79 @@ type PaymentSource_getTitle struct {
 
 // Args returns the call's arguments.
 func (c PaymentSource_getTitle) Args() PaymentSource_getTitle_Params {
-	return PaymentSource_getTitle_Params{Struct: c.Call.Args()}
+	return PaymentSource_getTitle_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c PaymentSource_getTitle) AllocResults() (PaymentSource_getTitle_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return PaymentSource_getTitle_Results{Struct: r}, err
+	return PaymentSource_getTitle_Results(r), err
 }
 
-type PaymentSource_getTitle_Params struct{ capnp.Struct }
+// PaymentSource_List is a list of PaymentSource.
+type PaymentSource_List = capnp.CapList[PaymentSource]
+
+// NewPaymentSource creates a new list of PaymentSource.
+func NewPaymentSource_List(s *capnp.Segment, sz int32) (PaymentSource_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PaymentSource](l), err
+}
+
+type PaymentSource_getTitle_Params capnp.Struct
 
 // PaymentSource_getTitle_Params_TypeID is the unique identifier for the type PaymentSource_getTitle_Params.
 const PaymentSource_getTitle_Params_TypeID = 0xcb2516f79343cbe3
 
 func NewPaymentSource_getTitle_Params(s *capnp.Segment) (PaymentSource_getTitle_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return PaymentSource_getTitle_Params{st}, err
+	return PaymentSource_getTitle_Params(st), err
 }
 
 func NewRootPaymentSource_getTitle_Params(s *capnp.Segment) (PaymentSource_getTitle_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return PaymentSource_getTitle_Params{st}, err
+	return PaymentSource_getTitle_Params(st), err
 }
 
 func ReadRootPaymentSource_getTitle_Params(msg *capnp.Message) (PaymentSource_getTitle_Params, error) {
 	root, err := msg.Root()
-	return PaymentSource_getTitle_Params{root.Struct()}, err
+	return PaymentSource_getTitle_Params(root.Struct()), err
 }
 
 func (s PaymentSource_getTitle_Params) String() string {
-	str, _ := text.Marshal(0xcb2516f79343cbe3, s.Struct)
+	str, _ := text.Marshal(0xcb2516f79343cbe3, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentSource_getTitle_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentSource_getTitle_Params) DecodeFromPtr(p capnp.Ptr) PaymentSource_getTitle_Params {
+	return PaymentSource_getTitle_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentSource_getTitle_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PaymentSource_getTitle_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentSource_getTitle_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentSource_getTitle_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // PaymentSource_getTitle_Params_List is a list of PaymentSource_getTitle_Params.
-type PaymentSource_getTitle_Params_List struct{ capnp.List }
+type PaymentSource_getTitle_Params_List = capnp.StructList[PaymentSource_getTitle_Params]
 
 // NewPaymentSource_getTitle_Params creates a new list of PaymentSource_getTitle_Params.
 func NewPaymentSource_getTitle_Params_List(s *capnp.Segment, sz int32) (PaymentSource_getTitle_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return PaymentSource_getTitle_Params_List{l}, err
-}
-
-func (s PaymentSource_getTitle_Params_List) At(i int) PaymentSource_getTitle_Params {
-	return PaymentSource_getTitle_Params{s.List.Struct(i)}
-}
-
-func (s PaymentSource_getTitle_Params_List) Set(i int, v PaymentSource_getTitle_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentSource_getTitle_Params_List) String() string {
-	str, _ := text.MarshalList(0xcb2516f79343cbe3, s.List)
-	return str
+	return capnp.StructList[PaymentSource_getTitle_Params](l), err
 }
 
 // PaymentSource_getTitle_Params_Future is a wrapper for a PaymentSource_getTitle_Params promised by a client call.
@@ -154,78 +183,87 @@ type PaymentSource_getTitle_Params_Future struct{ *capnp.Future }
 
 func (p PaymentSource_getTitle_Params_Future) Struct() (PaymentSource_getTitle_Params, error) {
 	s, err := p.Future.Struct()
-	return PaymentSource_getTitle_Params{s}, err
+	return PaymentSource_getTitle_Params(s), err
 }
 
-type PaymentSource_getTitle_Results struct{ capnp.Struct }
+type PaymentSource_getTitle_Results capnp.Struct
 
 // PaymentSource_getTitle_Results_TypeID is the unique identifier for the type PaymentSource_getTitle_Results.
 const PaymentSource_getTitle_Results_TypeID = 0xaf4ce1881ecae0ae
 
 func NewPaymentSource_getTitle_Results(s *capnp.Segment) (PaymentSource_getTitle_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return PaymentSource_getTitle_Results{st}, err
+	return PaymentSource_getTitle_Results(st), err
 }
 
 func NewRootPaymentSource_getTitle_Results(s *capnp.Segment) (PaymentSource_getTitle_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return PaymentSource_getTitle_Results{st}, err
+	return PaymentSource_getTitle_Results(st), err
 }
 
 func ReadRootPaymentSource_getTitle_Results(msg *capnp.Message) (PaymentSource_getTitle_Results, error) {
 	root, err := msg.Root()
-	return PaymentSource_getTitle_Results{root.Struct()}, err
+	return PaymentSource_getTitle_Results(root.Struct()), err
 }
 
 func (s PaymentSource_getTitle_Results) String() string {
-	str, _ := text.Marshal(0xaf4ce1881ecae0ae, s.Struct)
+	str, _ := text.Marshal(0xaf4ce1881ecae0ae, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentSource_getTitle_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentSource_getTitle_Results) DecodeFromPtr(p capnp.Ptr) PaymentSource_getTitle_Results {
+	return PaymentSource_getTitle_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentSource_getTitle_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PaymentSource_getTitle_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentSource_getTitle_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentSource_getTitle_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentSource_getTitle_Results) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s PaymentSource_getTitle_Results) HasTitle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentSource_getTitle_Results) SetTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PaymentSource_getTitle_Results) NewTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // PaymentSource_getTitle_Results_List is a list of PaymentSource_getTitle_Results.
-type PaymentSource_getTitle_Results_List struct{ capnp.List }
+type PaymentSource_getTitle_Results_List = capnp.StructList[PaymentSource_getTitle_Results]
 
 // NewPaymentSource_getTitle_Results creates a new list of PaymentSource_getTitle_Results.
 func NewPaymentSource_getTitle_Results_List(s *capnp.Segment, sz int32) (PaymentSource_getTitle_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return PaymentSource_getTitle_Results_List{l}, err
-}
-
-func (s PaymentSource_getTitle_Results_List) At(i int) PaymentSource_getTitle_Results {
-	return PaymentSource_getTitle_Results{s.List.Struct(i)}
-}
-
-func (s PaymentSource_getTitle_Results_List) Set(i int, v PaymentSource_getTitle_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentSource_getTitle_Results_List) String() string {
-	str, _ := text.MarshalList(0xaf4ce1881ecae0ae, s.List)
-	return str
+	return capnp.StructList[PaymentSource_getTitle_Results](l), err
 }
 
 // PaymentSource_getTitle_Results_Future is a wrapper for a PaymentSource_getTitle_Results promised by a client call.
@@ -233,14 +271,14 @@ type PaymentSource_getTitle_Results_Future struct{ *capnp.Future }
 
 func (p PaymentSource_getTitle_Results_Future) Struct() (PaymentSource_getTitle_Results, error) {
 	s, err := p.Future.Struct()
-	return PaymentSource_getTitle_Results{s}, err
+	return PaymentSource_getTitle_Results(s), err
 }
 
 func (p PaymentSource_getTitle_Results_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-type PaymentAcceptor struct{ Client *capnp.Client }
+type PaymentAcceptor capnp.Client
 
 // PaymentAcceptor_TypeID is the unique identifier for the type PaymentAcceptor.
 const PaymentAcceptor_TypeID = 0xd562e38729bbd911
@@ -256,20 +294,30 @@ func (c PaymentAcceptor) CreatePayment(ctx context.Context, params func(PaymentA
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentAcceptor_createPayment_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentAcceptor_createPayment_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return PaymentAcceptor_CreatePaymentResults_Future{Future: ans.Future()}, release
 }
 
 func (c PaymentAcceptor) AddRef() PaymentAcceptor {
-	return PaymentAcceptor{
-		Client: c.Client.AddRef(),
-	}
+	return PaymentAcceptor(capnp.Client(c).AddRef())
 }
 
 func (c PaymentAcceptor) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PaymentAcceptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PaymentAcceptor) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor {
+	return PaymentAcceptor(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PaymentAcceptor) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PaymentAcceptor_Server is a PaymentAcceptor with a local implementation.
@@ -278,15 +326,15 @@ type PaymentAcceptor_Server interface {
 }
 
 // PaymentAcceptor_NewServer creates a new Server from an implementation of PaymentAcceptor_Server.
-func PaymentAcceptor_NewServer(s PaymentAcceptor_Server, policy *server.Policy) *server.Server {
+func PaymentAcceptor_NewServer(s PaymentAcceptor_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PaymentAcceptor_Methods(nil, s), s, c, policy)
+	return server.New(PaymentAcceptor_Methods(nil, s), s, c)
 }
 
 // PaymentAcceptor_ServerToClient creates a new Client from an implementation of PaymentAcceptor_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PaymentAcceptor_ServerToClient(s PaymentAcceptor_Server, policy *server.Policy) PaymentAcceptor {
-	return PaymentAcceptor{Client: capnp.NewClient(PaymentAcceptor_NewServer(s, policy))}
+func PaymentAcceptor_ServerToClient(s PaymentAcceptor_Server) PaymentAcceptor {
+	return PaymentAcceptor(capnp.NewClient(PaymentAcceptor_NewServer(s)))
 }
 
 // PaymentAcceptor_Methods appends Methods to a slice that invoke the methods on s.
@@ -319,16 +367,25 @@ type PaymentAcceptor_createPayment struct {
 
 // Args returns the call's arguments.
 func (c PaymentAcceptor_createPayment) Args() PaymentAcceptor_createPayment_Params {
-	return PaymentAcceptor_createPayment_Params{Struct: c.Call.Args()}
+	return PaymentAcceptor_createPayment_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c PaymentAcceptor_createPayment) AllocResults() (PaymentAcceptor_CreatePaymentResults, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return PaymentAcceptor_CreatePaymentResults{Struct: r}, err
+	return PaymentAcceptor_CreatePaymentResults(r), err
 }
 
-type PaymentAcceptor_CreatePaymentResults struct{ capnp.Struct }
+// PaymentAcceptor_List is a list of PaymentAcceptor.
+type PaymentAcceptor_List = capnp.CapList[PaymentAcceptor]
+
+// NewPaymentAcceptor creates a new list of PaymentAcceptor.
+func NewPaymentAcceptor_List(s *capnp.Segment, sz int32) (PaymentAcceptor_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PaymentAcceptor](l), err
+}
+
+type PaymentAcceptor_CreatePaymentResults capnp.Struct
 type PaymentAcceptor_CreatePaymentResults_success PaymentAcceptor_CreatePaymentResults
 type PaymentAcceptor_CreatePaymentResults_failed PaymentAcceptor_CreatePaymentResults
 type PaymentAcceptor_CreatePaymentResults_Which uint16
@@ -355,51 +412,85 @@ const PaymentAcceptor_CreatePaymentResults_TypeID = 0xeedba0c4417e0460
 
 func NewPaymentAcceptor_CreatePaymentResults(s *capnp.Segment) (PaymentAcceptor_CreatePaymentResults, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return PaymentAcceptor_CreatePaymentResults{st}, err
+	return PaymentAcceptor_CreatePaymentResults(st), err
 }
 
 func NewRootPaymentAcceptor_CreatePaymentResults(s *capnp.Segment) (PaymentAcceptor_CreatePaymentResults, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return PaymentAcceptor_CreatePaymentResults{st}, err
+	return PaymentAcceptor_CreatePaymentResults(st), err
 }
 
 func ReadRootPaymentAcceptor_CreatePaymentResults(msg *capnp.Message) (PaymentAcceptor_CreatePaymentResults, error) {
 	root, err := msg.Root()
-	return PaymentAcceptor_CreatePaymentResults{root.Struct()}, err
+	return PaymentAcceptor_CreatePaymentResults(root.Struct()), err
 }
 
 func (s PaymentAcceptor_CreatePaymentResults) String() string {
-	str, _ := text.Marshal(0xeedba0c4417e0460, s.Struct)
+	str, _ := text.Marshal(0xeedba0c4417e0460, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentAcceptor_CreatePaymentResults) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentAcceptor_CreatePaymentResults) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor_CreatePaymentResults {
+	return PaymentAcceptor_CreatePaymentResults(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentAcceptor_CreatePaymentResults) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+
 func (s PaymentAcceptor_CreatePaymentResults) Which() PaymentAcceptor_CreatePaymentResults_Which {
-	return PaymentAcceptor_CreatePaymentResults_Which(s.Struct.Uint16(0))
+	return PaymentAcceptor_CreatePaymentResults_Which(capnp.Struct(s).Uint16(0))
+}
+func (s PaymentAcceptor_CreatePaymentResults) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
 }
 func (s PaymentAcceptor_CreatePaymentResults) Success() PaymentAcceptor_CreatePaymentResults_success {
 	return PaymentAcceptor_CreatePaymentResults_success(s)
 }
 
 func (s PaymentAcceptor_CreatePaymentResults) SetSuccess() {
-	s.Struct.SetUint16(0, 0)
+	capnp.Struct(s).SetUint16(0, 0)
 }
 
+func (s PaymentAcceptor_CreatePaymentResults_success) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults_success) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults_success) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentAcceptor_CreatePaymentResults_success) Payment() Payment {
-	p, _ := s.Struct.Ptr(0)
-	return Payment{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return Payment(p.Interface().Client())
 }
 
 func (s PaymentAcceptor_CreatePaymentResults_success) HasPayment() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentAcceptor_CreatePaymentResults_success) SetPayment(v Payment) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s PaymentAcceptor_CreatePaymentResults) Failed() PaymentAcceptor_CreatePaymentResults_failed {
@@ -407,53 +498,51 @@ func (s PaymentAcceptor_CreatePaymentResults) Failed() PaymentAcceptor_CreatePay
 }
 
 func (s PaymentAcceptor_CreatePaymentResults) SetFailed() {
-	s.Struct.SetUint16(0, 1)
+	capnp.Struct(s).SetUint16(0, 1)
 }
 
+func (s PaymentAcceptor_CreatePaymentResults_failed) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults_failed) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_CreatePaymentResults_failed) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentAcceptor_CreatePaymentResults_failed) Description() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s PaymentAcceptor_CreatePaymentResults_failed) HasDescription() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentAcceptor_CreatePaymentResults_failed) SetDescription(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewDescription sets the description field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PaymentAcceptor_CreatePaymentResults_failed) NewDescription() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // PaymentAcceptor_CreatePaymentResults_List is a list of PaymentAcceptor_CreatePaymentResults.
-type PaymentAcceptor_CreatePaymentResults_List struct{ capnp.List }
+type PaymentAcceptor_CreatePaymentResults_List = capnp.StructList[PaymentAcceptor_CreatePaymentResults]
 
 // NewPaymentAcceptor_CreatePaymentResults creates a new list of PaymentAcceptor_CreatePaymentResults.
 func NewPaymentAcceptor_CreatePaymentResults_List(s *capnp.Segment, sz int32) (PaymentAcceptor_CreatePaymentResults_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return PaymentAcceptor_CreatePaymentResults_List{l}, err
-}
-
-func (s PaymentAcceptor_CreatePaymentResults_List) At(i int) PaymentAcceptor_CreatePaymentResults {
-	return PaymentAcceptor_CreatePaymentResults{s.List.Struct(i)}
-}
-
-func (s PaymentAcceptor_CreatePaymentResults_List) Set(i int, v PaymentAcceptor_CreatePaymentResults) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentAcceptor_CreatePaymentResults_List) String() string {
-	str, _ := text.MarshalList(0xeedba0c4417e0460, s.List)
-	return str
+	return capnp.StructList[PaymentAcceptor_CreatePaymentResults](l), err
 }
 
 // PaymentAcceptor_CreatePaymentResults_Future is a wrapper for a PaymentAcceptor_CreatePaymentResults promised by a client call.
@@ -461,7 +550,7 @@ type PaymentAcceptor_CreatePaymentResults_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_CreatePaymentResults_Future) Struct() (PaymentAcceptor_CreatePaymentResults, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults{s}, err
+	return PaymentAcceptor_CreatePaymentResults(s), err
 }
 
 func (p PaymentAcceptor_CreatePaymentResults_Future) Success() PaymentAcceptor_CreatePaymentResults_success_Future {
@@ -473,11 +562,11 @@ type PaymentAcceptor_CreatePaymentResults_success_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_CreatePaymentResults_success_Future) Struct() (PaymentAcceptor_CreatePaymentResults_success, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults_success{s}, err
+	return PaymentAcceptor_CreatePaymentResults_success(s), err
 }
 
 func (p PaymentAcceptor_CreatePaymentResults_success_Future) Payment() Payment {
-	return Payment{Client: p.Future.Field(0, nil).Client()}
+	return Payment(p.Future.Field(0, nil).Client())
 }
 
 func (p PaymentAcceptor_CreatePaymentResults_Future) Failed() PaymentAcceptor_CreatePaymentResults_failed_Future {
@@ -489,82 +578,91 @@ type PaymentAcceptor_CreatePaymentResults_failed_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_CreatePaymentResults_failed_Future) Struct() (PaymentAcceptor_CreatePaymentResults_failed, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults_failed{s}, err
+	return PaymentAcceptor_CreatePaymentResults_failed(s), err
 }
 
 func (p PaymentAcceptor_CreatePaymentResults_failed_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-type PaymentAcceptor_Invoice struct{ capnp.Struct }
+type PaymentAcceptor_Invoice capnp.Struct
 
 // PaymentAcceptor_Invoice_TypeID is the unique identifier for the type PaymentAcceptor_Invoice.
 const PaymentAcceptor_Invoice_TypeID = 0x91d6a3469f738613
 
 func NewPaymentAcceptor_Invoice(s *capnp.Segment) (PaymentAcceptor_Invoice, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return PaymentAcceptor_Invoice{st}, err
+	return PaymentAcceptor_Invoice(st), err
 }
 
 func NewRootPaymentAcceptor_Invoice(s *capnp.Segment) (PaymentAcceptor_Invoice, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1})
-	return PaymentAcceptor_Invoice{st}, err
+	return PaymentAcceptor_Invoice(st), err
 }
 
 func ReadRootPaymentAcceptor_Invoice(msg *capnp.Message) (PaymentAcceptor_Invoice, error) {
 	root, err := msg.Root()
-	return PaymentAcceptor_Invoice{root.Struct()}, err
+	return PaymentAcceptor_Invoice(root.Struct()), err
 }
 
 func (s PaymentAcceptor_Invoice) String() string {
-	str, _ := text.Marshal(0x91d6a3469f738613, s.Struct)
+	str, _ := text.Marshal(0x91d6a3469f738613, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentAcceptor_Invoice) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentAcceptor_Invoice) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor_Invoice {
+	return PaymentAcceptor_Invoice(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentAcceptor_Invoice) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PaymentAcceptor_Invoice) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_Invoice) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_Invoice) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentAcceptor_Invoice) Items() (PaymentAcceptor_Invoice_Item_List, error) {
-	p, err := s.Struct.Ptr(0)
-	return PaymentAcceptor_Invoice_Item_List{List: p.List()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return PaymentAcceptor_Invoice_Item_List(p.List()), err
 }
 
 func (s PaymentAcceptor_Invoice) HasItems() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentAcceptor_Invoice) SetItems(v PaymentAcceptor_Invoice_Item_List) error {
-	return s.Struct.SetPtr(0, v.List.ToPtr())
+	return capnp.Struct(s).SetPtr(0, v.ToPtr())
 }
 
 // NewItems sets the items field to a newly
 // allocated PaymentAcceptor_Invoice_Item_List, preferring placement in s's segment.
 func (s PaymentAcceptor_Invoice) NewItems(n int32) (PaymentAcceptor_Invoice_Item_List, error) {
-	l, err := NewPaymentAcceptor_Invoice_Item_List(s.Struct.Segment(), n)
+	l, err := NewPaymentAcceptor_Invoice_Item_List(capnp.Struct(s).Segment(), n)
 	if err != nil {
 		return PaymentAcceptor_Invoice_Item_List{}, err
 	}
-	err = s.Struct.SetPtr(0, l.List.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
 
 // PaymentAcceptor_Invoice_List is a list of PaymentAcceptor_Invoice.
-type PaymentAcceptor_Invoice_List struct{ capnp.List }
+type PaymentAcceptor_Invoice_List = capnp.StructList[PaymentAcceptor_Invoice]
 
 // NewPaymentAcceptor_Invoice creates a new list of PaymentAcceptor_Invoice.
 func NewPaymentAcceptor_Invoice_List(s *capnp.Segment, sz int32) (PaymentAcceptor_Invoice_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 1}, sz)
-	return PaymentAcceptor_Invoice_List{l}, err
-}
-
-func (s PaymentAcceptor_Invoice_List) At(i int) PaymentAcceptor_Invoice {
-	return PaymentAcceptor_Invoice{s.List.Struct(i)}
-}
-
-func (s PaymentAcceptor_Invoice_List) Set(i int, v PaymentAcceptor_Invoice) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentAcceptor_Invoice_List) String() string {
-	str, _ := text.MarshalList(0x91d6a3469f738613, s.List)
-	return str
+	return capnp.StructList[PaymentAcceptor_Invoice](l), err
 }
 
 // PaymentAcceptor_Invoice_Future is a wrapper for a PaymentAcceptor_Invoice promised by a client call.
@@ -572,86 +670,95 @@ type PaymentAcceptor_Invoice_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_Invoice_Future) Struct() (PaymentAcceptor_Invoice, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_Invoice{s}, err
+	return PaymentAcceptor_Invoice(s), err
 }
 
-type PaymentAcceptor_Invoice_Item struct{ capnp.Struct }
+type PaymentAcceptor_Invoice_Item capnp.Struct
 
 // PaymentAcceptor_Invoice_Item_TypeID is the unique identifier for the type PaymentAcceptor_Invoice_Item.
 const PaymentAcceptor_Invoice_Item_TypeID = 0xfe043eafc75e52c0
 
 func NewPaymentAcceptor_Invoice_Item(s *capnp.Segment) (PaymentAcceptor_Invoice_Item, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return PaymentAcceptor_Invoice_Item{st}, err
+	return PaymentAcceptor_Invoice_Item(st), err
 }
 
 func NewRootPaymentAcceptor_Invoice_Item(s *capnp.Segment) (PaymentAcceptor_Invoice_Item, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1})
-	return PaymentAcceptor_Invoice_Item{st}, err
+	return PaymentAcceptor_Invoice_Item(st), err
 }
 
 func ReadRootPaymentAcceptor_Invoice_Item(msg *capnp.Message) (PaymentAcceptor_Invoice_Item, error) {
 	root, err := msg.Root()
-	return PaymentAcceptor_Invoice_Item{root.Struct()}, err
+	return PaymentAcceptor_Invoice_Item(root.Struct()), err
 }
 
 func (s PaymentAcceptor_Invoice_Item) String() string {
-	str, _ := text.Marshal(0xfe043eafc75e52c0, s.Struct)
+	str, _ := text.Marshal(0xfe043eafc75e52c0, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentAcceptor_Invoice_Item) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentAcceptor_Invoice_Item) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor_Invoice_Item {
+	return PaymentAcceptor_Invoice_Item(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentAcceptor_Invoice_Item) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PaymentAcceptor_Invoice_Item) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_Invoice_Item) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_Invoice_Item) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentAcceptor_Invoice_Item) Title() (util.LocalizedText, error) {
-	p, err := s.Struct.Ptr(0)
-	return util.LocalizedText{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(0)
+	return util.LocalizedText(p.Struct()), err
 }
 
 func (s PaymentAcceptor_Invoice_Item) HasTitle() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentAcceptor_Invoice_Item) SetTitle(v util.LocalizedText) error {
-	return s.Struct.SetPtr(0, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(0, capnp.Struct(v).ToPtr())
 }
 
 // NewTitle sets the title field to a newly
 // allocated util.LocalizedText struct, preferring placement in s's segment.
 func (s PaymentAcceptor_Invoice_Item) NewTitle() (util.LocalizedText, error) {
-	ss, err := util.NewLocalizedText(s.Struct.Segment())
+	ss, err := util.NewLocalizedText(capnp.Struct(s).Segment())
 	if err != nil {
 		return util.LocalizedText{}, err
 	}
-	err = s.Struct.SetPtr(0, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(0, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 func (s PaymentAcceptor_Invoice_Item) AmountCents() int32 {
-	return int32(s.Struct.Uint32(0))
+	return int32(capnp.Struct(s).Uint32(0))
 }
 
 func (s PaymentAcceptor_Invoice_Item) SetAmountCents(v int32) {
-	s.Struct.SetUint32(0, uint32(v))
+	capnp.Struct(s).SetUint32(0, uint32(v))
 }
 
 // PaymentAcceptor_Invoice_Item_List is a list of PaymentAcceptor_Invoice_Item.
-type PaymentAcceptor_Invoice_Item_List struct{ capnp.List }
+type PaymentAcceptor_Invoice_Item_List = capnp.StructList[PaymentAcceptor_Invoice_Item]
 
 // NewPaymentAcceptor_Invoice_Item creates a new list of PaymentAcceptor_Invoice_Item.
 func NewPaymentAcceptor_Invoice_Item_List(s *capnp.Segment, sz int32) (PaymentAcceptor_Invoice_Item_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 8, PointerCount: 1}, sz)
-	return PaymentAcceptor_Invoice_Item_List{l}, err
-}
-
-func (s PaymentAcceptor_Invoice_Item_List) At(i int) PaymentAcceptor_Invoice_Item {
-	return PaymentAcceptor_Invoice_Item{s.List.Struct(i)}
-}
-
-func (s PaymentAcceptor_Invoice_Item_List) Set(i int, v PaymentAcceptor_Invoice_Item) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentAcceptor_Invoice_Item_List) String() string {
-	str, _ := text.MarshalList(0xfe043eafc75e52c0, s.List)
-	return str
+	return capnp.StructList[PaymentAcceptor_Invoice_Item](l), err
 }
 
 // PaymentAcceptor_Invoice_Item_Future is a wrapper for a PaymentAcceptor_Invoice_Item promised by a client call.
@@ -659,100 +766,109 @@ type PaymentAcceptor_Invoice_Item_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_Invoice_Item_Future) Struct() (PaymentAcceptor_Invoice_Item, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_Invoice_Item{s}, err
+	return PaymentAcceptor_Invoice_Item(s), err
 }
 
 func (p PaymentAcceptor_Invoice_Item_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
 
-type PaymentAcceptor_createPayment_Params struct{ capnp.Struct }
+type PaymentAcceptor_createPayment_Params capnp.Struct
 
 // PaymentAcceptor_createPayment_Params_TypeID is the unique identifier for the type PaymentAcceptor_createPayment_Params.
 const PaymentAcceptor_createPayment_Params_TypeID = 0x9fe16028dd10ba82
 
 func NewPaymentAcceptor_createPayment_Params(s *capnp.Segment) (PaymentAcceptor_createPayment_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return PaymentAcceptor_createPayment_Params{st}, err
+	return PaymentAcceptor_createPayment_Params(st), err
 }
 
 func NewRootPaymentAcceptor_createPayment_Params(s *capnp.Segment) (PaymentAcceptor_createPayment_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2})
-	return PaymentAcceptor_createPayment_Params{st}, err
+	return PaymentAcceptor_createPayment_Params(st), err
 }
 
 func ReadRootPaymentAcceptor_createPayment_Params(msg *capnp.Message) (PaymentAcceptor_createPayment_Params, error) {
 	root, err := msg.Root()
-	return PaymentAcceptor_createPayment_Params{root.Struct()}, err
+	return PaymentAcceptor_createPayment_Params(root.Struct()), err
 }
 
 func (s PaymentAcceptor_createPayment_Params) String() string {
-	str, _ := text.Marshal(0x9fe16028dd10ba82, s.Struct)
+	str, _ := text.Marshal(0x9fe16028dd10ba82, capnp.Struct(s))
 	return str
 }
 
+func (s PaymentAcceptor_createPayment_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (PaymentAcceptor_createPayment_Params) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor_createPayment_Params {
+	return PaymentAcceptor_createPayment_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s PaymentAcceptor_createPayment_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s PaymentAcceptor_createPayment_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s PaymentAcceptor_createPayment_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s PaymentAcceptor_createPayment_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
 func (s PaymentAcceptor_createPayment_Params) Source() PaymentSource {
-	p, _ := s.Struct.Ptr(0)
-	return PaymentSource{Client: p.Interface().Client()}
+	p, _ := capnp.Struct(s).Ptr(0)
+	return PaymentSource(p.Interface().Client())
 }
 
 func (s PaymentAcceptor_createPayment_Params) HasSource() bool {
-	return s.Struct.HasPtr(0)
+	return capnp.Struct(s).HasPtr(0)
 }
 
 func (s PaymentAcceptor_createPayment_Params) SetSource(v PaymentSource) error {
-	if !v.Client.IsValid() {
-		return s.Struct.SetPtr(0, capnp.Ptr{})
+	if !v.IsValid() {
+		return capnp.Struct(s).SetPtr(0, capnp.Ptr{})
 	}
 	seg := s.Segment()
-	in := capnp.NewInterface(seg, seg.Message().AddCap(v.Client))
-	return s.Struct.SetPtr(0, in.ToPtr())
+	in := capnp.NewInterface(seg, seg.Message().AddCap(capnp.Client(v)))
+	return capnp.Struct(s).SetPtr(0, in.ToPtr())
 }
 
 func (s PaymentAcceptor_createPayment_Params) Invoice() (PaymentAcceptor_Invoice, error) {
-	p, err := s.Struct.Ptr(1)
-	return PaymentAcceptor_Invoice{Struct: p.Struct()}, err
+	p, err := capnp.Struct(s).Ptr(1)
+	return PaymentAcceptor_Invoice(p.Struct()), err
 }
 
 func (s PaymentAcceptor_createPayment_Params) HasInvoice() bool {
-	return s.Struct.HasPtr(1)
+	return capnp.Struct(s).HasPtr(1)
 }
 
 func (s PaymentAcceptor_createPayment_Params) SetInvoice(v PaymentAcceptor_Invoice) error {
-	return s.Struct.SetPtr(1, v.Struct.ToPtr())
+	return capnp.Struct(s).SetPtr(1, capnp.Struct(v).ToPtr())
 }
 
 // NewInvoice sets the invoice field to a newly
 // allocated PaymentAcceptor_Invoice struct, preferring placement in s's segment.
 func (s PaymentAcceptor_createPayment_Params) NewInvoice() (PaymentAcceptor_Invoice, error) {
-	ss, err := NewPaymentAcceptor_Invoice(s.Struct.Segment())
+	ss, err := NewPaymentAcceptor_Invoice(capnp.Struct(s).Segment())
 	if err != nil {
 		return PaymentAcceptor_Invoice{}, err
 	}
-	err = s.Struct.SetPtr(1, ss.Struct.ToPtr())
+	err = capnp.Struct(s).SetPtr(1, capnp.Struct(ss).ToPtr())
 	return ss, err
 }
 
 // PaymentAcceptor_createPayment_Params_List is a list of PaymentAcceptor_createPayment_Params.
-type PaymentAcceptor_createPayment_Params_List struct{ capnp.List }
+type PaymentAcceptor_createPayment_Params_List = capnp.StructList[PaymentAcceptor_createPayment_Params]
 
 // NewPaymentAcceptor_createPayment_Params creates a new list of PaymentAcceptor_createPayment_Params.
 func NewPaymentAcceptor_createPayment_Params_List(s *capnp.Segment, sz int32) (PaymentAcceptor_createPayment_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 2}, sz)
-	return PaymentAcceptor_createPayment_Params_List{l}, err
-}
-
-func (s PaymentAcceptor_createPayment_Params_List) At(i int) PaymentAcceptor_createPayment_Params {
-	return PaymentAcceptor_createPayment_Params{s.List.Struct(i)}
-}
-
-func (s PaymentAcceptor_createPayment_Params_List) Set(i int, v PaymentAcceptor_createPayment_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s PaymentAcceptor_createPayment_Params_List) String() string {
-	str, _ := text.MarshalList(0x9fe16028dd10ba82, s.List)
-	return str
+	return capnp.StructList[PaymentAcceptor_createPayment_Params](l), err
 }
 
 // PaymentAcceptor_createPayment_Params_Future is a wrapper for a PaymentAcceptor_createPayment_Params promised by a client call.
@@ -760,18 +876,18 @@ type PaymentAcceptor_createPayment_Params_Future struct{ *capnp.Future }
 
 func (p PaymentAcceptor_createPayment_Params_Future) Struct() (PaymentAcceptor_createPayment_Params, error) {
 	s, err := p.Future.Struct()
-	return PaymentAcceptor_createPayment_Params{s}, err
+	return PaymentAcceptor_createPayment_Params(s), err
 }
 
 func (p PaymentAcceptor_createPayment_Params_Future) Source() PaymentSource {
-	return PaymentSource{Client: p.Future.Field(0, nil).Client()}
+	return PaymentSource(p.Future.Field(0, nil).Client())
 }
 
 func (p PaymentAcceptor_createPayment_Params_Future) Invoice() PaymentAcceptor_Invoice_Future {
 	return PaymentAcceptor_Invoice_Future{Future: p.Future.Field(1, nil)}
 }
 
-type Payment struct{ Client *capnp.Client }
+type Payment capnp.Client
 
 // Payment_TypeID is the unique identifier for the type Payment.
 const Payment_TypeID = 0xc5203e36361f382d
@@ -787,20 +903,30 @@ func (c Payment) Commit(ctx context.Context, params func(Payment_commit_Params) 
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Payment_commit_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Payment_commit_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Payment_commit_Results_Future{Future: ans.Future()}, release
 }
 
 func (c Payment) AddRef() Payment {
-	return Payment{
-		Client: c.Client.AddRef(),
-	}
+	return Payment(capnp.Client(c).AddRef())
 }
 
 func (c Payment) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c Payment) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (Payment) DecodeFromPtr(p capnp.Ptr) Payment {
+	return Payment(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c Payment) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A Payment_Server is a Payment with a local implementation.
@@ -809,15 +935,15 @@ type Payment_Server interface {
 }
 
 // Payment_NewServer creates a new Server from an implementation of Payment_Server.
-func Payment_NewServer(s Payment_Server, policy *server.Policy) *server.Server {
+func Payment_NewServer(s Payment_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(Payment_Methods(nil, s), s, c, policy)
+	return server.New(Payment_Methods(nil, s), s, c)
 }
 
 // Payment_ServerToClient creates a new Client from an implementation of Payment_Server.
 // The caller is responsible for calling Release on the returned Client.
-func Payment_ServerToClient(s Payment_Server, policy *server.Policy) Payment {
-	return Payment{Client: capnp.NewClient(Payment_NewServer(s, policy))}
+func Payment_ServerToClient(s Payment_Server) Payment {
+	return Payment(capnp.NewClient(Payment_NewServer(s)))
 }
 
 // Payment_Methods appends Methods to a slice that invoke the methods on s.
@@ -850,60 +976,79 @@ type Payment_commit struct {
 
 // Args returns the call's arguments.
 func (c Payment_commit) Args() Payment_commit_Params {
-	return Payment_commit_Params{Struct: c.Call.Args()}
+	return Payment_commit_Params(c.Call.Args())
 }
 
 // AllocResults allocates the results struct.
 func (c Payment_commit) AllocResults() (Payment_commit_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Payment_commit_Results{Struct: r}, err
+	return Payment_commit_Results(r), err
 }
 
-type Payment_commit_Params struct{ capnp.Struct }
+// Payment_List is a list of Payment.
+type Payment_List = capnp.CapList[Payment]
+
+// NewPayment creates a new list of Payment.
+func NewPayment_List(s *capnp.Segment, sz int32) (Payment_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[Payment](l), err
+}
+
+type Payment_commit_Params capnp.Struct
 
 // Payment_commit_Params_TypeID is the unique identifier for the type Payment_commit_Params.
 const Payment_commit_Params_TypeID = 0xbe3b7a8d4c9cd5b5
 
 func NewPayment_commit_Params(s *capnp.Segment) (Payment_commit_Params, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Payment_commit_Params{st}, err
+	return Payment_commit_Params(st), err
 }
 
 func NewRootPayment_commit_Params(s *capnp.Segment) (Payment_commit_Params, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Payment_commit_Params{st}, err
+	return Payment_commit_Params(st), err
 }
 
 func ReadRootPayment_commit_Params(msg *capnp.Message) (Payment_commit_Params, error) {
 	root, err := msg.Root()
-	return Payment_commit_Params{root.Struct()}, err
+	return Payment_commit_Params(root.Struct()), err
 }
 
 func (s Payment_commit_Params) String() string {
-	str, _ := text.Marshal(0xbe3b7a8d4c9cd5b5, s.Struct)
+	str, _ := text.Marshal(0xbe3b7a8d4c9cd5b5, capnp.Struct(s))
 	return str
 }
 
+func (s Payment_commit_Params) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Payment_commit_Params) DecodeFromPtr(p capnp.Ptr) Payment_commit_Params {
+	return Payment_commit_Params(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Payment_commit_Params) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Payment_commit_Params) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Payment_commit_Params) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Payment_commit_Params) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Payment_commit_Params_List is a list of Payment_commit_Params.
-type Payment_commit_Params_List struct{ capnp.List }
+type Payment_commit_Params_List = capnp.StructList[Payment_commit_Params]
 
 // NewPayment_commit_Params creates a new list of Payment_commit_Params.
 func NewPayment_commit_Params_List(s *capnp.Segment, sz int32) (Payment_commit_Params_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Payment_commit_Params_List{l}, err
-}
-
-func (s Payment_commit_Params_List) At(i int) Payment_commit_Params {
-	return Payment_commit_Params{s.List.Struct(i)}
-}
-
-func (s Payment_commit_Params_List) Set(i int, v Payment_commit_Params) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Payment_commit_Params_List) String() string {
-	str, _ := text.MarshalList(0xbe3b7a8d4c9cd5b5, s.List)
-	return str
+	return capnp.StructList[Payment_commit_Params](l), err
 }
 
 // Payment_commit_Params_Future is a wrapper for a Payment_commit_Params promised by a client call.
@@ -911,54 +1056,64 @@ type Payment_commit_Params_Future struct{ *capnp.Future }
 
 func (p Payment_commit_Params_Future) Struct() (Payment_commit_Params, error) {
 	s, err := p.Future.Struct()
-	return Payment_commit_Params{s}, err
+	return Payment_commit_Params(s), err
 }
 
-type Payment_commit_Results struct{ capnp.Struct }
+type Payment_commit_Results capnp.Struct
 
 // Payment_commit_Results_TypeID is the unique identifier for the type Payment_commit_Results.
 const Payment_commit_Results_TypeID = 0xb3942c4ba1c3c70f
 
 func NewPayment_commit_Results(s *capnp.Segment) (Payment_commit_Results, error) {
 	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Payment_commit_Results{st}, err
+	return Payment_commit_Results(st), err
 }
 
 func NewRootPayment_commit_Results(s *capnp.Segment) (Payment_commit_Results, error) {
 	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return Payment_commit_Results{st}, err
+	return Payment_commit_Results(st), err
 }
 
 func ReadRootPayment_commit_Results(msg *capnp.Message) (Payment_commit_Results, error) {
 	root, err := msg.Root()
-	return Payment_commit_Results{root.Struct()}, err
+	return Payment_commit_Results(root.Struct()), err
 }
 
 func (s Payment_commit_Results) String() string {
-	str, _ := text.Marshal(0xb3942c4ba1c3c70f, s.Struct)
+	str, _ := text.Marshal(0xb3942c4ba1c3c70f, capnp.Struct(s))
 	return str
 }
 
+func (s Payment_commit_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (Payment_commit_Results) DecodeFromPtr(p capnp.Ptr) Payment_commit_Results {
+	return Payment_commit_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s Payment_commit_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s Payment_commit_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s Payment_commit_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s Payment_commit_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
 // Payment_commit_Results_List is a list of Payment_commit_Results.
-type Payment_commit_Results_List struct{ capnp.List }
+type Payment_commit_Results_List = capnp.StructList[Payment_commit_Results]
 
 // NewPayment_commit_Results creates a new list of Payment_commit_Results.
 func NewPayment_commit_Results_List(s *capnp.Segment, sz int32) (Payment_commit_Results_List, error) {
 	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
-	return Payment_commit_Results_List{l}, err
-}
-
-func (s Payment_commit_Results_List) At(i int) Payment_commit_Results {
-	return Payment_commit_Results{s.List.Struct(i)}
-}
-
-func (s Payment_commit_Results_List) Set(i int, v Payment_commit_Results) error {
-	return s.List.SetStruct(i, v.Struct)
-}
-
-func (s Payment_commit_Results_List) String() string {
-	str, _ := text.MarshalList(0xb3942c4ba1c3c70f, s.List)
-	return str
+	return capnp.StructList[Payment_commit_Results](l), err
 }
 
 // Payment_commit_Results_Future is a wrapper for a Payment_commit_Results promised by a client call.
@@ -966,10 +1121,10 @@ type Payment_commit_Results_Future struct{ *capnp.Future }
 
 func (p Payment_commit_Results_Future) Struct() (Payment_commit_Results, error) {
 	s, err := p.Future.Struct()
-	return Payment_commit_Results{s}, err
+	return Payment_commit_Results(s), err
 }
 
-type PersistentPaymentSource struct{ Client *capnp.Client }
+type PersistentPaymentSource capnp.Client
 
 // PersistentPaymentSource_TypeID is the unique identifier for the type PersistentPaymentSource.
 const PersistentPaymentSource_TypeID = 0xa66dd2d4c80d0fae
@@ -985,9 +1140,9 @@ func (c PersistentPaymentSource) GetTitle(ctx context.Context, params func(Payme
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentSource_getTitle_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentSource_getTitle_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return PaymentSource_getTitle_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentPaymentSource) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -1001,11 +1156,9 @@ func (c PersistentPaymentSource) AddRequirements(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentPaymentSource) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -1019,20 +1172,30 @@ func (c PersistentPaymentSource) Save(ctx context.Context, params func(persisten
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentPaymentSource) AddRef() PersistentPaymentSource {
-	return PersistentPaymentSource{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentPaymentSource(capnp.Client(c).AddRef())
 }
 
 func (c PersistentPaymentSource) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentPaymentSource) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentPaymentSource) DecodeFromPtr(p capnp.Ptr) PersistentPaymentSource {
+	return PersistentPaymentSource(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentPaymentSource) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentPaymentSource_Server is a PersistentPaymentSource with a local implementation.
@@ -1045,15 +1208,15 @@ type PersistentPaymentSource_Server interface {
 }
 
 // PersistentPaymentSource_NewServer creates a new Server from an implementation of PersistentPaymentSource_Server.
-func PersistentPaymentSource_NewServer(s PersistentPaymentSource_Server, policy *server.Policy) *server.Server {
+func PersistentPaymentSource_NewServer(s PersistentPaymentSource_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentPaymentSource_Methods(nil, s), s, c, policy)
+	return server.New(PersistentPaymentSource_Methods(nil, s), s, c)
 }
 
 // PersistentPaymentSource_ServerToClient creates a new Client from an implementation of PersistentPaymentSource_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentPaymentSource_ServerToClient(s PersistentPaymentSource_Server, policy *server.Policy) PersistentPaymentSource {
-	return PersistentPaymentSource{Client: capnp.NewClient(PersistentPaymentSource_NewServer(s, policy))}
+func PersistentPaymentSource_ServerToClient(s PersistentPaymentSource_Server) PersistentPaymentSource {
+	return PersistentPaymentSource(capnp.NewClient(PersistentPaymentSource_NewServer(s)))
 }
 
 // PersistentPaymentSource_Methods appends Methods to a slice that invoke the methods on s.
@@ -1102,7 +1265,16 @@ func PersistentPaymentSource_Methods(methods []server.Method, s PersistentPaymen
 	return methods
 }
 
-type PersistentPaymentAcceptor struct{ Client *capnp.Client }
+// PersistentPaymentSource_List is a list of PersistentPaymentSource.
+type PersistentPaymentSource_List = capnp.CapList[PersistentPaymentSource]
+
+// NewPersistentPaymentSource creates a new list of PersistentPaymentSource.
+func NewPersistentPaymentSource_List(s *capnp.Segment, sz int32) (PersistentPaymentSource_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentPaymentSource](l), err
+}
+
+type PersistentPaymentAcceptor capnp.Client
 
 // PersistentPaymentAcceptor_TypeID is the unique identifier for the type PersistentPaymentAcceptor.
 const PersistentPaymentAcceptor_TypeID = 0xe70f1d4eea79f6f5
@@ -1118,9 +1290,9 @@ func (c PersistentPaymentAcceptor) CreatePayment(ctx context.Context, params fun
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentAcceptor_createPayment_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(PaymentAcceptor_createPayment_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return PaymentAcceptor_CreatePaymentResults_Future{Future: ans.Future()}, release
 }
 func (c PersistentPaymentAcceptor) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -1134,11 +1306,9 @@ func (c PersistentPaymentAcceptor) AddRequirements(ctx context.Context, params f
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentPaymentAcceptor) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -1152,20 +1322,30 @@ func (c PersistentPaymentAcceptor) Save(ctx context.Context, params func(persist
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentPaymentAcceptor) AddRef() PersistentPaymentAcceptor {
-	return PersistentPaymentAcceptor{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentPaymentAcceptor(capnp.Client(c).AddRef())
 }
 
 func (c PersistentPaymentAcceptor) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentPaymentAcceptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentPaymentAcceptor) DecodeFromPtr(p capnp.Ptr) PersistentPaymentAcceptor {
+	return PersistentPaymentAcceptor(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentPaymentAcceptor) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentPaymentAcceptor_Server is a PersistentPaymentAcceptor with a local implementation.
@@ -1178,15 +1358,15 @@ type PersistentPaymentAcceptor_Server interface {
 }
 
 // PersistentPaymentAcceptor_NewServer creates a new Server from an implementation of PersistentPaymentAcceptor_Server.
-func PersistentPaymentAcceptor_NewServer(s PersistentPaymentAcceptor_Server, policy *server.Policy) *server.Server {
+func PersistentPaymentAcceptor_NewServer(s PersistentPaymentAcceptor_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentPaymentAcceptor_Methods(nil, s), s, c, policy)
+	return server.New(PersistentPaymentAcceptor_Methods(nil, s), s, c)
 }
 
 // PersistentPaymentAcceptor_ServerToClient creates a new Client from an implementation of PersistentPaymentAcceptor_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentPaymentAcceptor_ServerToClient(s PersistentPaymentAcceptor_Server, policy *server.Policy) PersistentPaymentAcceptor {
-	return PersistentPaymentAcceptor{Client: capnp.NewClient(PersistentPaymentAcceptor_NewServer(s, policy))}
+func PersistentPaymentAcceptor_ServerToClient(s PersistentPaymentAcceptor_Server) PersistentPaymentAcceptor {
+	return PersistentPaymentAcceptor(capnp.NewClient(PersistentPaymentAcceptor_NewServer(s)))
 }
 
 // PersistentPaymentAcceptor_Methods appends Methods to a slice that invoke the methods on s.
@@ -1235,7 +1415,16 @@ func PersistentPaymentAcceptor_Methods(methods []server.Method, s PersistentPaym
 	return methods
 }
 
-type PersistentPayment struct{ Client *capnp.Client }
+// PersistentPaymentAcceptor_List is a list of PersistentPaymentAcceptor.
+type PersistentPaymentAcceptor_List = capnp.CapList[PersistentPaymentAcceptor]
+
+// NewPersistentPaymentAcceptor creates a new list of PersistentPaymentAcceptor.
+func NewPersistentPaymentAcceptor_List(s *capnp.Segment, sz int32) (PersistentPaymentAcceptor_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentPaymentAcceptor](l), err
+}
+
+type PersistentPayment capnp.Client
 
 // PersistentPayment_TypeID is the unique identifier for the type PersistentPayment.
 const PersistentPayment_TypeID = 0xbbcf2f6351d92999
@@ -1251,9 +1440,9 @@ func (c PersistentPayment) Commit(ctx context.Context, params func(Payment_commi
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 0}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(Payment_commit_Params{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(Payment_commit_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return Payment_commit_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentPayment) AddRequirements(ctx context.Context, params func(supervisor.SystemPersistent_addRequirements_Params) error) (supervisor.SystemPersistent_addRequirements_Results_Future, capnp.ReleaseFunc) {
@@ -1267,11 +1456,9 @@ func (c PersistentPayment) AddRequirements(ctx context.Context, params func(supe
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 2}
-		s.PlaceArgs = func(s capnp.Struct) error {
-			return params(supervisor.SystemPersistent_addRequirements_Params{Struct: s})
-		}
+		s.PlaceArgs = func(s capnp.Struct) error { return params(supervisor.SystemPersistent_addRequirements_Params(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return supervisor.SystemPersistent_addRequirements_Results_Future{Future: ans.Future()}, release
 }
 func (c PersistentPayment) Save(ctx context.Context, params func(persistent.Persistent_SaveParams) error) (persistent.Persistent_SaveResults_Future, capnp.ReleaseFunc) {
@@ -1285,20 +1472,30 @@ func (c PersistentPayment) Save(ctx context.Context, params func(persistent.Pers
 	}
 	if params != nil {
 		s.ArgsSize = capnp.ObjectSize{DataSize: 0, PointerCount: 1}
-		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams{Struct: s}) }
+		s.PlaceArgs = func(s capnp.Struct) error { return params(persistent.Persistent_SaveParams(s)) }
 	}
-	ans, release := c.Client.SendCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
 func (c PersistentPayment) AddRef() PersistentPayment {
-	return PersistentPayment{
-		Client: c.Client.AddRef(),
-	}
+	return PersistentPayment(capnp.Client(c).AddRef())
 }
 
 func (c PersistentPayment) Release() {
-	c.Client.Release()
+	capnp.Client(c).Release()
+}
+
+func (c PersistentPayment) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Client(c).EncodeAsPtr(seg)
+}
+
+func (PersistentPayment) DecodeFromPtr(p capnp.Ptr) PersistentPayment {
+	return PersistentPayment(capnp.Client{}.DecodeFromPtr(p))
+}
+
+func (c PersistentPayment) IsValid() bool {
+	return capnp.Client(c).IsValid()
 }
 
 // A PersistentPayment_Server is a PersistentPayment with a local implementation.
@@ -1311,15 +1508,15 @@ type PersistentPayment_Server interface {
 }
 
 // PersistentPayment_NewServer creates a new Server from an implementation of PersistentPayment_Server.
-func PersistentPayment_NewServer(s PersistentPayment_Server, policy *server.Policy) *server.Server {
+func PersistentPayment_NewServer(s PersistentPayment_Server) *server.Server {
 	c, _ := s.(server.Shutdowner)
-	return server.New(PersistentPayment_Methods(nil, s), s, c, policy)
+	return server.New(PersistentPayment_Methods(nil, s), s, c)
 }
 
 // PersistentPayment_ServerToClient creates a new Client from an implementation of PersistentPayment_Server.
 // The caller is responsible for calling Release on the returned Client.
-func PersistentPayment_ServerToClient(s PersistentPayment_Server, policy *server.Policy) PersistentPayment {
-	return PersistentPayment{Client: capnp.NewClient(PersistentPayment_NewServer(s, policy))}
+func PersistentPayment_ServerToClient(s PersistentPayment_Server) PersistentPayment {
+	return PersistentPayment(capnp.NewClient(PersistentPayment_NewServer(s)))
 }
 
 // PersistentPayment_Methods appends Methods to a slice that invoke the methods on s.
@@ -1368,72 +1565,81 @@ func PersistentPayment_Methods(methods []server.Method, s PersistentPayment_Serv
 	return methods
 }
 
-const schema_d512486208994241 = "x\xda\x94U]h\x1cU\x14>g~:3\xa5\xeb" +
-	"\xee\xf5V\xab\x0fu}\xd8\xd2nI\xd7\x9a\xd4Z#" +
-	"d\xbb\x1bl\xdcZt'U\xdf\x94N&W\x19\xc9" +
-	"\xecng&\x96\xaa\x18\xf4\xc1*\xfe@Q\x90\x80R" +
-	"\xad((\xd8>\xa8TZ(\x85*U\xfb \x8a\xab" +
-	"T\x0d\x98\xd6\"-\xc4\xb7U\xa2\xd8\x91;\xb33\xb3" +
-	"\xd9tc|\xcb\xde\xdc\xfb}\xdf\xf9\xcew\xcel\xbe" +
-	"O\xdc.\xdc*\x1f\xc8\x00\xe8\xa7\xe4\x15>}\xce=" +
-	"\xb4\xe3\x9d\xef\x0f\x02\xc9\xa2O\xce\x9d\xc8\x1f\xb80\xd6" +
-	"\x04\x19\x15\x80\x81\xbc:\x88\xf4\x0eu\x0d\x00-\xa9E" +
-	"@\xff\xd9\xe3\x99\x99\x0d{f\x0f\xf1\xcb\x00\xb2\xc0/" +
-	"\xedU\x0f# }F\xdd\x07\xe8\x1fI\xa7\xbe\xf8\xee" +
-	"[\xfb= i\xd1/\x95\xa7\xd5\xb1\xbb\xafm\x02\xe0" +
-	"\xc0\x0c\x87\x9aS\x15\x00zIU\xe8%u=\x80\x7f" +
-	"\xe4\x97\xafnz~v\xd7Q k9\\\xc09\xab" +
-	":\x1cn.\xe0K\x9f9\xfd\xf6=}\xaf}\x04d" +
-	"\x0d\x02H\xfc\xff)\xad\x1fA\xf2\xa7\xf3\xe7t\xf3\x96" +
-	"\xafO,\"j\xa9+\x91\xca\x1a'BM\xa1\xa8q" +
-	"\xa2O\x9ao\xecz\xf9\x89;Ov\xe0\xcc\xab\x1b9" +
-	"\xce\xa6m\xd9\xad[\x87n\xfe\xbc\x1b\x87\xce\xaa\xc7\xb9" +
-	"R\x00zQ\x1d\xa1)\x0e\xe8_8;\xfc\xea\x9f\xd7" +
-	"\xaf;\x1b\xea\x0d`Z\xeac\x1c\xe6\xf5O_\xf9p" +
-	"\xe6A\xb9\x09\xfa\x16D\x7f\x8f\xf4t\xe9\xb3\xb7~\xfa" +
-	"\x1d\xaeC\x05\x83\x9a~\xe45\xb5\x82\x9ab\x8f\xbb\x19" +
-	"o\xd4\xfe\xa2\xeb\xb8\\Z\xd2F\xa8\x1d0\xae\xcc\x1e" +
-	"\xfb\xf9\xef\x1dC\xbf^\x1d\xf7\x01\xed<\xc7\xb54\x8e" +
-	"\xdb\xfac\xff\xe5{\xd7\xa6\x7f[\xe4\xc8\x0b\xdaN\xa4" +
-	"o\x06\x8eLk\x0a\x9d\x0e\x1c\x89\xa1\xf4,vh\xba" +
-	"\x0b\x15\x01`\xe0\xa0v\x18\xe9\xfb\xc1\x93w5\xde\xd7" +
-	"\xc6\\n\xefm}\xd6\xfc\"\xd1_j\x97i3\xb8" +
-	"\xf8\x8d6B\xff\x09D\x9f\x1a}\xf8\xcc\xd1!\xe9\x0a" +
-	"\xe8\xeb\x11\x93\x80\x85\xfd\xbd\xa8\x8d!\x9d\x0f^\xb4\xb4" +
-	"}\xe0\x83\xe17\x8c\xfd6\xaby\xaeX0\x8dF\xad" +
-	"1X\x0d\x7f\x97L\x935\xbc\xbaS\xa8\x14k\x8f\xd7" +
-	"-\x93\xe9\x12b\x02Npc\xba\xe21[\x97D\x09" +
-	"@B\x00\x92\xea\x07\xd0U\x11\xf5\x9c\x80Y\xcbc\xb6" +
-	"\x8b\xd7\x00VE\xc4L\xf2\x0e\x90\x1f\xc6\xa4r\x0fR" +
-	"\xd3a\x86\xc7\xda\xa7\xb9\xaa\xe1(\x86\xed\xeaj\xcc\x95" +
-	"\x1f\x04\xd0s\"\xea\x9b\x05$\x88\xab\x91\x1fn*\x03" +
-	"\xe8\x1bD\xd4\xb7\x08Xt\xeb\x93\x8e\xc9\x90$\xe6\x01" +
-	"\"\x01\x9c\xb2\xc2r0\x93x\x03\x88\x99\x0eQ\xb1\x13" +
-	"\xccq-\xd7c5\xaf-\xa4\xb8;\x00\xad\"VE" +
-	"YW\xb1\xa33\x00\xfe\xc7\xcd\x93O\xfd0\xf7\xd2i" +
-	"\xfew\x04%-\xac/|_x\x94y\xf7[\xde\x04" +
-	"\xcb\x8d\xb2\xac;9\xe1\xb9Wsq\xb5\x80Y\x8f\xdf" +
-	"\xc2\x8c_9\xff\xe4\xed\xce\xb1\x87^\xec\xa94\xfc]" +
-	"0\xeb\xb6my1\xec\x7fW\x04\xd0QL<\x8d=" +
-	"\x8a\xe9\xc1V5\xd2\x8ea'd\x18]+\x86\x07U" +
-	"D]\x12\xe5\x8eE\x80\xd1f!d\x10\x04\"+\xc5" +
-	"\x10j;V\x11\x97\xeb]7\xed\x8a\x1eQ\x1a\xee\x8c" +
-	"\xd2(\x0b\x8c)<bX\x13\"\x1b\x0f}\x0f\xd3\x93" +
-	"\x1a\x03\xd0W\x89\xa8\xdf \xa0?\xce\\\xd3\xb1\x1a\x1e" +
-	"(V\xbd\xb6D\x03\x84n\xd2b\xc8\x1a\xf8\x19O9" +
-	"\xd1>\xe8\xd8\xf4\xa9\xb2\x1fi\xc2HT\x9a\xab\x9a\xaa" +
-	"D\x93\x16\xb8\x15\xad{\x8cp\x08q@ \x9a\xe2G" +
-	"\xd3\x01\xd9\xe0\xfdB\xdb\xfe\x97\x0f\xee\xa4i*\xcc]" +
-	"\x10\xc0r\x12\xc0\xa96(\x92\x8ep\x04c\xb4\xb8K" +
-	"\xdd\xd1\x8a\x88\x17D,^u=\"&/W\xbc2" +
-	"\xe1\xb9<X\xaa(\xad\xf2}\xc4dW\x93|\x19\x84" +
-	"\x14^\xe1\x87\xf1\x87!\x08\xda\x14\xaf\x96\xb9n\x91w" +
-	"\x9f\x8d\xf7j\xe2\xeez\xba=\xe5\xedFD\x1f\x1e\x8c" +
-	"\xbe\x98\x84\xec\x0c\x1b\x11\x85\x11\x00\x96\xccn\xb2L\xc3" +
-	"\x0e\x17*\x8a\xc7\xec\xb6\xfeh\xa5\xf5'+-\xdeh" +
-	"<\x93}\"\xea\xdb\x96X\x06\x86]\x9f\xacy\xc3\x0c" +
-	"\x14>|\x12\x08(\x01\xfe\x1b\x00\x00\xff\xff;\xb5\xa3" +
-	"\xaf"
+// PersistentPayment_List is a list of PersistentPayment.
+type PersistentPayment_List = capnp.CapList[PersistentPayment]
+
+// NewPersistentPayment creates a new list of PersistentPayment.
+func NewPersistentPayment_List(s *capnp.Segment, sz int32) (PersistentPayment_List, error) {
+	l, err := capnp.NewPointerList(s, sz)
+	return capnp.CapList[PersistentPayment](l), err
+}
+
+const schema_d512486208994241 = "x\xda\x94U_h\x1c\xd5\x17>g\xfetfJ\xf7" +
+	"\xb7{\x7f\xb7Z}\xa8\xebCJ\x9b\x92\xae5\xa9\xb5" +
+	"F\xc86\x1bl\xdcZdo\xaa\xbe)\x9dL\xae2" +
+	"\x92\xd9\xdd\xceL,U1\xe8\x83U\xfc\x03EA\x02" +
+	"J\xb5\xa2\xa0`\xfb\xa0Ri\xa1\x14\xaaT\xed\x83(" +
+	"\xaeR5`Z\x8b\xb4\x10\xdfV\x89bG\xee\xcc\xce" +
+	"\xccf\xd3\x8d\xf5-{s\xef\xf7}\xe7;\xdf9\xb3" +
+	"\x99\xc9\xdb\x95[3\x07r \xb1S\xea\x8a\x80>\xeb" +
+	"\x1d\xda\xf1\xf6w\x07\x81\xe41 \xe7N\xf4\x1e\xb80" +
+	"\xde\x00\x155\x80\x81^}\x10\xe9\x1d\xfa\x1a\x00:\xac" +
+	"\x17\x01\x83g\x8e\xe7f7\xec\x99;$.\x03\xa8\x92" +
+	"\xb8\xb4W?\x8c\x80\xf4i}\x1f`p$\x9b\xf9\xfc" +
+	"\xdbo\x9cw\x81d\xe5`\xb84\xa3\x8f\xdf\xfd\xff\x06" +
+	"\x00\x0e\xcc\x0a\xa8y]\x03\xa0\x97t\x8d^\xd2\xd7\x03" +
+	"\x04G~\xfe\xf2\xa6\xe7\xe6v\x1d\x05\xb2V\xc0\x85\x9c" +
+	"s\xba+\xe0\xe6C\xbe\xec\x99\xd3o\xdd\xd3\xf7\xea\x87" +
+	"@\xd6 \x80\"\xfe\x9f1\xfa\x11\x94`\xa6\xf7\x1c\xb3" +
+	"n\xf9\xea\xc4\x12\xa2\xa6\xbe\x12\xa9j\x08\"44\x8a" +
+	"\x86 \xfa\xb8\xf1\xfa\xae\x97\x1e\xbf\xf3d\x1b\xce\x82\xbe" +
+	"Q\xe0l\xda\x96\xdf\xbau\xe8\xe6\xcf:q\xe8\x9c~" +
+	"\\(\x05\xa0\x17\xf5Q\x9a\x11\x80\xc1\x85\xb3#\xaf\xfc" +
+	"q\xfd\xba\xb3\x91\xde\x10\xa6\xa9?*`^\xfb\xe4\xe5" +
+	"\x0ff\x1fP\x1b\xc0\xb6 \x06{\x94\xa7\x86?}\xf3" +
+	"\xc7\xdf\xe0:\xd40\xac\xe9\x07QS3\xac)\xf1\xb8" +
+	"\x93\xf1F\xe3O\xbaN\xc8\xa5\xc3\xc6(uB\xc6\x95" +
+	"\xf9c?\xfd\xb5c\xe8\x97\xab\xe3\xdeo\x9c\x17\xb8\xb6" +
+	"!p\x9b\xbf\xef\xbf|\xef\xda\xec\xafK\x1cy\xde\xd8" +
+	"\x89\xf4\x8d\xd0\x91\x19C\xa33\xa1#\x09\x14\xcbc\x9b" +
+	"\xa6\xbbP\x93\x00\x06\x0e\x1a\x87\x91\xbe\x17>y\xc7\x10" +
+	"}\xad\xcf\xf7\xec\xbd\xad\xcf^X\"\xfa\x0b\xe32m" +
+	"\x84\x17\xbf6F\xe9\xdf\xa1\xe8Sc\x0f\x9d9:\xa4" +
+	"\\\x01\xb6\x1e1\x0dX\xd4\xdf\x8b\xc68\xd2\x85\xf0E" +
+	"\xd3\xd8\x07\x01\x98A\xdd\xdc\xef\xf0\xaa\xef\xc9\x05\xcb\xac" +
+	"W\xeb\x83\x95\xe8\xf7\xb0e\xf1\xba_s\x0b\xe5b\xf5" +
+	"\xb1\x9amq\xa6 \xa6\xe0\x047f\xcb>w\x98\"" +
+	"+\x00\x0a\x02\x90L?\x00\xd3ed=\x12\xe6m\x9f" +
+	";\x1e\xfe\x0f\xb0\"#\xe6\xd2w\x80\xe20!U\xbb" +
+	"\x90Z.7}\xde:\xed\xa9\x98\xaef:\x1e\xd3\x13" +
+	"\xae\xdeA\x00\xd6##\xdb,!A\\\x8d\xe2pS" +
+	"\x09\x80m\x90\x91m\x91\xb0\xe8\xd5\xa6\\\x8b#I\xcd" +
+	"\x03D\x028mG\xe5`.\xf5\x06\x10sm\xa2\x12" +
+	"'\xb8\xeb\xd9\x9e\xcf\xab~KHqw\x08ZA\xac" +
+	"\xc8*\xd3\xb1\xad3\x00\xc1G\x8d\x93O~?\xff\xe2" +
+	"i\xf1w\x0c\xa5,\xae/z_x\x84\xfb\xf7\xd9\xfe" +
+	"$\xef\x19\xe3yoj\xd2\xf7\xae\xe6\xe2j\x09\xf3\xbe" +
+	"\xb8\x85\xb9\xa0|\xfe\x89\xdb\xddc\x0f\xbe\xd0Ui\xf4" +
+	"\xbb`\xd5\x1c\xc7\xf6\x13\xd8\x7f\xaf\x08\xa0\xad\x98d\x1a" +
+	"\xbb\x14\xd3\x85\xadbf]\xd3I\xc90\xbeV\x8c\x0e" +
+	"*\x88L\x91\xd5\xb6E\x80\xf1f!d\x10$\xa2j" +
+	"\xc5\x08j;V\x10\xaf\xd5\xbbN\xda\x15]\xa24\xd2" +
+	"\x1e\xa51\x1e\x1aSx\xd8\xb4'e>\x11\xf9\x1e\xa5" +
+	"'3\x0e\xc0V\xc9\xc8n\x900\x98\xe0\x9e\xe5\xdau" +
+	"\x1f4\xbbV]\xa6\x01R'i1b\x0d\xfdL\xa6" +
+	"\x9c\x18\xef\xb7m\xfaL)\x885a,*+TM" +
+	"\x97\xe3I\x0b\xdd\x8a\xd7=\xc68\x84\xb8 \x11C\x0b" +
+	"\xe2\xe9\x80|\xf8~\xb1m\xff\xc9\x07o\xca\xb24\xee" +
+	"-\x0a`)\x0d\xe0t\x0b\x14I[8\xc21Z\xda" +
+	"\xa5\xceh\xc5\xc4\x8b\"\x96\xac\xba.\x11S\xafU\xbc" +
+	"6\xe9{\"X\xba\xac\xac\x0a\x02\xc4tW\x93\xde\x12" +
+	"H\x19\xbc\"\x0e\x93\x0fC\x18\xb4iQ-\xf7\xbc\xa2" +
+	"\xe8>\x9f\xe8\xd6\xc4\xdd\xb5lk\xca[\x8d\x88?<" +
+	"\x18\x7f1\x09\xd9\x195\"\x0e#\x00,\x9b\xddt\x99" +
+	"F\x1d.\x945\x9f;-\xfd\xf1J\xebOWZ\xb2" +
+	"\xd1D&\xfbdd\xdb\x96Y\x06\xa6S\x9b\xaa\xfa#" +
+	"\x1c41|\x0aH\xa8\x00\xfe\x13\x00\x00\xff\xff\xb1%" +
+	"\xa3\xbd"
 
 func init() {
 	schemas.Register(schema_d512486208994241,
