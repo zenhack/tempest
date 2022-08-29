@@ -55,7 +55,7 @@ func buildElm() error {
 }
 
 func buildGo() error {
-	return runInDir(".", "go", "build", "-v", "-i", "-o", "bin/server", "./go/cmd/server")
+	return runInDir(".", "go", "build", "-v", "-o", "bin/server", "./go/cmd/server")
 }
 
 func cleanC() error {
