@@ -1,24 +1,77 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 )
 
-var (
-	configureFlags = flag.NewFlagSet("configure", flag.ExitOnError)
+type Config struct {
+	User, Group   string
+	Prefix        string
+	Libexecdir    string
+	Localstatedir string
+}
 
-	user       = configureFlags.String("user", "sandstorm", "the user to run as")
-	group      = configureFlags.String("group", "sandstorm", "the group to run as")
-	prefix     = configureFlags.String("prefix", "/usr/local", "install prefix")
-	libexecdir = configureFlags.String("libexecdir", "",
+func (c *Config) ParseFlags(args []string, name string, errorHandling flag.ErrorHandling) {
+	fs := flag.NewFlagSet(name, errorHandling)
+	fs.StringVar(&c.User, "user", "sandstorm", "the user to run as")
+	fs.StringVar(&c.Group, "group", "sandstorm", "the group to run as")
+
+	fs.StringVar(&c.Prefix, "prefix", "/usr/local", "install prefix")
+	fs.StringVar(&c.Libexecdir, "libexecdir", "",
 		`path for helper commands (default "${PREFIX}/libexec")`)
-	localstatedir = configureFlags.String("localstatedir", "",
+	fs.StringVar(&c.Localstatedir, "localstatedir", "",
 		`path to store run-time data (default "${PREFIX}/var/lib")`)
+
+	fs.Parse(args[1:])
+	if c.Libexecdir == "" {
+		c.Libexecdir = c.Prefix + "/libexec"
+	}
+	if c.Localstatedir == "" {
+		c.Localstatedir = c.Prefix + "/var/lib"
+	}
+}
+
+func (c Config) GoSrc() string {
+	return fmt.Sprintf(`package conifg
+
+const (
+	User = %q
+	Group = %q
+	Prefix = %q
+	Libexecdir = %q
+	Localstatedir = %q
 )
+`,
+		c.User,
+		c.Group,
+		c.Prefix,
+		c.Libexecdir,
+		c.Localstatedir,
+	)
+}
+
+func (c Config) CSrc() string {
+	return fmt.Sprintf(`
+#ifndef SANDSTORM_CONFIG_H
+#define SANDSTORM_CONFIG_H
+
+#define PREFIX %q
+#define LIBEXECDIR %q
+#define LOCALSTATEDIR %q
+
+#endif
+`,
+		c.Prefix,
+		c.Libexecdir,
+		c.Localstatedir,
+	)
+}
 
 func chkfatal(err error) {
 	if err != nil {
@@ -120,55 +173,22 @@ func run(args ...string) {
 		run("clean")
 		runJobs(nukeC, nukeElm, nukeGo)
 	case "configure":
-		configureFlags.Parse(args[1:])
-		if *libexecdir == "" {
-			*libexecdir = *prefix + "/libexec"
-		}
-		if *localstatedir == "" {
-			*localstatedir = *prefix + "/var/lib"
-		}
-		file, err := os.Create("./go/internal/config/config.go")
+		cfg := &Config{}
+		cfg.ParseFlags(args, "configure", flag.ExitOnError)
+		chkfatal(ioutil.WriteFile(
+			"./go/internal/config/config.go",
+			[]byte(cfg.GoSrc()),
+			0600))
+		chkfatal(ioutil.WriteFile(
+			"./c/config.h",
+			[]byte(cfg.CSrc()),
+			0600))
+		jsonData, err := json.Marshal(cfg)
 		chkfatal(err)
-		defer file.Close()
-		_, err = fmt.Fprintf(file,
-			`
-package conifg
-
-const (
-	User = %q
-	Group = %q
-	Prefix = %q
-	Libexecdir = %q
-	Localstatedir = %q
-)
-`,
-			*user,
-			*group,
-			*prefix,
-			*libexecdir,
-			*localstatedir,
-		)
-		chkfatal(err)
-
-		file, err = os.Create("./c/config.h")
-		chkfatal(err)
-		defer file.Close()
-		_, err = fmt.Fprintf(file,
-			`
-#ifndef SANDSTORM_CONFIG_H
-#define SANDSTORM_CONFIG_H
-
-#define PREFIX %q
-#define LIBEXECDIR %q
-#define LOCALSTATEDIR %q
-
-#endif
-`,
-			*prefix,
-			*libexecdir,
-			*localstatedir,
-		)
-		chkfatal(err)
+		chkfatal(ioutil.WriteFile(
+			"./config.json",
+			jsonData,
+			0600))
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
