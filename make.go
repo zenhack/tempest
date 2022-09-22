@@ -104,7 +104,7 @@ func buildC() error {
 }
 
 func buildGo() error {
-	return runInDir(".", "go", "build", "-v", "-o", "bin/server", "./go/cmd/server")
+	return runInDir(".", "go", "build", "-v", "-o", "bin/sandstorm-next", "./go/cmd/sandstorm-next")
 }
 
 func cleanC() error {

@@ -2,3 +2,4 @@
 # Appears if you do `go build` in the root, though normally you'd just invoke make.go with `go run`:
 /sandstorm-next
 /config.json
+/bin
