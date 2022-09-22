@@ -103,18 +103,20 @@ func runInDir(dir, bin string, args ...string) error {
 	return withMyOuts(cmd).Run()
 }
 
-func installExe(exe, dir string) {
+func installExe(exe, dir, caps string) {
 	destDir := os.Getenv("DESTDIR")
 	src, err := os.Open("./bin/" + exe)
 	chkfatal(err)
 	defer src.Close()
 	dstPathDir := destDir + dir + "/"
 	chkfatal(os.MkdirAll(dstPathDir, 0755))
-	dst, err := os.OpenFile(dstPathDir+exe, os.O_CREATE|os.O_RDWR, 0770)
+	dstPath := dstPathDir + exe
+	dst, err := os.OpenFile(dstPath, os.O_CREATE|os.O_RDWR, 0770)
 	chkfatal(err)
 	defer dst.Close()
 	_, err = io.Copy(dst, src)
 	chkfatal(err)
+	chkfatal(withMyOuts(exec.Command("setcap", caps, dstPath)).Run())
 }
 
 func buildC() error {
@@ -207,8 +209,8 @@ func run(args ...string) {
 		data, err := ioutil.ReadFile("config.json")
 		chkfatal(err)
 		chkfatal(json.Unmarshal(data, &c))
-		installExe("sandstorm-next", c.Bindir)
-		installExe("sandstorm-sandbox-launcher", c.Libexecdir)
+		installExe("sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
+		installExe("sandstorm-sandbox-launcher", c.Libexecdir, "cap_sys_admin+ep")
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
