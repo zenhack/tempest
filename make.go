@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +14,7 @@ import (
 type Config struct {
 	User, Group   string
 	Prefix        string
+	Bindir        string
 	Libexecdir    string
 	Localstatedir string
 }
@@ -23,12 +25,14 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 	fs.StringVar(&c.Group, "group", "sandstorm", "the group to run as")
 
 	fs.StringVar(&c.Prefix, "prefix", "/usr/local", "install prefix")
+	fs.StringVar(&c.Prefix, "bindir", "", "path for executables (default ${PREFIX}/bin)")
 	fs.StringVar(&c.Libexecdir, "libexecdir", "",
 		`path for helper commands (default "${PREFIX}/libexec")`)
 	fs.StringVar(&c.Localstatedir, "localstatedir", "",
 		`path to store run-time data (default "${PREFIX}/var/lib")`)
 
 	fs.Parse(args[1:])
+	c.Bindir = c.Prefix + "/bin"
 	if c.Libexecdir == "" {
 		c.Libexecdir = c.Prefix + "/libexec"
 	}
@@ -97,6 +101,20 @@ func runInDir(dir, bin string, args ...string) error {
 	cmd := exec.Command(bin, args...)
 	cmd.Dir = dir
 	return withMyOuts(cmd).Run()
+}
+
+func installExe(exe, dir string) {
+	destDir := os.Getenv("DESTDIR")
+	src, err := os.Open("./bin/" + exe)
+	chkfatal(err)
+	defer src.Close()
+	dstPathDir := destDir + dir + "/"
+	chkfatal(os.MkdirAll(dstPathDir, 0755))
+	dst, err := os.OpenFile(dstPathDir+exe, os.O_CREATE|os.O_RDWR, 0770)
+	chkfatal(err)
+	defer dst.Close()
+	_, err = io.Copy(dst, src)
+	chkfatal(err)
 }
 
 func buildC() error {
@@ -183,6 +201,14 @@ func run(args ...string) {
 			"./config.json",
 			jsonData,
 			0600))
+	case "install":
+		run("build")
+		var c Config
+		data, err := ioutil.ReadFile("config.json")
+		chkfatal(err)
+		chkfatal(json.Unmarshal(data, &c))
+		installExe("sandstorm-next", c.Bindir)
+		installExe("sandstorm-sandbox-launcher", c.Libexecdir)
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
