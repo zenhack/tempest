@@ -111,20 +111,12 @@ func cleanC() error {
 	return runInDir("c", "make", "clean")
 }
 
-func cleanElm() error {
-	return runInDir(".", "rm", "-f", "./static/index.html")
-}
-
 func cleanGo() error {
 	return runInDir(".", "rm", "-f", "bin/server")
 }
 
 func nukeC() error {
 	return runInDir(".", "rm", "-f", "c/config.h")
-}
-
-func nukeElm() error {
-	return runInDir("elm", "rm", "-rf", "elm-stuff")
 }
 
 func nukeGo() error {
@@ -135,7 +127,8 @@ func nukeGo() error {
 func maybeConfigure() {
 	_, errC := os.Stat("./c/config.h")
 	_, errGo := os.Stat("./go/internal/config/config.go")
-	if errC == nil && errGo == nil {
+	_, errJson := os.Stat("./config.json")
+	if errC == nil && errGo == nil && errJson == nil {
 		// Config is already present; we're done.
 		return
 	}
@@ -168,10 +161,11 @@ func run(args ...string) {
 		chkfatal(withMyOuts(exec.Command("./bin/server")).Run())
 	case "clean":
 		maybeConfigure()
-		runJobs(cleanC, cleanElm, cleanGo)
+		runJobs(cleanC, cleanGo)
 	case "nuke":
 		run("clean")
-		runJobs(nukeC, nukeElm, nukeGo)
+		runJobs(nukeC, nukeGo)
+		os.Remove("config.json")
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
