@@ -122,7 +122,8 @@ int main(int argc, char **argv) {
 	REQUIRE(mount(image_id, CHROOT_MNT, "", MS_BIND, "") == 0);
 	REQUIRE(mount("", CHROOT_MNT, "", MS_REMOUNT|MS_BIND|MS_RDONLY, "") == 0);
 	REQUIRE(chdir(SANDBOX_DIR) == 0);
-	REQUIRE(mount(sandbox_id, CHROOT_MNT "/var", "", MS_BIND, "") == 0);
+	REQUIRE(chdir(sandbox_id) == 0);
+	REQUIRE(mount("sandbox", CHROOT_MNT "/var", "", MS_BIND, "") == 0);
 
 	/* Bind-mount the host's cpuinfo. It's typical for runtime environments to inspect this. */
 	REQUIRE(mount("/proc/cpuinfo", CHROOT_MNT "/proc/cpuinfo", "", MS_BIND, "") == 0);
