@@ -44,12 +44,13 @@
 #define GRANULAR_STATE   LOCALSTATEDIR "/granular"
 #define GRANULAR_LIBEXEC LIBEXECDIR    "/granular"
 
-#define IMAGE_DIR     GRANULAR_STATE   "/app-images"
-#define SANDBOX_DIR   GRANULAR_STATE   "/sandboxes"
+#define IMAGE_DIR     GRANULAR_STATE   "/apps"
+#define SANDBOX_DIR   GRANULAR_STATE   "/grains"
 #define AGENT_PATH    GRANULAR_LIBEXEC "/sandbox-agent"
 #define CHROOT_MNT    GRANULAR_STATE   "/mnt"
 
-#define ID_SIZE 32
+#define PKG_ID_SIZE 32
+#define GRAIN_ID_SIZE 22
 
 #define REQUIRE(condition) \
 	if (!(condition)) do { \
@@ -64,18 +65,26 @@ void panic(const char *file, int line, const char *check) {
 	exit(1);
 }
 
-void require_valid_id(const char *str) {
-	REQUIRE(strlen(str) == ID_SIZE);
+void require_valid_pkg_id(const char *str) {
+	REQUIRE(strlen(str) == PKG_ID_SIZE);
 	while(*str) {
 		REQUIRE(isxdigit(*str));
 		str++;
 	}
 }
 
+void require_valid_grain_id(const char *str) {
+	REQUIRE(strlen(str) == GRAIN_ID_SIZE);
+	while(*str) {
+		REQUIRE(isalpha(*str) || isdigit(*str));
+		str++;
+	}
+}
+
 int main(int argc, char **argv) {
 	REQUIRE(argc == 3);
-	require_valid_id(argv[1]);
-	require_valid_id(argv[2]);
+	require_valid_pkg_id(argv[1]);
+	require_valid_grain_id(argv[2]);
 
 	const char *image_id = argv[1];
 	const char *sandbox_id = argv[2];
