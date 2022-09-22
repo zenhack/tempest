@@ -9,8 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/#{gopath}/src/zenhack.net/go/granular", type: "nfs"
   config.vm.provision "shell", inline: <<-EOF
     set -exuo pipefail
-    dnf install -y make gcc go npm
-    npm install -g elm
+    dnf install -y make gcc go
     echo 'export GOPATH="${HOME}/go"' >> ~vagrant/.bashrc
 
     # This is owned by root by default, which prevents go build from working.

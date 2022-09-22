@@ -50,10 +50,6 @@ func buildC() error {
 	return runInDir("c", "make")
 }
 
-func buildElm() error {
-	return runInDir("elm", "elm-make", "Main.elm", "--yes", "--output", "../static/index.html")
-}
-
 func buildGo() error {
 	return runInDir(".", "go", "build", "-v", "-o", "bin/server", "./go/cmd/server")
 }
@@ -112,7 +108,7 @@ func run(args ...string) {
 	switch args[0] {
 	case "build":
 		maybeConfigure()
-		runJobs(buildC, buildElm, buildGo)
+		runJobs(buildC, buildGo)
 	case "run":
 		run("build")
 		fmt.Fprintln(os.Stderr, "Starting server...")
