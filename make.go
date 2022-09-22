@@ -11,8 +11,8 @@ import (
 var (
 	configureFlags = flag.NewFlagSet("configure", flag.ExitOnError)
 
-	user       = configureFlags.String("user", "granular", "the user to run as")
-	group      = configureFlags.String("group", "granular", "the group to run as")
+	user       = configureFlags.String("user", "sandstorm", "the user to run as")
+	group      = configureFlags.String("group", "sandstorm", "the group to run as")
 	prefix     = configureFlags.String("prefix", "/usr/local", "install prefix")
 	libexecdir = configureFlags.String("libexecdir", "",
 		`path for helper commands (default "${PREFIX}/libexec")`)
@@ -155,8 +155,8 @@ const (
 		defer file.Close()
 		_, err = fmt.Fprintf(file,
 			`
-#ifndef GRANULAR_CONFIG_H
-#define GRANULAR_CONFIG_H
+#ifndef SANDSTORM_CONFIG_H
+#define SANDSTORM_CONFIG_H
 
 #define PREFIX %q
 #define LIBEXECDIR %q

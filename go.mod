@@ -1,4 +1,4 @@
-module zenhack.net/go/granular
+module zenhack.net/go/sandstorm-next
 
 go 1.19
 

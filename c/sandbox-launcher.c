@@ -41,13 +41,13 @@
 /* prctl and associated constants */
 #include <sys/prctl.h>
 
-#define GRANULAR_STATE   LOCALSTATEDIR "/granular"
-#define GRANULAR_LIBEXEC LIBEXECDIR    "/granular"
+#define SANDSTORM_STATE   LOCALSTATEDIR "/sandstorm"
+#define SANDSTORM_LIBEXEC LIBEXECDIR    "/sandstorm"
 
-#define IMAGE_DIR     GRANULAR_STATE   "/apps"
-#define SANDBOX_DIR   GRANULAR_STATE   "/grains"
-#define AGENT_PATH    GRANULAR_LIBEXEC "/sandbox-agent"
-#define CHROOT_MNT    GRANULAR_STATE   "/mnt"
+#define IMAGE_DIR     SANDSTORM_STATE   "/apps"
+#define SANDBOX_DIR   SANDSTORM_STATE   "/grains"
+#define AGENT_PATH    SANDSTORM_LIBEXEC "/sandbox-agent"
+#define CHROOT_MNT    SANDSTORM_STATE   "/mnt"
 
 #define PKG_ID_SIZE 32
 #define GRAIN_ID_SIZE 22
