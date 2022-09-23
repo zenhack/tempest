@@ -33,6 +33,24 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 	fs.StringVar(&c.Localstatedir, "localstatedir", "",
 		`path to store run-time data (default "${PREFIX}/var/lib")`)
 
+	// currently unused, but permitted, for compatibility with gnu coding guidelines/autoconf.
+	fs.String("sbindir", "", "unused")
+	fs.String("sysconfdir", "", "unused")
+	fs.String("sharedstatedir", "", "unused")
+	fs.String("runstatedir", "", "unused")
+	fs.String("libdir", "", "unused")
+	fs.String("includedir", "", "unused")
+	fs.String("oldincludedir", "", "unused")
+	fs.String("datarootdir", "", "unused")
+	fs.String("datadir", "", "unused")
+	fs.String("infodir", "", "unused")
+	fs.String("mandir", "", "unused")
+	fs.String("docdir", "", "unused")
+	fs.String("htmldir", "", "unused")
+	fs.String("dvidir", "", "unused")
+	fs.String("pdfdir", "", "unused")
+	fs.String("psdir", "", "unused")
+
 	fs.Parse(args[1:])
 
 	if c.ExecPrefix == "" {
