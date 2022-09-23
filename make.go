@@ -26,7 +26,7 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 	fs.StringVar(&c.Group, "group", "sandstorm", "the group to run as")
 
 	fs.StringVar(&c.Prefix, "prefix", "/usr/local", "install prefix")
-	fs.StringVar(&c.ExecPrefix, "exec-prefix", "", "executable prefix")
+	fs.StringVar(&c.ExecPrefix, "exec-prefix", "", "executable prefix (default ${PREFIX})")
 	fs.StringVar(&c.Bindir, "bindir", "", "path for executables (default ${EXEC_PREFIX}/bin)")
 	fs.StringVar(&c.Libexecdir, "libexecdir", "",
 		`path for helper commands (default "${PREFIX}/libexec")`)
