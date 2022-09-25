@@ -7,7 +7,7 @@ clean:
 	rm -f $(exe) *.o *.d
 
 %.o: %.c
-	$(CC) $(CFLAGS) -MMD -c -o $@ $<
+	$(CC) $(CFLAGS) -std=c11 -Wall -Wextra -MMD -c -o $@ $<
 $(exe): $(objects)
 	$(CC) $(LDFLAGS) -o $@ $(objects)
 
