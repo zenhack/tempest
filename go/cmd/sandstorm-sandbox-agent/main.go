@@ -7,8 +7,25 @@
 // surface.
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+
+	"capnproto.org/go/capnp/v3"
+	"zenhack.net/go/sandstorm-next/go/internal/util"
+	"zenhack.net/go/sandstorm/capnp/spk"
+)
 
 func main() {
-	fmt.Println("Hello, Sandbox!")
+	data, err := ioutil.ReadFile("/sandstorm-manifest")
+	util.Chkfatal(err)
+	msg, err := capnp.Unmarshal(data)
+	util.Chkfatal(err)
+	manifest, err := spk.ReadRootManifest(msg)
+	util.Chkfatal(err)
+	appTitle, err := manifest.AppTitle()
+	util.Chkfatal(err)
+	text, err := appTitle.DefaultText()
+	util.Chkfatal(err)
+	fmt.Println("App title: ", text)
 }
