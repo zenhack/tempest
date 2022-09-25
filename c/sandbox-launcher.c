@@ -1,3 +1,22 @@
+/* This program is responsible for actually setting up the grain sandbox.
+ * Sandstorm invokes it as:
+ *
+ * sandstorm-sandbox-launcher <package-id> <grain-id>
+ *
+ * It configures a sandbox using the directories for that package & grain, and
+ * then inovkes fexecve() to start the `sandbox-agent` executable, which then
+ * takes over starting up and interfacing with the grain proper.
+ *
+ * This program is written in C, rather than Go, because:
+ *
+ * 1. There have historically been many bugs and gotchas around multi-threaded
+ *    programs that drop elevated privileges, and there is no such thing as a
+ *    single-threaded Go program.
+ * 2. More broadly, this is an area of the code where we aren't really processing
+ *    user input, and we are more concerned with polluting the sandbox with ambient
+ *    state from the operating system -- so it is better to not have a complex language
+ *    runtime underneath us.
+ */
 #include "config.h"
 
 /* bool */
