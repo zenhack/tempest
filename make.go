@@ -244,6 +244,7 @@ func run(args ...string) {
 		installExe("sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
 		installExe("sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
 		installExe("sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
+		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
