@@ -1,5 +1,5 @@
 
-exe := ../bin/sandstorm-sandbox-launcher
+exe := ../_build/sandstorm-sandbox-launcher
 objects := sandbox-launcher.o
 
 all: $(exe)

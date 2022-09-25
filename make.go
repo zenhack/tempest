@@ -131,7 +131,7 @@ func runInDir(dir, bin string, args ...string) error {
 
 func installExe(exe, dir, caps string) {
 	destDir := os.Getenv("DESTDIR")
-	src, err := os.Open("./bin/" + exe)
+	src, err := os.Open("./_build/" + exe)
 	chkfatal(err)
 	defer src.Close()
 	dstPathDir := destDir + dir + "/"
@@ -150,7 +150,7 @@ func buildC() error {
 }
 
 func buildGo() error {
-	return runInDir(".", "go", "build", "-v", "-o", "bin/sandstorm-next", "./go/cmd/sandstorm-next")
+	return runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
 }
 
 func cleanC() error {
@@ -158,7 +158,7 @@ func cleanC() error {
 }
 
 func cleanGo() error {
-	return runInDir(".", "rm", "-f", "bin/server")
+	return runInDir(".", "rm", "-f", "_build/sandstorm-next")
 }
 
 func nukeC() error {
