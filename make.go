@@ -142,7 +142,9 @@ func installExe(exe, dir, caps string) {
 	defer dst.Close()
 	_, err = io.Copy(dst, src)
 	chkfatal(err)
-	chkfatal(withMyOuts(exec.Command("setcap", caps, dstPath)).Run())
+	if caps != "" {
+		chkfatal(withMyOuts(exec.Command("setcap", caps, dstPath)).Run())
+	}
 }
 
 func buildC() error {
@@ -150,7 +152,11 @@ func buildC() error {
 }
 
 func buildGo() error {
-	return runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
+	err := runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
+	if err != nil {
+		return err
+	}
+	return runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-sandbox-agent", "./go/cmd/sandstorm-sandbox-agent")
 }
 
 func cleanC() error {
@@ -236,7 +242,8 @@ func run(args ...string) {
 		chkfatal(err)
 		chkfatal(json.Unmarshal(data, &c))
 		installExe("sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
-		installExe("sandstorm-sandbox-launcher", c.Libexecdir, "cap_sys_admin+ep")
+		installExe("sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
+		installExe("sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
