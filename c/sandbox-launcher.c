@@ -219,8 +219,9 @@ int main(int argc, char **argv) {
 	REQUIRE(fchdir(old_root) == 0);
 	REQUIRE(umount2(".", MNT_DETACH) == 0);
 
-	/* Now actually move into the new root. */
+	/* Now actually move into the new root and drop the reference: */
 	REQUIRE(chdir("/") == 0);
+	REQUIRE(close(old_root) == 0);
 
 	/* TODO: install a seccomp-bpf filter. */
 
