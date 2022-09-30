@@ -191,9 +191,6 @@ int main(int argc, char **argv) {
 
 	/* TODO: install a seccomp-bpf filter. */
 
-	char *const agent_argv[] = {"sandbox-agent", NULL};
-	char *const agent_envp[] = {NULL};
-
 	pid_t pid = fork();
 	REQUIRE(pid != -1);
 	if(pid == 0) {
@@ -261,6 +258,8 @@ int main(int argc, char **argv) {
 		REQUIRE(setsid() != -1);
 		//REQUIRE(setpgid(0, 0) == 0);
 
+		char *const agent_argv[] = {"sandbox-agent", NULL};
+		char *const agent_envp[] = {NULL};
 		fexecve(agent_fd, agent_argv, agent_envp);
 
 		/* Exec failed, bail out: */
