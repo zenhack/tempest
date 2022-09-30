@@ -130,7 +130,8 @@ int main(int argc, char **argv) {
 	   - [ ] sysvsem
 
 	   */
-	REQUIRE(unshare(CLONE_FILES | CLONE_FS | CLONE_NEWCGROUP | CLONE_NEWIPC |
+	REQUIRE(unshare(CLONE_NEWNS |
+				CLONE_FILES | CLONE_FS | CLONE_NEWCGROUP | CLONE_NEWIPC |
 				CLONE_NEWNET | CLONE_NEWPID | CLONE_NEWUTS | CLONE_SYSVSEM) == 0);
 
 	/* No, really, unshare the mounts. See the "SHARED SUBTREES" section of mount_namespaces(7)
