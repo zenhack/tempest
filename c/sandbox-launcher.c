@@ -54,6 +54,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -181,13 +182,37 @@ int main(int argc, char **argv) {
 
 	REQUIRE(prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == 0);
 
+
 	/* Make sure we're inside the sandbox's root. */
 	REQUIRE(chdir(CHROOT_MNT) == 0);
 
-	/* Mount the sandbox root over the original root. This puts us in somewhat dangerous
-	   territory, since now the app controls our filesystem's contents. Accordingly, this
-	   is as near to the end of the process as it can be. */
-	REQUIRE(mount(CHROOT_MNT, "/", "", MS_MOVE, "") == 0);
+	/* We use pivot_root below to swap the grain's directory in for our new root directory.
+	 * pivot_root(new, old) swaps the root mount out for the mount at `new`, and
+	 * simultaneously mounts the old root at `old`. We provide CHROOT_MNT as both
+	 * paths, which has the weird effect of making CHROOT_MNT our new root, but
+	 * mounting the old root on top of it.
+	 *
+	 * I don't really know where else to put it; there's no obvious place it could
+	 * go inside the grain's storage. But this has the unfortunate consequence that
+	 * we can't just umount / to get rid of it. Instead, before pivoting we grab a
+	 * reference to the old root, which we can use for the umount after it becomes
+	 * unaddressable.
+	 *
+	 * N.B. I believe we should be able to make this work by using mount with MS_MOVE
+	 * in flags, but I'm having trouble debugging that version and this is what the
+	 * old sandstorm did, so let's just stick with it.
+	 *
+	 * Once we're in, we're in somewhat dangerous territory, since now the app
+	 * controls our filesystem's contents. Accordingly, this as near to the end of
+	 * the process as it can be. */
+	int old_root = open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+	REQUIRE(old_root >= 0);
+	REQUIRE(syscall(SYS_pivot_root, CHROOT_MNT, CHROOT_MNT) == 0);
+	REQUIRE(fchdir(old_root) == 0);
+	REQUIRE(umount2(".", MNT_DETACH) == 0);
+
+	/* Now actually move into the new root. */
+	REQUIRE(chdir("/") == 0);
 
 	/* TODO: install a seccomp-bpf filter. */
 
