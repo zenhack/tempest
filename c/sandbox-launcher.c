@@ -193,7 +193,18 @@ int main(int argc, char **argv) {
 
 	pid_t pid = fork();
 	REQUIRE(pid != -1);
-	if(pid == 0) {
+	if(pid != 0) {
+		/* parent */
+		/* Close the remaining file descriptors. */
+		close(1);
+		close(2);
+		close(3);
+		close(agent_fd);
+
+		int wstatus;
+		waitpid(pid, &wstatus, 0);
+		return WEXITSTATUS(wstatus);
+	} else {
 		/* child. We're now pid 1 in the new pid namespace. We'll fork again, execing the
 		   agent in the child, and reaping processes in the parent. We can't have the
 		   agent do this itself, since it's written in go and the runtime does weird
@@ -265,17 +276,6 @@ int main(int argc, char **argv) {
 		/* Exec failed, bail out: */
 		perror("fexecve");
 		return 1;
-	} else {
-		/* parent */
-		/* Close the remaining file descriptors. */
-		close(1);
-		close(2);
-		close(3);
-		close(agent_fd);
-
-		int wstatus;
-		waitpid(pid, &wstatus, 0);
-		return WEXITSTATUS(wstatus);
 	}
 }
 
