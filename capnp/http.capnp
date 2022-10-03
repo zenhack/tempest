@@ -1,22 +1,23 @@
 @0xcf769d5676f4466f;
 
-using Io = import "./io.capnp";
+using Go = import "/go.capnp";
+$Go.package("http");
+$Go.import("zenhack.net/go/sandstorm-next/capnp/http");
+
+using Util = import "/util.capnp";
+
+using Header = Util.KeyValue;
 
 struct Request {
   method @0 :Text;
   headers @1 :List(Header);
-  responder @2 :Responder
-}
-
-struct Header {
-  key @0 :Text;
-  value @1 :Text;
+  responder @2 :Responder;
 }
 
 interface Responder {
-  respond @0 (status :UInt16, headers :ListHeader) -> (sink :Io.ByteSink);
+  respond @0 (status :UInt16, headers :List(Header)) -> (sink :Util.ByteStream);
 }
 
 interface Server {
-  makeRequest @0 (request :Request) -> (requestBody :Io.ByteSink);
+  request @0 (request :Request) -> (requestBody :Util.ByteStream);
 }
