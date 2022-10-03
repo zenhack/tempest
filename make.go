@@ -18,6 +18,9 @@ type Config struct {
 	Bindir        string
 	Libexecdir    string
 	Localstatedir string
+
+	WithGoSandstorm string
+	WithGoCapnp     string
 }
 
 func (c *Config) ParseFlags(args []string, name string, errorHandling flag.ErrorHandling) {
@@ -32,6 +35,9 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 		`path for helper commands (default "${PREFIX}/libexec")`)
 	fs.StringVar(&c.Localstatedir, "localstatedir", "",
 		`path to store run-time data (default "${PREFIX}/var/lib")`)
+
+	fs.StringVar(&c.WithGoSandstorm, "with-go-sandstorm", "", "path to go.sandstorm source")
+	fs.StringVar(&c.WithGoCapnp, "with-go-capnp", "", "path to go-capnp source")
 
 	// currently unused, but permitted, for compatibility with gnu coding guidelines/autoconf.
 	fs.String("sbindir", "", "unused")
@@ -151,8 +157,26 @@ func buildC() error {
 	return runInDir("c", "make")
 }
 
+func buildCapnp() error {
+	c := readConfig()
+	return runInDir(".",
+		"capnp", "compile",
+		"-ogo:capnp",
+		"--src-prefix=capnp/",
+		"-I", c.WithGoCapnp+"/std",
+		"-I", c.WithGoSandstorm+"/capnp",
+
+		// TODO: glob match or something:
+		"capnp/http.capnp",
+	)
+}
+
 func buildGo() error {
-	err := runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
+	err := buildCapnp()
+	if err != nil {
+		return err
+	}
+	err = runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
 	if err != nil {
 		return err
 	}
@@ -237,10 +261,7 @@ func run(args ...string) {
 			0600))
 	case "install":
 		run("build")
-		var c Config
-		data, err := ioutil.ReadFile("config.json")
-		chkfatal(err)
-		chkfatal(json.Unmarshal(data, &c))
+		c := readConfig()
 		installExe("sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
 		installExe("sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
 		installExe("sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
@@ -249,6 +270,14 @@ func run(args ...string) {
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
 	}
+}
+
+func readConfig() Config {
+	var c Config
+	data, err := ioutil.ReadFile("config.json")
+	chkfatal(err)
+	chkfatal(json.Unmarshal(data, &c))
+	return c
 }
 
 func main() {
