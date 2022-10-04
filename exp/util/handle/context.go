@@ -12,20 +12,5 @@ import (
 // is cancelled.
 func WithCancel(ctx context.Context) (context.Context, util.Handle) {
 	ctx, cancel := context.WithCancel(ctx)
-
-	// The server policy doesn't matter, because handles have no methods:
-	return ctx, util.Handle_ServerToClient(&cancelHandle{cancel})
-}
-
-type cancelHandle struct {
-	cancel context.CancelFunc
-}
-
-func (h *cancelHandle) Ping(context.Context, util.Handle_ping) error {
-	return nil
-}
-
-func (h *cancelHandle) Shutdown() error {
-	h.cancel()
-	return nil
+	return ctx, CallbackHandle(cancel)
 }
