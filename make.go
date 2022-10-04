@@ -75,7 +75,7 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 }
 
 func (c Config) GoSrc() string {
-	return fmt.Sprintf(`package conifg
+	return fmt.Sprintf(`package config
 
 const (
 	User = %q
