@@ -96,7 +96,7 @@ func main() {
 	}
 	if len(cmd.Args) < 4 {
 		// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
-		panic("Too few argments")
+		panic("Too few arugments")
 	}
 	portNo, err := strconv.Atoi(cmd.Args[1])
 	util.Chkfatal(err)
