@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type Config struct {
@@ -159,16 +160,18 @@ func buildC() error {
 
 func buildCapnp() error {
 	c := readConfig()
-	return runInDir(".",
-		"capnp", "compile",
+	args := []string{
+		"compile",
 		"-ogo:capnp",
 		"--src-prefix=capnp/",
-		"-I", c.WithGoCapnp+"/std",
-		"-I", c.WithGoSandstorm+"/capnp",
-
-		// TODO: glob match or something:
-		"capnp/http.capnp",
-	)
+		"-I", c.WithGoCapnp + "/std",
+		"-I", c.WithGoSandstorm + "/capnp",
+	}
+	files, err := filepath.Glob("capnp/*.capnp")
+	if err != nil {
+		return err
+	}
+	return runInDir(".", "capnp", append(args, files...)...)
 }
 
 func buildGo() error {
