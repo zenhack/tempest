@@ -160,18 +160,29 @@ func buildC() error {
 
 func buildCapnp() error {
 	c := readConfig()
-	args := []string{
-		"compile",
-		"-ogo:capnp",
-		"--src-prefix=capnp/",
-		"-I", c.WithGoCapnp + "/std",
-		"-I", c.WithGoSandstorm + "/capnp",
-	}
 	files, err := filepath.Glob("capnp/*.capnp")
 	if err != nil {
 		return err
 	}
-	return runInDir(".", "capnp", append(args, files...)...)
+	for _, file := range files {
+		dir := file[:len(file)-len(".capnp")]
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return err
+		}
+		err = runInDir(".", "capnp",
+			"compile",
+			"-ogo:"+dir,
+			"--src-prefix=capnp/",
+			"-I", c.WithGoCapnp+"/std",
+			"-I", c.WithGoSandstorm+"/capnp",
+			file,
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func buildGo() error {
