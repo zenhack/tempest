@@ -8,7 +8,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,6 +17,9 @@ import (
 	"strconv"
 
 	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/rpc"
+	"capnproto.org/go/capnp/v3/rpc/transport"
+	"zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/util"
 	"zenhack.net/go/sandstorm/capnp/spk"
 )
@@ -117,18 +119,14 @@ func main() {
 
 	log.Printf("App started on port #%v. TODO: connect to it and do stuff.", portNo)
 
-	<-context.Background().Done()
+	apiSocket := os.NewFile(3, "supervisor socket")
+	trans := transport.NewStream(apiSocket)
+	bootstrap := http.Server_ServerToClient(httpBridge{portNo: portNo})
+	conn := rpc.NewConn(trans, &rpc.Options{
+		BootstrapClient: capnp.Client(bootstrap),
+	})
 
-	/*
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_STREAM, 0)
-		util.Chkfatal(err)
-		parentSock := os.NewFile(uintptr(fds[0]), "Parent socket")
-		defer parentSock.Close()
-		childSock := os.NewFile(uintptr(fds[1]), "Child socket")
-		cmd.ExtraFiles = []*os.File{childSock}
-	*/
+	<-conn.Done()
 }
 
 func startCapnpApi() error {
