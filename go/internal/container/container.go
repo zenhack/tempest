@@ -38,33 +38,26 @@ func (Spawner) Spawn(_ context.Context, p container.Spawner_spawn) error {
 	}
 
 	ctx, cancel := handle.WithCancel(context.Background())
-	spawnResult, err := startContainer(ctx, supervisorBootstrap.AddRef(), packageId, grainId)
+	grainBootstrap, err := startContainer(ctx, supervisorBootstrap.AddRef(), packageId, grainId)
 	if err != nil {
 		cancel.Release()
 		return err
 	}
 
-	results.SetBootstrap(spawnResult.bootstrap)
+	results.SetBootstrap(grainBootstrap)
 	results.SetHandle(cancel)
 	return nil
-}
-
-type spawnResult struct {
-	cmd       *exec.Cmd
-	bootstrap capnp.Client
-	sock      *os.File
-	conn      *rpc.Conn
 }
 
 func startContainer(
 	ctx context.Context,
 	supervisorBootstrap capnp.Client,
 	packageId, grainId string,
-) (spawnResult, error) {
+) (capnp.Client, error) {
 	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_STREAM, 0)
 	if err != nil {
 		supervisorBootstrap.Release()
-		return spawnResult{}, err
+		return capnp.Client{}, err
 	}
 	grainSock := os.NewFile(uintptr(fds[0]), "grain api socket")
 	supervisorSock := os.NewFile(uintptr(fds[1]), "supervisor api socket")
@@ -80,7 +73,7 @@ func startContainer(
 		supervisorBootstrap.Release()
 		grainSock.Close()
 		supervisorSock.Close()
-		return spawnResult{}, err
+		return capnp.Client{}, err
 	}
 	trans := transport.NewStream(supervisorSock)
 	var options *rpc.Options
@@ -100,10 +93,5 @@ func startContainer(
 		util.Chkfatal(err)
 		<-conn.Done()
 	}()
-	return spawnResult{
-		cmd:       cmd,
-		bootstrap: grainBootstrap,
-		sock:      supervisorSock,
-		conn:      conn,
-	}, nil
+	return grainBootstrap, nil
 }
