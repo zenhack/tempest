@@ -2,11 +2,7 @@ package main
 
 import (
 	"net/http"
-	"net/rpc"
-	"net/rpc/jsonrpc"
 	"os"
-
-	"golang.org/x/net/websocket"
 
 	"github.com/gorilla/mux"
 )
@@ -34,14 +30,6 @@ func SetAppHeaders(w http.ResponseWriter) {
 
 func main() {
 	r := mux.NewRouter()
-	rootR := r.Host(rootDomain).Subrouter()
-
-	rootR.Path("/rpc").Handler(websocket.Handler(func(conn *websocket.Conn) {
-		server := rpc.NewServer()
-		server.Register(&RpcServer{})
-		server.ServeCodec(jsonrpc.NewServerCodec(conn))
-	}))
-	rootR.PathPrefix("/").Handler(http.FileServer(http.Dir("static")))
 
 	r.Host("{app}." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ServeApp(mux.Vars(req)["app"], w, req)
