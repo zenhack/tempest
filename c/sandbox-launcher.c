@@ -236,6 +236,7 @@ int main(int argc, char **argv) {
 		close(agent_fd);
 
 		int wstatus;
+		/* FIXME: handle failures from waitpid (EINTR mainly). */
 		waitpid(pid, &wstatus, 0);
 		return WEXITSTATUS(wstatus);
 	} else {
