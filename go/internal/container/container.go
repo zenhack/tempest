@@ -12,6 +12,7 @@ import (
 
 	"zenhack.net/go/sandstorm-next/capnp/container"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/sandstorm-next/go/internal/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"
 )
 
@@ -92,12 +93,11 @@ func startContainer(
 	grainBootstrap := conn.Bootstrap(ctx)
 	go func() {
 		<-ctx.Done()
-		// TODO(now): check errors
-		cmd.Process.Kill()
-		cmd.Process.Wait()
+		// I(isd) don't see a sensible behavior if we fail to shut down the
+		// container, so panic I guess.
+		util.Chkfatal(cmd.Process.Kill())
+		util.Chkfatal(cmd.Process.Wait())
 		<-conn.Done()
-		// TODO(now): can't remember, do we need to close the transport,
-		// or will the connection do that?
 	}()
 	return spawnResult{
 		cmd:       cmd,
