@@ -96,7 +96,8 @@ func startContainer(
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
 		util.Chkfatal(cmd.Process.Kill())
-		util.Chkfatal(cmd.Process.Wait())
+		_, err = cmd.Process.Wait()
+		util.Chkfatal(err)
 		<-conn.Done()
 	}()
 	return spawnResult{
