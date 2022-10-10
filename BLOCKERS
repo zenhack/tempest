@@ -7,6 +7,7 @@ Absolute blockers:
 - [ ] Load a seccomp-bpf filter in the sandbox launcher.
 - [ ] Do some verification that sandbox-launcher actually
       properly drops privileges; right now this isn't well tested.
+- [ ] Do actual filtering of http traffic, rather than just passing everything through.
 
 Things that really *should* be dealt with, but aren't regressions from
 sandstorm-legacy:

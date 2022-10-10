@@ -1,20 +1,18 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
+	"zenhack.net/go/sandstorm-next/go/internal/container"
+	"zenhack.net/go/sandstorm-next/go/internal/util"
 )
 
 var (
 	rootDomain = defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io")
 	listenAddr = defaultTo(os.Getenv("LISTEN_ADDR"), ":8000")
-	apps       = map[string]string{
-		"app-1": ":8101",
-		"app-2": ":8102",
-		"app-3": ":8103",
-	}
 )
 
 func defaultTo(val, def string) string {
@@ -29,10 +27,15 @@ func SetAppHeaders(w http.ResponseWriter) {
 }
 
 func main() {
+	ctx := context.Background()
+	c, err := container.StartDummy(ctx)
+	util.Chkfatal(err)
+	defer c.Release()
+
 	r := mux.NewRouter()
 
-	r.Host("{app}." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		ServeApp(mux.Vars(req)["app"], w, req)
+	r.Host("grain." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		ServeApp(c, w, req)
 	})
 
 	http.Handle("/", r)
