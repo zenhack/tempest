@@ -97,7 +97,10 @@ func startContainer(
 		packageId,
 		grainId,
 	)
-	// TODO(soon) redirect stdio.
+	// TODO(soon) capture/log stdout/stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	cmd.ExtraFiles = []*os.File{grainSock}
 	err = cmd.Start()
 	if err != nil {
