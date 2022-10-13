@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
@@ -19,7 +20,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
-	"zenhack.net/go/sandstorm-next/capnp/http"
+	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/util"
 	"zenhack.net/go/sandstorm/capnp/spk"
 )
@@ -117,11 +118,12 @@ func main() {
 		log.Println("App exited; shutting down grain.")
 	}()
 
-	log.Printf("App started on port #%v. TODO: connect to it and do stuff.", portNo)
-
 	apiSocket := os.NewFile(3, "supervisor socket")
 	trans := transport.NewStream(apiSocket)
-	bootstrap := http.Server_ServerToClient(httpBridge{portNo: portNo})
+	bootstrap := httpcp.Server_ServerToClient(httpBridge{
+		portNo:       portNo,
+		roundTripper: http.DefaultTransport,
+	})
 	conn := rpc.NewConn(trans, &rpc.Options{
 		BootstrapClient: capnp.Client(bootstrap),
 	})

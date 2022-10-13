@@ -25,10 +25,11 @@ func ServeApp(c *container.Container, w http.ResponseWriter, req *http.Request) 
 			r, err := p.NewRequest()
 			throw(err)
 
-			throw(r.SetResponder(httpcp.Responder_ServerToClient(responder{
+			throw(p.SetResponder(httpcp.Responder_ServerToClient(responder{
 				w:      w,
 				cancel: cancel,
 			})))
+			throw(r.SetPath(req.RequestURI))
 			throw(r.SetMethod(req.Method))
 			totalHeaders := 0
 			for _, vs := range req.Header {

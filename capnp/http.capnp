@@ -9,9 +9,9 @@ using Util = import "/util.capnp";
 using Header = Util.KeyValue;
 
 struct Request {
+  path @2 :Text;
   method @0 :Text;
   headers @1 :List(Header);
-  responder @2 :Responder;
 }
 
 interface Responder {
@@ -19,5 +19,6 @@ interface Responder {
 }
 
 interface Server {
-  request @0 (request :Request) -> (requestBody :Util.ByteStream);
+  request @0 (request :Request, responder :Responder) -> (requestBody :Util.ByteStream);
+
 }
