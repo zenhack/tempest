@@ -9,6 +9,7 @@ import (
 
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
+	"zenhack.net/go/sandstorm-next/go/internal/util/exn"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 )
 
@@ -20,45 +21,51 @@ func ServeApp(c *container.Container, w http.ResponseWriter, req *http.Request) 
 	srv := httpcp.Server(c.Bootstrap)
 
 	fut, rel := srv.Request(ctx, func(p httpcp.Server_request_Params) error {
-		r, err := p.NewRequest()
-		if err != nil {
-			return err
-		}
-		r.SetResponder(httpcp.Responder_ServerToClient(responder{w: w, cancel: cancel}))
-		r.SetMethod(req.Method)
-		totalHeaders := 0
-		for _, vs := range req.Header {
-			totalHeaders += len(vs)
-		}
-		headers, err := r.NewHeaders(int32(totalHeaders))
-		if err != nil {
-			return err
-		}
+		return exn.Try0(func(throw func(error)) {
+			r, err := p.NewRequest()
+			throw(err)
 
-		i := 0
-		for k, vs := range req.Header {
-			for _, v := range vs {
-				h := headers.At(i)
-				h.SetKey(k)
-				h.SetValue(v)
-				i++
+			throw(r.SetResponder(httpcp.Responder_ServerToClient(responder{
+				w:      w,
+				cancel: cancel,
+			})))
+			throw(r.SetMethod(req.Method))
+			totalHeaders := 0
+			for _, vs := range req.Header {
+				totalHeaders += len(vs)
 			}
-		}
-		return nil
+			headers, err := r.NewHeaders(int32(totalHeaders))
+			throw(err)
+
+			i := 0
+			for k, vs := range req.Header {
+				for _, v := range vs {
+					h := headers.At(i)
+					throw(h.SetKey(k))
+					throw(h.SetValue(v))
+					i++
+				}
+			}
+		})
 	})
 	defer rel()
 	bodyW := bytestream.ToWriteCloser(ctx, fut.RequestBody())
 	go func() {
-		_, err := fut.Struct()
+		_, err := io.Copy(bodyW, req.Body)
 		if err != nil {
-			log.Printf("Error in request(): %v", err)
+			log.Printf("Error copying request body: %v", err)
+			cancel()
+		}
+		err = bodyW.Close()
+		if err != nil {
+			log.Printf("bodyW.Close(): %v", err)
 			cancel()
 		}
 	}()
-	_, err := io.Copy(bodyW, req.Body)
+	_, err := fut.Struct()
 	if err != nil {
-		log.Printf("Error copying request body: %v", err)
-		return
+		log.Printf("Error in request(): %v", err)
+		cancel()
 	}
 	<-ctx.Done()
 }
