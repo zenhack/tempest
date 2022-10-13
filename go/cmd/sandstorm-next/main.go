@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 
@@ -39,6 +40,7 @@ func main() {
 	})
 
 	http.Handle("/", r)
+	log.Printf("Listening on %v", listenAddr)
 	http.ListenAndServe(listenAddr, nil)
 }
 
