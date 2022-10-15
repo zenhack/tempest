@@ -9,8 +9,8 @@ import (
 	"net/url"
 
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
-	"zenhack.net/go/sandstorm-next/go/internal/util/exn"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
+	"zenhack.net/go/util/exn"
 )
 
 type httpBridge struct {

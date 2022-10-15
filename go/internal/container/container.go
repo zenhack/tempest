@@ -12,9 +12,9 @@ import (
 
 	"zenhack.net/go/sandstorm-next/capnp/container"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
-	"zenhack.net/go/sandstorm-next/go/internal/util"
 	utilcp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"
+	"zenhack.net/go/util"
 )
 
 type Container struct {

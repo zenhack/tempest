@@ -21,8 +21,8 @@ import (
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
-	"zenhack.net/go/sandstorm-next/go/internal/util"
 	"zenhack.net/go/sandstorm/capnp/spk"
+	"zenhack.net/go/util"
 )
 
 type Command struct {

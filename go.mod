@@ -14,4 +14,5 @@ require (
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9 // indirect
 	zenhack.net/go/sandstorm v0.0.0-20220806194653-4d4ad4418a15 // indirect
+	zenhack.net/go/util v0.0.0-20221015181152-e65f93a0f343 // indirect
 )

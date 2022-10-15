@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
-	"zenhack.net/go/sandstorm-next/go/internal/util"
+	"zenhack.net/go/util"
 )
 
 var (
