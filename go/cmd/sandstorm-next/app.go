@@ -25,7 +25,7 @@ func ServeApp(c *container.Container, w http.ResponseWriter, req *http.Request) 
 			r, err := p.NewRequest()
 			throw(err)
 
-			throw(p.SetResponder(httpcp.Responder_ServerToClient(responder{
+			throw(p.SetResponder(httpcp.Responder_ServerToClient(&responder{
 				w:      w,
 				cancel: cancel,
 			})))
@@ -76,7 +76,7 @@ type responder struct {
 	cancel context.CancelFunc
 }
 
-func (r responder) Respond(ctx context.Context, p httpcp.Responder_respond) error {
+func (r *responder) Respond(ctx context.Context, p httpcp.Responder_respond) error {
 	defer func() {
 		r.w = nil
 	}()
@@ -118,7 +118,7 @@ func (r responder) Respond(ctx context.Context, p httpcp.Responder_respond) erro
 	return nil
 }
 
-func (r responder) Shutdown() {
+func (r *responder) Shutdown() {
 	if r.w == nil {
 		return
 	}
