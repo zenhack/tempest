@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"capnproto.org/go/capnp/v3"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
@@ -67,39 +68,57 @@ func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error 
 		go func() {
 			defer responder.Release()
 			resp, err := b.roundTripper.RoundTrip(&req)
+			var (
+				fut httpcp.Responder_respond_Results_Future
+				rel capnp.ReleaseFunc
+			)
 			if err != nil {
-				// TODO: handle errors by sending an error response.
-				panic(err)
-			}
-			defer resp.Body.Close()
+				// Push an error response to the caller:
+				fut, rel = responder.Respond(context.TODO(),
+					func(p httpcp.Responder_respond_Params) error {
+						p.SetStatus(500)
+						return nil
+					})
+			} else {
+				defer resp.Body.Close()
 
-			// Now push the response back to our caller:
-			fut, rel := responder.Respond(context.TODO(), func(p httpcp.Responder_respond_Params) error {
-				return exn.Try0(func(throw func(error)) {
-					p.SetStatus(uint16(resp.StatusCode))
-					totalHeaders := 0
-					for _, vs := range resp.Header {
-						totalHeaders += len(vs)
-					}
-					headers, err := p.NewHeaders(int32(totalHeaders))
-					throw(err)
-					i := 0
-					for k, vs := range resp.Header {
-						for _, v := range vs {
-							h := headers.At(i)
-							i++
-							throw(h.SetKey(k))
-							throw(h.SetValue(v))
+				// Now push the response back to our caller:
+				fut, rel = responder.Respond(context.TODO(), func(p httpcp.Responder_respond_Params) error {
+					return exn.Try0(func(throw func(error)) {
+						p.SetStatus(uint16(resp.StatusCode))
+						totalHeaders := 0
+						for _, vs := range resp.Header {
+							totalHeaders += len(vs)
 						}
-					}
+						headers, err := p.NewHeaders(int32(totalHeaders))
+						throw(err)
+						i := 0
+						for k, vs := range resp.Header {
+							for _, v := range vs {
+								h := headers.At(i)
+								i++
+								throw(h.SetKey(k))
+								throw(h.SetValue(v))
+							}
+						}
+					})
 				})
-			})
+			}
 			defer rel()
 			sink := fut.Sink()
 			responseBody := bytestream.ToWriteCloser(context.TODO(), sink)
-			n, err := io.Copy(responseBody, resp.Body)
+			defer responseBody.Close()
 			if err != nil {
-				log.Printf("Error copying response body after %v bytes: %v", n, err)
+				fmt.Fprintf(
+					responseBody,
+					"Internal Server Error: %v\n",
+					err,
+				)
+			} else {
+				n, err := io.Copy(responseBody, resp.Body)
+				if err != nil {
+					log.Printf("Error copying response body after %v bytes: %v", n, err)
+				}
 			}
 		}()
 	})
