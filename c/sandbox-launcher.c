@@ -17,14 +17,21 @@
  *    state from the operating system -- so it is better to not have a complex language
  *    runtime underneath us.
  */
+#define _GNU_SOURCE
+
 #include "config.h"
 
 /* bool */
 #include <stdbool.h>
 
 /* unshare */
-#define _GNU_SOURCE
 #include <sched.h>
+
+/* misc networking stuff: */
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <linux/sockios.h>
+#include <net/if.h>
 
 /* errno */
 #include <errno.h>
@@ -144,6 +151,29 @@ int main(int argc, char **argv) {
 	/* No, really, unshare the mounts. See the "SHARED SUBTREES" section of mount_namespaces(7)
 	   for details. */
 	REQUIRE(mount("", "/", "", MS_REC|MS_PRIVATE, "") == 0);
+
+	/* Set up a loopback interface in the new network namespace. */
+	{
+		/* Socket to make ioctls: */
+		int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+		REQUIRE(sockfd >= 0);
+
+		/* Set the address of "lo": */
+		struct ifreq ifr;
+		memset(&ifr, 0, sizeof ifr);
+		strcpy(ifr.ifr_ifrn.ifrn_name, "lo");
+		struct sockaddr_in *addr = (struct sockaddr_in *)(&ifr.ifr_ifru.ifru_addr);
+		addr->sin_family = AF_INET;
+		addr->sin_addr.s_addr = htonl(0x7f000001); /* 127.0.0.1 */
+		REQUIRE(ioctl(sockfd, SIOCSIFADDR, &ifr) >= 0);
+
+		/* ...and set flags to enable it: */
+		memset(&ifr.ifr_ifru, 0, sizeof ifr.ifr_ifru);
+		ifr.ifr_ifru.ifru_flags = IFF_LOOPBACK | IFF_UP | IFF_RUNNING;
+		REQUIRE(ioctl(sockfd, SIOCSIFFLAGS, &ifr) >= 0);
+
+		close(sockfd);
+	}
 
 	/* Mount the image read only, then mount the sandbox's storage in the image's /var. */
 	REQUIRE(chdir(IMAGE_DIR) == 0);
