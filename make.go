@@ -9,7 +9,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
+	"strconv"
 )
 
 type Config struct {
@@ -22,6 +24,22 @@ type Config struct {
 
 	WithGoSandstorm string
 	WithGoCapnp     string
+}
+
+func getUid(name string) int {
+	u, err := user.Lookup(name)
+	chkfatal(err)
+	id, err := strconv.Atoi(u.Uid)
+	chkfatal(err)
+	return id
+}
+
+func getGid(name string) int {
+	g, err := user.LookupGroup(name)
+	chkfatal(err)
+	id, err := strconv.Atoi(g.Gid)
+	chkfatal(err)
+	return id
 }
 
 func (c *Config) ParseFlags(args []string, name string, errorHandling flag.ErrorHandling) {
@@ -136,7 +154,7 @@ func runInDir(dir, bin string, args ...string) error {
 	return withMyOuts(cmd).Run()
 }
 
-func installExe(exe, dir, caps string) {
+func installExe(cfg Config, exe, dir, caps string) {
 	destDir := os.Getenv("DESTDIR")
 	src, err := os.Open("./_build/" + exe)
 	chkfatal(err)
@@ -144,11 +162,12 @@ func installExe(exe, dir, caps string) {
 	dstPathDir := destDir + dir + "/"
 	chkfatal(os.MkdirAll(dstPathDir, 0755))
 	dstPath := dstPathDir + exe
-	dst, err := os.OpenFile(dstPath, os.O_CREATE|os.O_RDWR, 0770)
+	dst, err := os.OpenFile(dstPath, os.O_CREATE|os.O_RDWR, 0750)
 	chkfatal(err)
 	defer dst.Close()
 	_, err = io.Copy(dst, src)
 	chkfatal(err)
+	chkfatal(os.Chown(dstPath, 0, getGid("sandstorm")))
 	if caps != "" {
 		chkfatal(withMyOuts(exec.Command("setcap", caps, dstPath)).Run())
 	}
@@ -276,9 +295,9 @@ func run(args ...string) {
 	case "install":
 		run("build")
 		c := readConfig()
-		installExe("sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
-		installExe("sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
-		installExe("sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
+		installExe(c, "sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
+		installExe(c, "sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
+		installExe(c, "sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
 		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
