@@ -10,7 +10,7 @@ To build sandstorm-next, you will need:
 
 - Go 1.19 or later
 - Standard C development tools (make, a C compiler, etc).
-- capnp (command line tool)
+- capnp (command line tool) version 0.8 or later.
 - capnpc-go code generator plugin
 
 You will also need to separately check out the source for go-capnp and
