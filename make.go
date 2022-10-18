@@ -296,7 +296,8 @@ func run(args ...string) {
 		run("build")
 		c := readConfig()
 		installExe(c, "sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
-		installExe(c, "sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm", "cap_sys_admin+ep")
+		installExe(c, "sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm",
+			"cap_sys_admin,cap_net_admin,cap_mknod+ep")
 		installExe(c, "sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
 		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
 	default:
