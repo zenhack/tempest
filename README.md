@@ -49,6 +49,10 @@ apps or create grains; to experiment with it you must separately arrange
 a suitable grain storage directory. The easiest way to do this is to
 point it at an existing sandstorm installation, per above.
 
+You will need to be a member of the `sandstorm` group to run
+`sandstorm-next` (or if you specified a different group name via the
+`--group` configure flag, that group instead).
+
 On startup, the `sandstorm-next` executable will attempt to launch the
 grain specified in the environment variable `DUMMY_GRAIN_ID`, using the
 package `DUMMY_PACKAGE_ID`. You are responsible for making sure these
