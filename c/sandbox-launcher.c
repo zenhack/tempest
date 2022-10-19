@@ -24,6 +24,8 @@
 /* bool */
 #include <stdbool.h>
 
+#include <sys/syscall.h>
+
 /* unshare */
 #include <sched.h>
 
@@ -336,7 +338,7 @@ int main(int argc, char **argv) {
 
 		char *const agent_argv[] = {"sandbox-agent", NULL};
 		char *const agent_envp[] = {NULL};
-		execveat(agent_fd, "", agent_argv, agent_envp, AT_EMPTY_PATH);
+		syscall(SYS_execveat, agent_fd, "", agent_argv, agent_envp, AT_EMPTY_PATH);
 
 		/* Exec failed, bail out: */
 		perror("execveat");
