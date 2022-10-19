@@ -4,7 +4,7 @@
  * sandstorm-sandbox-launcher <package-id> <grain-id>
  *
  * It configures a sandbox using the directories for that package & grain, and
- * then inovkes fexecve() to start the `sandstorm-sandbox-agent` executable, which then
+ * then inovkes execveat() to start the `sandstorm-sandbox-agent` executable, which then
  * takes over starting up and interfacing with the grain proper.
  *
  * This program is written in C, rather than Go, because:
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 	const char *image_id = argv[1];
 	const char *sandbox_id = argv[2];
 
-	/* Get an fd for the agent executable, which we'll fexecve() once we're in the sandbox. */
+	/* Get an fd for the agent executable, which we'll execveat() once we're in the sandbox. */
 	int agent_fd = open(AGENT_PATH, O_RDONLY);
 	REQUIRE(agent_fd >= 0);
 
@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
 
 	   - stdout & stderr -- these are logged by the supervisor.
 	   - fd #3, which is the rpc socket
-	   - agent_fd, which we still need to pass to fexecve when we're done. It's close-on-exec,
+	   - agent_fd, which we still need to pass to execveat when we're done. It's close-on-exec,
 	     so this is fine.
 
 	We don't check the errors here; on linux close() can't actually fail to close the file
@@ -336,10 +336,10 @@ int main(int argc, char **argv) {
 
 		char *const agent_argv[] = {"sandbox-agent", NULL};
 		char *const agent_envp[] = {NULL};
-		fexecve(agent_fd, agent_argv, agent_envp);
+		execveat(agent_fd, "", agent_argv, agent_envp, AT_EMPTY_PATH);
 
 		/* Exec failed, bail out: */
-		perror("fexecve");
+		perror("execveat");
 		return 1;
 	}
 }
