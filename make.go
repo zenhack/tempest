@@ -263,6 +263,7 @@ func run(args ...string) {
 	switch args[0] {
 	case "build":
 		maybeConfigure()
+		chkfatal(os.MkdirAll("_build", 0755))
 		runJobs(buildC, buildGo)
 	case "run":
 		run("build")
