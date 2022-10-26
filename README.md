@@ -9,6 +9,7 @@ http traffic to them from the outside.
 To build sandstorm-next, you will need:
 
 - Go 1.19 or later
+- [tinygo](https://tinygo.org/)
 - Standard C development tools (make, a C compiler, etc).
 - capnp (command line tool) version 0.8 or later.
 - capnpc-go code generator plugin

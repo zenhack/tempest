@@ -209,6 +209,14 @@ func buildGo() error {
 	if err != nil {
 		return err
 	}
+	err = runInDir("go/internal/webui/cmd",
+		"tinygo", "build",
+		"-target", "wasm",
+		"-no-debug",
+		"-o", "../embed/webui.wasm")
+	if err != nil {
+		return err
+	}
 	err = runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
 	if err != nil {
 		return err
