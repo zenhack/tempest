@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
+	"zenhack.net/go/sandstorm-next/go/internal/webui/embed"
 	"zenhack.net/go/util"
 )
 
@@ -38,6 +39,8 @@ func main() {
 	r.Host("grain." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ServeApp(c, w, req)
 	})
+
+	r.Host(rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 
 	http.Handle("/", r)
 	log.Printf("Listening on %v", listenAddr)

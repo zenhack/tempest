@@ -1,11 +1,10 @@
 package embed
 
 import (
-	_ "embed"
+	"embed"
 )
 
 //go:embed webui.wasm
-var WasmBytes []byte
-
 //go:embed wasm_exec.js
-var WasmExecJs []byte
+//go:embed index.html
+var Content embed.FS
