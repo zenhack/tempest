@@ -12,7 +12,6 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 type Config struct {
@@ -216,15 +215,13 @@ func buildWebui() error {
 		return err
 	}
 
-	// Copy the js shim:
-	goroot, err := exec.Command("go", "env", "GOROOT").Output()
-	if err != nil {
-		return err
-	}
-	jspath := strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
+	// Copy the js shim. FIXME: be smarter about the source location;
+	// this will fail if tinygo is installed via a different path.
+	// The stock Go toolchain has this at a location relative to $GOROOT,
+	// but I don't know how to adaptively find it for tinygo.
 	return copyFile(
 		"go/internal/webui/embed/wasm_exec.js",
-		jspath,
+		"/usr/lib/tinygo/targets/wasm_exec.js",
 	)
 }
 
