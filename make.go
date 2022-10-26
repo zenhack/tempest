@@ -12,6 +12,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 type Config struct {
@@ -204,16 +205,50 @@ func buildCapnp() error {
 	return nil
 }
 
+func buildWebui() error {
+	// Build the webassembly binary:
+	err := runInDir("go/internal/webui/cmd",
+		"tinygo", "build",
+		"-target", "wasm",
+		"-no-debug",
+		"-o", "../embed/webui.wasm")
+	if err != nil {
+		return err
+	}
+
+	// Copy the js shim:
+	goroot, err := exec.Command("go", "env", "GOROOT").Output()
+	if err != nil {
+		return err
+	}
+	jspath := strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
+	return copyFile(
+		"go/internal/webui/embed/wasm_exec.js",
+		jspath,
+	)
+}
+
+func copyFile(dest, src string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
+}
+
 func buildGo() error {
 	err := buildCapnp()
 	if err != nil {
 		return err
 	}
-	err = runInDir("go/internal/webui/cmd",
-		"tinygo", "build",
-		"-target", "wasm",
-		"-no-debug",
-		"-o", "../embed/webui.wasm")
+	err = buildWebui()
 	if err != nil {
 		return err
 	}
