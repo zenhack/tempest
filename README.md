@@ -62,8 +62,8 @@ package `DUMMY_PACKAGE_ID`. You are responsible for making sure these
 are present and agree.
 
 `sandstorm-next` will start a web server on port 8000; to connect to the
-grain's UI, go to `http://grain.local.sandstorm.io:8000`.
+UI, go to `http://local.sandstorm.io:8000`.
 
-This will display the grain's UI with no surrounding iframe. Things like
+This will display the grain's UI within an iframe. Things like
 offer iframes and anything that uses sandstorm specific APIs will not
 work currently.
