@@ -18,13 +18,20 @@ type jsRenderer struct {
 }
 
 func (r jsRenderer) E(tag string, attrs render.A, body func(r render.Renderer)) {
-	if attrs == nil {
-		attrs = render.A{}
+	e := r.document.Call("createElement", tag)
+	if attrs != nil {
+		eAttrs := e.Get("attributes")
+		for k, v := range attrs {
+			attr := r.document.Call("createAttribute", k)
+			attr.Set("value", v)
+			eAttrs.Call("setNamedItem", attr)
+		}
 	}
-	e := r.document.Call("createElement", tag, attrs)
-	childR := r
-	childR.root = e
-	body(childR)
+	if body != nil {
+		childR := r
+		childR.root = e
+		body(childR)
+	}
 	r.root.Call("appendChild", e)
 }
 

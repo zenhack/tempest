@@ -8,9 +8,14 @@ import (
 )
 
 func view(r render.Renderer) {
+	host := js.Global().Get("window").Get("location").Get("host").String()
 	r.E("p", render.A{"class": "foo"}, func(r render.Renderer) {
 		r.T("Hello, World!")
 	})
+	r.E("iframe", render.A{
+		"src":   "//grain." + host,
+		"style": "width: 100%; height: 100%;",
+	}, nil)
 }
 
 func main() {
