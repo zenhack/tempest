@@ -9,13 +9,20 @@ import (
 
 func view(r render.Renderer) {
 	host := js.Global().Get("window").Get("location").Get("host").String()
-	r.E("p", render.A{"class": "foo"}, func(r render.Renderer) {
-		r.T("Hello, World!")
+	r.E("div", render.A{"class": "main-ui"}, func(r render.Renderer) {
+		r.E("div", render.A{"class": "main-ui__topbar"}, func(r render.Renderer) {
+			r.E("p", nil, func(r render.Renderer) { r.T("Topbar") })
+		})
+		r.E("div", render.A{"class": "main-ui__main"}, func(r render.Renderer) {
+			r.E("div", render.A{"class": "main-ui__sidebar"}, func(r render.Renderer) {
+				r.E("p", nil, func(r render.Renderer) { r.T("Sidebar") })
+			})
+			r.E("iframe", render.A{
+				"src":   "//grain." + host,
+				"class": "main-ui__grain-iframe",
+			}, nil)
+		})
 	})
-	r.E("iframe", render.A{
-		"src":   "//grain." + host,
-		"style": "width: 100%; height: 100%;",
-	}, nil)
 }
 
 func main() {

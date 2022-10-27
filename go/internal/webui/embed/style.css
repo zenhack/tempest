@@ -44,4 +44,33 @@
 	--default-content-color: var(--grey-1);
 }
 
+
+.main-ui {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+}
+
+.main-ui__main {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+}
+
+.main-ui__topbar {
+	background-color: var(--topbar-bgcolor);
+	color: var(--topbar-color);
+}
+
+.main-ui__sidebar {
+	/* XXX: either rename --topbar-* or use a different variable here. */
+	background-color: var(--topbar-bgcolor);
+	color: var(--topbar-color);
+}
+
+.main-ui__grain-iframe {
+	flex: 1;
+}
+
 /* vim: set ts=8 sw=8 noet : */
