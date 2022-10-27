@@ -1,0 +1,37 @@
+/* TODO: outline basic paradigm we use for styling. TL;DR:
+ *
+ * - Pick color and size constants once, up front, and then style everything from
+ *   that pallet.
+ * - Use BEM style classes for things.
+ */
+:root {
+	/*** Color Pallet ***/
+
+	/** Primary Colors **/
+	/* TODO: numbers, like below? */
+
+	--sandstorm-purple: #762f87;
+	--sandstorm-darkpurple: #65468e;
+
+	/** Greys **/
+	--grey-1: #191919;
+	--grey-6: #9e9e9e; /* "6" is kindof arbitrary; we probably want to pick
+			    * a range of 9 or so of these at some point, and this
+			    * is a guess re: where on that scale this will land. */
+
+	/** Accents **/
+	/* each of these will have shades 1-7, but I'm choosing them as I go. */
+	--red-6: #ffdddd;
+	--green-6: #ddffdd;
+	--yellow-6: #ffffaa;
+
+	/* Symbolic Constants */
+	--error-bgcolor: var(--red-6);
+	--success-bgcolor: var(--green-6);
+	--warning-bgcolor: var(--yellow-6);
+
+	--topbar-bgcolor: var(--grey-0);
+	--topbar-color: var(--grey-7);
+}
+
+/* vim: set ts=8 sw=8 noet : */

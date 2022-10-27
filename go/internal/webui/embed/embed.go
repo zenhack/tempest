@@ -4,7 +4,9 @@ import (
 	"embed"
 )
 
-//go:embed webui.wasm
-//go:embed wasm_exec.js
-//go:embed index.html
+//go:embed *.wasm
+//go:embed *.js
+//go:embed *.html
+//go:embed *.css
+//go:embed _dev/*
 var Content embed.FS
