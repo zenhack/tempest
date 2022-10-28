@@ -48,8 +48,8 @@
 .main-ui {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
-	height: 100%;
+	height: 100vh;
+	width: 100vw;
 }
 
 .main-ui__main {
@@ -71,6 +71,7 @@
 
 .main-ui__grain-iframe {
 	flex: 1;
+	height: 100%;
 }
 
 /* vim: set ts=8 sw=8 noet : */
