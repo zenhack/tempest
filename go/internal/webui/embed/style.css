@@ -32,10 +32,10 @@
 	--success-bgcolor: var(--green-6);
 	--warning-bgcolor: var(--yellow-6);
 
-	--topbar-bgcolor: var(--grey-0);
+	--topbar-bgcolor: var(--grey-1);
 	--topbar-bgcolor-hover: var(--grey-6);
 	--topbar-bgcolor-active: var(--grey-8);
-	--topbar-color: var(--grey-7);
+	--topbar-color: var(--grey-6);
 	--topbar-color-hover: var(--grey-9);
 	--topbar-color-active: var(--grey-1);
 	--topbar-border-color: var(--grey-3);
