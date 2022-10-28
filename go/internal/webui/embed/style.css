@@ -44,6 +44,10 @@
 	--default-content-color: var(--grey-1);
 }
 
+body {
+	margin: 0px;
+	padding: 0px;
+}
 
 .main-ui {
 	display: flex;
@@ -72,6 +76,7 @@
 .main-ui__grain-iframe {
 	flex: 1;
 	height: 100%;
+	border: none;
 }
 
 /* vim: set ts=8 sw=8 noet : */
