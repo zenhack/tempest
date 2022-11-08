@@ -249,11 +249,22 @@ func buildGo() error {
 	if err != nil {
 		return err
 	}
-	err = runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-next", "./go/cmd/sandstorm-next")
-	if err != nil {
-		return err
+	exes := []string{
+		"sandstorm-legacy-tool",
+		"sandstorm-next",
+		"sandstorm-sandbox-agent",
 	}
-	return runInDir(".", "go", "build", "-v", "-o", "_build/sandstorm-sandbox-agent", "./go/cmd/sandstorm-sandbox-agent")
+	for _, exe := range exes {
+		err = compileGoExe(exe)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func compileGoExe(name string) error {
+	return runInDir(".", "go", "build", "-v", "-o", "_build/"+name, "./go/cmd/"+name)
 }
 
 func cleanC() error {
