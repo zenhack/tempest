@@ -12,9 +12,11 @@ import (
 
 	"zenhack.net/go/sandstorm-next/capnp/container"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/sandstorm-next/go/internal/database"
 	utilcp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"
 	"zenhack.net/go/util"
+	"zenhack.net/go/util/exn"
 )
 
 type Container struct {
@@ -27,24 +29,32 @@ func (c *Container) Release() {
 	c.Handle.Release()
 }
 
-func StartDummy(ctx context.Context) (*Container, error) {
-	spawner := container.Spawner_ServerToClient(Spawner{})
-	defer spawner.Release()
-	fut, rel := spawner.Spawn(ctx, func(p container.Spawner_spawn_Params) error {
-		// TODO: bootstrap
-		util.Chkfatal(p.SetPackageId(os.Getenv("DUMMY_PACKAGE_ID")))
-		util.Chkfatal(p.SetGrainId(os.Getenv("DUMMY_GRAIN_ID")))
-		return nil
+func StartDummy(ctx context.Context, db database.DB) (*Container, error) {
+	return exn.Try(func(throw func(error)) *Container {
+		grainId := os.Getenv("DUMMY_GRAIN_ID")
+		tx, err := db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		pkgId, err := tx.GetGrainPackageId(grainId)
+		throw(err)
+		throw(tx.Commit())
+
+		spawner := container.Spawner_ServerToClient(Spawner{})
+		defer spawner.Release()
+		fut, rel := spawner.Spawn(ctx, func(p container.Spawner_spawn_Params) error {
+			// TODO: bootstrap
+			util.Chkfatal(p.SetPackageId(pkgId))
+			util.Chkfatal(p.SetGrainId(grainId))
+			return nil
+		})
+		defer rel()
+		results, err := fut.Struct()
+		throw(err)
+		return &Container{
+			Bootstrap: results.Bootstrap().AddRef(),
+			Handle:    results.Handle().AddRef(),
+		}
 	})
-	defer rel()
-	results, err := fut.Struct()
-	if err != nil {
-		return nil, err
-	}
-	return &Container{
-		Bootstrap: results.Bootstrap().AddRef(),
-		Handle:    results.Handle().AddRef(),
-	}, nil
 }
 
 type Spawner struct {

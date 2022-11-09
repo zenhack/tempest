@@ -3,8 +3,23 @@ package database
 import (
 	"database/sql"
 
+	_ "github.com/mattn/go-sqlite3"
+
+	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/util/exn"
 )
+
+const (
+	DBPath = config.Localstatedir + "/sandstorm/sandstorm.sqlite3"
+)
+
+func Open() (DB, error) {
+	sqlDB, err := sql.Open("sqlite3", DBPath)
+	if err != nil {
+		return DB{}, err
+	}
+	return InitDB(sqlDB)
+}
 
 // Wrapper object around a SQL database.
 type DB struct {

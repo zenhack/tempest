@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/database/legacy"
 	"zenhack.net/go/util"
 )
@@ -16,7 +16,7 @@ var (
 		"File storing the mongo user password (export only)")
 	snapshotDir = flag.String("snapshot-dir", "./mongo-snapshot",
 		"Directory in which to store a temporary snapshot")
-	sqlitePath = flag.String("sqlite-path", config.Localstatedir+"/sandstorm.sqlite3", "path to sqlite database (import only)")
+	sqlitePath = flag.String("sqlite-path", database.DBPath, "path to sqlite database (import only)")
 )
 
 func main() {

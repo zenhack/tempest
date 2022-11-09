@@ -249,13 +249,16 @@ func buildGo() error {
 	if err != nil {
 		return err
 	}
-	exes := []string{
-		"sandstorm-legacy-tool",
-		"sandstorm-next",
-		"sandstorm-sandbox-agent",
+	exes := []struct {
+		name   string
+		static bool
+	}{
+		{"sandstorm-legacy-tool", false},
+		{"sandstorm-next", false},
+		{"sandstorm-sandbox-agent", true},
 	}
 	for _, exe := range exes {
-		err = compileGoExe(exe)
+		err = compileGoExe(exe.name, exe.static)
 		if err != nil {
 			return err
 		}
@@ -263,8 +266,15 @@ func buildGo() error {
 	return nil
 }
 
-func compileGoExe(name string) error {
-	return runInDir(".", "go", "build", "-v", "-o", "_build/"+name, "./go/cmd/"+name)
+func compileGoExe(name string, static bool) error {
+	cmd := exec.Command("go", "build", "-v", "-o", "_build/"+name, "./go/cmd/"+name)
+	cmd.Env = append(cmd.Env, os.Environ()...)
+	if static {
+		cmd.Env = append(cmd.Env, "CGO_ENABLED=0")
+	} else {
+		cmd.Env = append(cmd.Env, "CGO_ENABLED=1")
+	}
+	return withMyOuts(cmd).Run()
 }
 
 func cleanC() error {

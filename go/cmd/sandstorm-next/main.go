@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
+	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/webui/embed"
 	"zenhack.net/go/util"
 )
@@ -29,8 +30,10 @@ func SetAppHeaders(w http.ResponseWriter) {
 }
 
 func main() {
+	db, err := database.Open()
+	util.Chkfatal(err)
 	ctx := context.Background()
-	c, err := container.StartDummy(ctx)
+	c, err := container.StartDummy(ctx, db)
 	util.Chkfatal(err)
 	defer c.Release()
 
