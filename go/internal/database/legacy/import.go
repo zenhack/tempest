@@ -45,7 +45,7 @@ func Import(sqlitePath, snapshotDir string) error {
 	})
 }
 
-func importPackages(snapshotDir string, tx database.Tx) error {
+func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw) error) error {
 	return exn.Try0(func(throw func(error)) {
 		f, err := os.Open(filepath.Join(snapshotDir, "packages"))
 		throw(err)
@@ -57,7 +57,14 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 				return
 			}
 			throw(err)
+			throw(fn(raw))
+		}
+	})
+}
 
+func importPackages(snapshotDir string, tx database.Tx) error {
+	return eachEntry(snapshotDir, "packages", tx, func(raw bson.Raw) error {
+		return exn.Try0(func(throw func(error)) {
 			elts, err := raw.Elements()
 			throw(err)
 
@@ -68,23 +75,13 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 					break
 				}
 			}
-		}
+		})
 	})
 }
 
 func importGrains(snapshotDir string, tx database.Tx) error {
-	return exn.Try0(func(throw func(error)) {
-		f, err := os.Open(filepath.Join(snapshotDir, "grains"))
-		throw(err)
-		defer f.Close()
-		it := iter{r: f}
-		for {
-			raw, err := it.readValue()
-			if err == io.EOF {
-				return
-			}
-			throw(err)
-
+	return eachEntry(snapshotDir, "grains", tx, func(raw bson.Raw) error {
+		return exn.Try0(func(throw func(error)) {
 			elts, err := raw.Elements()
 			throw(err)
 
@@ -102,6 +99,6 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 			}
 
 			throw(tx.AddGrain(grainId, pkgId, title))
-		}
+		})
 	})
 }
