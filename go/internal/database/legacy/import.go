@@ -3,6 +3,7 @@ package legacy
 import (
 	"database/sql"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -39,15 +40,16 @@ func Import(sqlitePath, snapshotDir string) error {
 		tx, err := db.Begin()
 		throw(err)
 		defer tx.Rollback()
+		throw(importUsers(snapshotDir, tx))
 		throw(importPackages(snapshotDir, tx))
 		throw(importGrains(snapshotDir, tx))
 		throw(tx.Commit())
 	})
 }
 
-func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw) error) error {
+func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw)) error {
 	return exn.Try0(func(throw func(error)) {
-		f, err := os.Open(filepath.Join(snapshotDir, "packages"))
+		f, err := os.Open(filepath.Join(snapshotDir, collection))
 		throw(err)
 		defer f.Close()
 		it := iter{r: f}
@@ -57,14 +59,78 @@ func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw)
 				return
 			}
 			throw(err)
-			throw(fn(raw))
+			fn(raw)
 		}
 	})
 }
 
+type user struct {
+	Id      string
+	Type    string
+	IsAdmin bool
+	Profile struct {
+		DisplayName     string
+		PreferredHandle string
+	}
+}
+
+func decodeUser(raw bson.Raw) (user, error) {
+	return exn.Try(func(throw func(error)) (ret user) {
+		elts, err := raw.Elements()
+		throw(err)
+
+		for _, e := range elts {
+			switch e.Key() {
+			case "id":
+				ret.Id = e.Value().StringValue()
+			case "type":
+				ret.Type = e.Value().StringValue()
+			case "isAdmin":
+				ret.IsAdmin = e.Value().Boolean()
+			case "profile":
+				pelts, err := e.Value().Document().Elements()
+				throw(err)
+				for _, pe := range pelts {
+					switch pe.Key() {
+					case "name":
+						ret.Profile.DisplayName = pe.Value().StringValue()
+					case "handle":
+						ret.Profile.PreferredHandle = pe.Value().StringValue()
+					}
+				}
+			}
+		}
+		return
+	})
+}
+
+func importUsers(snapshotDir string, tx database.Tx) error {
+	return exn.Try0(func(throw func(error)) {
+		// We do this in two passes, accounts first, then credentials.
+		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
+			u, err := decodeUser(raw)
+			throw(err)
+
+			if u.Type != "account" {
+				return
+			}
+			fmt.Printf("account: %v\n", u)
+		}))
+		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
+			u, err := decodeUser(raw)
+			throw(err)
+
+			if u.Type != "credential" {
+				return
+			}
+			fmt.Printf("credential: %v\n", u)
+		}))
+	})
+}
+
 func importPackages(snapshotDir string, tx database.Tx) error {
-	return eachEntry(snapshotDir, "packages", tx, func(raw bson.Raw) error {
-		return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw func(error)) {
+		throw(eachEntry(snapshotDir, "packages", tx, func(raw bson.Raw) {
 			elts, err := raw.Elements()
 			throw(err)
 
@@ -75,30 +141,32 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 					break
 				}
 			}
-		})
+		}))
 	})
 }
 
 func importGrains(snapshotDir string, tx database.Tx) error {
-	return eachEntry(snapshotDir, "grains", tx, func(raw bson.Raw) error {
-		return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw func(error)) {
+		throw(eachEntry(snapshotDir, "grains", tx, func(raw bson.Raw) {
 			elts, err := raw.Elements()
 			throw(err)
 
-			var grainId, pkgId, title string
+			var grain database.NewGrain
 
 			for _, e := range elts {
 				switch e.Key() {
 				case "_id":
-					grainId = e.Value().StringValue()
+					grain.GrainId = e.Value().StringValue()
 				case "packageId":
-					pkgId = e.Value().StringValue()
+					grain.PkgId = e.Value().StringValue()
 				case "title":
-					title = e.Value().StringValue()
+					grain.Title = e.Value().StringValue()
+				case "ownerId":
+					grain.OwnerId = e.Value().StringValue()
 				}
 			}
 
-			throw(tx.AddGrain(grainId, pkgId, title))
-		})
+			throw(tx.AddGrain(grain))
+		}))
 	})
 }

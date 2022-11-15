@@ -44,13 +44,34 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			)`)
 		throw(err)
 		_, err = tx.Exec(
+			`CREATE TABLE IF NOT EXISTS accounts (
+				id VARCHAR PRIMARY KEY,
+
+				isAdmin BOOLEAN NOT NULL,
+
+				profile_display_name VARCHAR NOT NULL,
+				profile_preferred_handle VARCHAR NOT NULL
+				-- TODO: picture, identicon, pronouns
+			)`)
+		throw(err)
+		_, err = tx.Exec(
+			// TODO: research login support libraries for Go.
+			`CREATE TABLE IF NOT EXISTS credentials (
+				account_id VARCHAR NOT NULL REFERENCES accounts(id),
+				-- Whether this credential is sufficient for logging
+				-- in to the account:
+				login BOOLEAN NOT NULL
+			)`)
+		throw(err)
+		_, err = tx.Exec(
 			`CREATE TABLE IF NOT EXISTS grains (
 				-- random base64 url-encoded:
 				id VARCHAR(22) PRIMARY KEY NOT NULL,
 				-- id of the package for this grain:
 				packageId VARCHAR(32) NOT NULL REFERENCES packages(id),
 				-- Human readable title chosen by the grain owner:
-				title VARCHAR NOT NULL
+				title VARCHAR NOT NULL,
+				ownerId VARCHAR NOT NULL REFERENCES accounts(id)
 			)`)
 		throw(err)
 		throw(tx.Commit())
@@ -79,10 +100,17 @@ func (tx Tx) AddPackage(pkgId string) error {
 	return err
 }
 
-func (tx Tx) AddGrain(grainId, pkgId, title string) error {
+type NewGrain struct {
+	GrainId string
+	PkgId   string
+	OwnerId string
+	Title   string
+}
+
+func (tx Tx) AddGrain(g NewGrain) error {
 	_, err := tx.sqlTx.Exec(
-		`INSERT INTO grains(id, packageId, title) VALUES (?, ?, ?)`,
-		grainId, pkgId, title,
+		`INSERT INTO grains(id, packageId, title, ownerId) VALUES (?, ?, ?, ?)`,
+		g.GrainId, g.PkgId, g.Title, g.OwnerId,
 	)
 	return err
 }
