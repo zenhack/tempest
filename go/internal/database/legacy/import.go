@@ -72,6 +72,13 @@ type user struct {
 		DisplayName     string
 		PreferredHandle string
 	}
+
+	Services struct {
+		Dev struct {
+			Name    string
+			IsAdmin bool
+		}
+	}
 }
 
 func decodeUser(raw bson.Raw) (user, error) {
@@ -96,6 +103,25 @@ func decodeUser(raw bson.Raw) (user, error) {
 						ret.Profile.DisplayName = pe.Value().StringValue()
 					case "handle":
 						ret.Profile.PreferredHandle = pe.Value().StringValue()
+					}
+				}
+			case "services":
+				selts, err := e.Value().Document().Elements()
+				throw(err)
+				for _, se := range selts {
+					switch se.Key() {
+					case "dev":
+						delts, err := se.Value().Document().Elements()
+						throw(err)
+						for _, de := range delts {
+							switch de.Key() {
+							case "name":
+								ret.Services.Dev.Name = de.Value().StringValue()
+								ret.Services.Dev.IsAdmin = de.Value().Boolean()
+							}
+						}
+					default:
+						// TODO: handle github, google, email, etc.
 					}
 				}
 			}
