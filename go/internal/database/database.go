@@ -55,12 +55,19 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			)`)
 		throw(err)
 		_, err = tx.Exec(
-			// TODO: research login support libraries for Go.
+			// TODO: research SSO support libraries for Go.
+			// TODO: add unique/primary key constraint for (type, scoped_id).
 			`CREATE TABLE IF NOT EXISTS credentials (
 				account_id VARCHAR NOT NULL REFERENCES accounts(id),
 				-- Whether this credential is sufficient for logging
 				-- in to the account:
-				login BOOLEAN NOT NULL
+				login BOOLEAN NOT NULL,
+				-- The type of the credential. Currently always "dev".
+				type VARCHAR NOT NULL,
+				-- The name of the credential, within the type's naming system.
+				-- e.g. for an email authentication system this would just be
+				-- the email address.
+				scoped_id VARCHAR NOT NULL
 			)`)
 		throw(err)
 		_, err = tx.Exec(
@@ -105,6 +112,56 @@ type NewGrain struct {
 	PkgId   string
 	OwnerId string
 	Title   string
+}
+
+type NewAccount struct {
+	Id      string
+	IsAdmin bool
+	Profile struct {
+		DisplayName     string
+		PreferredHandle string
+	}
+}
+
+type NewCredential struct {
+	AccountId string
+	Login     bool
+	Type      string
+	ScopedId  string
+}
+
+func (tx Tx) AddAccount(a NewAccount) error {
+	_, err := tx.sqlTx.Exec(
+		`INSERT INTO accounts
+			( id
+			, isAdmin
+			, profile_display_name
+			, profile_preferred_handle
+			)
+			VALUES (?, ?, ?, ?)`,
+		a.Id,
+		a.IsAdmin,
+		a.Profile.DisplayName,
+		a.Profile.PreferredHandle,
+	)
+	return err
+}
+
+func (tx Tx) AddCredential(c NewCredential) error {
+	_, err := tx.sqlTx.Exec(
+		`INSERT INTO credentials
+			( account_id
+			, login
+			, type
+			, scope_id
+			)
+			VALUES (?, ?, ?, ?)`,
+		c.AccountId,
+		c.Login,
+		c.Type,
+		c.ScopedId,
+	)
+	return err
 }
 
 func (tx Tx) AddGrain(g NewGrain) error {

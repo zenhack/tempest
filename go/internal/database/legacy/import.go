@@ -88,7 +88,7 @@ func decodeUser(raw bson.Raw) (user, error) {
 
 		for _, e := range elts {
 			switch e.Key() {
-			case "id":
+			case "_id":
 				ret.Id = e.Value().StringValue()
 			case "type":
 				ret.Type = e.Value().StringValue()
@@ -117,6 +117,7 @@ func decodeUser(raw bson.Raw) (user, error) {
 							switch de.Key() {
 							case "name":
 								ret.Services.Dev.Name = de.Value().StringValue()
+							case "isAdmin":
 								ret.Services.Dev.IsAdmin = de.Value().Boolean()
 							}
 						}
@@ -140,7 +141,11 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			if u.Type != "account" {
 				return
 			}
-			fmt.Printf("account: %v\n", u)
+			throw(tx.AddAccount(database.NewAccount{
+				Id:      u.Id,
+				IsAdmin: u.IsAdmin,
+				Profile: u.Profile,
+			}))
 		}))
 		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
 			u, err := decodeUser(raw)
@@ -187,7 +192,7 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 					grain.PkgId = e.Value().StringValue()
 				case "title":
 					grain.Title = e.Value().StringValue()
-				case "ownerId":
+				case "userId":
 					grain.OwnerId = e.Value().StringValue()
 				}
 			}
