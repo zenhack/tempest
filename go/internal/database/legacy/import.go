@@ -79,6 +79,28 @@ type user struct {
 			IsAdmin bool
 		}
 	}
+
+	LoginCredentials    []string
+	NonloginCredentials []string
+}
+
+// Decodes a list of credentials in the form of loginCredentials or nonloginCredentials.
+func decodeCredentialList(e bson.RawElement) ([]string, error) {
+	return exn.Try(func(throw func(error)) []string {
+		var ret []string
+		vals, err := e.Value().Array().Values()
+		throw(err)
+		for _, v := range vals {
+			elts, err := v.Document().Elements()
+			throw(err)
+			for _, e := range elts {
+				if e.Key() == "id" {
+					ret = append(ret, e.Value().StringValue())
+				}
+			}
+		}
+		return ret
+	})
 }
 
 func decodeUser(raw bson.Raw) (user, error) {
@@ -105,6 +127,12 @@ func decodeUser(raw bson.Raw) (user, error) {
 						ret.Profile.PreferredHandle = pe.Value().StringValue()
 					}
 				}
+			case "loginCredentials":
+				ret.LoginCredentials, err = decodeCredentialList(e)
+				throw(err)
+			case "nonloginCredentials":
+				ret.NonloginCredentials, err = decodeCredentialList(e)
+				throw(err)
 			case "services":
 				selts, err := e.Value().Document().Elements()
 				throw(err)
@@ -131,7 +159,15 @@ func decodeUser(raw bson.Raw) (user, error) {
 	})
 }
 
+type credentialOwner struct {
+	accountId string
+	login     bool
+}
+
 func importUsers(snapshotDir string, tx database.Tx) error {
+	// Mapping from credential ids to info about their owner:
+	credentialOwners := make(map[string]credentialOwner)
+
 	return exn.Try0(func(throw func(error)) {
 		// We do this in two passes, accounts first, then credentials.
 		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
@@ -146,6 +182,19 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 				IsAdmin: u.IsAdmin,
 				Profile: u.Profile,
 			}))
+			// Store these for lookup during the second pass:
+			for _, credId := range u.LoginCredentials {
+				credentialOwners[credId] = credentialOwner{
+					accountId: u.Id,
+					login:     true,
+				}
+			}
+			for _, credId := range u.NonloginCredentials {
+				credentialOwners[credId] = credentialOwner{
+					accountId: u.Id,
+					login:     false,
+				}
+			}
 		}))
 		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
 			u, err := decodeUser(raw)
@@ -154,7 +203,17 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			if u.Type != "credential" {
 				return
 			}
-			fmt.Printf("credential: %v\n", u)
+			owner := credentialOwners[u.Id]
+			var entry database.NewCredential
+			entry.AccountId = owner.accountId
+			entry.Login = owner.login
+			if u.Services.Dev.Name != "" {
+				entry.Type = "dev"
+				entry.ScopedId = u.Services.Dev.Name
+				throw(tx.AddCredential(entry))
+			} else {
+				fmt.Printf("TODO: add support for other credential types (skipping)")
+			}
 		}))
 	})
 }

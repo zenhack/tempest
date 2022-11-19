@@ -153,7 +153,7 @@ func (tx Tx) AddCredential(c NewCredential) error {
 			( account_id
 			, login
 			, type
-			, scope_id
+			, scoped_id
 			)
 			VALUES (?, ?, ?, ?)`,
 		c.AccountId,
