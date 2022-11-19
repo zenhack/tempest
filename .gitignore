@@ -6,3 +6,6 @@
 
 # I(Ian) sometimes like to leave myself short term notes for the next time I sit down, in this file:
 /NOTES
+
+# Default path for the mongo import/export; easy to accidentally commit:
+mongo-snapshot
