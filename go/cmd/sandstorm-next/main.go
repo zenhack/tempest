@@ -6,11 +6,15 @@ import (
 	"net/http"
 	"os"
 
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/webui/embed"
 	"zenhack.net/go/util"
+	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
 var (
@@ -26,7 +30,6 @@ func defaultTo(val, def string) string {
 }
 
 func SetAppHeaders(w http.ResponseWriter) {
-
 }
 
 func main() {
@@ -42,6 +45,26 @@ func main() {
 	r.Host("grain." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		ServeApp(c, w, req)
 	})
+
+	r.Host(rootDomain).Path("/_capnp-api").
+		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			up := &websocket.Upgrader{
+				Subprotocols:      []string{"capnp-rpc"},
+				EnableCompression: true,
+			}
+			wsConn, err := up.Upgrade(w, req, nil)
+			if err != nil {
+				return
+			}
+			wsConn.EnableWriteCompression(true)
+			transport := websocketcapnp.NewTransport(wsConn)
+			defer transport.Close()
+			rpcConn := rpc.NewConn(transport, &rpc.Options{
+				// TODO: set the bootstrap interface.
+				BootstrapClient: capnp.Client{},
+			})
+			<-rpcConn.Done()
+		})
 
 	r.Host(rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 

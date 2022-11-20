@@ -8,6 +8,9 @@ Absolute blockers:
 - [ ] Do some verification that sandbox-launcher actually
       properly drops privileges; right now this isn't well tested.
 - [ ] Do actual filtering of http traffic, rather than just passing everything through.
+- [ ] Memory limits on capnp connections
+  - [ ] from the outside
+  - [ ] from apps
 
 Things that really *should* be dealt with, but aren't regressions from
 sandstorm-legacy:
