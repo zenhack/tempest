@@ -3,9 +3,21 @@ package main
 import (
 	"syscall/js"
 
+	"capnproto.org/go/capnp/v3/rpc"
+	"capnproto.org/go/capnp/v3/rpc/transport"
+	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/vdom"
 	vb "zenhack.net/go/vdom/builder"
+	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
+
+func getCapnpApi() (*rpc.Conn, external.ExternalApi) {
+	codec := wscapnpjs.New("/_capnp-api")
+	trans := transport.NewStreamTransport(codec)
+	conn := rpc.NewConn(trans, nil)
+	bs := external.ExternalApi(conn.Bootstrap())
+	return conn, bs
+}
 
 func view() vdom.VNode {
 	host := js.Global().Get("window").Get("location").Get("host").String()
