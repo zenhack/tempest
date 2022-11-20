@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/webui/embed"
@@ -60,8 +60,7 @@ func main() {
 			transport := websocketcapnp.NewTransport(wsConn)
 			defer transport.Close()
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
-				// TODO: set the bootstrap interface.
-				BootstrapClient: capnp.Client{},
+				BootstrapClient: external.ExternalApi_ServerToClient(externalApiImpl{}),
 			})
 			<-rpcConn.Done()
 		})
