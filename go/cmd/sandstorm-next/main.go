@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -60,7 +61,7 @@ func main() {
 			transport := websocketcapnp.NewTransport(wsConn)
 			defer transport.Close()
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
-				BootstrapClient: external.ExternalApi_ServerToClient(externalApiImpl{}),
+				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(externalApiImpl{})),
 			})
 			<-rpcConn.Done()
 		})

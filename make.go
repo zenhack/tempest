@@ -210,7 +210,7 @@ func buildWebui() error {
 		"tinygo", "build",
 		"-target", "wasm",
 		"-no-debug",
-		"-o", "../embed/webui.wasm")
+		"-o=../embed/webui.wasm")
 	if err != nil {
 		return err
 	}

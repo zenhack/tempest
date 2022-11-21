@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"syscall/js"
 
 	"capnproto.org/go/capnp/v3/rpc"
@@ -11,11 +12,11 @@ import (
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
 
-func getCapnpApi() (*rpc.Conn, external.ExternalApi) {
+func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 	codec := wscapnpjs.New("/_capnp-api")
-	trans := transport.NewStreamTransport(codec)
+	trans := transport.New(codec)
 	conn := rpc.NewConn(trans, nil)
-	bs := external.ExternalApi(conn.Bootstrap())
+	bs := external.ExternalApi(conn.Bootstrap(ctx))
 	return conn, bs
 }
 

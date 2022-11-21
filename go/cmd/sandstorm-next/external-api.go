@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"capnproto.org/go/capnp/v3/capnp/exc"
+	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 )
 
@@ -11,5 +11,5 @@ type externalApiImpl struct {
 }
 
 func (externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
-	return exc.Unimplementedf("TODO: implement getLoginSession()")
+	return capnp.Unimplemented("TODO: implement getLoginSession()")
 }
