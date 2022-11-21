@@ -39,9 +39,21 @@ func view() vdom.VNode {
 }
 
 func main() {
+	ctx := context.Background()
+	conn, api := getCapnpApi(ctx)
+	defer conn.Close()
+
+	go func() {
+		fut, rel := api.GetLoginSession(ctx, nil)
+		defer rel()
+		_, err := fut.Struct()
+		print("getLoginSession(): " + err.Error())
+	}()
+
 	body := js.Global().
 		Get("document").
 		Call("getElementsByTagName", "body").
 		Index(0)
 	body.Call("appendChild", view().ToDomNode().Value)
+	<-conn.Done()
 }
