@@ -21,7 +21,7 @@ func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 	}
 	url += "://" + location.Get("host").String() + "/_capnp-api"
 
-	codec := wscapnpjs.New(url)
+	codec := wscapnpjs.New(url, []string{"capnp-rpc"})
 	trans := transport.New(codec)
 	conn := rpc.NewConn(trans, nil)
 	bs := external.ExternalApi(conn.Bootstrap(ctx))
