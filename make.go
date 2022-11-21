@@ -209,6 +209,7 @@ func buildWebui() error {
 	err := runInDir("go/internal/webui/cmd",
 		"tinygo", "build",
 		"-target", "wasm",
+		"-panic", "trap",
 		"-no-debug",
 		"-o=../embed/webui.wasm")
 	if err != nil {
