@@ -17,7 +17,7 @@ require (
 	zenhack.net/go/sandstorm v0.0.0-20220806194653-4d4ad4418a15
 	zenhack.net/go/util v0.0.0-20221015181152-e65f93a0f343
 	zenhack.net/go/vdom v0.0.0-20221104044328-f3b1dd7f4360
-	zenhack.net/go/websocket-capnp v0.0.0-20221120211354-9ebea22406ad
+	zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8
 )
 
 require (
