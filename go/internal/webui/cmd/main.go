@@ -13,7 +13,15 @@ import (
 )
 
 func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
-	codec := wscapnpjs.New("/_capnp-api")
+	// Derive the websocket url from window.location:
+	location := js.Global().Get("window").Get("location")
+	url := "ws"
+	if location.Get("protocol").String() == "https:" {
+		url += "s"
+	}
+	url += "://" + location.Get("host").String() + "/_capnp-api"
+
+	codec := wscapnpjs.New(url)
 	trans := transport.New(codec)
 	conn := rpc.NewConn(trans, nil)
 	bs := external.ExternalApi(conn.Bootstrap(ctx))
