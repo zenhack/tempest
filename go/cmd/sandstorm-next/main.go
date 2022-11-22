@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -9,8 +11,10 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/capnp/external"
+	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/sandstorm-next/go/internal/container"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/webui/embed"
@@ -33,6 +37,32 @@ func defaultTo(val, def string) string {
 func SetAppHeaders(w http.ResponseWriter) {
 }
 
+func getSessionKey() []byte {
+	const path = config.Localstatedir + "/sandstorm/session-key"
+	data, err := ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
+	if os.IsNotExist(err) {
+		data := make([]byte, 32)
+		rand.Read(data)
+		util.Chkfatal(os.WriteFile(path, data, 0600))
+	} else {
+		util.Chkfatal(err)
+	}
+	return data
+}
+
+func userSessionId(store sessions.Store, req *http.Request) string {
+	session, _ := store.Get(req, "user-session")
+	sessionId, ok := session.Values["session-id"]
+	if !ok {
+		return ""
+	}
+	ret, ok := sessionId.(string)
+	if !ok {
+		return ""
+	}
+	return ret
+}
+
 func main() {
 	db, err := database.Open()
 	util.Chkfatal(err)
@@ -40,6 +70,8 @@ func main() {
 	c, err := container.StartDummy(ctx, db)
 	util.Chkfatal(err)
 	defer c.Release()
+
+	sessionStore := sessions.NewCookieStore(getSessionKey())
 
 	r := mux.NewRouter()
 
@@ -49,6 +81,7 @@ func main() {
 
 	r.Host(rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			sid := userSessionId(sessionStore, req)
 			up := &websocket.Upgrader{
 				Subprotocols:      []string{"capnp-rpc"},
 				EnableCompression: true,
@@ -60,8 +93,12 @@ func main() {
 			wsConn.EnableWriteCompression(true)
 			transport := websocketcapnp.NewTransport(wsConn)
 			defer transport.Close()
+			bootstrap := externalApiImpl{
+				db:            db,
+				userSessionId: sid,
+			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
-				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(externalApiImpl{})),
+				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),
 			})
 			<-rpcConn.Done()
 		})
