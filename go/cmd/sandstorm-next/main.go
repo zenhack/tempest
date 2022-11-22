@@ -50,9 +50,19 @@ func getSessionKey() []byte {
 	return data
 }
 
-func userSessionId(store sessions.Store, req *http.Request) string {
+type userSession struct {
+	session *sessions.Session
+}
+
+func getUserSession(store sessions.Store, req *http.Request) userSession {
 	session, _ := store.Get(req, "user-session")
-	sessionId, ok := session.Values["session-id"]
+	return userSession{
+		session: session,
+	}
+}
+
+func (s userSession) Id() string {
+	sessionId, ok := s.session.Values["session-id"]
 	if !ok {
 		return ""
 	}
@@ -61,6 +71,14 @@ func userSessionId(store sessions.Store, req *http.Request) string {
 		return ""
 	}
 	return ret
+}
+
+func (s userSession) SetDevCredential(name string) {
+	s.session.Values["dev-credential-name"] = name
+}
+
+func (s userSession) Save(req *http.Request, w http.ResponseWriter) {
+	s.session.Save(req, w)
 }
 
 func main() {
@@ -79,9 +97,37 @@ func main() {
 		ServeApp(c, w, req)
 	})
 
+	r.Host(rootDomain).Path("/login/dev").Methods("GET").
+		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Write([]byte(`<!doctype html>
+			<html>
+			<head>
+			<meta charset="utf-8" />
+			<title>Login dev account</title>
+			</head>
+			<body>
+			<form action="/login/dev" method="post">
+				<input name="name">
+				<button type="submit">Submit</button>
+			</form>
+			</body>
+			</html>
+			`))
+		})
+
+	r.Host(rootDomain).Path("/login/dev").Methods("POST").
+		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			name := req.FormValue("name")
+			sess := getUserSession(sessionStore, req)
+			sess.SetDevCredential(name)
+			sess.Save(req, w)
+			w.Header().Set("Location", "/")
+			w.WriteHeader(http.StatusSeeOther)
+		})
+
 	r.Host(rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			sid := userSessionId(sessionStore, req)
+			session := getUserSession(sessionStore, req)
 			up := &websocket.Upgrader{
 				Subprotocols:      []string{"capnp-rpc"},
 				EnableCompression: true,
@@ -95,7 +141,7 @@ func main() {
 			defer transport.Close()
 			bootstrap := externalApiImpl{
 				db:            db,
-				userSessionId: sid,
+				userSessionId: session.Id(),
 			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
 				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),
