@@ -9,12 +9,12 @@ import (
 )
 
 type externalApiImpl struct {
-	db            database.DB
-	userSessionId string // "" if there is no logged-in user session.
+	db          database.DB
+	userSession userSession
 }
 
 func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
 	return capnp.Unimplemented(
-		"TODO: implement getLoginSession() (session id: " + api.userSessionId + ")",
+		"TODO: implement getLoginSession() (session id: " + api.userSession.Id() + ")",
 	)
 }
