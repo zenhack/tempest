@@ -206,12 +206,12 @@ func buildCapnp() error {
 
 func buildWebui() error {
 	// Build the webassembly binary:
-	err := runInDir("go/internal/webui/cmd",
+	err := runInDir("go/cmd/webui",
 		"tinygo", "build",
 		"-target", "wasm",
 		"-panic", "trap",
 		"-no-debug",
-		"-o=../embed/webui.wasm")
+		"-o=../../internal/server/embed/webui.wasm")
 	if err != nil {
 		return err
 	}
@@ -221,7 +221,7 @@ func buildWebui() error {
 	// The stock Go toolchain has this at a location relative to $GOROOT,
 	// but I don't know how to adaptively find it for tinygo.
 	return copyFile(
-		"go/internal/webui/embed/wasm_exec.js",
+		"go/internal/server/embed/wasm_exec.js",
 		"/usr/lib/tinygo/targets/wasm_exec.js",
 	)
 }

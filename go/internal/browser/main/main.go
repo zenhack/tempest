@@ -1,4 +1,4 @@
-package main
+package browsermain
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func view() vdom.VNode {
 	)
 }
 
-func main() {
+func Main() {
 	ctx := context.Background()
 	conn, api := getCapnpApi(ctx)
 	defer conn.Close()

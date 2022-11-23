@@ -1,4 +1,4 @@
-package main
+package servermain
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
-	"zenhack.net/go/sandstorm-next/go/internal/container"
+	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 )
