@@ -2,8 +2,6 @@ package servermain
 
 import (
 	"context"
-	"crypto/rand"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,10 +12,10 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/capnp/external"
-	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/embed"
+	"zenhack.net/go/sandstorm-next/go/internal/server/usersession"
 	"zenhack.net/go/util"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
@@ -37,50 +35,6 @@ func defaultTo(val, def string) string {
 func SetAppHeaders(w http.ResponseWriter) {
 }
 
-func getSessionKey() []byte {
-	const path = config.Localstatedir + "/sandstorm/session-key"
-	data, err := ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
-	if os.IsNotExist(err) {
-		data := make([]byte, 32)
-		rand.Read(data)
-		util.Chkfatal(os.WriteFile(path, data, 0600))
-	} else {
-		util.Chkfatal(err)
-	}
-	return data
-}
-
-type userSession struct {
-	session *sessions.Session
-}
-
-func getUserSession(store sessions.Store, req *http.Request) userSession {
-	session, _ := store.Get(req, "user-session")
-	return userSession{
-		session: session,
-	}
-}
-
-func (s userSession) Id() string {
-	sessionId, ok := s.session.Values["session-id"]
-	if !ok {
-		return ""
-	}
-	ret, ok := sessionId.(string)
-	if !ok {
-		return ""
-	}
-	return ret
-}
-
-func (s userSession) SetDevCredential(name string) {
-	s.session.Values["dev-credential-name"] = name
-}
-
-func (s userSession) Save(req *http.Request, w http.ResponseWriter) {
-	s.session.Save(req, w)
-}
-
 func Main() {
 	db, err := database.Open()
 	util.Chkfatal(err)
@@ -89,7 +43,7 @@ func Main() {
 	util.Chkfatal(err)
 	defer c.Release()
 
-	sessionStore := sessions.NewCookieStore(getSessionKey())
+	sessionStore := sessions.NewCookieStore(util.Must(usersession.GetKey()))
 
 	r := mux.NewRouter()
 
@@ -118,7 +72,7 @@ func Main() {
 	r.Host(rootDomain).Path("/login/dev").Methods("POST").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			name := req.FormValue("name")
-			sess := getUserSession(sessionStore, req)
+			sess := usersession.Get(sessionStore, req)
 			sess.SetDevCredential(name)
 			sess.Save(req, w)
 			w.Header().Set("Location", "/")
@@ -127,7 +81,7 @@ func Main() {
 
 	r.Host(rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			session := getUserSession(sessionStore, req)
+			session := usersession.Get(sessionStore, req)
 			up := &websocket.Upgrader{
 				Subprotocols:      []string{"capnp-rpc"},
 				EnableCompression: true,
