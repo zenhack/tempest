@@ -21,9 +21,11 @@ interface ExternalApi {
   # Return a handle to a LoginSession object for the current user. If
   # the user is not logged in, this will fail. logged-in status is
   # determined by the HTTP headers used in the websocket connection
-  # request (TODO: document these. Web UI will support a session cookie
-  # at least, we may want to support bearer tokens or something for
-  # programmatic access?)
+  # request (A session cookie for the web UI. TODO: we may want to
+  # support bearer tokens or something for programmatic access?
+
+  restore @1 (sturdyRef :Data) -> (cap :Capability);
+  # Restore a sturdyRef as a live capability.
 }
 
 interface LoginSession {
