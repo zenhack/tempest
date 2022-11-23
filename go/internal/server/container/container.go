@@ -133,8 +133,7 @@ func startContainer(
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
 		util.Chkfatal(cmd.Process.Kill())
-		_, err = cmd.Process.Wait()
-		util.Chkfatal(err)
+		util.Must(cmd.Process.Wait())
 		<-conn.Done()
 	}()
 	return grainBootstrap, nil

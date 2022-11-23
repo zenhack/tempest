@@ -36,11 +36,9 @@ func SetAppHeaders(w http.ResponseWriter) {
 }
 
 func Main() {
-	db, err := database.Open()
-	util.Chkfatal(err)
+	db := util.Must(database.Open())
 	ctx := context.Background()
-	c, err := container.StartDummy(ctx, db)
-	util.Chkfatal(err)
+	c := util.Must(container.StartDummy(ctx, db))
 	defer c.Release()
 
 	sessionStore := sessions.NewCookieStore(util.Must(usersession.GetKey()))
