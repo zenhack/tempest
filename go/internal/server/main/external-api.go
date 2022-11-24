@@ -19,3 +19,7 @@ func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.Exter
 		"TODO: implement getLoginSession() (session id: " + api.userSession.Id() + ")",
 	)
 }
+
+func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_restore) error {
+	return capnp.Unimplemented("ExternalApi.restore() is unimplemented.")
+}
