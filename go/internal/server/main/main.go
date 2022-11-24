@@ -71,10 +71,15 @@ func Main() {
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			name := req.FormValue("name")
 			sess := usersession.Get(sessionStore, req)
-			sess.SetDevCredential(name)
+			sess.SetCredential("dev", name)
 			sess.Save(req, w)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)
+			// TODO:
+			// - Check if the credential is already linked to
+			//   an account.
+			//   - If so, check if it is usable for login
+			//   - If not, create one.
 		})
 
 	r.Host(rootDomain).Path("/_capnp-api").

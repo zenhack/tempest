@@ -12,6 +12,8 @@ import (
 
 type Session struct {
 	sess *sessions.Session
+	id   string
+	// TODO: expiration date?
 }
 
 func GetKey() ([]byte, error) {
@@ -29,25 +31,28 @@ func GetKey() ([]byte, error) {
 
 func Get(s sessions.Store, req *http.Request) Session {
 	sess, _ := s.Get(req, "user-session")
-	return Session{
+	ret := Session{
 		sess: sess,
 	}
-}
-
-func (s Session) Id() string {
-	sessionId, ok := s.sess.Values["session-id"]
-	if !ok {
-		return ""
+	sessionId, ok := sess.Values["session-id"]
+	if ok {
+		ret.id, ok = sessionId.(string)
 	}
-	ret, ok := sessionId.(string)
 	if !ok {
-		return ""
+		var buf [32]byte
+		rand.Read(buf[:])
+		ret.id = string(buf[:])
 	}
 	return ret
 }
 
-func (s Session) SetDevCredential(name string) {
-	s.sess.Values["dev-credential-name"] = name
+func (s Session) Id() string {
+	return s.id
+}
+
+func (s Session) SetCredential(typ, scopedId string) {
+	s.sess.Values["credential-type"] = typ
+	s.sess.Values["credential-scoped-id"] = scopedId
 }
 
 func (s Session) Save(req *http.Request, w http.ResponseWriter) {
