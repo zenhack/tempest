@@ -42,6 +42,6 @@ interface Puller(K, V) {
   # When the the returned `subsription` handle is dropped, the Puller
   # will drop its reference to `into` and cease sending updates.
 
-  key @1 (name :K) -> (getter :Assignable(V).Getter);
+  key @1 (name :K) -> (getter :Util.Assignable(V).Getter);
   # Return a getter for a single key.
 }
