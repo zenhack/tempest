@@ -71,7 +71,8 @@ func Main() {
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			name := req.FormValue("name")
 			sess := usersession.Get(sessionStore, req)
-			sess.SetCredential("dev", name)
+			sess.Data.Credential.Type = "dev"
+			sess.Data.Credential.ScopedId = name
 			sess.Save(req, w)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)

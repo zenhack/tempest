@@ -6,14 +6,25 @@ import (
 	"net/http"
 	"os"
 
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/pogs"
 	"github.com/gorilla/sessions"
+	"zenhack.net/go/sandstorm-next/capnp/internals/cookie"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/util"
 )
 
 type Session struct {
 	sess *sessions.Session
-	id   string
-	// TODO: expiration date?
+	Data SessionData
+}
+
+type SessionData struct {
+	SessionId  []byte
+	Credential struct {
+		Type     string
+		ScopedId string
+	}
 }
 
 func GetKey() ([]byte, error) {
@@ -34,33 +45,31 @@ func Get(s sessions.Store, req *http.Request) Session {
 	ret := Session{
 		sess: sess,
 	}
-	sessionId, ok := sess.Values["session-id"]
+	bytes, ok := sess.Values["data"]
+	var (
+		msg *capnp.Message
+		err error
+	)
 	if ok {
-		ret.id, ok = sessionId.(string)
-	}
-	if !ok {
+		msg, _, err = capnp.NewMessage(capnp.SingleSegment(bytes.([]byte)))
+		util.Chkfatal(err) // Should be impossible
+		root, err := msg.Root()
+		util.Chkfatal(err)
+		util.Chkfatal(pogs.Extract(&ret.Data, cookie.UserSession_TypeID, root.Struct()))
+	} else {
 		var buf [32]byte
 		rand.Read(buf[:])
-		ret.id = string(buf[:])
+		ret.Data.SessionId = buf[:]
 	}
 	return ret
 }
 
-func (s Session) Id() string {
-	return s.id
-}
-
-func (s Session) Credential() (typ, scopedId string) {
-	typ = s.sess.Values["credential-type"].(string)
-	scopedId = s.sess.Values["credential-scoped-id"].(string)
-	return
-}
-
-func (s Session) SetCredential(typ, scopedId string) {
-	s.sess.Values["credential-type"] = typ
-	s.sess.Values["credential-scoped-id"] = scopedId
-}
-
 func (s Session) Save(req *http.Request, w http.ResponseWriter) {
+	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
+	util.Chkfatal(err)
+	root, err := cookie.NewRootUserSession(seg)
+	util.Chkfatal(err)
+	util.Chkfatal(pogs.Insert(cookie.UserSession_TypeID, capnp.Struct(root), &s.Data))
+	s.sess.Values["data"] = seg.Data()
 	s.sess.Save(req, w)
 }

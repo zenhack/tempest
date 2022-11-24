@@ -20,7 +20,7 @@ type externalApiImpl struct {
 }
 
 func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
-	if api.userSession.Id() == "" {
+	if api.userSession.Data.Credential.Type == "" {
 		return ErrNotLoggedIn
 	}
 	results, err := p.AllocResults()
@@ -56,7 +56,8 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		tx, err := s.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		info, err := tx.GetCredentialGrains(s.userSession.Credential())
+		c := s.userSession.Data.Credential
+		info, err := tx.GetCredentialGrains(c.Type, c.ScopedId)
 		throw(err)
 		throw(tx.Commit())
 
