@@ -50,6 +50,12 @@ func (s Session) Id() string {
 	return s.id
 }
 
+func (s Session) Credential() (typ, scopedId string) {
+	typ = s.sess.Values["credential-type"].(string)
+	scopedId = s.sess.Values["credential-scoped-id"].(string)
+	return
+}
+
 func (s Session) SetCredential(typ, scopedId string) {
 	s.sess.Values["credential-type"] = typ
 	s.sess.Values["credential-scoped-id"] = scopedId

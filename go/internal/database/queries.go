@@ -80,3 +80,35 @@ func (tx Tx) GetGrainPackageId(grainId string) (string, error) {
 	err := row.Scan(&result)
 	return result, err
 }
+
+type GrainInfo struct {
+	Id    string
+	Title string
+}
+
+func (tx Tx) GetCredentialGrains(typ, scopedId string) ([]GrainInfo, error) {
+	rows, err := tx.sqlTx.Query(
+		`SELECT
+			grains.id, grains.title
+		FROM
+			grains, credentials, accounts
+		WHERE
+			credentials.type = ?
+			AND credentials.scoped_id = ?
+			AND credentials.account_id = accounts.id
+			AND grains.ownerId = accounts.id`,
+		typ, scopedId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ret []GrainInfo
+	for rows.Next() {
+		var item GrainInfo
+		err := rows.Scan(&item.Id, &item.Title)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ret, rows.Err()
+}

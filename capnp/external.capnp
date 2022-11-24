@@ -13,6 +13,8 @@ using Go = import "/go.capnp";
 $Go.package("external");
 $Go.import("zenhack.net/go/sandstorm-next/capnp/external");
 
+using Collection = import "collection.capnp";
+
 interface ExternalApi {
   # The bootstrap interface when connecting to the externally facing
   # websocket
@@ -31,6 +33,8 @@ interface ExternalApi {
 interface LoginSession {
   userInfo @0 () -> (info :UserInfo);
   # Return info about the user.
+
+  listGrains @1 (into :Collection.Pusher(Text, Grain));
 }
 
 struct UserInfo {
@@ -50,4 +54,14 @@ struct UserInfo {
     # An admin is an administrator for the server, and has full access to
     # everything.
   }
+}
+
+
+struct Grain {
+  title @1 :Text;
+  sessionToken @2 :Text;
+  handle @0 :GrainHandle;
+}
+
+interface GrainHandle {
 }
