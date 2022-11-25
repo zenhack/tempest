@@ -174,10 +174,12 @@ func installExe(cfg Config, exe, dir, caps string) {
 }
 
 func buildC() error {
+	log.Println("Building C executable")
 	return runInDir("c", "make")
 }
 
 func buildCapnp() error {
+	log.Println("Compiling capnp schema")
 	c := readConfig()
 	dirs := []string{
 		"capnp",
@@ -214,6 +216,7 @@ func buildCapnp() error {
 
 func buildWebui() error {
 	// Build the webassembly binary:
+	log.Println("Building wasm binary")
 	err := runInDir("go/cmd/webui",
 		"tinygo", "build",
 		"-target", "wasm",
@@ -276,6 +279,7 @@ func buildGo() error {
 }
 
 func compileGoExe(name string, static bool) error {
+	log.Printf("Compiling go executable %q (static = %v)", name, static)
 	cmd := exec.Command("go", "build", "-v", "-o", "_build/"+name, "./go/cmd/"+name)
 	cmd.Env = append(cmd.Env, os.Environ()...)
 	if static {
