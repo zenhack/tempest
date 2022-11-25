@@ -109,6 +109,7 @@ func (tx Tx) GetCredentialGrains(typ, scopedId string) ([]GrainInfo, error) {
 		if err != nil {
 			return nil, err
 		}
+		ret = append(ret, item)
 	}
 	return ret, rows.Err()
 }
