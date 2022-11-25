@@ -36,8 +36,8 @@ func (tx Tx) AddAccount(a NewAccount) error {
 		`INSERT INTO accounts
 			( id
 			, isAdmin
-			, profile_display_name
-			, profile_preferred_handle
+			, profileDisplayName
+			, profilePreferredHandle
 			)
 			VALUES (?, ?, ?, ?)`,
 		a.Id,
@@ -51,10 +51,10 @@ func (tx Tx) AddAccount(a NewAccount) error {
 func (tx Tx) AddCredential(c NewCredential) error {
 	_, err := tx.sqlTx.Exec(
 		`INSERT INTO credentials
-			( account_id
+			( accountId
 			, login
 			, type
-			, scoped_id
+			, scopedId
 			)
 			VALUES (?, ?, ?, ?)`,
 		c.AccountId,
@@ -94,8 +94,8 @@ func (tx Tx) GetCredentialGrains(typ, scopedId string) ([]GrainInfo, error) {
 			grains, credentials
 		WHERE
 			credentials.type = ?
-			AND credentials.scoped_id = ?
-			AND credentials.account_id = grains.ownerId`,
+			AND credentials.scopedId = ?
+			AND credentials.accountId = grains.ownerId`,
 		typ, scopedId)
 	if err != nil {
 		return nil, err

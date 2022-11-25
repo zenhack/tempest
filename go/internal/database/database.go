@@ -49,16 +49,16 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 
 				isAdmin BOOLEAN NOT NULL,
 
-				profile_display_name VARCHAR NOT NULL,
-				profile_preferred_handle VARCHAR NOT NULL
+				profileDisplayName VARCHAR NOT NULL,
+				profilePreferredHandle VARCHAR NOT NULL
 				-- TODO: picture, identicon, pronouns
 			)`)
 		throw(err)
 		_, err = tx.Exec(
 			// TODO: research SSO support libraries for Go.
-			// TODO: add unique/primary key constraint for (type, scoped_id).
+			// TODO: add unique/primary key constraint for (type, scopedId).
 			`CREATE TABLE IF NOT EXISTS credentials (
-				account_id VARCHAR NOT NULL REFERENCES accounts(id),
+				accountId VARCHAR NOT NULL REFERENCES accounts(id),
 				-- Whether this credential is sufficient for logging
 				-- in to the account:
 				login BOOLEAN NOT NULL,
@@ -67,7 +67,7 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				-- The name of the credential, within the type's naming system.
 				-- e.g. for an email authentication system this would just be
 				-- the email address.
-				scoped_id VARCHAR NOT NULL
+				scopedId VARCHAR NOT NULL
 			)`)
 		throw(err)
 		_, err = tx.Exec(
