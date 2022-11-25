@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha256"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +15,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
+	"time"
 )
 
 type Config struct {
@@ -178,7 +182,7 @@ func buildC() error {
 	return runInDir("c", "make")
 }
 
-func buildCapnp() error {
+func buildCapnp(r *BuildRecord) {
 	log.Println("Compiling capnp schema")
 	c := readConfig()
 	dirs := []string{
@@ -188,30 +192,39 @@ func buildCapnp() error {
 
 	for _, d := range dirs {
 		files, err := filepath.Glob(d + "/*.capnp")
-		if err != nil {
-			return err
-		}
+		chkfatal(err)
 
 		for _, file := range files {
 			dir := file[:len(file)-len(".capnp")]
 			err := os.MkdirAll(dir, 0755)
-			if err != nil {
-				return err
-			}
-			err = runInDir(".", "capnp",
+			chkfatal(err)
+			cmd := exec.Command("capnp",
 				"compile",
-				"-ogo:"+dir,
+				"-o-",
 				"--src-prefix="+d+"/",
 				"-I", c.WithGoCapnp+"/std",
 				"-I", c.WithGoSandstorm+"/capnp",
 				file,
 			)
-			if err != nil {
-				return err
+			cgr, err := cmd.Output()
+			chkfatal(err)
+			cgrPath := file + ".cgr"
+			oldSig, ok := r.Files[cgrPath]
+			if !ok || oldSig.Stamp.Size != int64(len(cgr)) {
+				hash := sha256.Sum256(cgr)
+				if bytes.Compare(hash[:], oldSig.Hash) != 0 {
+					log.Printf("Generating go code for %q", file)
+					chkfatal(os.WriteFile(cgrPath, cgr, 0644))
+					cmd := exec.Command("capnpc-go")
+					cmd.Dir = dir
+					cmd.Stdin, err = os.Open(cgrPath)
+					chkfatal(err)
+					chkfatal(withMyOuts(cmd).Run())
+					chkfatal(r.RecordFile(cgrPath))
+				}
 			}
 		}
 	}
-	return nil
 }
 
 func buildWebui() error {
@@ -253,11 +266,11 @@ func copyFile(dest, src string) error {
 }
 
 func buildGo() error {
-	err := buildCapnp()
-	if err != nil {
-		return err
-	}
-	err = buildWebui()
+	r := GetBuildRecord()
+	buildCapnp(r)
+	r.Save()
+
+	err := buildWebui()
 	if err != nil {
 		return err
 	}
@@ -288,22 +301,6 @@ func compileGoExe(name string, static bool) error {
 		cmd.Env = append(cmd.Env, "CGO_ENABLED=1")
 	}
 	return withMyOuts(cmd).Run()
-}
-
-func cleanC() error {
-	return runInDir("c", "make", "clean")
-}
-
-func cleanGo() error {
-	return runInDir(".", "rm", "-f", "_build/sandstorm-next")
-}
-
-func nukeC() error {
-	return runInDir(".", "rm", "-f", "c/config.h")
-}
-
-func nukeGo() error {
-	return runInDir(".", "rm", "-f", "go/internal/config/config.go")
 }
 
 // Run configure if its outputs aren't already present.
@@ -343,13 +340,6 @@ func run(args ...string) {
 		run("build")
 		fmt.Fprintln(os.Stderr, "Starting server...")
 		chkfatal(withMyOuts(exec.Command("./bin/server")).Run())
-	case "clean":
-		maybeConfigure()
-		runJobs(cleanC, cleanGo)
-	case "nuke":
-		run("clean")
-		runJobs(nukeC, nukeGo)
-		os.Remove("config.json")
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
@@ -395,4 +385,98 @@ func main() {
 	} else {
 		run(os.Args[1:]...)
 	}
+}
+
+const buildRecordPath = "_build/build_record.json"
+
+func GetBuildRecord() *BuildRecord {
+	empty := &BuildRecord{
+		Files: make(map[string]FileSig),
+	}
+	data, err := os.ReadFile(buildRecordPath)
+	if err != nil {
+		return empty
+	}
+	var ret BuildRecord
+	err = json.Unmarshal(data, &ret)
+	if err != nil {
+		return empty
+	}
+	return &ret
+}
+
+type BuildRecord struct {
+	Files map[string]FileSig
+}
+
+func (r *BuildRecord) Save() {
+	data, err := json.Marshal(r)
+	chkfatal(err)
+	chkfatal(os.WriteFile(buildRecordPath, data, 0644))
+}
+
+func (r *BuildRecord) IsModified(path string) bool {
+	stamp, err := StampFile(path)
+	if err != nil {
+		return true
+	}
+	sig, ok := r.Files[path]
+	if !ok {
+		return true
+	}
+
+	return stamp != sig.Stamp
+}
+
+func (r *BuildRecord) RecordFile(path string) error {
+	stamp, err := StampFile(path)
+	if err != nil {
+		return err
+	}
+	hash, err := HashFile(path)
+	if err != nil {
+		return err
+	}
+	r.Files[path] = FileSig{
+		Stamp: stamp,
+		Hash:  hash,
+	}
+	return nil
+}
+
+func HashFile(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	h := sha256.New()
+	_, err = io.Copy(h, f)
+	if err != nil {
+		return nil, err
+	}
+	return h.Sum(nil), nil
+}
+
+func StampFile(path string) (FileStamp, error) {
+	fi, err := os.Lstat(path)
+	if err != nil {
+		return FileStamp{}, err
+	}
+	return FileStamp{
+		Size:    fi.Size(),
+		Mode:    fi.Mode(),
+		ModTime: fi.ModTime(),
+	}, nil
+}
+
+type FileStamp struct {
+	Size    int64
+	Mode    fs.FileMode
+	ModTime time.Time
+}
+
+type FileSig struct {
+	Stamp FileStamp
+	Hash  []byte
 }

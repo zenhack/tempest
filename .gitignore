@@ -7,3 +7,6 @@
 
 # Default path for the mongo import/export; easy to accidentally commit:
 mongo-snapshot
+
+# Binary output of capnp compile
+*.cgr
