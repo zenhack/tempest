@@ -91,12 +91,11 @@ func (tx Tx) GetCredentialGrains(typ, scopedId string) ([]GrainInfo, error) {
 		`SELECT
 			grains.id, grains.title
 		FROM
-			grains, credentials, accounts
+			grains, credentials
 		WHERE
 			credentials.type = ?
 			AND credentials.scoped_id = ?
-			AND credentials.account_id = accounts.id
-			AND grains.ownerId = accounts.id`,
+			AND credentials.account_id = grains.ownerId`,
 		typ, scopedId)
 	if err != nil {
 		return nil, err
