@@ -27,32 +27,43 @@ type SessionData struct {
 	}
 }
 
-func GetKey() ([]byte, error) {
+func GetKeys() ([][]byte, error) {
+	var (
+		data []byte
+		err  error
+	)
 	const path = config.Localstatedir + "/sandstorm/session-key"
-	data, err := ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
+	data, err = ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
 	if os.IsNotExist(err) {
-		data := make([]byte, 32)
+		data = make([]byte, 64)
 		rand.Read(data)
-		return data, os.WriteFile(path, data, 0600)
-	} else {
+		err = os.WriteFile(path, data, 0600)
+		if err != nil {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
-	return data, nil
+	return [][]byte{data[:32], data[32:]}, nil
 }
 
 func Get(s sessions.Store, req *http.Request) Session {
-	sess, _ := s.Get(req, "user-session")
+	sess, err := s.Get(req, "user-session")
 	ret := Session{
 		sess: sess,
 	}
-	bytes, ok := sess.Values["data"]
+	valAny, ok := sess.Values["data"]
 	var (
 		msg *capnp.Message
-		err error
+		val []byte
 	)
 	if ok {
-		msg, _, err = capnp.NewMessage(capnp.SingleSegment(bytes.([]byte)))
-		util.Chkfatal(err) // Should be impossible
+		val, ok = valAny.([]byte)
+	}
+	if ok {
+		msg = &capnp.Message{
+			Arena: capnp.SingleSegment(val),
+		}
 		root, err := msg.Root()
 		util.Chkfatal(err)
 		util.Chkfatal(pogs.Extract(&ret.Data, cookie.UserSession_TypeID, root.Struct()))
@@ -61,6 +72,7 @@ func Get(s sessions.Store, req *http.Request) Session {
 		rand.Read(buf[:])
 		ret.Data.SessionId = buf[:]
 	}
+	util.Chkfatal(err)
 	return ret
 }
 
@@ -71,5 +83,5 @@ func (s Session) Save(req *http.Request, w http.ResponseWriter) {
 	util.Chkfatal(err)
 	util.Chkfatal(pogs.Insert(cookie.UserSession_TypeID, capnp.Struct(root), &s.Data))
 	s.sess.Values["data"] = seg.Data()
-	s.sess.Save(req, w)
+	util.Chkfatal(s.sess.Save(req, w))
 }

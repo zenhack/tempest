@@ -41,7 +41,7 @@ func Main() {
 	c := util.Must(container.StartDummy(ctx, db))
 	defer c.Release()
 
-	sessionStore := sessions.NewCookieStore(util.Must(usersession.GetKey()))
+	sessionStore := sessions.NewCookieStore(util.Must(usersession.GetKeys())...)
 
 	r := mux.NewRouter()
 
