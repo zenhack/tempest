@@ -8,7 +8,6 @@ import (
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"zenhack.net/go/sandstorm-next/capnp/collection"
 	"zenhack.net/go/sandstorm-next/capnp/external"
-	"zenhack.net/go/util/exn"
 	"zenhack.net/go/vdom"
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
@@ -29,53 +28,8 @@ func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 	return conn, bs
 }
 
-type keyPrintingPusher struct {
-}
-
-func (keyPrintingPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {
-	return exn.Try0(func(throw func(error)) {
-		key, err := p.Args().Key()
-		throw(err)
-		println("upsert(" + key.Text() + ", _)")
-	})
-}
-
-func (keyPrintingPusher) Remove(ctx context.Context, p collection.Pusher_remove) error {
-	return exn.Try0(func(throw func(error)) {
-		key, err := p.Args().Key()
-		throw(err)
-		println("remove(" + key.Text() + ")")
-	})
-}
-
-func (keyPrintingPusher) Clear(context.Context, collection.Pusher_clear) error {
-	println("clear()")
-	return nil
-}
-
-func (keyPrintingPusher) Ready(context.Context, collection.Pusher_ready) error {
-	println("ready()")
-	return nil
-}
-
 func Main() {
 	ctx := context.Background()
-	conn, api := getCapnpApi(ctx)
-	defer conn.Close()
-
-	go func() {
-		fut, rel := api.GetLoginSession(ctx, nil)
-		defer rel()
-		_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {
-			p.SetInto(collection.Pusher_ServerToClient(keyPrintingPusher{}))
-			return nil
-		})
-		defer rel()
-		_, err := fut.Struct()
-		if err != nil {
-			println("getLoginSesion(): " + err.Error())
-		}
-	}()
 
 	body := vdom.DomNode{
 		Value: js.Global().
@@ -85,6 +39,31 @@ func Main() {
 	}
 	up := vdom.NewUpdater(body)
 	defer up.Close()
-	up.Update(view(initModel()))
+	uiMsgs := make(chan func(Model) Model)
+	go func() {
+		m := initModel()
+		for {
+			up.Update(m.View())
+			f := <-uiMsgs
+			m = f(m)
+		}
+	}()
+
+	conn, api := getCapnpApi(ctx)
+	defer conn.Close()
+	fut, rel := api.GetLoginSession(ctx, nil)
+	defer rel()
+	_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {
+		p.SetInto(collection.Pusher_ServerToClient(grainPusher{
+			uiMsgs: uiMsgs,
+		}))
+		return nil
+	})
+	defer rel()
+	_, err := fut.Struct()
+	if err != nil {
+		println("getLoginSesion(): " + err.Error())
+	}
+
 	<-conn.Done()
 }
