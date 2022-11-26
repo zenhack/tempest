@@ -72,6 +72,7 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 				throw(err)
 				g.SetTitle(grainInfo.Title)
 				// TODO: sessionToken, handle
+				p.SetValue(g.ToPtr())
 				return nil
 			})
 			releaseFuncs = append(releaseFuncs, rel)
