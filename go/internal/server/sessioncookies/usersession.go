@@ -9,7 +9,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
 	"github.com/gorilla/sessions"
-	"zenhack.net/go/sandstorm-next/capnp/internals/cookie"
+	"zenhack.net/go/sandstorm-next/capnp/private/cookie"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/util"
 )
