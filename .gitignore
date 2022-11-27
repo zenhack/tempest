@@ -10,3 +10,6 @@ mongo-snapshot
 
 # Binary output of capnp compile
 *.cgr
+
+# Coverage profiles and the like
+*.out
