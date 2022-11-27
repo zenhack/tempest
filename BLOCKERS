@@ -11,6 +11,7 @@ Absolute blockers:
 - [ ] Memory limits on capnp connections
   - [ ] from the outside
   - [ ] from apps
+- [ ] Sanity check cookies have proper attributes/aren't visible from js etc.
 
 Things that really *should* be dealt with, but aren't regressions from
 sandstorm-legacy:
