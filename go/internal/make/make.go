@@ -187,6 +187,29 @@ func buildC() error {
 	return runInDir("c", "make")
 }
 
+func buildConfig(r *BuildRecord) {
+	if r.IsModified("./config.json") {
+		cfg := readConfig()
+		files := []struct {
+			path    string
+			content string
+		}{
+			{
+				path:    "./go/internal/config/config.go",
+				content: cfg.GoSrc(),
+			},
+			{
+				path:    "./c/config.h",
+				content: cfg.CSrc(),
+			},
+		}
+		for _, f := range files {
+			chkfatal(ioutil.WriteFile(f.path, []byte(f.content), 0600))
+			r.RecordFile(f.path)
+		}
+	}
+}
+
 func buildCapnp(r *BuildRecord) {
 	log.Println("Compiling capnp schema")
 	c := readConfig()
@@ -211,6 +234,7 @@ func buildCapnp(r *BuildRecord) {
 				"-I", c.WithGoSandstorm+"/capnp",
 				file,
 			)
+			cmd.Stderr = os.Stderr
 			cgr, err := cmd.Output()
 			chkfatal(err)
 			cgrPath := file + ".cgr"
@@ -294,10 +318,8 @@ func copyFile(dest, src string) error {
 	return err
 }
 
-func buildGo() error {
-	r := GetBuildRecord()
+func buildGo(r *BuildRecord) error {
 	buildCapnp(r)
-	r.Save()
 
 	err := buildWebui(readConfig())
 	if err != nil {
@@ -334,10 +356,8 @@ func compileGoExe(name string, static bool) error {
 
 // Run configure if its outputs aren't already present.
 func maybeConfigure() {
-	_, errC := os.Stat("./c/config.h")
-	_, errGo := os.Stat("./go/internal/config/config.go")
 	_, errJson := os.Stat("./config.json")
-	if errC == nil && errGo == nil && errJson == nil {
+	if errJson == nil {
 		// Config is already present; we're done.
 		return
 	}
@@ -364,7 +384,11 @@ func run(args ...string) {
 	case "build":
 		maybeConfigure()
 		chkfatal(os.MkdirAll("_build", 0755))
-		runJobs(buildC, buildGo)
+		r := GetBuildRecord()
+		buildConfig(r)
+		buildC()
+		buildGo(r)
+		r.Save()
 	case "run":
 		run("build")
 		fmt.Fprintln(os.Stderr, "Starting server...")
@@ -372,14 +396,6 @@ func run(args ...string) {
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
-		chkfatal(ioutil.WriteFile(
-			"./go/internal/config/config.go",
-			[]byte(cfg.GoSrc()),
-			0600))
-		chkfatal(ioutil.WriteFile(
-			"./c/config.h",
-			[]byte(cfg.CSrc()),
-			0600))
 		jsonData, err := json.Marshal(cfg)
 		chkfatal(err)
 		chkfatal(ioutil.WriteFile(
