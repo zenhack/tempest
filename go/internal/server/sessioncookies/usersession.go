@@ -1,4 +1,4 @@
-package usersession
+package sessioncookies
 
 import (
 	"crypto/rand"
@@ -14,12 +14,12 @@ import (
 	"zenhack.net/go/util"
 )
 
-type Session struct {
+type UserSession struct {
 	sess *sessions.Session
-	Data SessionData
+	Data UserSessionData
 }
 
-type SessionData struct {
+type UserSessionData struct {
 	SessionId  []byte
 	Credential struct {
 		Type     string
@@ -47,9 +47,9 @@ func GetKeys() ([][]byte, error) {
 	return [][]byte{data[:32], data[32:]}, nil
 }
 
-func Get(s sessions.Store, req *http.Request) Session {
+func GetUserSession(s sessions.Store, req *http.Request) UserSession {
 	sess, err := s.Get(req, "user-session")
-	ret := Session{
+	ret := UserSession{
 		sess: sess,
 	}
 	valAny, ok := sess.Values["data"]
@@ -76,7 +76,7 @@ func Get(s sessions.Store, req *http.Request) Session {
 	return ret
 }
 
-func (s Session) Save(req *http.Request, w http.ResponseWriter) {
+func (s UserSession) Save(req *http.Request, w http.ResponseWriter) {
 	_, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 	util.Chkfatal(err)
 	root, err := cookie.NewRootUserSession(seg)

@@ -15,7 +15,7 @@ import (
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/embed"
-	"zenhack.net/go/sandstorm-next/go/internal/server/usersession"
+	"zenhack.net/go/sandstorm-next/go/internal/server/sessioncookies"
 	"zenhack.net/go/util"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
@@ -41,7 +41,7 @@ func Main() {
 	c := util.Must(container.StartDummy(ctx, db))
 	defer c.Release()
 
-	sessionStore := sessions.NewCookieStore(util.Must(usersession.GetKeys())...)
+	sessionStore := sessions.NewCookieStore(util.Must(sessioncookies.GetKeys())...)
 
 	r := mux.NewRouter()
 
@@ -70,7 +70,7 @@ func Main() {
 	r.Host(rootDomain).Path("/login/dev").Methods("POST").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			name := req.FormValue("name")
-			sess := usersession.Get(sessionStore, req)
+			sess := sessioncookies.GetUserSession(sessionStore, req)
 			sess.Data.Credential.Type = "dev"
 			sess.Data.Credential.ScopedId = name
 			sess.Save(req, w)
@@ -85,7 +85,7 @@ func Main() {
 
 	r.Host(rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			session := usersession.Get(sessionStore, req)
+			session := sessioncookies.GetUserSession(sessionStore, req)
 			up := &websocket.Upgrader{
 				Subprotocols:      []string{"capnp-rpc"},
 				EnableCompression: true,

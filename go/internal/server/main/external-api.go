@@ -8,7 +8,7 @@ import (
 	"zenhack.net/go/sandstorm-next/capnp/collection"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/usersession"
+	"zenhack.net/go/sandstorm-next/go/internal/server/sessioncookies"
 	"zenhack.net/go/util/exn"
 )
 
@@ -16,7 +16,7 @@ var ErrNotLoggedIn = errors.New("You are not logged in.")
 
 type externalApiImpl struct {
 	db          database.DB
-	userSession usersession.Session
+	userSession sessioncookies.UserSession
 }
 
 func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
@@ -40,7 +40,7 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 
 type loginSessionImpl struct {
 	db          database.DB
-	userSession usersession.Session
+	userSession sessioncookies.UserSession
 }
 
 func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo) error {
