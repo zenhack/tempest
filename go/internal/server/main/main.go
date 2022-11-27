@@ -49,6 +49,23 @@ func Main() {
 		ServeApp(c, w, req)
 	})
 
+	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + rootDomain).
+		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			haveCookie := false
+			// TODO: check if we have a sandstorm-sid session cookie
+			// already.
+
+			if !haveCookie {
+				if req.URL.Path == "/_sandstorm-init" {
+					// TODO: Transfer value in query params into
+					// cookies, then redirect.
+					// TODO(perf): when doing the redirect,
+					// Use http/2 push to avoid a round trip.
+				}
+				w.WriteHeader(http.StatusUnauthorized)
+			}
+		})
+
 	r.Host(rootDomain).Path("/login/dev").Methods("GET").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte(`<!doctype html>
