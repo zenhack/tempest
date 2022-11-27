@@ -13,6 +13,7 @@ using Go = import "/go.capnp";
 $Go.package("external");
 $Go.import("zenhack.net/go/sandstorm-next/capnp/external");
 
+using Util = import "/util.capnp";
 using Collection = import "collection.capnp";
 
 interface ExternalApi {
@@ -56,12 +57,21 @@ struct UserInfo {
   }
 }
 
-
 struct Grain {
   title @1 :Text;
-  sessionToken @2 :Text;
-  handle @0 :GrainHandle;
-}
+  # The title of the grain
 
-interface GrainHandle {
+  sessionToken @2 :Text;
+  # A session token which can be exchanged for a cookie on a ui-* subdomain. To
+  # open a UI session in the browser, navigate to:
+  #
+  #   http(s)://ui-${random}.sandstorm.example.net/_sandstorm-init?sandstorm-sid=${sessionToken}&path=${path}
+  #
+  # This will set an authentication cookie using the Set-Cookie header, and
+  # return a redirect to /${path}
+  #
+  # The token is valid until `handle` is dropped.
+
+  handle @0 :Util.Handle;
+  # When handle is dropped, sessionToken is invalidated.
 }

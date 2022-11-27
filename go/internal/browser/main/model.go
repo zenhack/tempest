@@ -3,7 +3,7 @@ package browsermain
 import (
 	"syscall/js"
 
-	"zenhack.net/go/sandstorm-next/capnp/external"
+	"zenhack.net/go/sandstorm/capnp/util"
 )
 
 func initModel() Model {
@@ -22,5 +22,5 @@ type Model struct {
 type Grain struct {
 	Title        string
 	SessionToken string
-	Handle       external.GrainHandle
+	Handle       util.Handle
 }
