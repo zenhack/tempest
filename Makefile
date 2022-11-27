@@ -6,6 +6,9 @@ clean:
 	cd c && $(MAKE) clean
 	rm -rf _build
 	rm -f go/internal/server/embed/*.wasm
+	find capnp -type f -name '*.capnp.go' -delete
+	find capnp -type f -name '*.cgr' -delete
+	find capnp -type d -empty -delete
 nuke: clean
 	rm -f \
 		c/config.h \
