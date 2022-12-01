@@ -15,9 +15,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
-	zenhack.net/go/sandstorm v0.0.0-20220806194653-4d4ad4418a15
-	zenhack.net/go/util v0.0.0-20221015181152-e65f93a0f343
-	zenhack.net/go/vdom v0.0.0-20221104044328-f3b1dd7f4360
+	zenhack.net/go/sandstorm v0.0.0-20221004231102-f230a21f7fb5
+	zenhack.net/go/util v0.0.0-20221123004949-b7966f74ef2e
+	zenhack.net/go/vdom v0.0.0-20221126231432-6d2a3dbb5ac8
 	zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8
 )
 
