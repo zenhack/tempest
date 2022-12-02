@@ -386,8 +386,8 @@ func run(args ...string) {
 		chkfatal(os.MkdirAll("_build", 0755))
 		r := GetBuildRecord()
 		buildConfig(r)
-		buildC()
-		buildGo(r)
+		chkfatal(buildC())
+		chkfatal(buildGo(r))
 		r.Save()
 	case "run":
 		run("build")
