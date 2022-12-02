@@ -24,7 +24,8 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 8000, host: 8000
+  config.vm.network "forwarded_port", guest: 8000, host: 8000 # sandstorm-next
+  config.vm.network "forwarded_port", guest: 6090, host: 6090 # legacy sandstorm
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -60,25 +61,27 @@ Vagrant.configure("2") do |config|
   #
   # View the documentation for the provider you are using for more
   # information on available options.
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = `nproc`.to_i
+    vb.memory = 2048
+  end
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+    set -euo pipefail
+
     apt-get update
     apt-get install -y \
       build-essential \
-      golang-1.19
+      golang-1.19 \
+      curl
 
-    cat > /etc/profile.d/go.sh << "EOF"
-    export PATH="$PATH:/usr/lib/go-1.19/bin:$HOME/go/bin"
-    EOF
-
+    echo 'export PATH="$PATH:/usr/lib/go-1.19/bin:$HOME/go/bin"' > /etc/profile.d/go.sh
     . /etc/profile.d/go.sh
 
     # Bullseye ships capnp 0.7, which is too old, so we build from source.
-    # TODO: we can probably get this to build a lot faster by disabling features
-    # via ./configure; all we need is the schema compiler frontend.
     which capnp || {
       [ -d $HOME/capnp ] || mkdir $HOME/capnp
       cd $HOME/capnp
@@ -86,13 +89,33 @@ Vagrant.configure("2") do |config|
       wget https://capnproto.org/capnproto-c++-0.10.3.tar.gz
       tar zxf capnproto-c++-0.10.3.tar.gz
       cd capnproto-c++-0.10.3
-      ./configure
-      make -j6 check
+      # We disable as much as we can, since all we actually need is
+      # the schema compiler frontend. TODO: we can probably cut this
+      # down even more by doing make <target> for the right value of
+      # <target> instead of just make.
+      ./configure \
+        --enable-fast-install \
+        --disable-dependency-tracking \
+        --disable-shared \
+        --disable-static
+      make -j$(nproc)
       sudo make install
     }
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
 
     # TODO: install tinygo. For now you can develop using --use-tinygo=false
+
+    # Install legacy sandstorm:
+    curl https://install.sandstorm.io/ 2>&1 > ~/install-sandstorm.sh
+    bash ~/install-sandstorm.sh -d -e -p 6090
+    # Make the vagrant user part of the sandstorm group so that commands like
+    # `spk dev` work.
+    usermod -a -G 'sandstorm' 'vagrant'
+    # Bind to all addresses, so the vagrant port-forward works.
+    sudo sed --in-place='' \
+            --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' \
+            /opt/sandstorm/sandstorm.conf
+    sudo service sandstorm restart
   SHELL
 end
