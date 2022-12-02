@@ -20,7 +20,7 @@ type httpBridge struct {
 }
 
 func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error {
-	p.Go()
+	p.Ack()
 	return exn.Try0(func(throw func(error)) {
 		// First, copy/translate the parameters into an http.Request:
 		var req http.Request
