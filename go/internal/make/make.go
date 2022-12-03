@@ -300,6 +300,7 @@ func buildWebui(cfg Config) error {
 		}
 		wasmExecSrc = strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
 	}
+	runInDir(workDir, "du", "-hs", targetPath)
 	return copyFile("go/internal/server/embed/wasm_exec.js", wasmExecSrc)
 }
 
