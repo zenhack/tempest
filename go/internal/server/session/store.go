@@ -2,6 +2,7 @@ package session
 
 import (
 	"encoding/hex"
+	"net/http"
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
@@ -19,6 +20,16 @@ func NewStore(key [32]byte) Store {
 type Payload struct {
 	CookieName string
 	Data       string
+}
+
+func (p Payload) ToCookie() *http.Cookie {
+	return &http.Cookie{
+		Name:     p.CookieName,
+		Value:    p.Data,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	}
 }
 
 func unseal(val any, typeId uint64, store Store, payload Payload) error {
