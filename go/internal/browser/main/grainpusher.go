@@ -26,13 +26,13 @@ func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) er
 		sessionToken, err := grain.SessionToken()
 		throw(err)
 
-		k := key.Text()
+		k := ID[Grain](key.Text())
 		v := Grain{
 			Title:        title,
 			SessionToken: sessionToken,
 			Handle:       grain.Handle().AddRef(),
 		}
-		println("grain(" + k + ", " + v.Title + ")")
+		println("grain(" + string(k) + ", " + v.Title + ")")
 		gp.uiMsgs <- func(m Model) Model {
 			m.Grains[k].Handle.Release()
 			m.Grains[k] = v
@@ -45,7 +45,7 @@ func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) er
 	return exn.Try0(func(throw func(error)) {
 		key, err := p.Args().Key()
 		throw(err)
-		k := key.Text()
+		k := ID[Grain](key.Text())
 		gp.uiMsgs <- func(m Model) Model {
 			m.Grains[k].Handle.Release()
 			delete(m.Grains, k)
@@ -56,7 +56,7 @@ func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) er
 
 func (gp grainPusher) Clear(context.Context, collection.Pusher_clear) error {
 	gp.uiMsgs <- func(m Model) Model {
-		m.Grains = make(map[string]Grain)
+		m.Grains = make(map[ID[Grain]]Grain)
 		return m
 	}
 	return nil

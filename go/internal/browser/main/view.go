@@ -29,6 +29,6 @@ func (m Model) View() vdom.VNode {
 	)
 }
 
-func viewGrain(id string, grain Grain) vdom.VNode {
-	return vb.H("li", nil, nil, vb.T(grain.Title+" ("+id+")"))
+func viewGrain(id ID[Grain], grain Grain) vdom.VNode {
+	return vb.H("li", nil, nil, vb.T(grain.Title+" ("+string(id)+")"))
 }
