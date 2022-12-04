@@ -20,3 +20,9 @@ struct UserSession {
     scopedId @1 :Text;
   }
 }
+
+struct GrainSession {
+  # Session cookie for a user's session on a ui-* subdomain for
+  # a given grain. Stored at Values["data"] in the "grain-session"
+  # cookie.
+}

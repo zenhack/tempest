@@ -51,11 +51,12 @@ func Main() {
 
 	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + rootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			haveCookie := false
+			session, ok := sessioncookies.GetGrainSession(sessionStore, req)
+			_ = session
 			// TODO: check if we have a sandstorm-sid session cookie
 			// already.
 
-			if !haveCookie {
+			if !ok {
 				if req.URL.Path == "/_sandstorm-init" {
 					// TODO: Transfer value in query params into
 					// cookies, then redirect.
