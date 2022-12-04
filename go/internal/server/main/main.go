@@ -2,6 +2,7 @@ package servermain
 
 import (
 	"context"
+	"crypto/rand"
 	"log"
 	"net/http"
 	"os"
@@ -9,13 +10,12 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/embed"
-	"zenhack.net/go/sandstorm-next/go/internal/server/sessioncookies"
+	"zenhack.net/go/sandstorm-next/go/internal/server/session"
 	"zenhack.net/go/util"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
@@ -41,30 +41,39 @@ func Main() {
 	c := util.Must(container.StartDummy(ctx, db))
 	defer c.Release()
 
-	sessionStore := sessions.NewCookieStore(util.Must(sessioncookies.GetKeys())...)
+	sessionStore := session.NewStore(util.Must(session.GetKeys()))
 
 	r := mux.NewRouter()
 
-	r.Host("grain." + rootDomain).HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		ServeApp(c, w, req)
-	})
-
 	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + rootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			session, ok := sessioncookies.GetGrainSession(sessionStore, req)
-			_ = session
-			// TODO: check if we have a sandstorm-sid session cookie
-			// already.
-
-			if !ok {
+			var sess session.GrainSession
+			err := session.ReadCookie(sessionStore, req, &sess)
+			if err != nil {
 				if req.URL.Path == "/_sandstorm-init" {
-					// TODO: Transfer value in query params into
-					// cookies, then redirect.
+					query := req.URL.Query()
+					err = sess.Unseal(sessionStore, session.Payload{
+						CookieName: sess.CookieName(),
+						Data:       query.Get("sandstorm-sid"),
+					})
+					if err != nil {
+						w.WriteHeader(http.StatusUnauthorized)
+						log.Println("error unsealing: ", err)
+					}
+					session.WriteCookie(sessionStore, w, sess)
+					w.Header().Set("Location", query.Get("path"))
+					// FIXME: sanity check this is the right redirect:
+					w.WriteHeader(http.StatusSeeOther)
+					return
+
 					// TODO(perf): when doing the redirect,
 					// Use http/2 push to avoid a round trip.
 				}
 				w.WriteHeader(http.StatusUnauthorized)
+				return
 			}
+			// TODO: dispatch to the correct app
+			ServeApp(c, w, req)
 		})
 
 	r.Host(rootDomain).Path("/login/dev").Methods("GET").
@@ -87,11 +96,18 @@ func Main() {
 
 	r.Host(rootDomain).Path("/login/dev").Methods("POST").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			name := req.FormValue("name")
-			sess := sessioncookies.GetUserSession(sessionStore, req)
-			sess.Data.Credential.Type = "dev"
-			sess.Data.Credential.ScopedId = name
-			sess.Save(req, w)
+			var sess session.UserSession
+			sess.Credential.Type = "dev"
+			sess.Credential.ScopedId = req.FormValue("name")
+			var buf [32]byte
+			_, err := rand.Read(buf[:])
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				log.Println(err)
+				return
+			}
+			sess.SessionId = buf[:]
+			session.WriteCookie(sessionStore, w, sess)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)
 			// TODO:
@@ -103,7 +119,8 @@ func Main() {
 
 	r.Host(rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			session := sessioncookies.GetUserSession(sessionStore, req)
+			var sess session.UserSession
+			err := session.ReadCookie(sessionStore, req, &sess)
 			up := &websocket.Upgrader{
 				Subprotocols:      []string{"capnp-rpc"},
 				EnableCompression: true,
@@ -117,7 +134,7 @@ func Main() {
 			defer transport.Close()
 			bootstrap := externalApiImpl{
 				db:          db,
-				userSession: session,
+				userSession: sess,
 			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
 				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),

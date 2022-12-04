@@ -24,3 +24,7 @@ func (sess UserSession) Seal(store Store) (string, error) {
 		store,
 	)
 }
+
+func (sess UserSession) CookieName() string {
+	return "user-session"
+}

@@ -17,3 +17,7 @@ func (sess GrainSession) Seal(store Store) (string, error) {
 		store,
 	)
 }
+
+func (sess GrainSession) CookieName() string {
+	return "grain-session"
+}

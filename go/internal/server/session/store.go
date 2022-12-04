@@ -1,11 +1,15 @@
 package session
 
 import (
+	"crypto/rand"
 	"encoding/hex"
+	"io/ioutil"
 	"net/http"
+	"os"
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
+	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/util/exn"
 )
 
@@ -13,8 +17,28 @@ type Store struct {
 	aead capnpAEAD
 }
 
-func NewStore(key [32]byte) Store {
-	return Store{aead: newCapnpAEAD(key)}
+func GetKeys() (keys [][32]byte, err error) {
+	const path = config.Localstatedir + "/sandstorm/session-key"
+	data, err := ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
+	if os.IsNotExist(err) {
+		data = make([]byte, 64)
+		rand.Read(data)
+		err = os.WriteFile(path, data, 0600)
+		if err != nil {
+			return nil, err
+		}
+	} else if err != nil {
+		return nil, err
+	}
+	ret := make([][32]byte, 2)
+	copy(ret[0][:], data[:32])
+	copy(ret[1][:], data[32:])
+	return ret, nil
+}
+
+func NewStore(keys [][32]byte) Store {
+	// TODO: use other keys for decryption, to allow rotation.
+	return Store{aead: newCapnpAEAD(keys[0])}
 }
 
 type Payload struct {
@@ -58,4 +82,37 @@ func seal[T ~capnp.StructKind](
 		throw(pogs.Insert(typeId, capnp.Struct(root), &val))
 		return hex.EncodeToString(store.aead.sealCapnp(msg, typeId))
 	})
+}
+
+type CookieReader interface {
+	Unseal(Store, Payload) error
+	CookieName() string
+}
+
+type CookieWriter interface {
+	Seal(Store) (string, error)
+	CookieName() string
+}
+
+func ReadCookie[T CookieReader](store Store, req *http.Request, val T) error {
+	c, err := req.Cookie(val.CookieName())
+	if err != nil {
+		return err
+	}
+	return val.Unseal(store, Payload{
+		CookieName: c.Name,
+		Data:       c.Value,
+	})
+}
+
+func WriteCookie[T CookieWriter](store Store, w http.ResponseWriter, val T) error {
+	data, err := val.Seal(store)
+	if err != nil {
+		return err
+	}
+	http.SetCookie(w, Payload{
+		CookieName: val.CookieName(),
+		Data:       data,
+	}.ToCookie())
+	return nil
 }

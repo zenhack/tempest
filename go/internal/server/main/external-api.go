@@ -8,7 +8,7 @@ import (
 	"zenhack.net/go/sandstorm-next/capnp/collection"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/sessioncookies"
+	"zenhack.net/go/sandstorm-next/go/internal/server/session"
 	"zenhack.net/go/util/exn"
 )
 
@@ -16,11 +16,11 @@ var ErrNotLoggedIn = errors.New("You are not logged in.")
 
 type externalApiImpl struct {
 	db          database.DB
-	userSession sessioncookies.UserSession
+	userSession session.UserSession
 }
 
 func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
-	if api.userSession.Data.Credential.Type == "" {
+	if api.userSession.Credential.Type == "" {
 		return ErrNotLoggedIn
 	}
 	results, err := p.AllocResults()
@@ -40,7 +40,7 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 
 type loginSessionImpl struct {
 	db          database.DB
-	userSession sessioncookies.UserSession
+	userSession session.UserSession
 }
 
 func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo) error {
@@ -56,7 +56,7 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		tx, err := s.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		c := s.userSession.Data.Credential
+		c := s.userSession.Credential
 		info, err := tx.GetCredentialGrains(c.Type, c.ScopedId)
 		throw(err)
 		throw(tx.Commit())
