@@ -84,5 +84,7 @@ zenhack.net/go/vdom v0.0.0-20221104044328-f3b1dd7f4360 h1:q13RTQdycIbXsfbGbulCUK
 zenhack.net/go/vdom v0.0.0-20221104044328-f3b1dd7f4360/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/vdom v0.0.0-20221126231432-6d2a3dbb5ac8 h1:lPr5mAwwdU7x12i9lnH8MokQKHt26ukfNAQHMHKZ6n4=
 zenhack.net/go/vdom v0.0.0-20221126231432-6d2a3dbb5ac8/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
+zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61 h1:ca09n6Mu5AmJ9y27bxAu988BjQznrBXfR6MGeu7Cro8=
+zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8 h1:5QBpmuv8PBHSPN1xH6mFZBUCUPRNBBNwHQyP1rqj/1U=
 zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8/go.mod h1:8j4HpdxOyu5Pk/4J66nODlgAxxmde1CX0kO+59pHCd8=

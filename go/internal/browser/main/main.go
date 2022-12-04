@@ -39,11 +39,11 @@ func Main() {
 	}
 	up := vdom.NewUpdater(body)
 	defer up.Close()
-	uiMsgs := make(chan func(Model) Model)
+	uiMsgs := make(chan Msg)
 	go func() {
 		m := initModel()
 		for {
-			up.Update(m.View())
+			up.Update(m.View(uiMsgs))
 			f := <-uiMsgs
 			m = f(m)
 		}

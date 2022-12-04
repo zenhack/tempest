@@ -1,14 +1,28 @@
 package browsermain
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+
 	"zenhack.net/go/vdom"
 	vb "zenhack.net/go/vdom/builder"
 )
 
-func (m Model) View() vdom.VNode {
+func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	var grainNodes []vdom.VNode
 	for k, v := range m.Grains {
-		grainNodes = append(grainNodes, viewGrain(k, v))
+		grainNodes = append(grainNodes, viewGrain(msgs, k, v))
+	}
+	var content vdom.VNode
+	if m.FocusedGrain == "" {
+		content = vb.T("some text")
+	} else {
+		content = viewGrainIframe(
+			m.ServerAddr,
+			m.FocusedGrain,
+			m.Grains[m.FocusedGrain],
+			m.OpenGrains[m.FocusedGrain],
+		)
 	}
 	return vb.H("body", nil, nil,
 		vb.H("div", vb.A{"class": "main-ui"}, nil,
@@ -20,15 +34,47 @@ func (m Model) View() vdom.VNode {
 					vb.H("p", nil, nil, vb.T("Sidebar")),
 					vb.H("ul", nil, nil, grainNodes...),
 				),
-				vb.H("iframe", vb.A{
-					"src":   "//grain." + m.Host,
-					"class": "main-ui__grain-iframe",
-				}, nil),
+				content,
 			),
 		),
 	)
 }
 
-func viewGrain(id ID[Grain], grain Grain) vdom.VNode {
-	return vb.H("li", nil, nil, vb.T(grain.Title+" ("+string(id)+")"))
+func newDomainNonce() string {
+	var buf [16]byte
+	rand.Read(buf[:])
+	return hex.EncodeToString(buf[:])
+}
+
+func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
+	onClick := func(vdom.Event) any {
+		msgs <- func(m Model) Model {
+			m.FocusedGrain = id
+			_, ok := m.OpenGrains[id]
+			if !ok {
+				m.OpenGrains[id] = OpenGrain{
+					DomainNonce: newDomainNonce(),
+				}
+			}
+			return m
+		}
+		return nil
+	}
+	return vb.H("li", nil, nil,
+		vb.H("a",
+			vb.A{"href": "#"},
+			vb.E{"click": &onClick},
+			vb.T(grain.Title+"("+string(id)+")")),
+	)
+}
+
+func viewGrainIframe(addr ServerAddr, id ID[Grain], grain Grain, open OpenGrain) vdom.VNode {
+	grainUrl := addr.Subdomain("ui-" + open.DomainNonce)
+	qv := grainUrl.Query()
+	qv.Set("sandstorm-sid", grain.SessionToken)
+	qv.Set("path", "/")
+	grainUrl.RawQuery = qv.Encode()
+	return vb.H("iframe", vb.A{"src": grainUrl.String(),
+		"class": "main-ui__grain-iframe",
+	}, nil)
 }

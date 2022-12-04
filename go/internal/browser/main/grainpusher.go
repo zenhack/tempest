@@ -9,7 +9,7 @@ import (
 )
 
 type grainPusher struct {
-	uiMsgs chan<- func(Model) Model
+	uiMsgs chan<- Msg
 }
 
 func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {

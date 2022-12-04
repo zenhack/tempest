@@ -17,7 +17,7 @@ require (
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
 	zenhack.net/go/sandstorm v0.0.0-20221004231102-f230a21f7fb5
 	zenhack.net/go/util v0.0.0-20221123004949-b7966f74ef2e
-	zenhack.net/go/vdom v0.0.0-20221126231432-6d2a3dbb5ac8
+	zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61
 	zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8
 )
 
