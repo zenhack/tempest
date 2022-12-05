@@ -51,7 +51,8 @@ func (a capnpAEAD) sealCapnp(msg *capnp.Message, typeId uint64) []byte {
 	var nonce [nonceSize]byte
 	_, err = rand.Read(nonce[:])
 	util.Chkfatal(err)
-	return a.aead.Seal(nil, nonce[:], plaintext, ad[:])
+	ret := a.aead.Seal(nil, nonce[:], plaintext, ad[:])
+	return append(nonce[:], ret...)
 }
 
 // unsealCapnp decryptes & verifies the payload as a capnproto's message, whose
