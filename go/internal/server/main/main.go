@@ -49,31 +49,37 @@ func Main() {
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.GrainSession
 			err := session.ReadCookie(sessionStore, req, &sess)
-			if err != nil {
-				if req.URL.Path == "/_sandstorm-init" {
-					query := req.URL.Query()
-					err = sess.Unseal(sessionStore, session.Payload{
-						CookieName: sess.CookieName(),
-						Data:       query.Get("sandstorm-sid"),
-					})
-					if err != nil {
-						w.WriteHeader(http.StatusUnauthorized)
-						log.Println("error unsealing: ", err)
-					}
-					session.WriteCookie(sessionStore, req, w, sess)
-					w.Header().Set("Location", query.Get("path"))
-					// FIXME: sanity check this is the right redirect:
-					w.WriteHeader(http.StatusSeeOther)
-					return
+			if err == nil {
+				// TODO: dispatch to the correct app
+				ServeApp(c, w, req)
+				return
+			}
 
-					// TODO(perf): when doing the redirect,
-					// Use http/2 push to avoid a round trip.
-				}
+			// See if we can transfer the token from query params to
+			// cookie:
+
+			if req.URL.Path != "/_sandstorm-init" {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			// TODO: dispatch to the correct app
-			ServeApp(c, w, req)
+
+			query := req.URL.Query()
+			err = sess.Unseal(sessionStore, session.Payload{
+				CookieName: sess.CookieName(),
+				Data:       query.Get("sandstorm-sid"),
+			})
+			if err != nil {
+				w.WriteHeader(http.StatusUnauthorized)
+				log.Println("error unsealing: ", err)
+			}
+			session.WriteCookie(sessionStore, req, w, sess)
+			w.Header().Set("Location", query.Get("path"))
+			// FIXME: sanity check this is the right redirect:
+			w.WriteHeader(http.StatusSeeOther)
+			return
+
+			// TODO(perf): when doing the redirect,
+			// Use http/2 push to avoid a round trip.
 		})
 
 	r.Host(rootDomain).Path("/login/dev").Methods("GET").
