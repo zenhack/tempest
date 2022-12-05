@@ -60,7 +60,7 @@ func Main() {
 						w.WriteHeader(http.StatusUnauthorized)
 						log.Println("error unsealing: ", err)
 					}
-					session.WriteCookie(sessionStore, w, sess)
+					session.WriteCookie(sessionStore, req, w, sess)
 					w.Header().Set("Location", query.Get("path"))
 					// FIXME: sanity check this is the right redirect:
 					w.WriteHeader(http.StatusSeeOther)
@@ -107,7 +107,7 @@ func Main() {
 				return
 			}
 			sess.SessionId = buf[:]
-			session.WriteCookie(sessionStore, w, sess)
+			session.WriteCookie(sessionStore, req, w, sess)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)
 			// TODO:

@@ -46,11 +46,11 @@ type Payload struct {
 	Data       string
 }
 
-func (p Payload) ToCookie() *http.Cookie {
+func (p Payload) ToCookie(isHttps bool) *http.Cookie {
 	return &http.Cookie{
 		Name:     p.CookieName,
 		Value:    p.Data,
-		Secure:   true,
+		Secure:   isHttps,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 	}
@@ -105,7 +105,7 @@ func ReadCookie[T CookieReader](store Store, req *http.Request, val T) error {
 	})
 }
 
-func WriteCookie[T CookieWriter](store Store, w http.ResponseWriter, val T) error {
+func WriteCookie[T CookieWriter](store Store, req *http.Request, w http.ResponseWriter, val T) error {
 	data, err := val.Seal(store)
 	if err != nil {
 		return err
@@ -113,6 +113,6 @@ func WriteCookie[T CookieWriter](store Store, w http.ResponseWriter, val T) erro
 	http.SetCookie(w, Payload{
 		CookieName: val.CookieName(),
 		Data:       data,
-	}.ToCookie())
+	}.ToCookie(req.URL.Scheme == "https"))
 	return nil
 }
