@@ -50,6 +50,7 @@ func (p Payload) ToCookie(isHttps bool) *http.Cookie {
 	return &http.Cookie{
 		Name:     p.CookieName,
 		Value:    p.Data,
+		Path:     "/",
 		Secure:   isHttps,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
