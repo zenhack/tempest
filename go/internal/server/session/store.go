@@ -68,8 +68,8 @@ func unseal(val any, typeId uint64, store Store, payload Payload) error {
 	})
 }
 
-func seal[T ~capnp.StructKind](
-	val any,
+func seal[T ~capnp.StructKind, U any](
+	val U,
 	typeId uint64,
 	NewRoot func(*capnp.Segment) (T, error),
 	store Store,

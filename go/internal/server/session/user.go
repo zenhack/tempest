@@ -6,10 +6,12 @@ import (
 
 type UserSession struct {
 	SessionId  []byte
-	Credential struct {
-		Type     string
-		ScopedId string
-	}
+	Credential UserSessionCredential
+}
+
+type UserSessionCredential struct {
+	Type     string
+	ScopedId string
 }
 
 func (sess *UserSession) Unseal(store Store, payload Payload) error {
