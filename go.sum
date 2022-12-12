@@ -1,5 +1,7 @@
 capnproto.org/go/capnp/v3 v3.0.0-alpha.9 h1:aQhrN87/+sxoXPNRm8ZVMLAPh9fPSf4ZO5y6cHqJHQE=
 capnproto.org/go/capnp/v3 v3.0.0-alpha.9/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.12 h1:F2K8YfgHxVi7kYdT7ZG2Xpl1ZjIbPSin0lXoKp/0akM=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.12/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -76,3 +78,5 @@ zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61 h1:ca09n6Mu5AmJ9y27bxAu98
 zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8 h1:5QBpmuv8PBHSPN1xH6mFZBUCUPRNBBNwHQyP1rqj/1U=
 zenhack.net/go/websocket-capnp v0.0.0-20221121043458-71bae49429d8/go.mod h1:8j4HpdxOyu5Pk/4J66nODlgAxxmde1CX0kO+59pHCd8=
+zenhack.net/go/websocket-capnp v0.0.0-20221212021612-7ca853314aec h1:gWdrEHXbwyp4VpMDv1PkkJf4NJnNzXCdn6v1yJB/xMU=
+zenhack.net/go/websocket-capnp v0.0.0-20221212021612-7ca853314aec/go.mod h1:3k82enY/ETmgiF7qwsG1K1wAQU4eVmrTjxqoMvuKijs=
