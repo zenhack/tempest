@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
@@ -35,11 +36,20 @@ func defaultTo(val, def string) string {
 func SetAppHeaders(w http.ResponseWriter) {
 }
 
+type ContainerSet struct {
+	mu                  sync.Mutex
+	db                  database.DB
+	containersByGrainId map[string]*container.Container
+}
+
 func Main() {
 	db := util.Must(database.Open())
 	ctx := context.Background()
-	c := util.Must(container.StartDummy(ctx, db))
-	defer c.Release()
+
+	containers := &ContainerSet{
+		db:                  db,
+		containersByGrainId: make(map[string]*container.Container),
+	}
 
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
 
@@ -50,7 +60,28 @@ func Main() {
 			var sess session.GrainSession
 			err := session.ReadCookie(sessionStore, req, &sess)
 			if err == nil {
-				// TODO: dispatch to the correct app
+				var (
+					c   *container.Container
+					err error
+				)
+				func() {
+					containers.mu.Lock()
+					defer containers.mu.Unlock()
+					var ok bool
+					c, ok = containers.containersByGrainId[sess.GrainId]
+					if ok {
+						return
+					}
+					c, err = container.Start(ctx, db, sess.GrainId)
+					if err == nil {
+						containers.containersByGrainId[sess.GrainId] = c
+					}
+				}()
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Println("Opening grain: ", err)
+					return
+				}
 				ServeApp(c, w, req)
 				return
 			}

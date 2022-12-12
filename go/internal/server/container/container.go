@@ -29,9 +29,8 @@ func (c *Container) Release() {
 	c.Handle.Release()
 }
 
-func StartDummy(ctx context.Context, db database.DB) (*Container, error) {
+func Start(ctx context.Context, db database.DB, grainId string) (*Container, error) {
 	return exn.Try(func(throw func(error)) *Container {
-		grainId := os.Getenv("DUMMY_GRAIN_ID")
 		tx, err := db.Begin()
 		throw(err)
 		defer tx.Rollback()

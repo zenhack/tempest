@@ -81,11 +81,14 @@ You will need to be a member of the `sandstorm` group to run
 `sandstorm-next` (or if you specified a different group name via the
 `--group` configure flag, that group instead).
 
-On startup, the `sandstorm-next` executable will attempt to launch the
-grain specified in the environment variable `DUMMY_GRAIN_ID`.
-
 `sandstorm-next` will start a web server on port 8000; to connect to the
 UI, go to `http://local.sandstorm.io:8000`.
+
+To log in with a developer account, go to `/login/dev`, and enter the
+dev account's name, e.g. "Alice Dev Admin."
+
+Once you have logged in, a list of grains the user owns will be
+displayed; click the links to open the grains.
 
 This will display the grain's UI within an iframe. Things like
 offer iframes and anything that uses sandstorm specific APIs will not
