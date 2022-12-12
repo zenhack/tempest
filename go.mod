@@ -10,7 +10,6 @@ require go.mongodb.org/mongo-driver v1.10.0
 require (
 	capnproto.org/go/capnp/v3 v3.0.0-alpha.9
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.7.0
@@ -25,7 +24,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect
