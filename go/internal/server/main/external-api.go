@@ -49,7 +49,7 @@ func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo
 
 func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSession_listGrains) error {
 	into := p.Args().Into()
-	p.Ack()
+	p.Go()
 	return exn.Try0(func(throw func(error)) {
 		// TODO(cleanup): update our wrapper to support one-off queries without having to
 		// create a whole transaction; this is too much boilerplate.
