@@ -32,7 +32,6 @@ func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) er
 			SessionToken: sessionToken,
 			Handle:       grain.Handle().AddRef(),
 		}
-		println("grain(" + string(k) + ", " + v.Title + ")")
 		gp.uiMsgs <- func(m Model) Model {
 			m.Grains[k].Handle.Release()
 			m.Grains[k] = v
