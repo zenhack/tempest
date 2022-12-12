@@ -1,7 +1,6 @@
 package session
 
 import (
-	"crypto/rand"
 	"strconv"
 	"testing"
 
@@ -27,9 +26,7 @@ func TestUserSealUnseal(t *testing.T) {
 }
 
 func testUserSealUnseal(t *testing.T, sess UserSession) {
-	var key [32]byte
-	rand.Read(key[:])
-	store := NewStore([][32]byte{key})
+	store := randomStore()
 	data, err := sess.Seal(store)
 	assert.NoError(t, err)
 	var sessOut UserSession

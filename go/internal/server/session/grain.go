@@ -3,6 +3,8 @@ package session
 import "zenhack.net/go/sandstorm-next/capnp/private/cookie"
 
 type GrainSession struct {
+	GrainId   string
+	SessionId []byte
 }
 
 func (sess *GrainSession) Unseal(store Store, payload Payload) error {

@@ -25,4 +25,10 @@ struct GrainSession {
   # Session cookie for a user's session on a ui-* subdomain for
   # a given grain. Stored at Values["data"] in the "grain-session"
   # cookie.
+
+  grainId @0 :Text;
+  # The grain id
+
+  sessionId @1 :Data;
+  # The session id (from UserSession)
 }
