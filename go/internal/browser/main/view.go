@@ -68,7 +68,7 @@ func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
 	}
 	return vb.H("li", nil, nil,
 		vb.H("a",
-			vb.A{"href": "#"},
+			vb.A{"href": "#/grain/" + string(id)},
 			vb.E{"click": &onClick},
 			vb.T(grain.Title),
 		),
