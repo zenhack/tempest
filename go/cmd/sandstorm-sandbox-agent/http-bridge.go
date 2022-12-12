@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"capnproto.org/go/capnp/v3"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
@@ -67,7 +68,9 @@ func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error 
 		// requestBody
 		go func() {
 			defer responder.Release()
-			resp, err := b.roundTripper.RoundTrip(&req)
+			resp, err := exponentialBackoff(func() (*http.Response, error) {
+				return b.roundTripper.RoundTrip(&req)
+			})
 			var (
 				fut httpcp.Responder_respond_Results_Future
 				rel capnp.ReleaseFunc
@@ -122,4 +125,20 @@ func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error 
 			}
 		}()
 	})
+}
+
+// Try calling f at exponentially increasing intervals until either it returns a nil error,
+// or the length of the interval exceeds 30 seconds.
+func exponentialBackoff[T any](f func() (T, error)) (val T, err error) {
+	delay := time.Millisecond
+	limit := 30 * time.Second
+	for {
+		val, err = f()
+		if err == nil || delay > limit {
+			return
+		}
+		log.Printf("Error %v\n; trying again in %v\n", err, delay)
+		time.Sleep(delay)
+		delay *= 2
+	}
 }
