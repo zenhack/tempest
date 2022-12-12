@@ -16,7 +16,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
 	zenhack.net/go/sandstorm v0.0.0-20221004231102-f230a21f7fb5
-	zenhack.net/go/util v0.0.0-20221123004949-b7966f74ef2e
+	zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5
 	zenhack.net/go/vdom v0.0.0-20221204054110-265d823c5f61
 	zenhack.net/go/websocket-capnp v0.0.0-20221212021612-7ca853314aec
 )

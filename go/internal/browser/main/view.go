@@ -4,14 +4,20 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
+	"zenhack.net/go/util/maps"
+	"zenhack.net/go/util/slices"
 	"zenhack.net/go/vdom"
 	vb "zenhack.net/go/vdom/builder"
 )
 
 func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	var grainNodes []vdom.VNode
-	for k, v := range m.Grains {
-		grainNodes = append(grainNodes, viewGrain(msgs, k, v))
+	items := maps.Items(m.Grains)
+	slices.SortOn(items, func(kv maps.KV[ID[Grain], Grain]) string {
+		return kv.Value.Title
+	})
+	for _, kv := range items {
+		grainNodes = append(grainNodes, viewGrain(msgs, kv.Key, kv.Value))
 	}
 	var content vdom.VNode
 	if m.FocusedGrain == "" {
