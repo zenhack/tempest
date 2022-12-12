@@ -139,8 +139,9 @@ func Main() {
 			transport := websocketcapnp.NewTransport(wsConn)
 			defer transport.Close()
 			bootstrap := externalApiImpl{
-				db:          db,
-				userSession: sess,
+				db:           db,
+				userSession:  sess,
+				sessionStore: sessionStore,
 			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
 				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),

@@ -73,6 +73,7 @@ func viewGrainIframe(addr ServerAddr, id ID[Grain], grain Grain, open OpenGrain)
 	qv := grainUrl.Query()
 	qv.Set("sandstorm-sid", grain.SessionToken)
 	qv.Set("path", "/")
+	grainUrl.Path = "/_sandstorm-init"
 	grainUrl.RawQuery = qv.Encode()
 	return vb.H("iframe", vb.A{"src": grainUrl.String(),
 		"class": "main-ui__grain-iframe",

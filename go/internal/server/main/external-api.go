@@ -15,8 +15,9 @@ import (
 var ErrNotLoggedIn = errors.New("You are not logged in.")
 
 type externalApiImpl struct {
-	db          database.DB
-	userSession session.UserSession
+	db           database.DB
+	userSession  session.UserSession
+	sessionStore session.Store
 }
 
 func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
@@ -28,8 +29,9 @@ func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.Exter
 		return err
 	}
 	results.SetSession(external.LoginSession_ServerToClient(loginSessionImpl{
-		db:          api.db,
-		userSession: api.userSession,
+		db:           api.db,
+		userSession:  api.userSession,
+		sessionStore: api.sessionStore,
 	}))
 	return nil
 }
@@ -39,8 +41,9 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 }
 
 type loginSessionImpl struct {
-	db          database.DB
-	userSession session.UserSession
+	db           database.DB
+	userSession  session.UserSession
+	sessionStore session.Store
 }
 
 func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo) error {
@@ -71,7 +74,13 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 				g, err := external.NewGrain(p.Segment())
 				throw(err)
 				g.SetTitle(grainInfo.Title)
-				// TODO: sessionToken, handle
+				sessionToken, err := session.GrainSession{
+					GrainId:   grainInfo.Id,
+					SessionId: s.userSession.SessionId,
+				}.Seal(s.sessionStore)
+				throw(err)
+				g.SetSessionToken(sessionToken)
+				// TODO: handle
 				p.SetValue(g.ToPtr())
 				return nil
 			})
