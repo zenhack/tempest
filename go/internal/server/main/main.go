@@ -42,6 +42,20 @@ type ContainerSet struct {
 	containersByGrainId map[string]*container.Container
 }
 
+func (cset *ContainerSet) Get(ctx context.Context, grainId string) (*container.Container, error) {
+	cset.mu.Lock()
+	defer cset.mu.Unlock()
+	c, ok := cset.containersByGrainId[grainId]
+	if ok {
+		return c, nil
+	}
+	c, err := container.Start(ctx, cset.db, grainId)
+	if err == nil {
+		cset.containersByGrainId[grainId] = c
+	}
+	return c, err
+}
+
 func Main() {
 	db := util.Must(database.Open())
 	ctx := context.Background()
@@ -60,23 +74,7 @@ func Main() {
 			var sess session.GrainSession
 			err := session.ReadCookie(sessionStore, req, &sess)
 			if err == nil {
-				var (
-					c   *container.Container
-					err error
-				)
-				func() {
-					containers.mu.Lock()
-					defer containers.mu.Unlock()
-					var ok bool
-					c, ok = containers.containersByGrainId[sess.GrainId]
-					if ok {
-						return
-					}
-					c, err = container.Start(ctx, db, sess.GrainId)
-					if err == nil {
-						containers.containersByGrainId[sess.GrainId] = c
-					}
-				}()
+				c, err := containers.Get(ctx, sess.GrainId)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					log.Println("Opening grain: ", err)
