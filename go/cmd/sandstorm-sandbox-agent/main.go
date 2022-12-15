@@ -109,6 +109,10 @@ func main() {
 	cmd.Args = cmd.Args[3:]
 	osCmd := cmd.ToOsCmd()
 
+	// TODO: make direct these in a more structured way?
+	osCmd.Stdout = os.Stdout
+	osCmd.Stderr = os.Stderr
+
 	util.Chkfatal(startCapnpApi())
 
 	util.Chkfatal(osCmd.Start())
