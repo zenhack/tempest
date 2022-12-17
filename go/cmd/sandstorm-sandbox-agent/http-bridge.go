@@ -160,7 +160,7 @@ func exponentialBackoff[T any](logger *logrus.Logger, f func() (T, error)) (val 
 		if err == nil || delay > limit {
 			return
 		}
-		logger.Printf("Error %v\n; trying again in %v\n", err, delay)
+		logger.Printf("Error %v; trying again in %v\n", err, delay)
 		time.Sleep(delay)
 		delay *= 2
 	}
