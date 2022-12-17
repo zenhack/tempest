@@ -69,7 +69,7 @@ func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error 
 		go func() {
 			defer responder.Release()
 			resp, err := exponentialBackoff(func() (*http.Response, error) {
-				return b.roundTripper.RoundTrip(&req)
+				return b.roundTripper.RoundTrip((&req).WithContext(context.TODO()))
 			})
 			var (
 				fut httpcp.Responder_respond_Results_Future
