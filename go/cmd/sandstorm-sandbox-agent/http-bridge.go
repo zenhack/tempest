@@ -88,6 +88,8 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 		results.SetRequestBody(w)
 		req.Body = r
 
+		b.log.WithField("request", req).Debug("request to app server")
+
 		// Ok, request is all set up. Fork off a goroutine to actually send it and
 		// copy the response back, so that the caller can start pushing data into
 		// requestBody
@@ -99,6 +101,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 				rel capnp.ReleaseFunc
 			)
 			if err != nil {
+				b.log.WithField("error", err).Error("error from app server")
 				// Push an error response to the caller:
 				fut, rel = responder.Respond(context.TODO(),
 					func(p httpcp.Responder_respond_Params) error {
@@ -106,6 +109,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 						return nil
 					})
 			} else {
+				b.log.WithField("response", resp).Debug("response from app server")
 				defer resp.Body.Close()
 
 				// Now push the response back to our caller:

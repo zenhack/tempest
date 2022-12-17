@@ -74,8 +74,51 @@ func Main() {
 	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + rootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.GrainSession
-			err := session.ReadCookie(sessionStore, req, &sess)
-			if err == nil {
+
+			query := req.URL.Query()
+			querySid := query.Has("sandstorm-sid")
+			readCookieErr := session.ReadCookie(sessionStore, req, &sess)
+
+			switch {
+			case querySid && req.URL.Path == "/_sandstorm-init":
+				// Transfer the token from query params to cookie:
+				err := sess.Unseal(sessionStore, session.Payload{
+					CookieName: sess.CookieName(),
+					Data:       query.Get("sandstorm-sid"),
+				})
+				if err != nil {
+					w.WriteHeader(http.StatusUnauthorized)
+					lg.WithFields(log.Fields{
+						"error":  err,
+						"reason": "unsealing sandstorm-sid failed",
+					}).Debug("Access to grain UI denied.")
+				}
+				session.WriteCookie(sessionStore, req, w, sess)
+				w.Header().Set("Location", query.Get("path"))
+				// FIXME: sanity check this is the right redirect:
+				w.WriteHeader(http.StatusSeeOther)
+				// TODO(perf): when doing the redirect,
+				// Use http/2 push to avoid a round trip.
+			case querySid:
+				w.WriteHeader(http.StatusUnauthorized)
+				lg.WithFields(log.Fields{
+					"url path": req.URL.Path,
+					"reason": []string{
+						"sandstorm-sid query parameter is present",
+						"path is not /_sandstorm-init",
+					},
+				}).Debug("Access to grain UI denied")
+			case readCookieErr != nil:
+				w.WriteHeader(http.StatusUnauthorized)
+				lg.WithFields(log.Fields{
+					"error": readCookieErr,
+					"url":   req.URL,
+					"reason": []string{
+						"no grain session cookie",
+						"no sandstorm-sid query parameter",
+					},
+				}).Debug("Access to grain UI denied")
+			default:
 				c, err := containers.Get(ctx, sess.GrainId)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
@@ -86,34 +129,7 @@ func Main() {
 					return
 				}
 				ServeApp(lg, c, w, req)
-				return
 			}
-
-			// See if we can transfer the token from query params to
-			// cookie:
-
-			if req.URL.Path != "/_sandstorm-init" {
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
-
-			query := req.URL.Query()
-			err = sess.Unseal(sessionStore, session.Payload{
-				CookieName: sess.CookieName(),
-				Data:       query.Get("sandstorm-sid"),
-			})
-			if err != nil {
-				w.WriteHeader(http.StatusUnauthorized)
-				lg.Infof("error unsealing: %v", err)
-			}
-			session.WriteCookie(sessionStore, req, w, sess)
-			w.Header().Set("Location", query.Get("path"))
-			// FIXME: sanity check this is the right redirect:
-			w.WriteHeader(http.StatusSeeOther)
-			return
-
-			// TODO(perf): when doing the redirect,
-			// Use http/2 push to avoid a round trip.
 		})
 
 	r.Host(rootDomain).Path("/login/dev").Methods("GET").

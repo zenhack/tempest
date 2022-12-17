@@ -77,6 +77,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 }
 
 func main() {
+	log.SetLevel(log.DebugLevel)
 	lg := log.Log
 
 	data, err := ioutil.ReadFile("/sandstorm-manifest")
