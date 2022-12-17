@@ -92,7 +92,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 		// requestBody
 		go func() {
 			defer responder.Release()
-			resp, err := b.roundTripper.RoundTrip((&req).WithContext(context.TODO()))
+			resp, err := b.roundTripper.RoundTrip(&req)
 			var (
 				fut httpcp.Responder_respond_Results_Future
 				rel capnp.ReleaseFunc
