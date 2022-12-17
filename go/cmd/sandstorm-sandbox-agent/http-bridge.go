@@ -21,14 +21,14 @@ type httpBridge struct {
 	portNo       int
 	roundTripper http.RoundTripper
 	serverReady  bool
-	logger       *logrus.Logger
+	log          *logrus.Logger
 }
 
 func (b *httpBridge) ensureServerReady() error {
 	if b.serverReady {
 		return nil
 	}
-	conn, err := exponentialBackoff(b.logger, func() (net.Conn, error) {
+	conn, err := exponentialBackoff(b.log, func() (net.Conn, error) {
 		return net.Dial("tcp", b.netAddr())
 	})
 	if err != nil {
@@ -143,7 +143,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 			} else {
 				n, err := io.Copy(responseBody, resp.Body)
 				if err != nil {
-					b.logger.Printf("Error copying response body after %v bytes: %v", n, err)
+					b.log.Printf("Error copying response body after %v bytes: %v", n, err)
 				}
 			}
 		}()
@@ -152,7 +152,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 
 // Try calling f at exponentially increasing intervals until either it returns a nil error,
 // or the length of the interval exceeds 30 seconds.
-func exponentialBackoff[T any](logger *logrus.Logger, f func() (T, error)) (val T, err error) {
+func exponentialBackoff[T any](log *logrus.Logger, f func() (T, error)) (val T, err error) {
 	delay := time.Millisecond
 	limit := 30 * time.Second
 	for {
@@ -160,7 +160,7 @@ func exponentialBackoff[T any](logger *logrus.Logger, f func() (T, error)) (val 
 		if err == nil || delay > limit {
 			return
 		}
-		logger.Printf("Error %v; trying again in %v\n", err, delay)
+		log.Printf("Error %v; trying again in %v\n", err, delay)
 		time.Sleep(delay)
 		delay *= 2
 	}

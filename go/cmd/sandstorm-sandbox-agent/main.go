@@ -77,7 +77,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 }
 
 func main() {
-	logger := logrus.New()
+	log := logrus.New()
 
 	data, err := ioutil.ReadFile("/sandstorm-manifest")
 	util.Chkfatal(err)
@@ -89,24 +89,24 @@ func main() {
 	util.Chkfatal(err)
 	text, err := appTitle.DefaultText()
 	util.Chkfatal(err)
-	logger.Println("App title: ", text)
+	log.Println("App title: ", text)
 	spkCmd, err := manifest.ContinueCommand()
 	util.Chkfatal(err)
 	cmd, err := parseCmd(spkCmd)
 	util.Chkfatal(err)
 
-	logger.Println("Command: ", cmd.Args)
+	log.Println("Command: ", cmd.Args)
 	if cmd.Args[0] != "/sandstorm-http-bridge" {
-		logger.Panic("Only sandstorm-http-bridge apps are supported.")
+		log.Panic("Only sandstorm-http-bridge apps are supported.")
 	}
 	if len(cmd.Args) < 4 {
 		// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
-		logger.Panic("Too few arugments")
+		log.Panic("Too few arugments")
 	}
 	portNo, err := strconv.Atoi(cmd.Args[1])
 	util.Chkfatal(err)
 	if cmd.Args[2] != "--" {
-		logger.Panic("Error: second argument should be '--' separator.")
+		log.Panic("Error: second argument should be '--' separator.")
 	}
 	cmd.Args = cmd.Args[3:]
 	osCmd := cmd.ToOsCmd()
@@ -115,13 +115,13 @@ func main() {
 	osCmd.Stdout = os.Stdout
 	osCmd.Stderr = os.Stderr
 
-	util.Chkfatal(startCapnpApi(logger))
+	util.Chkfatal(startCapnpApi(log))
 
 	util.Chkfatal(osCmd.Start())
 	go func() {
 		defer os.Exit(1)
 		util.Chkfatal(osCmd.Wait())
-		logger.Println("App exited; shutting down grain.")
+		log.Println("App exited; shutting down grain.")
 	}()
 
 	apiSocket := os.NewFile(3, "supervisor socket")
@@ -129,7 +129,7 @@ func main() {
 	bootstrap := httpcp.Server_ServerToClient(&httpBridge{
 		portNo:       portNo,
 		roundTripper: http.DefaultTransport,
-		logger:       logger,
+		log:          log,
 	})
 	conn := rpc.NewConn(trans, &rpc.Options{
 		BootstrapClient: capnp.Client(bootstrap),
@@ -138,7 +138,7 @@ func main() {
 	<-conn.Done()
 }
 
-func startCapnpApi(logger *logrus.Logger) error {
+func startCapnpApi(log *logrus.Logger) error {
 	l, err := net.Listen("unix", "/tmp/sandstorm-api")
 	if err != nil {
 		return err
@@ -150,7 +150,7 @@ func startCapnpApi(logger *logrus.Logger) error {
 				continue
 			}
 			// TODO: do something with the connection.
-			logger.Println("Got a connection to the api socket.")
+			log.Println("Got a connection to the api socket.")
 			conn.Close()
 		}
 	}()
