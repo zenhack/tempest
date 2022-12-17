@@ -124,7 +124,7 @@ func main() {
 
 	apiSocket := os.NewFile(3, "supervisor socket")
 	trans := transport.NewStream(apiSocket)
-	bootstrap := httpcp.Server_ServerToClient(httpBridge{
+	bootstrap := httpcp.Server_ServerToClient(&httpBridge{
 		portNo:       portNo,
 		roundTripper: http.DefaultTransport,
 	})

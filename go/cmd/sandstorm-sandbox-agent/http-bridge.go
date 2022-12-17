@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"capnproto.org/go/capnp/v3"
@@ -18,9 +20,31 @@ import (
 type httpBridge struct {
 	portNo       int
 	roundTripper http.RoundTripper
+	serverReady  bool
 }
 
-func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error {
+func (b *httpBridge) ensureServerReady() error {
+	if b.serverReady {
+		return nil
+	}
+	conn, err := exponentialBackoff(func() (net.Conn, error) {
+		return net.Dial("tcp", b.netAddr())
+	})
+	if err != nil {
+		return err
+	}
+	conn.Close()
+	b.serverReady = true
+	return nil
+}
+
+func (b *httpBridge) netAddr() string {
+	return net.JoinHostPort("127.0.0.1", strconv.Itoa(b.portNo))
+}
+
+func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error {
+	b.ensureServerReady()
+
 	p.Go()
 	return exn.Try0(func(throw func(error)) {
 		// First, copy/translate the parameters into an http.Request:
@@ -68,9 +92,7 @@ func (b httpBridge) Request(ctx context.Context, p httpcp.Server_request) error 
 		// requestBody
 		go func() {
 			defer responder.Release()
-			resp, err := exponentialBackoff(func() (*http.Response, error) {
-				return b.roundTripper.RoundTrip((&req).WithContext(context.TODO()))
-			})
+			resp, err := b.roundTripper.RoundTrip((&req).WithContext(context.TODO()))
 			var (
 				fut httpcp.Responder_respond_Results_Future
 				rel capnp.ReleaseFunc
