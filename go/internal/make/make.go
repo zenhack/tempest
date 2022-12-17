@@ -407,6 +407,15 @@ func run(args ...string) {
 			"cap_sys_admin,cap_net_admin,cap_mknod+ep")
 		installExe(c, "sandstorm-sandbox-agent", c.Libexecdir+"/sandstorm", "")
 		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
+	case "dev":
+		run("install")
+		c := readConfig()
+		chkfatal(withMyOuts(
+			exec.Command("sudo",
+				"-u", c.User,
+				"-g", c.Group,
+				c.Bindir+"/sandstorm-next"),
+		).Run())
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)

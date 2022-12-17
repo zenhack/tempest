@@ -1,5 +1,5 @@
 all: build
-build install:
+build install dev:
 	@# Just shell out to make.go.
 	go run go/internal/make/make.go $@
 clean:
