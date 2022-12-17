@@ -9,10 +9,10 @@ require go.mongodb.org/mongo-driver v1.10.0
 
 require (
 	capnproto.org/go/capnp/v3 v3.0.0-alpha.12
+	github.com/apex/log v1.9.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/sys v0.1.0

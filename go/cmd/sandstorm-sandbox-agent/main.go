@@ -19,7 +19,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm/capnp/spk"
 	"zenhack.net/go/util"
@@ -77,7 +77,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 }
 
 func main() {
-	log := logrus.New()
+	lg := log.Log
 
 	data, err := ioutil.ReadFile("/sandstorm-manifest")
 	util.Chkfatal(err)
@@ -87,26 +87,29 @@ func main() {
 	util.Chkfatal(err)
 	appTitle, err := manifest.AppTitle()
 	util.Chkfatal(err)
-	text, err := appTitle.DefaultText()
+	appTitleText, err := appTitle.DefaultText()
 	util.Chkfatal(err)
-	log.Println("App title: ", text)
 	spkCmd, err := manifest.ContinueCommand()
 	util.Chkfatal(err)
 	cmd, err := parseCmd(spkCmd)
 	util.Chkfatal(err)
 
-	log.Println("Command: ", cmd.Args)
+	lg.WithFields(log.Fields{
+		"appTitle": appTitleText,
+		"command":  cmd.Args,
+	}).Info("Starting up app")
+
 	if cmd.Args[0] != "/sandstorm-http-bridge" {
-		log.Panic("Only sandstorm-http-bridge apps are supported.")
+		lg.Fatal("Only sandstorm-http-bridge apps are supported.")
 	}
 	if len(cmd.Args) < 4 {
 		// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
-		log.Panic("Too few arugments")
+		lg.Fatal("Too few arugments")
 	}
 	portNo, err := strconv.Atoi(cmd.Args[1])
 	util.Chkfatal(err)
 	if cmd.Args[2] != "--" {
-		log.Panic("Error: second argument should be '--' separator.")
+		lg.Fatal("Error: second argument should be '--' separator.")
 	}
 	cmd.Args = cmd.Args[3:]
 	osCmd := cmd.ToOsCmd()
@@ -115,13 +118,13 @@ func main() {
 	osCmd.Stdout = os.Stdout
 	osCmd.Stderr = os.Stderr
 
-	util.Chkfatal(startCapnpApi(log))
+	util.Chkfatal(startCapnpApi(lg))
 
 	util.Chkfatal(osCmd.Start())
 	go func() {
 		defer os.Exit(1)
 		util.Chkfatal(osCmd.Wait())
-		log.Println("App exited; shutting down grain.")
+		lg.Info("App exited; shutting down grain.")
 	}()
 
 	apiSocket := os.NewFile(3, "supervisor socket")
@@ -129,7 +132,7 @@ func main() {
 	bootstrap := httpcp.Server_ServerToClient(&httpBridge{
 		portNo:       portNo,
 		roundTripper: http.DefaultTransport,
-		log:          log,
+		log:          lg,
 	})
 	conn := rpc.NewConn(trans, &rpc.Options{
 		BootstrapClient: capnp.Client(bootstrap),
@@ -138,7 +141,7 @@ func main() {
 	<-conn.Done()
 }
 
-func startCapnpApi(log *logrus.Logger) error {
+func startCapnpApi(lg log.Interface) error {
 	l, err := net.Listen("unix", "/tmp/sandstorm-api")
 	if err != nil {
 		return err
@@ -150,7 +153,7 @@ func startCapnpApi(log *logrus.Logger) error {
 				continue
 			}
 			// TODO: do something with the connection.
-			log.Println("Got a connection to the api socket.")
+			lg.Info("Got a connection to the api socket.")
 			conn.Close()
 		}
 	}()

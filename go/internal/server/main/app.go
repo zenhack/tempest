@@ -6,14 +6,14 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 )
 
-func ServeApp(log *logrus.Logger, c *container.Container, w http.ResponseWriter, req *http.Request) {
+func ServeApp(lg log.Interface, c *container.Container, w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -54,18 +54,18 @@ func ServeApp(log *logrus.Logger, c *container.Container, w http.ResponseWriter,
 	go func() {
 		_, err := io.Copy(bodyW, req.Body)
 		if err != nil {
-			log.Printf("Error copying request body: %v", err)
+			lg.Infof("Error copying request body: %v", err)
 			cancel()
 		}
 		err = bodyW.Close()
 		if err != nil {
-			log.Printf("bodyW.Close(): %v", err)
+			lg.Infof("bodyW.Close(): %v", err)
 			cancel()
 		}
 	}()
 	_, err := fut.Struct()
 	if err != nil {
-		log.Printf("Error in request(): %v", err)
+		lg.Infof("Error in request(): %v", err)
 		cancel()
 	}
 	<-ctx.Done()

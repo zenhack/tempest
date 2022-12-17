@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
-	"github.com/sirupsen/logrus"
+	"github.com/apex/log"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
@@ -21,7 +21,7 @@ type httpBridge struct {
 	portNo       int
 	roundTripper http.RoundTripper
 	serverReady  bool
-	log          *logrus.Logger
+	log          log.Interface
 }
 
 func (b *httpBridge) ensureServerReady() error {
@@ -143,7 +143,10 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 			} else {
 				n, err := io.Copy(responseBody, resp.Body)
 				if err != nil {
-					b.log.Printf("Error copying response body after %v bytes: %v", n, err)
+					b.log.WithFields(log.Fields{
+						"bytes copied": n,
+						"error":        err,
+					}).Error("Error copying response body")
 				}
 			}
 		}()
@@ -152,7 +155,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 
 // Try calling f at exponentially increasing intervals until either it returns a nil error,
 // or the length of the interval exceeds 30 seconds.
-func exponentialBackoff[T any](log *logrus.Logger, f func() (T, error)) (val T, err error) {
+func exponentialBackoff[T any](lg log.Interface, f func() (T, error)) (val T, err error) {
 	delay := time.Millisecond
 	limit := 30 * time.Second
 	for {
@@ -160,7 +163,10 @@ func exponentialBackoff[T any](log *logrus.Logger, f func() (T, error)) (val T, 
 		if err == nil || delay > limit {
 			return
 		}
-		log.Printf("Error %v; trying again in %v\n", err, delay)
+		lg.WithFields(log.Fields{
+			"error":    err,
+			"retry in": delay,
+		}).Info("App server not yet reachable")
 		time.Sleep(delay)
 		delay *= 2
 	}

@@ -9,9 +9,9 @@ import (
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
+	"github.com/apex/log"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
@@ -57,7 +57,7 @@ func (cset *ContainerSet) Get(ctx context.Context, grainId string) (*container.C
 }
 
 func Main() {
-	log := logrus.New()
+	lg := log.Log
 
 	db := util.Must(database.Open())
 	ctx := context.Background()
@@ -79,10 +79,13 @@ func Main() {
 				c, err := containers.Get(ctx, sess.GrainId)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					log.Println("Opening grain: ", err)
+					lg.WithFields(log.Fields{
+						"grainId": sess.GrainId,
+						"error":   err,
+					}).Error("Failed to open grain")
 					return
 				}
-				ServeApp(log, c, w, req)
+				ServeApp(lg, c, w, req)
 				return
 			}
 
@@ -101,7 +104,7 @@ func Main() {
 			})
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				log.Println("error unsealing: ", err)
+				lg.Infof("error unsealing: %v", err)
 			}
 			session.WriteCookie(sessionStore, req, w, sess)
 			w.Header().Set("Location", query.Get("path"))
@@ -140,7 +143,7 @@ func Main() {
 			_, err := rand.Read(buf[:])
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				log.Println(err)
+				lg.WithField("error", err).Error("crypto/rand.Read() failed")
 				return
 			}
 			sess.SessionId = buf[:]
@@ -183,7 +186,7 @@ func Main() {
 	r.Host(rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 
 	http.Handle("/", r)
-	log.Printf("Listening on %v", listenAddr)
+	lg.Infof("Listening on %v", listenAddr)
 	http.ListenAndServe(listenAddr, nil)
 }
 
