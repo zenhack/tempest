@@ -61,7 +61,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 		throw(err)
 		req.URL, err = url.ParseRequestURI(path)
 		throw(err)
-		req.URL.Host = fmt.Sprintf("127.0.0.1:%v", b.portNo)
+		req.URL.Host = b.netAddr()
 		req.URL.Scheme = "http"
 
 		method, err := cpReq.Method()
