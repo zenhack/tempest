@@ -77,9 +77,20 @@ a suitable grain storage directory and populate the database. The easiest
 way to do this is to point it at an existing sandstorm installation, and
 import database info using `sandstsorm-legacy-tool`, per above.
 
-You will need to be a member of the `sandstorm` group to run
-`sandstorm-next` (or if you specified a different group name via the
-`--group` configure flag, that group instead).
+`sandstorm-next` should be run as the user and group chosen by the via
+the `--user` and --group` flags to `./configure` (by default both
+`sandstorm`).  The easiest way to do this is to run as root:
+
+```
+sudo -u sandstorm -g sandstorm /path/to/sandstorm-next
+```
+
+For development purposes, the Makefile includes a `dev` target that will
+rebuild, reinstall, and then spawn sandstorm-next; simply run:
+
+```
+sudo make dev`
+```
 
 `sandstorm-next` will start a web server on port 8000; to connect to the
 UI, go to `http://local.sandstorm.io:8000`.
