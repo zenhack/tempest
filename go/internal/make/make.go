@@ -390,10 +390,6 @@ func run(args ...string) {
 		chkfatal(buildC())
 		chkfatal(buildGo(r))
 		r.Save()
-	case "run":
-		run("build")
-		fmt.Fprintln(os.Stderr, "Starting server...")
-		chkfatal(withMyOuts(exec.Command("./bin/server")).Run())
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
