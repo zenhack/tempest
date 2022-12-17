@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
+	"github.com/sirupsen/logrus"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 )
 
-func ServeApp(c *container.Container, w http.ResponseWriter, req *http.Request) {
+func ServeApp(log *logrus.Logger, c *container.Container, w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

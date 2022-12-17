@@ -3,7 +3,6 @@ package servermain
 import (
 	"context"
 	"crypto/rand"
-	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -12,6 +11,7 @@ import (
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 	"zenhack.net/go/sandstorm-next/capnp/external"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
@@ -57,6 +57,8 @@ func (cset *ContainerSet) Get(ctx context.Context, grainId string) (*container.C
 }
 
 func Main() {
+	log := logrus.New()
+
 	db := util.Must(database.Open())
 	ctx := context.Background()
 
@@ -80,7 +82,7 @@ func Main() {
 					log.Println("Opening grain: ", err)
 					return
 				}
-				ServeApp(c, w, req)
+				ServeApp(log, c, w, req)
 				return
 			}
 
