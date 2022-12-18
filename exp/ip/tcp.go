@@ -1,6 +1,5 @@
 package ip
 
-/*
 import (
 	"context"
 	"io"
@@ -9,18 +8,17 @@ import (
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 
 	"capnproto.org/go/capnp/v3"
-	"capnproto.org/go/capnp/v3/server"
 )
 
-func ConnectTCP(ctx context.Context, policy *server.Policy, port ip.TcpPort) io.ReadWriteCloser {
-	fromThem, toUs := bytestream.Pipe(policy)
+func ConnectTCP(ctx context.Context, port ip.TcpPort) io.ReadWriteCloser {
+	fromThem, toUs := bytestream.Pipe()
 	res, release := port.Connect(ctx, func(p ip.TcpPort_connect_Params) error {
 		p.SetDownstream(toUs)
 		return nil
 	})
 	toThem := res.Upstream()
 	return tcpPort{
-		toThem:   bytestream.ToWriteCloser(toThem),
+		toThem:   bytestream.ToWriteCloser(ctx, toThem),
 		fromThem: fromThem,
 		release:  release,
 	}
@@ -44,5 +42,5 @@ func (port tcpPort) Close() error {
 	port.fromThem.Close()
 	port.release()
 	port.closed = true
+	return nil
 }
-*/
