@@ -1,7 +1,7 @@
 @0xbbb10ce386c6624a;
 # This file defines the schema for data stored in cookies;
-# we store these as a single segment using gorilla's session
-# package.
+# the code for managing these is in the package
+# `go/internal/server/session`.
 
 using Go = import "/go.capnp";
 $Go.package("cookie");
