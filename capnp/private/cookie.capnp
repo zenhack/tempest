@@ -8,8 +8,8 @@ $Go.package("cookie");
 $Go.import("zenhack.net/go/sandstorm-next/capnp/private/cookie");
 
 struct UserSession {
-  # Session cookie for a user's login. Stored at Values["data"]
-  # in the "user-session" cookie.
+  # Session cookie for a user's login. Stored in the
+  # "sandstorm-user-session" cookie.
 
   sessionId @2 :Data;
   # Randomized session id
@@ -23,7 +23,7 @@ struct UserSession {
 
 struct GrainSession {
   # Session cookie for a user's session on a ui-* subdomain for
-  # a given grain. Stored at Values["data"] in the "grain-session"
+  # a given grain. Stored in the "sandstorm-grain-session"
   # cookie.
 
   grainId @0 :Text;

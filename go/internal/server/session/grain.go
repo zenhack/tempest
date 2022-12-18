@@ -21,5 +21,5 @@ func (sess GrainSession) Seal(store Store) (string, error) {
 }
 
 func (sess GrainSession) CookieName() string {
-	return "grain-session"
+	return "sandstorm-grain-session"
 }

@@ -28,5 +28,5 @@ func (sess UserSession) Seal(store Store) (string, error) {
 }
 
 func (sess UserSession) CookieName() string {
-	return "user-session"
+	return "sandstorm-user-session"
 }
