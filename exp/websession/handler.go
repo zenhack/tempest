@@ -144,7 +144,50 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 }
 
 func responseBodyBytes(resp websession.WebSession_Response) ([]byte, error) {
-	panic("TODO")
+	switch resp.Which() {
+	case websession.WebSession_Response_Which_content:
+		body := resp.Content().Body()
+		switch body.Which() {
+		case websession.WebSession_Response_content_body_Which_bytes:
+			return body.Bytes()
+		case websession.WebSession_Response_content_body_Which_stream:
+			return nil, fmt.Errorf("Can't get []byte for streaming body")
+		default:
+			return nil, fmt.Errorf("Unknown body variant: %v", body.Which())
+		}
+	case websession.WebSession_Response_Which_noContent:
+		return nil, nil
+	case websession.WebSession_Response_Which_preconditionFailed:
+		return nil, nil
+	case websession.WebSession_Response_Which_redirect:
+		return nil, nil
+	case websession.WebSession_Response_Which_clientError:
+		return errorBodyBytes(resp.ClientError())
+	case websession.WebSession_Response_Which_serverError:
+		return errorBodyBytes(resp.ServerError())
+	default:
+		return nil, fmt.Errorf("Unknown response variant: %v", resp.Which())
+	}
+}
+
+// errorBodyBytes is a helper for responseBodyBytes; it handles the clientError and serverError
+// cases.
+func errorBodyBytes(r hasErrorBody) ([]byte, error) {
+	if !r.HasNonHtmlBody() {
+		str, err := r.DescriptionHtml()
+		return []byte(str), err
+	}
+	errBody, err := r.NonHtmlBody()
+	if err != nil {
+		return nil, err
+	}
+	return errBody.Data()
+}
+
+type hasErrorBody interface {
+	DescriptionHtml() (string, error)
+	NonHtmlBody() (websession.WebSession_Response_ErrorBody, error)
+	HasNonHtmlBody() bool
 }
 
 func populateResponseHeaders(h http.Header, r websession.WebSession_Response) error {
