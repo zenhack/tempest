@@ -230,8 +230,21 @@ func replyErr(w http.ResponseWriter, err error) {
 // populateContext populates a websession context based on the request, using the supplied
 // value for the responseStream field. The reference to responseStream is stolen.
 func populateContext(wsCtx websession.WebSession_Context, req *http.Request, responseStream util.ByteStream) error {
-	// TODO: cookies
-	// TODO: responseStream
+	// Copy in cookies:
+	reqCookies := req.Cookies()
+	wsCookies, err := wsCtx.NewCookies(int32(len(reqCookies)))
+	if err != nil {
+		return err
+	}
+	for i, c := range reqCookies {
+		wsC := wsCookies.At(i)
+		wsC.SetKey(c.Name)
+		wsC.SetValue(c.Value)
+	}
+
+	// Rig up the response body;
+	wsCtx.SetResponseStream(responseStream)
+
 	// TODO: accept
 	// TODO: acceptEncoding
 	// TODO: eTagPrecondition
