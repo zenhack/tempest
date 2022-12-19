@@ -71,6 +71,8 @@ func (r *responseStreamImpl) waitReady(ctx context.Context) error {
 	}
 }
 
+// commitSize closes r.size and records that it is too late to invoke ExpectSize().
+// calling commitSize multiple times has no effect.
 func (r *responseStreamImpl) commitSize() error {
 	if r.tooLateForExpectSize {
 		return errExpectSizeCalledLater

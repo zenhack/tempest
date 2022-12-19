@@ -10,6 +10,7 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 )
 
+// A handler implements http.Handler on top of a WebSession.
 type handler struct {
 	session websession.WebSession
 }
@@ -25,6 +26,7 @@ func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// doGet makes a request using the WebSession.get() method.
 func (h handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool) {
 	responseStreamServer := newResponseStreamImpl(w)
 	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
@@ -51,7 +53,7 @@ func (h handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 		replyErr(w, err)
 		return
 	}
-	translateResponse(
+	relayResponse(
 		req.Context(),
 		w,
 		resp,
@@ -59,7 +61,11 @@ func (h handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 	)
 }
 
-func translateResponse(
+// relayResponse relays a response received from a WebSession back to an http.ResponseWriter.
+//
+// responseStream should be the value of WebSession.Context.responseStream that was passed in
+// to the request.
+func relayResponse(
 	ctx context.Context,
 	w http.ResponseWriter,
 	resp websession.WebSession_Response,
@@ -117,6 +123,7 @@ func translateResponse(
 	w.Write(data)
 }
 
+// responseStatus returns the correct HTTP status code for the the response.
 func responseStatus(resp websession.WebSession_Response) (int, error) {
 	switch resp.Which() {
 	case websession.WebSession_Response_Which_content:
@@ -143,6 +150,8 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 	panic("TODO")
 }
 
+// Return a []byte with the body of the response. This will return an error for
+// streaming responses.
 func responseBodyBytes(resp websession.WebSession_Response) ([]byte, error) {
 	switch resp.Which() {
 	case websession.WebSession_Response_Which_content:
@@ -190,6 +199,7 @@ type hasErrorBody interface {
 	HasNonHtmlBody() bool
 }
 
+// populateResponseHeaders fills in the response headers based on the contents of the response.
 func populateResponseHeaders(h http.Header, r websession.WebSession_Response) error {
 	// TODO: setCookies
 	// TODO: cachePolicy
@@ -198,11 +208,12 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 	panic("TODO")
 }
 
-// replyErr responds to the request with a 500 status and the given error.
+// replyErr responds to the request with a 500 status and the given error. If any headers had been
+// set in the response, they will be cleared.
 func replyErr(w http.ResponseWriter, err error) {
 	hdr := w.Header()
 
-	// Delete anty header we may have set when trying to build a proper response.
+	// Delete any headers we may have set when trying to build a normal response.
 	for k, _ := range hdr {
 		delete(hdr, k)
 	}
