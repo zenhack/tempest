@@ -3,8 +3,10 @@ package websession
 import (
 	"context"
 	"fmt"
+	"mime"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -230,7 +232,7 @@ func replyErr(w http.ResponseWriter, err error) {
 // populateContext populates a websession context based on the request, using the supplied
 // value for the responseStream field. The reference to responseStream is stolen.
 func populateContext(wsCtx websession.WebSession_Context, req *http.Request, responseStream util.ByteStream) error {
-	// Copy in cookies:
+	// Copy in cookies
 	reqCookies := req.Cookies()
 	wsCookies, err := wsCtx.NewCookies(int32(len(reqCookies)))
 	if err != nil {
@@ -242,10 +244,36 @@ func populateContext(wsCtx websession.WebSession_Context, req *http.Request, res
 		wsC.SetValue(c.Value)
 	}
 
-	// Rig up the response body;
+	// Rig up the response body
 	wsCtx.SetResponseStream(responseStream)
 
-	// TODO: accept
+	// Process the Accept header
+	if accept := req.Header.Get("Accept"); accept != "" {
+		types := strings.Split(accept, ",")
+		wsTypes, err := wsCtx.NewAccept(int32(len(types)))
+		if err != nil {
+			return err
+		}
+		for i, t := range types {
+			mimeType, params, err := mime.ParseMediaType(t)
+			if err != nil {
+				return fmt.Errorf("Error parsing media type at index %v (%q): %w", i, t, err)
+			}
+			acceptedType := wsTypes.At(i)
+			acceptedType.SetMimeType(mimeType)
+			qStr, ok := params["q"]
+			if ok {
+				q, err := strconv.ParseFloat(qStr, 32)
+				if err != nil {
+					return fmt.Errorf(
+						"Error parsing qValue %q in media type %q: %w",
+						qStr, t, err)
+				}
+				acceptedType.SetQValue(float32(q))
+			}
+		}
+	}
+
 	// TODO: acceptEncoding
 	// TODO: eTagPrecondition
 	// TODO: additionalHeaders
