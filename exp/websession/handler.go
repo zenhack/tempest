@@ -12,12 +12,12 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 )
 
-// A handler implements http.Handler on top of a WebSession.
-type handler struct {
-	session websession.WebSession
+// A Handler implements http.Handler on top of a WebSession.
+type Handler struct {
+	Session websession.WebSession
 }
 
-func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
 		h.doGet(w, req, true)
@@ -29,11 +29,11 @@ func (h handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 // doGet makes a request using the WebSession.get() method.
-func (h handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool) {
+func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool) {
 	responseStreamServer := newResponseStreamImpl(w)
 	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
 
-	respFut, rel := h.session.Get(req.Context(), func(p websession.WebSession_get_Params) error {
+	respFut, rel := h.Session.Get(req.Context(), func(p websession.WebSession_get_Params) error {
 		if err := p.SetPath(req.RequestURI); err != nil {
 			return err
 		}
