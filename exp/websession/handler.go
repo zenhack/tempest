@@ -2,6 +2,7 @@ package websession
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -64,7 +65,12 @@ func translateResponse(
 	resp websession.WebSession_Response,
 	responseStream *responseStreamImpl,
 ) {
-	status := responseStatus(resp)
+	status, err := responseStatus(resp)
+	if err != nil {
+		replyErr(w, err)
+		close(responseStream.ready)
+		return
+	}
 
 	if resp.Which() == websession.WebSession_Response_Which_content {
 		content := resp.Content()
@@ -111,25 +117,28 @@ func translateResponse(
 	w.Write(data)
 }
 
-func responseStatus(resp websession.WebSession_Response) int {
+func responseStatus(resp websession.WebSession_Response) (int, error) {
 	switch resp.Which() {
 	case websession.WebSession_Response_Which_content:
-		status, ok := successCodeStatuses[resp.Content().StatusCode()]
+		successCode := resp.Content().StatusCode()
+		status, ok := successCodeStatuses[successCode]
 		if ok {
-			return status
+			return status, nil
 		}
-		// TODO: what to do on failure? Maybe we should add an error return
-		// for unknown statuses.
+		return 0, fmt.Errorf("Unknown success code enumerant: %v", successCode)
 	case websession.WebSession_Response_Which_noContent:
 	case websession.WebSession_Response_Which_preconditionFailed:
 	case websession.WebSession_Response_Which_redirect:
 	case websession.WebSession_Response_Which_clientError:
-		status, ok := clientErrorCodeStatuses[resp.ClientError().StatusCode()]
+		errorCode := resp.ClientError().StatusCode()
+		status, ok := clientErrorCodeStatuses[errorCode]
 		if ok {
-			return status
+			return status, nil
 		}
-		// TODO: failure?
+		return 0, fmt.Errorf("Unknown error code enumerant: %v", errorCode)
 	case websession.WebSession_Response_Which_serverError:
+	default:
+		return 0, fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
 	panic("TODO")
 }
