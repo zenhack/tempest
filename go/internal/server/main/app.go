@@ -17,7 +17,6 @@ func ServeApp(lg log.Interface, c *container.Container, w http.ResponseWriter, r
 	ctx := req.Context()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	SetAppHeaders(w)
 	srv := httpcp.Server(c.Bootstrap)
 
 	fut, rel := srv.Request(ctx, func(p httpcp.Server_request_Params) error {

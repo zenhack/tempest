@@ -32,9 +32,6 @@ func defaultTo(val, def string) string {
 	return val
 }
 
-func SetAppHeaders(w http.ResponseWriter) {
-}
-
 func Main() {
 	lg := log.Log
 
