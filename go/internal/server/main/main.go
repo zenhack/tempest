@@ -74,7 +74,6 @@ func Main() {
 				}
 				session.WriteCookie(sessionStore, req, w, sess)
 				w.Header().Set("Location", query.Get("path"))
-				// FIXME: sanity check this is the right redirect:
 				w.WriteHeader(http.StatusSeeOther)
 				// TODO(perf): when doing the redirect,
 				// Use http/2 push to avoid a round trip.
