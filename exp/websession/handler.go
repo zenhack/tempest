@@ -253,7 +253,7 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 
 	switch r.Which() {
 	case websession.WebSession_Response_Which_content:
-		return populateContentResponseHeaders(h, r)
+		return populateContentResponseHeaders(h, r.Content())
 	case websession.WebSession_Response_Which_noContent:
 		// TODO: eTag
 		panic("TODO")
@@ -276,9 +276,60 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 	}
 }
 
-func populateContentResponseHeaders(h http.Header, r websession.WebSession_Response) error {
-	// TODO: encoding, language, mimeType, eTag, disposition
+func populateContentResponseHeaders(h http.Header, r websession.WebSession_Response_content) error {
+	// TODO: eTag
+	if err := populateHasContentHeaders(h, r); err != nil {
+		return err
+	}
+	disposition := r.Disposition()
+	switch disposition.Which() {
+	case websession.WebSession_Response_content_disposition_Which_normal:
+	case websession.WebSession_Response_content_disposition_Which_download:
+		_, err := disposition.Download()
+		if err != nil {
+			return err
+		}
+		panic("TODO")
+		// TODO: h.Set("Content-Disposition", "attachment; filename="+escape(filename))
+	}
 	panic("TODO")
+}
+
+func populateHasContentHeaders(dst http.Header, src hasContent) error {
+	if src.HasEncoding() {
+		v, err := src.Encoding()
+		if err != nil {
+			return err
+		}
+		dst.Set("Content-Encoding", v)
+	}
+	if src.HasLanguage() {
+		v, err := src.Language()
+		if err != nil {
+			return err
+		}
+		dst.Set("Content-Language", v)
+	}
+	contentType, err := src.MimeType()
+	if err != nil {
+		return err
+	}
+	// parse & re-format to ensure well-formedness:
+	mimeType, params, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return err
+	}
+	contentType = mime.FormatMediaType(mimeType, params)
+	dst.Set("Content-Type", contentType)
+	return nil
+}
+
+type hasContent interface {
+	HasEncoding() bool
+	Encoding() (string, error)
+	HasLanguage() bool
+	Language() (string, error)
+	MimeType() (string, error)
 }
 
 // replyErr responds to the request with a 500 status and the given error. If any headers had been
