@@ -8,16 +8,14 @@ import (
 
 	"github.com/apex/log"
 	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
-	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 )
 
-func ServeApp(lg log.Interface, c *container.Container, w http.ResponseWriter, req *http.Request) {
+func ServeApp(lg log.Interface, srv httpcp.Server, w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	srv := httpcp.Server(c.Bootstrap)
 
 	fut, rel := srv.Request(ctx, func(p httpcp.Server_request_Params) error {
 		return exn.Try0(func(throw func(error)) {

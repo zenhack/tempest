@@ -6,7 +6,6 @@ import (
 
 	"github.com/apex/log"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/session"
 	"zenhack.net/go/util"
 )
@@ -26,14 +25,8 @@ func defaultTo(val, def string) string {
 func Main() {
 	lg := log.Log
 	db := util.Must(database.Open())
-	srv := &server{
-		log: lg,
-		db:  db,
-		containers: ContainerSet{
-			containersByGrainId: make(map[string]*container.Container),
-		},
-		sessionStore: session.NewStore(util.Must(session.GetKeys())),
-	}
+	sessionStore := session.NewStore(util.Must(session.GetKeys()))
+	srv := newServer(lg, db, sessionStore)
 
 	http.Handle("/", srv.Handler())
 	lg.Infof("Listening on %v", listenAddr)

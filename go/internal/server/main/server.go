@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"net/http"
+	"sync"
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
@@ -11,17 +12,53 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/capnp/external"
+	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
+	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/embed"
 	"zenhack.net/go/sandstorm-next/go/internal/server/session"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
+// A server encapsulates the state of a running server.
 type server struct {
 	log          log.Interface
 	db           database.DB
-	containers   ContainerSet
 	sessionStore session.Store
+
+	// State that requires synchronization when accessed by multiple goroutines;
+	// the mutex must be held when accessin these fields:
+	lk struct {
+		sync.Mutex
+		grainSessions map[grainSessionKey]grainSession
+		containers    ContainerSet
+	}
+}
+
+func newServer(lg log.Interface, db database.DB, sessionStore session.Store) *server {
+	srv := &server{
+		log:          lg,
+		db:           db,
+		sessionStore: sessionStore,
+	}
+	srv.lk.containers = ContainerSet{
+		containersByGrainId: make(map[string]*container.Container),
+	}
+	srv.lk.grainSessions = make(map[grainSessionKey]grainSession)
+	return srv
+}
+
+type grainSessionKey struct {
+	userSessionId string
+	grainId       string
+	// TODO: we'll want the ability to have more than one session
+	// per user session, e.g. for powerbox requests, maybe multiple
+	// tabs.
+}
+
+type grainSession struct {
+	// TODO: switch over to websession
+	webServer httpcp.Server
 }
 
 func (s *server) Handler() http.Handler {
@@ -74,16 +111,42 @@ func (s *server) Handler() http.Handler {
 					},
 				}).Debug("Access to grain UI denied")
 			default:
-				c, err := s.containers.Get(context.Background(), s.db, sess.GrainId)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					s.log.WithFields(log.Fields{
-						"grainId": sess.GrainId,
-						"error":   err,
-					}).Error("Failed to open grain")
-					return
+				s.lk.Lock()
+				var unlocked bool
+				unlock := func() { // idempotent wrapper around s.lk.Unlock
+					if !unlocked {
+						s.lk.Unlock()
+						unlocked = true
+					}
 				}
-				ServeApp(s.log, c, w, req)
+				defer unlock()
+
+				key := grainSessionKey{
+					userSessionId: string(sess.SessionId),
+					grainId:       sess.GrainId,
+				}
+				gs, ok := s.lk.grainSessions[key]
+				if !ok {
+
+					c, err := s.lk.containers.Get(context.Background(), s.db, sess.GrainId)
+					if err != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						s.log.WithFields(log.Fields{
+							"grainId": sess.GrainId,
+							"error":   err,
+						}).Error("Failed to open grain")
+						return
+					}
+					srv := httpcp.Server(c.Bootstrap.AddRef())
+					gs = grainSession{
+						webServer: srv,
+					}
+					s.lk.grainSessions[key] = gs
+				}
+				srv := gs.webServer.AddRef()
+				defer srv.Release()
+				unlock()
+				ServeApp(s.log, srv, w, req)
 			}
 		})
 
