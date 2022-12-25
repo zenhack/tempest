@@ -30,6 +30,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // doGet makes a request using the WebSession.get() method.
 func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool) {
+	// TODO: block sending the body when ignoreBody = true
 	responseStreamServer := newResponseStreamImpl(w)
 	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
 
