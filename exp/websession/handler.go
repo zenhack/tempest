@@ -277,21 +277,24 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 }
 
 func populateContentResponseHeaders(h http.Header, r websession.WebSession_Response_content) error {
-	// TODO: eTag
 	if err := populateHasContentHeaders(h, r); err != nil {
 		return err
 	}
 	disposition := r.Disposition()
 	switch disposition.Which() {
 	case websession.WebSession_Response_content_disposition_Which_normal:
+		// Default
 	case websession.WebSession_Response_content_disposition_Which_download:
-		_, err := disposition.Download()
+		filename, err := disposition.Download()
 		if err != nil {
 			return err
 		}
-		panic("TODO")
-		// TODO: h.Set("Content-Disposition", "attachment; filename="+escape(filename))
+		h.Set("Content-Disposition", mime.FormatMediaType(
+			"attachment",
+			map[string]string{"filename": filename},
+		))
 	}
+	// TODO: eTag
 	panic("TODO")
 }
 
