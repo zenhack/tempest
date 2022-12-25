@@ -58,6 +58,7 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 	relayResponse(
 		req.Context(),
 		w,
+		req,
 		resp,
 		responseStreamServer,
 	)
@@ -70,10 +71,11 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 func relayResponse(
 	ctx context.Context,
 	w http.ResponseWriter,
+	req *http.Request,
 	resp websession.WebSession_Response,
 	responseStream *responseStreamImpl,
 ) {
-	status, err := responseStatus(resp)
+	status, err := responseStatus(req, resp)
 	if err != nil {
 		replyErr(w, err)
 		close(responseStream.ready)
@@ -126,7 +128,8 @@ func relayResponse(
 }
 
 // responseStatus returns the correct HTTP status code for the the response.
-func responseStatus(resp websession.WebSession_Response) (int, error) {
+// req is the original request that this is a response to.
+func responseStatus(req *http.Request, resp websession.WebSession_Response) (int, error) {
 	switch resp.Which() {
 	case websession.WebSession_Response_Which_content:
 		successCode := resp.Content().StatusCode()
@@ -142,6 +145,12 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 			return http.StatusNoContent, nil
 		}
 	case websession.WebSession_Response_Which_preconditionFailed:
+		if (req.Method == "GET" || req.Method == "HEAD") &&
+			req.Header.Get("If-None-Match") != "" {
+
+			return http.StatusNotModified, nil
+		}
+		return http.StatusPreconditionFailed, nil
 	case websession.WebSession_Response_Which_redirect:
 		r := resp.Redirect()
 		switch {
@@ -166,7 +175,6 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 	default:
 		return 0, fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
-	panic("TODO")
 }
 
 // Return a []byte with the body of the response. This will return an error for
