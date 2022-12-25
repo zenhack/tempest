@@ -22,6 +22,7 @@ import (
 
 // A server encapsulates the state of a running server.
 type server struct {
+	rootDomain   string // Main Sandstorm domain name
 	log          log.Interface
 	db           database.DB
 	sessionStore session.Store
@@ -35,8 +36,9 @@ type server struct {
 	}
 }
 
-func newServer(lg log.Interface, db database.DB, sessionStore session.Store) *server {
+func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore session.Store) *server {
 	srv := &server{
+		rootDomain:   rootDomain,
 		log:          lg,
 		db:           db,
 		sessionStore: sessionStore,
@@ -64,7 +66,7 @@ type grainSession struct {
 func (s *server) Handler() http.Handler {
 	r := mux.NewRouter()
 
-	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + rootDomain).
+	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + s.rootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.GrainSession
 
@@ -150,7 +152,7 @@ func (s *server) Handler() http.Handler {
 			}
 		})
 
-	r.Host(rootDomain).Path("/login/dev").Methods("GET").
+	r.Host(s.rootDomain).Path("/login/dev").Methods("GET").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte(`<!doctype html>
 			<html>
@@ -168,7 +170,7 @@ func (s *server) Handler() http.Handler {
 			`))
 		})
 
-	r.Host(rootDomain).Path("/login/dev").Methods("POST").
+	r.Host(s.rootDomain).Path("/login/dev").Methods("POST").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			sess.Credential.Type = "dev"
@@ -191,7 +193,7 @@ func (s *server) Handler() http.Handler {
 			//   - If not, create one.
 		})
 
-	r.Host(rootDomain).Path("/_capnp-api").
+	r.Host(s.rootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			err := session.ReadCookie(s.sessionStore, req, &sess)
@@ -217,7 +219,7 @@ func (s *server) Handler() http.Handler {
 			<-rpcConn.Done()
 		})
 
-	r.Host(rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
+	r.Host(s.rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 
 	return r
 }

@@ -10,11 +10,6 @@ import (
 	"zenhack.net/go/util"
 )
 
-var (
-	rootDomain = defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io")
-	listenAddr = defaultTo(os.Getenv("LISTEN_ADDR"), ":8000")
-)
-
 func defaultTo(val, def string) string {
 	if val == "" {
 		return def
@@ -23,10 +18,13 @@ func defaultTo(val, def string) string {
 }
 
 func Main() {
+	rootDomain := defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io")
+	listenAddr := defaultTo(os.Getenv("LISTEN_ADDR"), ":8000")
+
 	lg := log.Log
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
-	srv := newServer(lg, db, sessionStore)
+	srv := newServer(rootDomain, lg, db, sessionStore)
 
 	http.Handle("/", srv.Handler())
 	lg.Infof("Listening on %v", listenAddr)
