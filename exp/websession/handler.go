@@ -136,8 +136,24 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 		}
 		return 0, fmt.Errorf("Unknown success code enumerant: %v", successCode)
 	case websession.WebSession_Response_Which_noContent:
+		if resp.NoContent().ShouldResetForm() {
+			return http.StatusResetContent, nil
+		} else {
+			return http.StatusNoContent, nil
+		}
 	case websession.WebSession_Response_Which_preconditionFailed:
 	case websession.WebSession_Response_Which_redirect:
+		r := resp.Redirect()
+		switch {
+		case r.IsPermanent() && r.SwitchToGet():
+			return http.StatusMovedPermanently, nil
+		case !r.IsPermanent() && r.SwitchToGet():
+			return http.StatusSeeOther, nil
+		case r.IsPermanent() && !r.SwitchToGet():
+			return http.StatusPermanentRedirect, nil
+		default: // !r.IsPermanent() && !r.SwitchToGet():
+			return http.StatusTemporaryRedirect, nil
+		}
 	case websession.WebSession_Response_Which_clientError:
 		errorCode := resp.ClientError().StatusCode()
 		status, ok := clientErrorCodeStatuses[errorCode]
@@ -146,6 +162,7 @@ func responseStatus(resp websession.WebSession_Response) (int, error) {
 		}
 		return 0, fmt.Errorf("Unknown error code enumerant: %v", errorCode)
 	case websession.WebSession_Response_Which_serverError:
+		return http.StatusInternalServerError, nil
 	default:
 		return 0, fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
