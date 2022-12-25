@@ -230,8 +230,27 @@ type hasErrorBody interface {
 func populateResponseHeaders(h http.Header, r websession.WebSession_Response) error {
 	// TODO: setCookies
 	// TODO: cachePolicy
-	// TODO: additionalHeaders
-	panic("TODO")
+
+	additionalHeaders, err := r.AdditionalHeaders()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < additionalHeaders.Len(); i++ {
+		item := additionalHeaders.At(i)
+		name, err := item.Name()
+		if err != nil {
+			return err
+		}
+		v, err := item.Value()
+		if err != nil {
+			return err
+		}
+		k := http.CanonicalHeaderKey(name)
+		if ResponseHeaderFilter.Allows(k) {
+			h[k] = append(h[k], v)
+		}
+	}
+
 	switch r.Which() {
 	case websession.WebSession_Response_Which_content:
 		return populateContentResponseHeaders(h, r)
@@ -324,6 +343,31 @@ func populateContext(wsCtx websession.WebSession_Context, req *http.Request, res
 
 	// TODO: acceptEncoding
 	// TODO: eTagPrecondition
-	// TODO: additionalHeaders
+
+	additionalHeaders := make(http.Header)
+	ContextHeaderFilter.Copy(additionalHeaders, req.Header)
+	var numHeaders int32
+	for _, vs := range additionalHeaders {
+		numHeaders += int32(len(vs))
+	}
+
+	dstAdditionalHeaders, err := wsCtx.NewAdditionalHeaders(numHeaders)
+	if err != nil {
+		return err
+	}
+	i := 0
+	for k, vs := range additionalHeaders {
+		for _, v := range vs {
+			h := dstAdditionalHeaders.At(i)
+			if err := h.SetName(k); err != nil {
+				return err
+			}
+			if err := h.SetValue(v); err != nil {
+				return err
+			}
+			i++
+		}
+	}
+
 	panic("TODO")
 }
