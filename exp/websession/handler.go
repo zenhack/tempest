@@ -261,8 +261,12 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 		// TODO: matchingETag
 		panic("TODO")
 	case websession.WebSession_Response_Which_redirect:
-		// TODO: location
-		panic("TODO")
+		loc, err := r.Redirect().Location()
+		if err != nil {
+			return err
+		}
+		h.Set("Location", loc)
+		return nil
 	case websession.WebSession_Response_Which_clientError:
 		panic("TODO")
 	case websession.WebSession_Response_Which_serverError:
