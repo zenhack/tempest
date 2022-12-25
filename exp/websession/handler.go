@@ -228,9 +228,24 @@ type hasErrorBody interface {
 
 // populateResponseHeaders fills in the response headers based on the contents of the response.
 func populateResponseHeaders(h http.Header, r websession.WebSession_Response) error {
+	switch resp.Which() {
+	case websession.WebSession_Response_Which_content:
+		panic("TODO")
+	case websession.WebSession_Response_Which_noContent:
+		panic("TODO")
+	case websession.WebSession_Response_Which_preconditionFailed:
+		panic("TODO")
+	case websession.WebSession_Response_Which_redirect:
+		panic("TODO")
+	case websession.WebSession_Response_Which_clientError:
+		panic("TODO")
+	case websession.WebSession_Response_Which_serverError:
+		panic("TODO")
+	default:
+		return fmt.Errorf("Unknown response variant: %v", resp.Which())
+	}
 	// TODO: setCookies
 	// TODO: cachePolicy
-	// TODO: union
 	// TODO: additionalHeaders
 	panic("TODO")
 }
