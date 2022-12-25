@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/capnp/websession"
@@ -98,7 +99,7 @@ func relayResponse(
 					w.Header().Set("Content-Length", strconv.FormatUint(size, 10))
 				}
 			}
-			if err := populateResponseHeaders(w.Header(), resp); err != nil {
+			if err := populateResponseHeaders(w, req, resp); err != nil {
 				replyErr(w, err)
 				return
 			}
@@ -114,7 +115,7 @@ func relayResponse(
 	}
 
 	close(responseStream.ready)
-	if err := populateResponseHeaders(w.Header(), resp); err != nil {
+	if err := populateResponseHeaders(w, req, resp); err != nil {
 		replyErr(w, err)
 		return
 	}
@@ -228,14 +229,50 @@ type hasErrorBody interface {
 }
 
 // populateResponseHeaders fills in the response headers based on the contents of the response.
-func populateResponseHeaders(h http.Header, r websession.WebSession_Response) error {
-	// TODO: setCookies
-	// TODO: cachePolicy
+func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp websession.WebSession_Response) error {
+	isHttps := req.URL.Scheme == "https"
 
-	additionalHeaders, err := r.AdditionalHeaders()
+	setCookies, err := resp.SetCookies()
 	if err != nil {
 		return err
 	}
+	for i := 0; i < setCookies.Len(); i++ {
+		setCookie := setCookies.At(i)
+		name, err := setCookie.Name()
+		if err != nil {
+			return err
+		}
+		value, err := setCookie.Value()
+		if err != nil {
+			return err
+		}
+		path, err := setCookie.Path()
+		if err != nil {
+			return err
+		}
+		cookie := &http.Cookie{
+			Name:   name,
+			Value:  value,
+			Secure: isHttps,
+			Path:   path,
+		}
+		expires := setCookie.Expires()
+		switch expires.Which() {
+		case websession.WebSession_Cookie_expires_Which_none:
+		case websession.WebSession_Cookie_expires_Which_absolute:
+			cookie.Expires = time.Unix(expires.Absolute(), 0)
+		case websession.WebSession_Cookie_expires_Which_relative:
+			cookie.Expires = time.Now().Add(time.Duration(expires.Relative()) * time.Second)
+		}
+		http.SetCookie(w, cookie)
+	}
+	// TODO: cachePolicy
+
+	additionalHeaders, err := resp.AdditionalHeaders()
+	if err != nil {
+		return err
+	}
+	wHeaders := w.Header()
 	for i := 0; i < additionalHeaders.Len(); i++ {
 		item := additionalHeaders.At(i)
 		name, err := item.Name()
@@ -248,13 +285,13 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 		}
 		k := http.CanonicalHeaderKey(name)
 		if ResponseHeaderFilter.Allows(k) {
-			h[k] = append(h[k], v)
+			wHeaders[k] = append(wHeaders[k], v)
 		}
 	}
 
-	switch r.Which() {
+	switch resp.Which() {
 	case websession.WebSession_Response_Which_content:
-		return populateContentResponseHeaders(h, r.Content())
+		return populateContentResponseHeaders(wHeaders, resp.Content())
 	case websession.WebSession_Response_Which_noContent:
 		// TODO: eTag
 		panic("TODO")
@@ -262,18 +299,18 @@ func populateResponseHeaders(h http.Header, r websession.WebSession_Response) er
 		// TODO: matchingETag
 		panic("TODO")
 	case websession.WebSession_Response_Which_redirect:
-		loc, err := r.Redirect().Location()
+		loc, err := resp.Redirect().Location()
 		if err != nil {
 			return err
 		}
-		h.Set("Location", loc)
+		wHeaders.Set("Location", loc)
 		return nil
 	case websession.WebSession_Response_Which_clientError:
 		panic("TODO")
 	case websession.WebSession_Response_Which_serverError:
 		panic("TODO")
 	default:
-		return fmt.Errorf("Unknown response variant: %v", r.Which())
+		return fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
 }
 
