@@ -222,6 +222,18 @@ func errorBodyBytes(r hasErrorBody) ([]byte, error) {
 	return errBody.Data()
 }
 
+func populateErrorBodyHeaders(dst http.Header, src hasErrorBody) error {
+	if !src.HasNonHtmlBody() {
+		dst.Set("Content-Type", "text/html")
+		return nil
+	}
+	errBody, err := src.NonHtmlBody()
+	if err != nil {
+		return err
+	}
+	return populateHasContentHeaders(dst, errBody)
+}
+
 type hasErrorBody interface {
 	DescriptionHtml() (string, error)
 	NonHtmlBody() (websession.WebSession_Response_ErrorBody, error)
@@ -320,9 +332,9 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 		wHeaders.Set("Location", loc)
 		return nil
 	case websession.WebSession_Response_Which_clientError:
-		panic("TODO")
+		return populateErrorBodyHeaders(w.Header(), resp.ClientError())
 	case websession.WebSession_Response_Which_serverError:
-		panic("TODO")
+		return populateErrorBodyHeaders(w.Header(), resp.ServerError())
 	default:
 		return fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
