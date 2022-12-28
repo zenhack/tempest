@@ -18,6 +18,7 @@ type Handler struct {
 	Session websession.WebSession
 }
 
+// ServeHTTP implements http.Handler.ServeHTTP
 func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
