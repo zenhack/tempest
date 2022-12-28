@@ -12,11 +12,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"zenhack.net/go/sandstorm-next/capnp/external"
-	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
 	"zenhack.net/go/sandstorm-next/go/internal/server/embed"
 	"zenhack.net/go/sandstorm-next/go/internal/server/session"
+	"zenhack.net/go/sandstorm/capnp/grain"
+	"zenhack.net/go/sandstorm/capnp/websession"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
@@ -59,8 +60,7 @@ type grainSessionKey struct {
 }
 
 type grainSession struct {
-	// TODO: switch over to websession
-	webServer httpcp.Server
+	webSession websession.WebSession
 }
 
 func (s *server) Handler() http.Handler {
@@ -139,16 +139,33 @@ func (s *server) Handler() http.Handler {
 						}).Error("Failed to open grain")
 						return
 					}
-					srv := httpcp.Server(c.Bootstrap.AddRef())
+					mainView := grain.MainView(c.Bootstrap.AddRef())
+					ctx := req.Context()
+					fut, rel := mainView.NewSession(ctx, func(p grain.UiView_newSession_Params) error {
+						// TODO
+						return nil
+					})
+					defer rel()
+					res, err := fut.Struct()
+					if err != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						s.log.WithFields(log.Fields{
+							"grainId": sess.GrainId,
+							"error":   err,
+						}).Error("UiView.newSession() failed")
+						return
+					}
+
+					webSession := websession.WebSession(res.Session().AddRef())
 					gs = grainSession{
-						webServer: srv,
+						webSession: webSession,
 					}
 					s.lk.grainSessions[key] = gs
 				}
-				srv := gs.webServer.AddRef()
-				defer srv.Release()
+				session := gs.webSession.AddRef()
+				defer session.Release()
 				unlock()
-				ServeApp(s.log, srv, w, req)
+				ServeApp(session, w, req)
 			}
 		})
 
