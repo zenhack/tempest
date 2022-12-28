@@ -6,6 +6,7 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 )
 
+// Mapping from web-session success codes to http status code numbers
 var successCodeStatuses = map[websession.WebSession_Response_SuccessCode]int{
 	websession.WebSession_Response_SuccessCode_ok:          http.StatusOK,
 	websession.WebSession_Response_SuccessCode_created:     http.StatusCreated,
@@ -15,6 +16,7 @@ var successCodeStatuses = map[websession.WebSession_Response_SuccessCode]int{
 	websession.WebSession_Response_SuccessCode_notModified: http.StatusNotModified,
 }
 
+// Mapping from web-session error codes to http status code numbers
 var clientErrorCodeStatuses = map[websession.WebSession_Response_ClientErrorCode]int{
 	websession.WebSession_Response_ClientErrorCode_badRequest:            http.StatusBadRequest,
 	websession.WebSession_Response_ClientErrorCode_forbidden:             http.StatusForbidden,
