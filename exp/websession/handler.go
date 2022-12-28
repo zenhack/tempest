@@ -293,11 +293,25 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 	case websession.WebSession_Response_Which_content:
 		return populateContentResponseHeaders(wHeaders, resp.Content())
 	case websession.WebSession_Response_Which_noContent:
-		// TODO: eTag
-		panic("TODO")
+		nc := resp.NoContent()
+		if nc.HasETag() {
+			etag, err := nc.ETag()
+			if err != nil {
+				return err
+			}
+			return setETag(wHeaders, etag)
+		}
+		return nil
 	case websession.WebSession_Response_Which_preconditionFailed:
-		// TODO: matchingETag
-		panic("TODO")
+		pf := resp.PreconditionFailed()
+		if pf.HasMatchingETag() {
+			etag, err := pf.MatchingETag()
+			if err != nil {
+				return err
+			}
+			return setETag(wHeaders, etag)
+		}
+		return nil
 	case websession.WebSession_Response_Which_redirect:
 		loc, err := resp.Redirect().Location()
 		if err != nil {
@@ -312,6 +326,27 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 	default:
 		return fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
+}
+
+func setETag(h http.Header, etag websession.WebSession_ETag) error {
+	s, err := eTagStr(etag)
+	if err != nil {
+		return err
+	}
+	h.Set("ETag", s)
+	return nil
+}
+
+func eTagStr(etag websession.WebSession_ETag) (string, error) {
+	value, err := etag.Value()
+	if err != nil {
+		return "", err
+	}
+	if etag.Weak() {
+		// FIXME: do we need to escape this?
+		return "W/\"" + value + "\"", nil
+	}
+	return "\"" + value + "\"", nil
 }
 
 func populateContentResponseHeaders(h http.Header, r websession.WebSession_Response_content) error {
@@ -332,8 +367,14 @@ func populateContentResponseHeaders(h http.Header, r websession.WebSession_Respo
 			map[string]string{"filename": filename},
 		))
 	}
-	// TODO: eTag
-	panic("TODO")
+	if r.HasETag() {
+		etag, err := r.ETag()
+		if err != nil {
+			return err
+		}
+		return setETag(h, etag)
+	}
+	return nil
 }
 
 func populateHasContentHeaders(dst http.Header, src hasContent) error {
