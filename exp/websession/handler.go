@@ -38,7 +38,11 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
 
 	respFut, rel := h.Session.Get(req.Context(), func(p websession.WebSession_get_Params) error {
-		if err := p.SetPath(req.RequestURI); err != nil {
+		if !strings.HasPrefix(req.RequestURI, "/") {
+			return fmt.Errorf("Error: malformed RequestURI (no leading slash): %q", req.RequestURI)
+		}
+		path := req.RequestURI[1:]
+		if err := p.SetPath(path); err != nil {
 			return err
 		}
 		wsCtx, err := p.NewContext()
