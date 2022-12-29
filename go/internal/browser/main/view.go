@@ -33,7 +33,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	return vb.H("body", nil, nil,
 		vb.H("div", vb.A{"class": "main-ui"}, nil,
 			vb.H("div", vb.A{"class": "main-ui__topbar"}, nil,
-				vb.H("p", nil, nil, vb.T("Topbar")),
+				vb.H("a", vb.A{"href": "/"}, nil, vb.T("Sandstorm")),
 			),
 			vb.H("div", vb.A{"class": "main-ui__main"}, nil,
 				vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
