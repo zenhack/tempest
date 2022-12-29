@@ -41,7 +41,7 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 		if err := p.SetPath(req.RequestURI); err != nil {
 			return err
 		}
-		wsCtx, err := p.Context()
+		wsCtx, err := p.NewContext()
 		if err != nil {
 			return err
 		}
