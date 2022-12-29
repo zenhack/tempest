@@ -143,6 +143,7 @@ func (s *server) Handler() http.Handler {
 					ctx := req.Context()
 					fut, rel := mainView.NewSession(ctx, func(p grain.UiView_newSession_Params) error {
 						// TODO
+						p.SetSessionType(websession.WebSession_TypeID)
 						return nil
 					})
 					defer rel()

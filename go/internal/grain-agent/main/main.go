@@ -11,16 +11,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
 
 	"capnproto.org/go/capnp/v3"
-	"capnproto.org/go/capnp/v3/rpc"
-	"capnproto.org/go/capnp/v3/rpc/transport"
 	"github.com/apex/log"
-	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
 	"zenhack.net/go/sandstorm/capnp/spk"
 	"zenhack.net/go/util"
 )
@@ -107,39 +102,43 @@ func Main() {
 		// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
 		lg.Fatal("Too few arugments")
 	}
-	portNo, err := strconv.Atoi(cmd.Args[1])
+	//portNo, err := strconv.Atoi(cmd.Args[1])
 	util.Chkfatal(err)
 	if cmd.Args[2] != "--" {
 		lg.Fatal("Error: second argument should be '--' separator.")
 	}
-	cmd.Args = cmd.Args[3:]
+	//cmd.Args = cmd.Args[3:]
 	osCmd := cmd.ToOsCmd()
 
 	// TODO: make direct these in a more structured way?
 	osCmd.Stdout = os.Stdout
 	osCmd.Stderr = os.Stderr
 
-	util.Chkfatal(startCapnpApi(lg))
+	apiSocket := os.NewFile(3, "supervisor socket")
+	osCmd.ExtraFiles = []*os.File{apiSocket}
+
+	//util.Chkfatal(startCapnpApi(lg))
 
 	util.Chkfatal(osCmd.Start())
-	go func() {
-		defer os.Exit(1)
-		util.Chkfatal(osCmd.Wait())
-		lg.Info("App exited; shutting down grain.")
-	}()
+	//go func() {
+	defer os.Exit(1)
+	util.Chkfatal(osCmd.Wait())
+	lg.Info("App exited; shutting down grain.")
+	//}()
 
-	apiSocket := os.NewFile(3, "supervisor socket")
-	trans := transport.NewStream(apiSocket)
-	bootstrap := httpcp.Server_ServerToClient(&httpBridge{
-		portNo:       portNo,
-		roundTripper: http.DefaultTransport,
-		log:          lg,
-	})
-	conn := rpc.NewConn(trans, &rpc.Options{
-		BootstrapClient: capnp.Client(bootstrap),
-	})
+	/*
+		trans := transport.NewStream(apiSocket)
+		bootstrap := httpcp.Server_ServerToClient(&httpBridge{
+			portNo:       portNo,
+			roundTripper: http.DefaultTransport,
+			log:          lg,
+		})
+		conn := rpc.NewConn(trans, &rpc.Options{
+			BootstrapClient: capnp.Client(bootstrap),
+		})
 
-	<-conn.Done()
+		<-conn.Done()
+	*/
 }
 
 func startCapnpApi(lg log.Interface) error {
