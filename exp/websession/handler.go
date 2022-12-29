@@ -13,7 +13,8 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 )
 
-// A Handler implements http.Handler on top of a WebSession.
+// A Handler implements http.Handler on top of a WebSession. NOTE: this is work in progress
+// and does not handle all requests gracefully (sometime codepaths simply panic("TODO")).
 type Handler struct {
 	Session websession.WebSession
 }
