@@ -180,7 +180,6 @@ func (s PackageDefinition) NewAlwaysInclude(n int32) (capnp.TextList, error) {
 	err = capnp.Struct(s).SetPtr(4, l.ToPtr())
 	return l, err
 }
-
 func (s PackageDefinition) BridgeConfig() (BridgeConfig, error) {
 	p, err := capnp.Struct(s).Ptr(5)
 	return BridgeConfig(p.Struct()), err
@@ -217,19 +216,16 @@ func NewPackageDefinition_List(s *capnp.Segment, sz int32) (PackageDefinition_Li
 // PackageDefinition_Future is a wrapper for a PackageDefinition promised by a client call.
 type PackageDefinition_Future struct{ *capnp.Future }
 
-func (p PackageDefinition_Future) Struct() (PackageDefinition, error) {
-	s, err := p.Future.Struct()
-	return PackageDefinition(s), err
+func (f PackageDefinition_Future) Struct() (PackageDefinition, error) {
+	p, err := f.Future.Ptr()
+	return PackageDefinition(p.Struct()), err
 }
-
 func (p PackageDefinition_Future) Manifest() Manifest_Future {
 	return Manifest_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p PackageDefinition_Future) SourceMap() SourceMap_Future {
 	return SourceMap_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p PackageDefinition_Future) BridgeConfig() BridgeConfig_Future {
 	return BridgeConfig_Future{Future: p.Future.Field(5, nil)}
 }
@@ -408,7 +404,6 @@ func (s Manifest) NewActions(n int32) (Manifest_Action_List, error) {
 	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
-
 func (s Manifest) ContinueCommand() (Manifest_Command, error) {
 	p, err := capnp.Struct(s).Ptr(1)
 	return Manifest_Command(p.Struct()), err
@@ -445,23 +440,19 @@ func NewManifest_List(s *capnp.Segment, sz int32) (Manifest_List, error) {
 // Manifest_Future is a wrapper for a Manifest promised by a client call.
 type Manifest_Future struct{ *capnp.Future }
 
-func (p Manifest_Future) Struct() (Manifest, error) {
-	s, err := p.Future.Struct()
-	return Manifest(s), err
+func (f Manifest_Future) Struct() (Manifest, error) {
+	p, err := f.Future.Ptr()
+	return Manifest(p.Struct()), err
 }
-
 func (p Manifest_Future) AppTitle() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
-
 func (p Manifest_Future) AppMarketingVersion() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p Manifest_Future) Metadata() Metadata_Future {
 	return Metadata_Future{Future: p.Future.Field(4, nil)}
 }
-
 func (p Manifest_Future) ContinueCommand() Manifest_Command_Future {
 	return Manifest_Command_Future{Future: p.Future.Field(1, nil)}
 }
@@ -536,7 +527,6 @@ func (s Manifest_Command) NewArgv(n int32) (capnp.TextList, error) {
 	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
-
 func (s Manifest_Command) Environ() (util.KeyValue_List, error) {
 	p, err := capnp.Struct(s).Ptr(2)
 	return util.KeyValue_List(p.List()), err
@@ -560,7 +550,6 @@ func (s Manifest_Command) NewEnviron(n int32) (util.KeyValue_List, error) {
 	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
-
 func (s Manifest_Command) DeprecatedExecutablePath() (string, error) {
 	p, err := capnp.Struct(s).Ptr(0)
 	return p.Text(), err
@@ -591,9 +580,9 @@ func NewManifest_Command_List(s *capnp.Segment, sz int32) (Manifest_Command_List
 // Manifest_Command_Future is a wrapper for a Manifest_Command promised by a client call.
 type Manifest_Command_Future struct{ *capnp.Future }
 
-func (p Manifest_Command_Future) Struct() (Manifest_Command, error) {
-	s, err := p.Future.Struct()
-	return Manifest_Command(s), err
+func (f Manifest_Command_Future) Struct() (Manifest_Command, error) {
+	p, err := f.Future.Ptr()
+	return Manifest_Command(p.Struct()), err
 }
 
 type Manifest_Action capnp.Struct
@@ -714,7 +703,6 @@ func (s Manifest_Action_input) NewCapability(n int32) (powerbox.PowerboxDescript
 	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
-
 func (s Manifest_Action) Command() (Manifest_Command, error) {
 	p, err := capnp.Struct(s).Ptr(1)
 	return Manifest_Command(p.Struct()), err
@@ -823,11 +811,10 @@ func NewManifest_Action_List(s *capnp.Segment, sz int32) (Manifest_Action_List, 
 // Manifest_Action_Future is a wrapper for a Manifest_Action promised by a client call.
 type Manifest_Action_Future struct{ *capnp.Future }
 
-func (p Manifest_Action_Future) Struct() (Manifest_Action, error) {
-	s, err := p.Future.Struct()
-	return Manifest_Action(s), err
+func (f Manifest_Action_Future) Struct() (Manifest_Action, error) {
+	p, err := f.Future.Ptr()
+	return Manifest_Action(p.Struct()), err
 }
-
 func (p Manifest_Action_Future) Input() Manifest_Action_input_Future {
 	return Manifest_Action_input_Future{p.Future}
 }
@@ -835,23 +822,19 @@ func (p Manifest_Action_Future) Input() Manifest_Action_input_Future {
 // Manifest_Action_input_Future is a wrapper for a Manifest_Action_input promised by a client call.
 type Manifest_Action_input_Future struct{ *capnp.Future }
 
-func (p Manifest_Action_input_Future) Struct() (Manifest_Action_input, error) {
-	s, err := p.Future.Struct()
-	return Manifest_Action_input(s), err
+func (f Manifest_Action_input_Future) Struct() (Manifest_Action_input, error) {
+	p, err := f.Future.Ptr()
+	return Manifest_Action_input(p.Struct()), err
 }
-
 func (p Manifest_Action_Future) Command() Manifest_Command_Future {
 	return Manifest_Command_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p Manifest_Action_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p Manifest_Action_Future) NounPhrase() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(4, nil)}
 }
-
 func (p Manifest_Action_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
@@ -939,9 +922,9 @@ func NewSourceMap_List(s *capnp.Segment, sz int32) (SourceMap_List, error) {
 // SourceMap_Future is a wrapper for a SourceMap promised by a client call.
 type SourceMap_Future struct{ *capnp.Future }
 
-func (p SourceMap_Future) Struct() (SourceMap, error) {
-	s, err := p.Future.Struct()
-	return SourceMap(s), err
+func (f SourceMap_Future) Struct() (SourceMap, error) {
+	p, err := f.Future.Ptr()
+	return SourceMap(p.Struct()), err
 }
 
 type SourceMap_Mapping capnp.Struct
@@ -1063,9 +1046,9 @@ func NewSourceMap_Mapping_List(s *capnp.Segment, sz int32) (SourceMap_Mapping_Li
 // SourceMap_Mapping_Future is a wrapper for a SourceMap_Mapping promised by a client call.
 type SourceMap_Mapping_Future struct{ *capnp.Future }
 
-func (p SourceMap_Mapping_Future) Struct() (SourceMap_Mapping, error) {
-	s, err := p.Future.Struct()
-	return SourceMap_Mapping(s), err
+func (f SourceMap_Mapping_Future) Struct() (SourceMap_Mapping, error) {
+	p, err := f.Future.Ptr()
+	return SourceMap_Mapping(p.Struct()), err
 }
 
 type BridgeConfig capnp.Struct
@@ -1209,11 +1192,10 @@ func NewBridgeConfig_List(s *capnp.Segment, sz int32) (BridgeConfig_List, error)
 // BridgeConfig_Future is a wrapper for a BridgeConfig promised by a client call.
 type BridgeConfig_Future struct{ *capnp.Future }
 
-func (p BridgeConfig_Future) Struct() (BridgeConfig, error) {
-	s, err := p.Future.Struct()
-	return BridgeConfig(s), err
+func (f BridgeConfig_Future) Struct() (BridgeConfig, error) {
+	p, err := f.Future.Ptr()
+	return BridgeConfig(p.Struct()), err
 }
-
 func (p BridgeConfig_Future) ViewInfo() grain.UiView_ViewInfo_Future {
 	return grain.UiView_ViewInfo_Future{Future: p.Future.Field(0, nil)}
 }
@@ -1385,15 +1367,13 @@ func NewBridgeConfig_PowerboxApi_List(s *capnp.Segment, sz int32) (BridgeConfig_
 // BridgeConfig_PowerboxApi_Future is a wrapper for a BridgeConfig_PowerboxApi promised by a client call.
 type BridgeConfig_PowerboxApi_Future struct{ *capnp.Future }
 
-func (p BridgeConfig_PowerboxApi_Future) Struct() (BridgeConfig_PowerboxApi, error) {
-	s, err := p.Future.Struct()
-	return BridgeConfig_PowerboxApi(s), err
+func (f BridgeConfig_PowerboxApi_Future) Struct() (BridgeConfig_PowerboxApi, error) {
+	p, err := f.Future.Ptr()
+	return BridgeConfig_PowerboxApi(p.Struct()), err
 }
-
 func (p BridgeConfig_PowerboxApi_Future) DisplayInfo() powerbox.PowerboxDisplayInfo_Future {
 	return powerbox.PowerboxDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p BridgeConfig_PowerboxApi_Future) Tag() apisession.ApiSession_PowerboxTag_Future {
 	return apisession.ApiSession_PowerboxTag_Future{Future: p.Future.Field(3, nil)}
 }
@@ -1761,7 +1741,6 @@ func (s Metadata) NewCategories(n int32) (Category_List, error) {
 	err = capnp.Struct(s).SetPtr(7, l.ToPtr())
 	return l, err
 }
-
 func (s Metadata) Author() Metadata_author { return Metadata_author(s) }
 
 func (s Metadata_author) IsValid() bool {
@@ -1908,7 +1887,6 @@ func (s Metadata) NewScreenshots(n int32) (Metadata_Screenshot_List, error) {
 	err = capnp.Struct(s).SetPtr(13, l.ToPtr())
 	return l, err
 }
-
 func (s Metadata) ChangeLog() (util.LocalizedText, error) {
 	p, err := capnp.Struct(s).Ptr(14)
 	return util.LocalizedText(p.Struct()), err
@@ -1945,77 +1923,64 @@ func NewMetadata_List(s *capnp.Segment, sz int32) (Metadata_List, error) {
 // Metadata_Future is a wrapper for a Metadata promised by a client call.
 type Metadata_Future struct{ *capnp.Future }
 
-func (p Metadata_Future) Struct() (Metadata, error) {
-	s, err := p.Future.Struct()
-	return Metadata(s), err
+func (f Metadata_Future) Struct() (Metadata, error) {
+	p, err := f.Future.Ptr()
+	return Metadata(p.Struct()), err
 }
-
 func (p Metadata_Future) Icons() Metadata_icons_Future { return Metadata_icons_Future{p.Future} }
 
 // Metadata_icons_Future is a wrapper for a Metadata_icons promised by a client call.
 type Metadata_icons_Future struct{ *capnp.Future }
 
-func (p Metadata_icons_Future) Struct() (Metadata_icons, error) {
-	s, err := p.Future.Struct()
-	return Metadata_icons(s), err
+func (f Metadata_icons_Future) Struct() (Metadata_icons, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_icons(p.Struct()), err
 }
-
 func (p Metadata_icons_Future) AppGrid() Metadata_Icon_Future {
 	return Metadata_Icon_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p Metadata_icons_Future) Grain() Metadata_Icon_Future {
 	return Metadata_Icon_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p Metadata_icons_Future) Market() Metadata_Icon_Future {
 	return Metadata_Icon_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p Metadata_icons_Future) MarketBig() Metadata_Icon_Future {
 	return Metadata_Icon_Future{Future: p.Future.Field(15, nil)}
 }
-
 func (p Metadata_Future) License() Metadata_license_Future { return Metadata_license_Future{p.Future} }
 
 // Metadata_license_Future is a wrapper for a Metadata_license promised by a client call.
 type Metadata_license_Future struct{ *capnp.Future }
 
-func (p Metadata_license_Future) Struct() (Metadata_license, error) {
-	s, err := p.Future.Struct()
-	return Metadata_license(s), err
+func (f Metadata_license_Future) Struct() (Metadata_license, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_license(p.Struct()), err
 }
-
 func (p Metadata_license_Future) Proprietary() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(5, nil)}
 }
-
 func (p Metadata_license_Future) PublicDomain() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(5, nil)}
 }
-
 func (p Metadata_license_Future) Notices() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(6, nil)}
 }
-
 func (p Metadata_Future) Author() Metadata_author_Future { return Metadata_author_Future{p.Future} }
 
 // Metadata_author_Future is a wrapper for a Metadata_author promised by a client call.
 type Metadata_author_Future struct{ *capnp.Future }
 
-func (p Metadata_author_Future) Struct() (Metadata_author, error) {
-	s, err := p.Future.Struct()
-	return Metadata_author(s), err
+func (f Metadata_author_Future) Struct() (Metadata_author, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_author(p.Struct()), err
 }
-
 func (p Metadata_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(11, nil)}
 }
-
 func (p Metadata_Future) ShortDescription() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(12, nil)}
 }
-
 func (p Metadata_Future) ChangeLog() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(14, nil)}
 }
@@ -2178,11 +2143,10 @@ func NewMetadata_Icon_List(s *capnp.Segment, sz int32) (Metadata_Icon_List, erro
 // Metadata_Icon_Future is a wrapper for a Metadata_Icon promised by a client call.
 type Metadata_Icon_Future struct{ *capnp.Future }
 
-func (p Metadata_Icon_Future) Struct() (Metadata_Icon, error) {
-	s, err := p.Future.Struct()
-	return Metadata_Icon(s), err
+func (f Metadata_Icon_Future) Struct() (Metadata_Icon, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_Icon(p.Struct()), err
 }
-
 func (p Metadata_Icon_Future) Png() Metadata_Icon_png_Future {
 	return Metadata_Icon_png_Future{p.Future}
 }
@@ -2190,9 +2154,9 @@ func (p Metadata_Icon_Future) Png() Metadata_Icon_png_Future {
 // Metadata_Icon_png_Future is a wrapper for a Metadata_Icon_png promised by a client call.
 type Metadata_Icon_png_Future struct{ *capnp.Future }
 
-func (p Metadata_Icon_png_Future) Struct() (Metadata_Icon_png, error) {
-	s, err := p.Future.Struct()
-	return Metadata_Icon_png(s), err
+func (f Metadata_Icon_png_Future) Struct() (Metadata_Icon_png, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_Icon_png(p.Struct()), err
 }
 
 type Metadata_Screenshot capnp.Struct
@@ -2340,9 +2304,9 @@ func NewMetadata_Screenshot_List(s *capnp.Segment, sz int32) (Metadata_Screensho
 // Metadata_Screenshot_Future is a wrapper for a Metadata_Screenshot promised by a client call.
 type Metadata_Screenshot_Future struct{ *capnp.Future }
 
-func (p Metadata_Screenshot_Future) Struct() (Metadata_Screenshot, error) {
-	s, err := p.Future.Struct()
-	return Metadata_Screenshot(s), err
+func (f Metadata_Screenshot_Future) Struct() (Metadata_Screenshot, error) {
+	p, err := f.Future.Ptr()
+	return Metadata_Screenshot(p.Struct()), err
 }
 
 type OsiLicenseInfo capnp.Struct
@@ -2448,9 +2412,9 @@ func NewOsiLicenseInfo_List(s *capnp.Segment, sz int32) (OsiLicenseInfo_List, er
 // OsiLicenseInfo_Future is a wrapper for a OsiLicenseInfo promised by a client call.
 type OsiLicenseInfo_Future struct{ *capnp.Future }
 
-func (p OsiLicenseInfo_Future) Struct() (OsiLicenseInfo, error) {
-	s, err := p.Future.Struct()
-	return OsiLicenseInfo(s), err
+func (f OsiLicenseInfo_Future) Struct() (OsiLicenseInfo, error) {
+	p, err := f.Future.Ptr()
+	return OsiLicenseInfo(p.Struct()), err
 }
 
 type OpenSourceLicense uint16
@@ -2673,9 +2637,9 @@ func NewAppId_List(s *capnp.Segment, sz int32) (AppId_List, error) {
 // AppId_Future is a wrapper for a AppId promised by a client call.
 type AppId_Future struct{ *capnp.Future }
 
-func (p AppId_Future) Struct() (AppId, error) {
-	s, err := p.Future.Struct()
-	return AppId(s), err
+func (f AppId_Future) Struct() (AppId, error) {
+	p, err := f.Future.Ptr()
+	return AppId(p.Struct()), err
 }
 
 type PackageId capnp.Struct
@@ -2753,9 +2717,9 @@ func NewPackageId_List(s *capnp.Segment, sz int32) (PackageId_List, error) {
 // PackageId_Future is a wrapper for a PackageId promised by a client call.
 type PackageId_Future struct{ *capnp.Future }
 
-func (p PackageId_Future) Struct() (PackageId, error) {
-	s, err := p.Future.Struct()
-	return PackageId(s), err
+func (f PackageId_Future) Struct() (PackageId, error) {
+	p, err := f.Future.Ptr()
+	return PackageId(p.Struct()), err
 }
 
 type VerifiedInfo capnp.Struct
@@ -2963,27 +2927,22 @@ func NewVerifiedInfo_List(s *capnp.Segment, sz int32) (VerifiedInfo_List, error)
 // VerifiedInfo_Future is a wrapper for a VerifiedInfo promised by a client call.
 type VerifiedInfo_Future struct{ *capnp.Future }
 
-func (p VerifiedInfo_Future) Struct() (VerifiedInfo, error) {
-	s, err := p.Future.Struct()
-	return VerifiedInfo(s), err
+func (f VerifiedInfo_Future) Struct() (VerifiedInfo, error) {
+	p, err := f.Future.Ptr()
+	return VerifiedInfo(p.Struct()), err
 }
-
 func (p VerifiedInfo_Future) AppId() AppId_Future {
 	return AppId_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p VerifiedInfo_Future) PackageId() PackageId_Future {
 	return PackageId_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p VerifiedInfo_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p VerifiedInfo_Future) MarketingVersion() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(3, nil)}
 }
-
 func (p VerifiedInfo_Future) Metadata() Metadata_Future {
 	return Metadata_Future{Future: p.Future.Field(5, nil)}
 }
@@ -3065,9 +3024,9 @@ func NewCategoryInfo_List(s *capnp.Segment, sz int32) (CategoryInfo_List, error)
 // CategoryInfo_Future is a wrapper for a CategoryInfo promised by a client call.
 type CategoryInfo_Future struct{ *capnp.Future }
 
-func (p CategoryInfo_Future) Struct() (CategoryInfo, error) {
-	s, err := p.Future.Struct()
-	return CategoryInfo(s), err
+func (f CategoryInfo_Future) Struct() (CategoryInfo, error) {
+	p, err := f.Future.Ptr()
+	return CategoryInfo(p.Struct()), err
 }
 
 type Category uint16
@@ -3244,9 +3203,9 @@ func NewKeyFile_List(s *capnp.Segment, sz int32) (KeyFile_List, error) {
 // KeyFile_Future is a wrapper for a KeyFile promised by a client call.
 type KeyFile_Future struct{ *capnp.Future }
 
-func (p KeyFile_Future) Struct() (KeyFile, error) {
-	s, err := p.Future.Struct()
-	return KeyFile(s), err
+func (f KeyFile_Future) Struct() (KeyFile, error) {
+	p, err := f.Future.Ptr()
+	return KeyFile(p.Struct()), err
 }
 
 type Signature capnp.Struct
@@ -3334,9 +3293,9 @@ func NewSignature_List(s *capnp.Segment, sz int32) (Signature_List, error) {
 // Signature_Future is a wrapper for a Signature promised by a client call.
 type Signature_Future struct{ *capnp.Future }
 
-func (p Signature_Future) Struct() (Signature, error) {
-	s, err := p.Future.Struct()
-	return Signature(s), err
+func (f Signature_Future) Struct() (Signature, error) {
+	p, err := f.Future.Ptr()
+	return Signature(p.Struct()), err
 }
 
 type Archive capnp.Struct
@@ -3422,9 +3381,9 @@ func NewArchive_List(s *capnp.Segment, sz int32) (Archive_List, error) {
 // Archive_Future is a wrapper for a Archive promised by a client call.
 type Archive_Future struct{ *capnp.Future }
 
-func (p Archive_Future) Struct() (Archive, error) {
-	s, err := p.Future.Struct()
-	return Archive(s), err
+func (f Archive_Future) Struct() (Archive, error) {
+	p, err := f.Future.Ptr()
+	return Archive(p.Struct()), err
 }
 
 type Archive_File capnp.Struct
@@ -3637,9 +3596,9 @@ func NewArchive_File_List(s *capnp.Segment, sz int32) (Archive_File_List, error)
 // Archive_File_Future is a wrapper for a Archive_File promised by a client call.
 type Archive_File_Future struct{ *capnp.Future }
 
-func (p Archive_File_Future) Struct() (Archive_File, error) {
-	s, err := p.Future.Struct()
-	return Archive_File(s), err
+func (f Archive_File_Future) Struct() (Archive_File, error) {
+	p, err := f.Future.Ptr()
+	return Archive_File(p.Struct()), err
 }
 
 const schema_df9bc20172856a3a = "x\xda\x94Z\x0fp\x14U\x9a\xff\xbe\xee\x99L\x82\x84" +

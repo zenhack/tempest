@@ -5,9 +5,11 @@ package webpublishing
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
@@ -114,12 +116,34 @@ func (c WebSite) ListResources(ctx context.Context, params func(WebSite_listReso
 	return WebSite_listResources_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c WebSite) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c WebSite) AddRef() WebSite {
 	return WebSite(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c WebSite) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c WebSite) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c WebSite) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -130,11 +154,34 @@ func (WebSite) DecodeFromPtr(p capnp.Ptr) WebSite {
 	return WebSite(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c WebSite) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A WebSite_Server is a WebSite with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c WebSite) IsSame(other WebSite) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c WebSite) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c WebSite) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A WebSite_Server is a WebSite with a local implementation.
 type WebSite_Server interface {
 	GetUrl(context.Context, WebSite_getUrl) error
 
@@ -565,11 +612,10 @@ func NewWebSite_Entity_List(s *capnp.Segment, sz int32) (WebSite_Entity_List, er
 // WebSite_Entity_Future is a wrapper for a WebSite_Entity promised by a client call.
 type WebSite_Entity_Future struct{ *capnp.Future }
 
-func (p WebSite_Entity_Future) Struct() (WebSite_Entity, error) {
-	s, err := p.Future.Struct()
-	return WebSite_Entity(s), err
+func (f WebSite_Entity_Future) Struct() (WebSite_Entity, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_Entity(p.Struct()), err
 }
-
 func (p WebSite_Entity_Future) Body() WebSite_Entity_body_Future {
 	return WebSite_Entity_body_Future{p.Future}
 }
@@ -577,11 +623,10 @@ func (p WebSite_Entity_Future) Body() WebSite_Entity_body_Future {
 // WebSite_Entity_body_Future is a wrapper for a WebSite_Entity_body promised by a client call.
 type WebSite_Entity_body_Future struct{ *capnp.Future }
 
-func (p WebSite_Entity_body_Future) Struct() (WebSite_Entity_body, error) {
-	s, err := p.Future.Struct()
-	return WebSite_Entity_body(s), err
+func (f WebSite_Entity_body_Future) Struct() (WebSite_Entity_body, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_Entity_body(p.Struct()), err
 }
-
 func (p WebSite_Entity_body_Future) Blob() util.Blob {
 	return util.Blob(p.Future.Field(3, nil).Client())
 }
@@ -646,9 +691,9 @@ func NewWebSite_getUrl_Params_List(s *capnp.Segment, sz int32) (WebSite_getUrl_P
 // WebSite_getUrl_Params_Future is a wrapper for a WebSite_getUrl_Params promised by a client call.
 type WebSite_getUrl_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getUrl_Params_Future) Struct() (WebSite_getUrl_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getUrl_Params(s), err
+func (f WebSite_getUrl_Params_Future) Struct() (WebSite_getUrl_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getUrl_Params(p.Struct()), err
 }
 
 type WebSite_getUrl_Results capnp.Struct
@@ -728,9 +773,9 @@ func NewWebSite_getUrl_Results_List(s *capnp.Segment, sz int32) (WebSite_getUrl_
 // WebSite_getUrl_Results_Future is a wrapper for a WebSite_getUrl_Results promised by a client call.
 type WebSite_getUrl_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getUrl_Results_Future) Struct() (WebSite_getUrl_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getUrl_Results(s), err
+func (f WebSite_getUrl_Results_Future) Struct() (WebSite_getUrl_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getUrl_Results(p.Struct()), err
 }
 
 type WebSite_getEntities_Params capnp.Struct
@@ -810,9 +855,9 @@ func NewWebSite_getEntities_Params_List(s *capnp.Segment, sz int32) (WebSite_get
 // WebSite_getEntities_Params_Future is a wrapper for a WebSite_getEntities_Params promised by a client call.
 type WebSite_getEntities_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getEntities_Params_Future) Struct() (WebSite_getEntities_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getEntities_Params(s), err
+func (f WebSite_getEntities_Params_Future) Struct() (WebSite_getEntities_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getEntities_Params(p.Struct()), err
 }
 
 type WebSite_getEntities_Results capnp.Struct
@@ -892,11 +937,10 @@ func NewWebSite_getEntities_Results_List(s *capnp.Segment, sz int32) (WebSite_ge
 // WebSite_getEntities_Results_Future is a wrapper for a WebSite_getEntities_Results promised by a client call.
 type WebSite_getEntities_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getEntities_Results_Future) Struct() (WebSite_getEntities_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getEntities_Results(s), err
+func (f WebSite_getEntities_Results_Future) Struct() (WebSite_getEntities_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getEntities_Results(p.Struct()), err
 }
-
 func (p WebSite_getEntities_Results_Future) Entities() util.Assignable {
 	return util.Assignable(p.Future.Field(0, nil).Client())
 }
@@ -961,9 +1005,9 @@ func NewWebSite_getNotFoundEntities_Params_List(s *capnp.Segment, sz int32) (Web
 // WebSite_getNotFoundEntities_Params_Future is a wrapper for a WebSite_getNotFoundEntities_Params promised by a client call.
 type WebSite_getNotFoundEntities_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getNotFoundEntities_Params_Future) Struct() (WebSite_getNotFoundEntities_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getNotFoundEntities_Params(s), err
+func (f WebSite_getNotFoundEntities_Params_Future) Struct() (WebSite_getNotFoundEntities_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getNotFoundEntities_Params(p.Struct()), err
 }
 
 type WebSite_getNotFoundEntities_Results capnp.Struct
@@ -1043,11 +1087,10 @@ func NewWebSite_getNotFoundEntities_Results_List(s *capnp.Segment, sz int32) (We
 // WebSite_getNotFoundEntities_Results_Future is a wrapper for a WebSite_getNotFoundEntities_Results promised by a client call.
 type WebSite_getNotFoundEntities_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getNotFoundEntities_Results_Future) Struct() (WebSite_getNotFoundEntities_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getNotFoundEntities_Results(s), err
+func (f WebSite_getNotFoundEntities_Results_Future) Struct() (WebSite_getNotFoundEntities_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getNotFoundEntities_Results(p.Struct()), err
 }
-
 func (p WebSite_getNotFoundEntities_Results_Future) Entities() util.Assignable {
 	return util.Assignable(p.Future.Field(0, nil).Client())
 }
@@ -1112,9 +1155,9 @@ func NewWebSite_uploadBlob_Params_List(s *capnp.Segment, sz int32) (WebSite_uplo
 // WebSite_uploadBlob_Params_Future is a wrapper for a WebSite_uploadBlob_Params promised by a client call.
 type WebSite_uploadBlob_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_uploadBlob_Params_Future) Struct() (WebSite_uploadBlob_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_uploadBlob_Params(s), err
+func (f WebSite_uploadBlob_Params_Future) Struct() (WebSite_uploadBlob_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_uploadBlob_Params(p.Struct()), err
 }
 
 type WebSite_uploadBlob_Results capnp.Struct
@@ -1212,11 +1255,10 @@ func NewWebSite_uploadBlob_Results_List(s *capnp.Segment, sz int32) (WebSite_upl
 // WebSite_uploadBlob_Results_Future is a wrapper for a WebSite_uploadBlob_Results promised by a client call.
 type WebSite_uploadBlob_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_uploadBlob_Results_Future) Struct() (WebSite_uploadBlob_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_uploadBlob_Results(s), err
+func (f WebSite_uploadBlob_Results_Future) Struct() (WebSite_uploadBlob_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_uploadBlob_Results(p.Struct()), err
 }
-
 func (p WebSite_uploadBlob_Results_Future) Blob() util.Blob {
 	return util.Blob(p.Future.Field(0, nil).Client())
 }
@@ -1302,9 +1344,9 @@ func NewWebSite_getSubsite_Params_List(s *capnp.Segment, sz int32) (WebSite_getS
 // WebSite_getSubsite_Params_Future is a wrapper for a WebSite_getSubsite_Params promised by a client call.
 type WebSite_getSubsite_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_getSubsite_Params_Future) Struct() (WebSite_getSubsite_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getSubsite_Params(s), err
+func (f WebSite_getSubsite_Params_Future) Struct() (WebSite_getSubsite_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getSubsite_Params(p.Struct()), err
 }
 
 type WebSite_getSubsite_Results capnp.Struct
@@ -1384,11 +1426,10 @@ func NewWebSite_getSubsite_Results_List(s *capnp.Segment, sz int32) (WebSite_get
 // WebSite_getSubsite_Results_Future is a wrapper for a WebSite_getSubsite_Results promised by a client call.
 type WebSite_getSubsite_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_getSubsite_Results_Future) Struct() (WebSite_getSubsite_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_getSubsite_Results(s), err
+func (f WebSite_getSubsite_Results_Future) Struct() (WebSite_getSubsite_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_getSubsite_Results(p.Struct()), err
 }
-
 func (p WebSite_getSubsite_Results_Future) Site() WebSite {
 	return WebSite(p.Future.Field(0, nil).Client())
 }
@@ -1460,9 +1501,9 @@ func NewWebSite_listResources_Params_List(s *capnp.Segment, sz int32) (WebSite_l
 // WebSite_listResources_Params_Future is a wrapper for a WebSite_listResources_Params promised by a client call.
 type WebSite_listResources_Params_Future struct{ *capnp.Future }
 
-func (p WebSite_listResources_Params_Future) Struct() (WebSite_listResources_Params, error) {
-	s, err := p.Future.Struct()
-	return WebSite_listResources_Params(s), err
+func (f WebSite_listResources_Params_Future) Struct() (WebSite_listResources_Params, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_listResources_Params(p.Struct()), err
 }
 
 type WebSite_listResources_Results capnp.Struct
@@ -1548,9 +1589,9 @@ func NewWebSite_listResources_Results_List(s *capnp.Segment, sz int32) (WebSite_
 // WebSite_listResources_Results_Future is a wrapper for a WebSite_listResources_Results promised by a client call.
 type WebSite_listResources_Results_Future struct{ *capnp.Future }
 
-func (p WebSite_listResources_Results_Future) Struct() (WebSite_listResources_Results, error) {
-	s, err := p.Future.Struct()
-	return WebSite_listResources_Results(s), err
+func (f WebSite_listResources_Results_Future) Struct() (WebSite_listResources_Results, error) {
+	p, err := f.Future.Ptr()
+	return WebSite_listResources_Results(p.Struct()), err
 }
 
 const schema_d5d3e63bd0a552b6 = "x\xda\xc4U]h\x1c\xd5\x17?\xe7\xcel\xa7\xd9\xee" +

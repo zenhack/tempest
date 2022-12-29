@@ -4,10 +4,12 @@ package persistentuiview
 
 import (
 	capnp "capnproto.org/go/capnp/v3"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
+	fmt "fmt"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 )
@@ -114,12 +116,34 @@ func (c PersistentUiView) Save(ctx context.Context, params func(persistent.Persi
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentUiView) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentUiView) AddRef() PersistentUiView {
 	return PersistentUiView(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentUiView) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentUiView) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentUiView) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -130,11 +154,34 @@ func (PersistentUiView) DecodeFromPtr(p capnp.Ptr) PersistentUiView {
 	return PersistentUiView(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentUiView) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentUiView_Server is a PersistentUiView with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentUiView) IsSame(other PersistentUiView) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentUiView) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentUiView) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentUiView_Server is a PersistentUiView with a local implementation.
 type PersistentUiView_Server interface {
 	GetViewInfo(context.Context, grain.UiView_getViewInfo) error
 

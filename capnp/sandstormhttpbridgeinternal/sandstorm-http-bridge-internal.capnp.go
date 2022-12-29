@@ -5,9 +5,11 @@ package sandstormhttpbridgeinternal
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
@@ -106,7 +108,6 @@ func (s BridgeObjectId) SetApplication(v capnp.Ptr) error {
 	capnp.Struct(s).SetUint16(0, 0)
 	return capnp.Struct(s).SetPtr(0, v)
 }
-
 func (s BridgeObjectId) HttpApi() (BridgeObjectId_HttpApi, error) {
 	if capnp.Struct(s).Uint16(0) != 1 {
 		panic("Which() != httpApi")
@@ -151,15 +152,13 @@ func NewBridgeObjectId_List(s *capnp.Segment, sz int32) (BridgeObjectId_List, er
 // BridgeObjectId_Future is a wrapper for a BridgeObjectId promised by a client call.
 type BridgeObjectId_Future struct{ *capnp.Future }
 
-func (p BridgeObjectId_Future) Struct() (BridgeObjectId, error) {
-	s, err := p.Future.Struct()
-	return BridgeObjectId(s), err
+func (f BridgeObjectId_Future) Struct() (BridgeObjectId, error) {
+	p, err := f.Future.Ptr()
+	return BridgeObjectId(p.Struct()), err
 }
-
 func (p BridgeObjectId_Future) Application() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
-
 func (p BridgeObjectId_Future) HttpApi() BridgeObjectId_HttpApi_Future {
 	return BridgeObjectId_HttpApi_Future{Future: p.Future.Field(0, nil)}
 }
@@ -270,7 +269,6 @@ func (s BridgeObjectId_HttpApi) NewPermissions(n int32) (capnp.BitList, error) {
 	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
-
 func (s BridgeObjectId_HttpApi) IdentityId() ([]byte, error) {
 	p, err := capnp.Struct(s).Ptr(3)
 	return []byte(p.Data()), err
@@ -296,9 +294,9 @@ func NewBridgeObjectId_HttpApi_List(s *capnp.Segment, sz int32) (BridgeObjectId_
 // BridgeObjectId_HttpApi_Future is a wrapper for a BridgeObjectId_HttpApi promised by a client call.
 type BridgeObjectId_HttpApi_Future struct{ *capnp.Future }
 
-func (p BridgeObjectId_HttpApi_Future) Struct() (BridgeObjectId_HttpApi, error) {
-	s, err := p.Future.Struct()
-	return BridgeObjectId_HttpApi(s), err
+func (f BridgeObjectId_HttpApi_Future) Struct() (BridgeObjectId_HttpApi, error) {
+	p, err := f.Future.Ptr()
+	return BridgeObjectId_HttpApi(p.Struct()), err
 }
 
 type BridgeHttpSession capnp.Client
@@ -611,12 +609,34 @@ func (c BridgeHttpSession) Save(ctx context.Context, params func(grain.AppPersis
 	return grain.AppPersistent_save_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c BridgeHttpSession) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c BridgeHttpSession) AddRef() BridgeHttpSession {
 	return BridgeHttpSession(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c BridgeHttpSession) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c BridgeHttpSession) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c BridgeHttpSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -627,11 +647,34 @@ func (BridgeHttpSession) DecodeFromPtr(p capnp.Ptr) BridgeHttpSession {
 	return BridgeHttpSession(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c BridgeHttpSession) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A BridgeHttpSession_Server is a BridgeHttpSession with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c BridgeHttpSession) IsSame(other BridgeHttpSession) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c BridgeHttpSession) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c BridgeHttpSession) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A BridgeHttpSession_Server is a BridgeHttpSession with a local implementation.
 type BridgeHttpSession_Server interface {
 	Get(context.Context, websession.WebSession_get) error
 
@@ -1050,7 +1093,6 @@ func (s SessionInfo_request) NewRequestInfo(n int32) (powerbox.PowerboxDescripto
 	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
-
 func (s SessionInfo) Offer() SessionInfo_offer { return SessionInfo_offer(s) }
 
 func (s SessionInfo) SetOffer() {
@@ -1121,11 +1163,10 @@ func NewSessionInfo_List(s *capnp.Segment, sz int32) (SessionInfo_List, error) {
 // SessionInfo_Future is a wrapper for a SessionInfo promised by a client call.
 type SessionInfo_Future struct{ *capnp.Future }
 
-func (p SessionInfo_Future) Struct() (SessionInfo, error) {
-	s, err := p.Future.Struct()
-	return SessionInfo(s), err
+func (f SessionInfo_Future) Struct() (SessionInfo, error) {
+	p, err := f.Future.Ptr()
+	return SessionInfo(p.Struct()), err
 }
-
 func (p SessionInfo_Future) Request() SessionInfo_request_Future {
 	return SessionInfo_request_Future{p.Future}
 }
@@ -1133,11 +1174,10 @@ func (p SessionInfo_Future) Request() SessionInfo_request_Future {
 // SessionInfo_request_Future is a wrapper for a SessionInfo_request promised by a client call.
 type SessionInfo_request_Future struct{ *capnp.Future }
 
-func (p SessionInfo_request_Future) Struct() (SessionInfo_request, error) {
-	s, err := p.Future.Struct()
-	return SessionInfo_request(s), err
+func (f SessionInfo_request_Future) Struct() (SessionInfo_request, error) {
+	p, err := f.Future.Ptr()
+	return SessionInfo_request(p.Struct()), err
 }
-
 func (p SessionInfo_Future) Offer() SessionInfo_offer_Future {
 	return SessionInfo_offer_Future{p.Future}
 }
@@ -1145,15 +1185,13 @@ func (p SessionInfo_Future) Offer() SessionInfo_offer_Future {
 // SessionInfo_offer_Future is a wrapper for a SessionInfo_offer promised by a client call.
 type SessionInfo_offer_Future struct{ *capnp.Future }
 
-func (p SessionInfo_offer_Future) Struct() (SessionInfo_offer, error) {
-	s, err := p.Future.Struct()
-	return SessionInfo_offer(s), err
+func (f SessionInfo_offer_Future) Struct() (SessionInfo_offer, error) {
+	p, err := f.Future.Ptr()
+	return SessionInfo_offer(p.Struct()), err
 }
-
-func (p SessionInfo_offer_Future) Offer() *capnp.Future {
-	return p.Future.Field(0, nil)
+func (p SessionInfo_offer_Future) Offer() capnp.Client {
+	return p.Future.Field(0, nil).Client()
 }
-
 func (p SessionInfo_offer_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
 	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
 }

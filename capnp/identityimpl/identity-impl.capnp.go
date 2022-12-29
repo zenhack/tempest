@@ -4,10 +4,12 @@ package identityimpl
 
 import (
 	capnp "capnproto.org/go/capnp/v3"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
+	fmt "fmt"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 )
@@ -66,12 +68,34 @@ func (c PersistentIdentity) Save(ctx context.Context, params func(persistent.Per
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentIdentity) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentIdentity) AddRef() PersistentIdentity {
 	return PersistentIdentity(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentIdentity) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentIdentity) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentIdentity) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -82,11 +106,34 @@ func (PersistentIdentity) DecodeFromPtr(p capnp.Ptr) PersistentIdentity {
 	return PersistentIdentity(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentIdentity) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentIdentity_Server is a PersistentIdentity with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentIdentity) IsSame(other PersistentIdentity) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentIdentity) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentIdentity) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentIdentity_Server is a PersistentIdentity with a local implementation.
 type PersistentIdentity_Server interface {
 	GetProfile(context.Context, identity.Identity_getProfile) error
 

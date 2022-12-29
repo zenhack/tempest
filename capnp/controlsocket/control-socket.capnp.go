@@ -5,9 +5,11 @@ package controlsocket
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
@@ -54,12 +56,34 @@ func (c Controller) Dev(ctx context.Context, params func(Controller_dev_Params) 
 	return Controller_dev_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c Controller) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c Controller) AddRef() Controller {
 	return Controller(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c Controller) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c Controller) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c Controller) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -70,11 +94,34 @@ func (Controller) DecodeFromPtr(p capnp.Ptr) Controller {
 	return Controller(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c Controller) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A Controller_Server is a Controller with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c Controller) IsSame(other Controller) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c Controller) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c Controller) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A Controller_Server is a Controller with a local implementation.
 type Controller_Server interface {
 	DevShell(context.Context, Controller_devShell) error
 
@@ -230,9 +277,9 @@ func NewController_devShell_Params_List(s *capnp.Segment, sz int32) (Controller_
 // Controller_devShell_Params_Future is a wrapper for a Controller_devShell_Params promised by a client call.
 type Controller_devShell_Params_Future struct{ *capnp.Future }
 
-func (p Controller_devShell_Params_Future) Struct() (Controller_devShell_Params, error) {
-	s, err := p.Future.Struct()
-	return Controller_devShell_Params(s), err
+func (f Controller_devShell_Params_Future) Struct() (Controller_devShell_Params, error) {
+	p, err := f.Future.Ptr()
+	return Controller_devShell_Params(p.Struct()), err
 }
 
 type Controller_devShell_Results capnp.Struct
@@ -336,15 +383,13 @@ func NewController_devShell_Results_List(s *capnp.Segment, sz int32) (Controller
 // Controller_devShell_Results_Future is a wrapper for a Controller_devShell_Results promised by a client call.
 type Controller_devShell_Results_Future struct{ *capnp.Future }
 
-func (p Controller_devShell_Results_Future) Struct() (Controller_devShell_Results, error) {
-	s, err := p.Future.Struct()
-	return Controller_devShell_Results(s), err
+func (f Controller_devShell_Results_Future) Struct() (Controller_devShell_Results, error) {
+	p, err := f.Future.Ptr()
+	return Controller_devShell_Results(p.Struct()), err
 }
-
 func (p Controller_devShell_Results_Future) ShellFds() ShellFDs_Future {
 	return ShellFDs_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p Controller_devShell_Results_Future) Handle() util.Handle {
 	return util.Handle(p.Future.Field(1, nil).Client())
 }
@@ -426,9 +471,9 @@ func NewController_dev_Params_List(s *capnp.Segment, sz int32) (Controller_dev_P
 // Controller_dev_Params_Future is a wrapper for a Controller_dev_Params promised by a client call.
 type Controller_dev_Params_Future struct{ *capnp.Future }
 
-func (p Controller_dev_Params_Future) Struct() (Controller_dev_Params, error) {
-	s, err := p.Future.Struct()
-	return Controller_dev_Params(s), err
+func (f Controller_dev_Params_Future) Struct() (Controller_dev_Params, error) {
+	p, err := f.Future.Ptr()
+	return Controller_dev_Params(p.Struct()), err
 }
 
 type Controller_dev_Results capnp.Struct
@@ -526,11 +571,10 @@ func NewController_dev_Results_List(s *capnp.Segment, sz int32) (Controller_dev_
 // Controller_dev_Results_Future is a wrapper for a Controller_dev_Results promised by a client call.
 type Controller_dev_Results_Future struct{ *capnp.Future }
 
-func (p Controller_dev_Results_Future) Struct() (Controller_dev_Results, error) {
-	s, err := p.Future.Struct()
-	return Controller_dev_Results(s), err
+func (f Controller_dev_Results_Future) Struct() (Controller_dev_Results, error) {
+	p, err := f.Future.Ptr()
+	return Controller_dev_Results(p.Struct()), err
 }
-
 func (p Controller_dev_Results_Future) FuseFd() FileDescriptor {
 	return FileDescriptor(p.Future.Field(0, nil).Client())
 }
@@ -652,11 +696,10 @@ func NewShellFDs_List(s *capnp.Segment, sz int32) (ShellFDs_List, error) {
 // ShellFDs_Future is a wrapper for a ShellFDs promised by a client call.
 type ShellFDs_Future struct{ *capnp.Future }
 
-func (p ShellFDs_Future) Struct() (ShellFDs, error) {
-	s, err := p.Future.Struct()
-	return ShellFDs(s), err
+func (f ShellFDs_Future) Struct() (ShellFDs, error) {
+	p, err := f.Future.Ptr()
+	return ShellFDs(p.Struct()), err
 }
-
 func (p ShellFDs_Future) AcceptHttp() FileDescriptor {
 	return FileDescriptor(p.Future.Field(0, nil).Client())
 }
@@ -691,12 +734,34 @@ func (c DevSession) UpdateManifest(ctx context.Context, params func(DevSession_u
 	return DevSession_updateManifest_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c DevSession) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c DevSession) AddRef() DevSession {
 	return DevSession(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c DevSession) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c DevSession) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c DevSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -707,11 +772,34 @@ func (DevSession) DecodeFromPtr(p capnp.Ptr) DevSession {
 	return DevSession(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c DevSession) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A DevSession_Server is a DevSession with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c DevSession) IsSame(other DevSession) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c DevSession) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c DevSession) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A DevSession_Server is a DevSession with a local implementation.
 type DevSession_Server interface {
 	UpdateManifest(context.Context, DevSession_updateManifest) error
 }
@@ -836,9 +924,9 @@ func NewDevSession_updateManifest_Params_List(s *capnp.Segment, sz int32) (DevSe
 // DevSession_updateManifest_Params_Future is a wrapper for a DevSession_updateManifest_Params promised by a client call.
 type DevSession_updateManifest_Params_Future struct{ *capnp.Future }
 
-func (p DevSession_updateManifest_Params_Future) Struct() (DevSession_updateManifest_Params, error) {
-	s, err := p.Future.Struct()
-	return DevSession_updateManifest_Params(s), err
+func (f DevSession_updateManifest_Params_Future) Struct() (DevSession_updateManifest_Params, error) {
+	p, err := f.Future.Ptr()
+	return DevSession_updateManifest_Params(p.Struct()), err
 }
 
 type DevSession_updateManifest_Results capnp.Struct
@@ -901,9 +989,9 @@ func NewDevSession_updateManifest_Results_List(s *capnp.Segment, sz int32) (DevS
 // DevSession_updateManifest_Results_Future is a wrapper for a DevSession_updateManifest_Results promised by a client call.
 type DevSession_updateManifest_Results_Future struct{ *capnp.Future }
 
-func (p DevSession_updateManifest_Results_Future) Struct() (DevSession_updateManifest_Results, error) {
-	s, err := p.Future.Struct()
-	return DevSession_updateManifest_Results(s), err
+func (f DevSession_updateManifest_Results_Future) Struct() (DevSession_updateManifest_Results, error) {
+	p, err := f.Future.Ptr()
+	return DevSession_updateManifest_Results(p.Struct()), err
 }
 
 type FileDescriptor capnp.Client
@@ -911,12 +999,34 @@ type FileDescriptor capnp.Client
 // FileDescriptor_TypeID is the unique identifier for the type FileDescriptor.
 const FileDescriptor_TypeID = 0xd9ccfac7d7a20cc0
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c FileDescriptor) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c FileDescriptor) AddRef() FileDescriptor {
 	return FileDescriptor(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c FileDescriptor) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c FileDescriptor) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c FileDescriptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -927,11 +1037,34 @@ func (FileDescriptor) DecodeFromPtr(p capnp.Ptr) FileDescriptor {
 	return FileDescriptor(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c FileDescriptor) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A FileDescriptor_Server is a FileDescriptor with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c FileDescriptor) IsSame(other FileDescriptor) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c FileDescriptor) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c FileDescriptor) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A FileDescriptor_Server is a FileDescriptor with a local implementation.
 type FileDescriptor_Server interface {
 }
 

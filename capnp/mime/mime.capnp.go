@@ -114,9 +114,9 @@ func NewMimeTypeInfo_List(s *capnp.Segment, sz int32) (MimeTypeInfo_List, error)
 // MimeTypeInfo_Future is a wrapper for a MimeTypeInfo promised by a client call.
 type MimeTypeInfo_Future struct{ *capnp.Future }
 
-func (p MimeTypeInfo_Future) Struct() (MimeTypeInfo, error) {
-	s, err := p.Future.Struct()
-	return MimeTypeInfo(s), err
+func (f MimeTypeInfo_Future) Struct() (MimeTypeInfo, error) {
+	p, err := f.Future.Ptr()
+	return MimeTypeInfo(p.Struct()), err
 }
 
 const schema_9dc702ea30180791 = "x\xda\xac\xfd]h\x14\xd9\xfb/\x8aw\xd9_\x7f\xf5" +

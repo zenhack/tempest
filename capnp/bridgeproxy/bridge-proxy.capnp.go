@@ -97,7 +97,6 @@ func (s ProxyClaimRequestRequest) NewRequiredPermissions(n int32) (capnp.TextLis
 	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
-
 func (s ProxyClaimRequestRequest) Label() (util.LocalizedText, error) {
 	p, err := capnp.Struct(s).Ptr(2)
 	return util.LocalizedText(p.Struct()), err
@@ -134,11 +133,10 @@ func NewProxyClaimRequestRequest_List(s *capnp.Segment, sz int32) (ProxyClaimReq
 // ProxyClaimRequestRequest_Future is a wrapper for a ProxyClaimRequestRequest promised by a client call.
 type ProxyClaimRequestRequest_Future struct{ *capnp.Future }
 
-func (p ProxyClaimRequestRequest_Future) Struct() (ProxyClaimRequestRequest, error) {
-	s, err := p.Future.Struct()
-	return ProxyClaimRequestRequest(s), err
+func (f ProxyClaimRequestRequest_Future) Struct() (ProxyClaimRequestRequest, error) {
+	p, err := f.Future.Ptr()
+	return ProxyClaimRequestRequest(p.Struct()), err
 }
-
 func (p ProxyClaimRequestRequest_Future) Label() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
@@ -220,9 +218,9 @@ func NewProxyClaimRequestResponse_List(s *capnp.Segment, sz int32) (ProxyClaimRe
 // ProxyClaimRequestResponse_Future is a wrapper for a ProxyClaimRequestResponse promised by a client call.
 type ProxyClaimRequestResponse_Future struct{ *capnp.Future }
 
-func (p ProxyClaimRequestResponse_Future) Struct() (ProxyClaimRequestResponse, error) {
-	s, err := p.Future.Struct()
-	return ProxyClaimRequestResponse(s), err
+func (f ProxyClaimRequestResponse_Future) Struct() (ProxyClaimRequestResponse, error) {
+	p, err := f.Future.Ptr()
+	return ProxyClaimRequestResponse(p.Struct()), err
 }
 
 const schema_bf72526e76ecd73b = "x\xda\x8c\x8e\xbfK\xebP\x00\x85\xcf\xb97}yC" +

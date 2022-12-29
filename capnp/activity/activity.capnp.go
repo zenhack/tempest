@@ -5,9 +5,11 @@ package activity
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	util "zenhack.net/go/sandstorm/capnp/util"
@@ -170,15 +172,13 @@ func NewActivityEvent_List(s *capnp.Segment, sz int32) (ActivityEvent_List, erro
 // ActivityEvent_Future is a wrapper for a ActivityEvent promised by a client call.
 type ActivityEvent_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_Future) Struct() (ActivityEvent, error) {
-	s, err := p.Future.Struct()
-	return ActivityEvent(s), err
+func (f ActivityEvent_Future) Struct() (ActivityEvent, error) {
+	p, err := f.Future.Ptr()
+	return ActivityEvent(p.Struct()), err
 }
-
 func (p ActivityEvent_Future) Thread() ActivityEvent_ThreadInfo_Future {
 	return ActivityEvent_ThreadInfo_Future{Future: p.Future.Field(3, nil)}
 }
-
 func (p ActivityEvent_Future) Notification() NotificationDisplayInfo_Future {
 	return NotificationDisplayInfo_Future{Future: p.Future.Field(1, nil)}
 }
@@ -284,11 +284,10 @@ func NewActivityEvent_ThreadInfo_List(s *capnp.Segment, sz int32) (ActivityEvent
 // ActivityEvent_ThreadInfo_Future is a wrapper for a ActivityEvent_ThreadInfo promised by a client call.
 type ActivityEvent_ThreadInfo_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_ThreadInfo_Future) Struct() (ActivityEvent_ThreadInfo, error) {
-	s, err := p.Future.Struct()
-	return ActivityEvent_ThreadInfo(s), err
+func (f ActivityEvent_ThreadInfo_Future) Struct() (ActivityEvent_ThreadInfo, error) {
+	p, err := f.Future.Ptr()
+	return ActivityEvent_ThreadInfo(p.Struct()), err
 }
-
 func (p ActivityEvent_ThreadInfo_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
@@ -394,11 +393,10 @@ func NewActivityEvent_User_List(s *capnp.Segment, sz int32) (ActivityEvent_User_
 // ActivityEvent_User_Future is a wrapper for a ActivityEvent_User promised by a client call.
 type ActivityEvent_User_Future struct{ *capnp.Future }
 
-func (p ActivityEvent_User_Future) Struct() (ActivityEvent_User, error) {
-	s, err := p.Future.Struct()
-	return ActivityEvent_User(s), err
+func (f ActivityEvent_User_Future) Struct() (ActivityEvent_User, error) {
+	p, err := f.Future.Ptr()
+	return ActivityEvent_User(p.Struct()), err
 }
-
 func (p ActivityEvent_User_Future) Identity() identity.Identity {
 	return identity.Identity(p.Future.Field(0, nil).Client())
 }
@@ -630,19 +628,16 @@ func NewActivityTypeDef_List(s *capnp.Segment, sz int32) (ActivityTypeDef_List, 
 // ActivityTypeDef_Future is a wrapper for a ActivityTypeDef promised by a client call.
 type ActivityTypeDef_Future struct{ *capnp.Future }
 
-func (p ActivityTypeDef_Future) Struct() (ActivityTypeDef, error) {
-	s, err := p.Future.Struct()
-	return ActivityTypeDef(s), err
+func (f ActivityTypeDef_Future) Struct() (ActivityTypeDef, error) {
+	p, err := f.Future.Ptr()
+	return ActivityTypeDef(p.Struct()), err
 }
-
 func (p ActivityTypeDef_Future) VerbPhrase() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p ActivityTypeDef_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }
-
 func (p ActivityTypeDef_Future) RequiredPermission() ActivityTypeDef_requiredPermission_Future {
 	return ActivityTypeDef_requiredPermission_Future{p.Future}
 }
@@ -650,9 +645,9 @@ func (p ActivityTypeDef_Future) RequiredPermission() ActivityTypeDef_requiredPer
 // ActivityTypeDef_requiredPermission_Future is a wrapper for a ActivityTypeDef_requiredPermission promised by a client call.
 type ActivityTypeDef_requiredPermission_Future struct{ *capnp.Future }
 
-func (p ActivityTypeDef_requiredPermission_Future) Struct() (ActivityTypeDef_requiredPermission, error) {
-	s, err := p.Future.Struct()
-	return ActivityTypeDef_requiredPermission(s), err
+func (f ActivityTypeDef_requiredPermission_Future) Struct() (ActivityTypeDef_requiredPermission, error) {
+	p, err := f.Future.Ptr()
+	return ActivityTypeDef_requiredPermission(p.Struct()), err
 }
 
 type NotificationDisplayInfo capnp.Struct
@@ -738,11 +733,10 @@ func NewNotificationDisplayInfo_List(s *capnp.Segment, sz int32) (NotificationDi
 // NotificationDisplayInfo_Future is a wrapper for a NotificationDisplayInfo promised by a client call.
 type NotificationDisplayInfo_Future struct{ *capnp.Future }
 
-func (p NotificationDisplayInfo_Future) Struct() (NotificationDisplayInfo, error) {
-	s, err := p.Future.Struct()
-	return NotificationDisplayInfo(s), err
+func (f NotificationDisplayInfo_Future) Struct() (NotificationDisplayInfo, error) {
+	p, err := f.Future.Ptr()
+	return NotificationDisplayInfo(p.Struct()), err
 }
-
 func (p NotificationDisplayInfo_Future) Caption() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
@@ -769,12 +763,34 @@ func (c NotificationTarget) AddOngoing(ctx context.Context, params func(Notifica
 	return NotificationTarget_addOngoing_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c NotificationTarget) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c NotificationTarget) AddRef() NotificationTarget {
 	return NotificationTarget(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c NotificationTarget) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c NotificationTarget) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c NotificationTarget) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -785,11 +801,34 @@ func (NotificationTarget) DecodeFromPtr(p capnp.Ptr) NotificationTarget {
 	return NotificationTarget(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c NotificationTarget) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A NotificationTarget_Server is a NotificationTarget with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c NotificationTarget) IsSame(other NotificationTarget) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c NotificationTarget) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c NotificationTarget) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A NotificationTarget_Server is a NotificationTarget with a local implementation.
 type NotificationTarget_Server interface {
 	AddOngoing(context.Context, NotificationTarget_addOngoing) error
 }
@@ -955,15 +994,13 @@ func NewNotificationTarget_addOngoing_Params_List(s *capnp.Segment, sz int32) (N
 // NotificationTarget_addOngoing_Params_Future is a wrapper for a NotificationTarget_addOngoing_Params promised by a client call.
 type NotificationTarget_addOngoing_Params_Future struct{ *capnp.Future }
 
-func (p NotificationTarget_addOngoing_Params_Future) Struct() (NotificationTarget_addOngoing_Params, error) {
-	s, err := p.Future.Struct()
-	return NotificationTarget_addOngoing_Params(s), err
+func (f NotificationTarget_addOngoing_Params_Future) Struct() (NotificationTarget_addOngoing_Params, error) {
+	p, err := f.Future.Ptr()
+	return NotificationTarget_addOngoing_Params(p.Struct()), err
 }
-
 func (p NotificationTarget_addOngoing_Params_Future) DisplayInfo() NotificationDisplayInfo_Future {
 	return NotificationDisplayInfo_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p NotificationTarget_addOngoing_Params_Future) Notification() OngoingNotification {
 	return OngoingNotification(p.Future.Field(1, nil).Client())
 }
@@ -1045,11 +1082,10 @@ func NewNotificationTarget_addOngoing_Results_List(s *capnp.Segment, sz int32) (
 // NotificationTarget_addOngoing_Results_Future is a wrapper for a NotificationTarget_addOngoing_Results promised by a client call.
 type NotificationTarget_addOngoing_Results_Future struct{ *capnp.Future }
 
-func (p NotificationTarget_addOngoing_Results_Future) Struct() (NotificationTarget_addOngoing_Results, error) {
-	s, err := p.Future.Struct()
-	return NotificationTarget_addOngoing_Results(s), err
+func (f NotificationTarget_addOngoing_Results_Future) Struct() (NotificationTarget_addOngoing_Results, error) {
+	p, err := f.Future.Ptr()
+	return NotificationTarget_addOngoing_Results(p.Struct()), err
 }
-
 func (p NotificationTarget_addOngoing_Results_Future) Handle() util.Handle {
 	return util.Handle(p.Future.Field(0, nil).Client())
 }
@@ -1076,12 +1112,34 @@ func (c OngoingNotification) Cancel(ctx context.Context, params func(OngoingNoti
 	return OngoingNotification_cancel_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c OngoingNotification) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c OngoingNotification) AddRef() OngoingNotification {
 	return OngoingNotification(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c OngoingNotification) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c OngoingNotification) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c OngoingNotification) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1092,11 +1150,34 @@ func (OngoingNotification) DecodeFromPtr(p capnp.Ptr) OngoingNotification {
 	return OngoingNotification(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c OngoingNotification) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A OngoingNotification_Server is a OngoingNotification with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c OngoingNotification) IsSame(other OngoingNotification) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c OngoingNotification) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c OngoingNotification) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A OngoingNotification_Server is a OngoingNotification with a local implementation.
 type OngoingNotification_Server interface {
 	Cancel(context.Context, OngoingNotification_cancel) error
 }
@@ -1221,9 +1302,9 @@ func NewOngoingNotification_cancel_Params_List(s *capnp.Segment, sz int32) (Ongo
 // OngoingNotification_cancel_Params_Future is a wrapper for a OngoingNotification_cancel_Params promised by a client call.
 type OngoingNotification_cancel_Params_Future struct{ *capnp.Future }
 
-func (p OngoingNotification_cancel_Params_Future) Struct() (OngoingNotification_cancel_Params, error) {
-	s, err := p.Future.Struct()
-	return OngoingNotification_cancel_Params(s), err
+func (f OngoingNotification_cancel_Params_Future) Struct() (OngoingNotification_cancel_Params, error) {
+	p, err := f.Future.Ptr()
+	return OngoingNotification_cancel_Params(p.Struct()), err
 }
 
 type OngoingNotification_cancel_Results capnp.Struct
@@ -1286,9 +1367,9 @@ func NewOngoingNotification_cancel_Results_List(s *capnp.Segment, sz int32) (Ong
 // OngoingNotification_cancel_Results_Future is a wrapper for a OngoingNotification_cancel_Results promised by a client call.
 type OngoingNotification_cancel_Results_Future struct{ *capnp.Future }
 
-func (p OngoingNotification_cancel_Results_Future) Struct() (OngoingNotification_cancel_Results, error) {
-	s, err := p.Future.Struct()
-	return OngoingNotification_cancel_Results(s), err
+func (f OngoingNotification_cancel_Results_Future) Struct() (OngoingNotification_cancel_Results, error) {
+	p, err := f.Future.Ptr()
+	return OngoingNotification_cancel_Results(p.Struct()), err
 }
 
 const schema_a4e001d4cbcf33fa = "x\xda\x94Um\x88TU\x18~\x9f{f\xf6\xce8" +

@@ -89,9 +89,9 @@ func NewTestIds_List(s *capnp.Segment, sz int32) (TestIds_List, error) {
 // TestIds_Future is a wrapper for a TestIds promised by a client call.
 type TestIds_Future struct{ *capnp.Future }
 
-func (p TestIds_Future) Struct() (TestIds, error) {
-	s, err := p.Future.Struct()
-	return TestIds(s), err
+func (f TestIds_Future) Struct() (TestIds, error) {
+	p, err := f.Future.Ptr()
+	return TestIds(p.Struct()), err
 }
 
 const schema_bee445adfb01a777 = "x\xda\xac\xd5[\x88\x1b\xd5\x1f\x07\xf0sv2\x9bR" +

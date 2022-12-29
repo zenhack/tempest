@@ -132,9 +132,9 @@ func NewAppIdReplacement_List(s *capnp.Segment, sz int32) (AppIdReplacement_List
 // AppIdReplacement_Future is a wrapper for a AppIdReplacement promised by a client call.
 type AppIdReplacement_Future struct{ *capnp.Future }
 
-func (p AppIdReplacement_Future) Struct() (AppIdReplacement, error) {
-	s, err := p.Future.Struct()
-	return AppIdReplacement(s), err
+func (f AppIdReplacement_Future) Struct() (AppIdReplacement, error) {
+	p, err := f.Future.Ptr()
+	return AppIdReplacement(p.Struct()), err
 }
 
 const schema_a53cae3f717a1676 = "x\xda|\xd0\xbd\x8e\xddD\x14\x07\xf0s\xeckVZ" +

@@ -5,10 +5,12 @@ package ip
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
@@ -52,12 +54,34 @@ func (c IpNetwork) GetRemoteHostByName(ctx context.Context, params func(IpNetwor
 	return IpNetwork_getRemoteHostByName_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c IpNetwork) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c IpNetwork) AddRef() IpNetwork {
 	return IpNetwork(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c IpNetwork) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c IpNetwork) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c IpNetwork) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -68,11 +92,34 @@ func (IpNetwork) DecodeFromPtr(p capnp.Ptr) IpNetwork {
 	return IpNetwork(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c IpNetwork) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A IpNetwork_Server is a IpNetwork with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c IpNetwork) IsSame(other IpNetwork) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c IpNetwork) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c IpNetwork) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A IpNetwork_Server is a IpNetwork with a local implementation.
 type IpNetwork_Server interface {
 	GetRemoteHost(context.Context, IpNetwork_getRemoteHost) error
 
@@ -251,11 +298,10 @@ func NewIpNetwork_PowerboxTag_List(s *capnp.Segment, sz int32) (IpNetwork_Powerb
 // IpNetwork_PowerboxTag_Future is a wrapper for a IpNetwork_PowerboxTag promised by a client call.
 type IpNetwork_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p IpNetwork_PowerboxTag_Future) Struct() (IpNetwork_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_PowerboxTag(s), err
+func (f IpNetwork_PowerboxTag_Future) Struct() (IpNetwork_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_PowerboxTag(p.Struct()), err
 }
-
 func (p IpNetwork_PowerboxTag_Future) Encryption() IpNetwork_PowerboxTag_Encryption_Future {
 	return IpNetwork_PowerboxTag_Encryption_Future{Future: p.Future.Field(0, nil)}
 }
@@ -351,9 +397,9 @@ func NewIpNetwork_PowerboxTag_Encryption_List(s *capnp.Segment, sz int32) (IpNet
 // IpNetwork_PowerboxTag_Encryption_Future is a wrapper for a IpNetwork_PowerboxTag_Encryption promised by a client call.
 type IpNetwork_PowerboxTag_Encryption_Future struct{ *capnp.Future }
 
-func (p IpNetwork_PowerboxTag_Encryption_Future) Struct() (IpNetwork_PowerboxTag_Encryption, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_PowerboxTag_Encryption(s), err
+func (f IpNetwork_PowerboxTag_Encryption_Future) Struct() (IpNetwork_PowerboxTag_Encryption, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_PowerboxTag_Encryption(p.Struct()), err
 }
 
 type IpNetwork_getRemoteHost_Params capnp.Struct
@@ -439,11 +485,10 @@ func NewIpNetwork_getRemoteHost_Params_List(s *capnp.Segment, sz int32) (IpNetwo
 // IpNetwork_getRemoteHost_Params_Future is a wrapper for a IpNetwork_getRemoteHost_Params promised by a client call.
 type IpNetwork_getRemoteHost_Params_Future struct{ *capnp.Future }
 
-func (p IpNetwork_getRemoteHost_Params_Future) Struct() (IpNetwork_getRemoteHost_Params, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHost_Params(s), err
+func (f IpNetwork_getRemoteHost_Params_Future) Struct() (IpNetwork_getRemoteHost_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_getRemoteHost_Params(p.Struct()), err
 }
-
 func (p IpNetwork_getRemoteHost_Params_Future) Address() IpAddress_Future {
 	return IpAddress_Future{Future: p.Future.Field(0, nil)}
 }
@@ -525,11 +570,10 @@ func NewIpNetwork_getRemoteHost_Results_List(s *capnp.Segment, sz int32) (IpNetw
 // IpNetwork_getRemoteHost_Results_Future is a wrapper for a IpNetwork_getRemoteHost_Results promised by a client call.
 type IpNetwork_getRemoteHost_Results_Future struct{ *capnp.Future }
 
-func (p IpNetwork_getRemoteHost_Results_Future) Struct() (IpNetwork_getRemoteHost_Results, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHost_Results(s), err
+func (f IpNetwork_getRemoteHost_Results_Future) Struct() (IpNetwork_getRemoteHost_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_getRemoteHost_Results(p.Struct()), err
 }
-
 func (p IpNetwork_getRemoteHost_Results_Future) Host() IpRemoteHost {
 	return IpRemoteHost(p.Future.Field(0, nil).Client())
 }
@@ -611,9 +655,9 @@ func NewIpNetwork_getRemoteHostByName_Params_List(s *capnp.Segment, sz int32) (I
 // IpNetwork_getRemoteHostByName_Params_Future is a wrapper for a IpNetwork_getRemoteHostByName_Params promised by a client call.
 type IpNetwork_getRemoteHostByName_Params_Future struct{ *capnp.Future }
 
-func (p IpNetwork_getRemoteHostByName_Params_Future) Struct() (IpNetwork_getRemoteHostByName_Params, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHostByName_Params(s), err
+func (f IpNetwork_getRemoteHostByName_Params_Future) Struct() (IpNetwork_getRemoteHostByName_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_getRemoteHostByName_Params(p.Struct()), err
 }
 
 type IpNetwork_getRemoteHostByName_Results capnp.Struct
@@ -693,11 +737,10 @@ func NewIpNetwork_getRemoteHostByName_Results_List(s *capnp.Segment, sz int32) (
 // IpNetwork_getRemoteHostByName_Results_Future is a wrapper for a IpNetwork_getRemoteHostByName_Results promised by a client call.
 type IpNetwork_getRemoteHostByName_Results_Future struct{ *capnp.Future }
 
-func (p IpNetwork_getRemoteHostByName_Results_Future) Struct() (IpNetwork_getRemoteHostByName_Results, error) {
-	s, err := p.Future.Struct()
-	return IpNetwork_getRemoteHostByName_Results(s), err
+func (f IpNetwork_getRemoteHostByName_Results_Future) Struct() (IpNetwork_getRemoteHostByName_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpNetwork_getRemoteHostByName_Results(p.Struct()), err
 }
-
 func (p IpNetwork_getRemoteHostByName_Results_Future) Host() IpRemoteHost {
 	return IpRemoteHost(p.Future.Field(0, nil).Client())
 }
@@ -777,9 +820,9 @@ func NewIpAddress_List(s *capnp.Segment, sz int32) (IpAddress_List, error) {
 // IpAddress_Future is a wrapper for a IpAddress promised by a client call.
 type IpAddress_Future struct{ *capnp.Future }
 
-func (p IpAddress_Future) Struct() (IpAddress, error) {
-	s, err := p.Future.Struct()
-	return IpAddress(s), err
+func (f IpAddress_Future) Struct() (IpAddress, error) {
+	p, err := f.Future.Ptr()
+	return IpAddress(p.Struct()), err
 }
 
 type IpInterface capnp.Client
@@ -820,12 +863,34 @@ func (c IpInterface) ListenUdp(ctx context.Context, params func(IpInterface_list
 	return IpInterface_listenUdp_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c IpInterface) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c IpInterface) AddRef() IpInterface {
 	return IpInterface(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c IpInterface) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c IpInterface) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c IpInterface) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -836,11 +901,34 @@ func (IpInterface) DecodeFromPtr(p capnp.Ptr) IpInterface {
 	return IpInterface(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c IpInterface) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A IpInterface_Server is a IpInterface with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c IpInterface) IsSame(other IpInterface) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c IpInterface) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c IpInterface) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A IpInterface_Server is a IpInterface with a local implementation.
 type IpInterface_Server interface {
 	ListenTcp(context.Context, IpInterface_listenTcp) error
 
@@ -1021,11 +1109,10 @@ func NewIpInterface_listenTcp_Params_List(s *capnp.Segment, sz int32) (IpInterfa
 // IpInterface_listenTcp_Params_Future is a wrapper for a IpInterface_listenTcp_Params promised by a client call.
 type IpInterface_listenTcp_Params_Future struct{ *capnp.Future }
 
-func (p IpInterface_listenTcp_Params_Future) Struct() (IpInterface_listenTcp_Params, error) {
-	s, err := p.Future.Struct()
-	return IpInterface_listenTcp_Params(s), err
+func (f IpInterface_listenTcp_Params_Future) Struct() (IpInterface_listenTcp_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpInterface_listenTcp_Params(p.Struct()), err
 }
-
 func (p IpInterface_listenTcp_Params_Future) Port() TcpPort {
 	return TcpPort(p.Future.Field(0, nil).Client())
 }
@@ -1107,11 +1194,10 @@ func NewIpInterface_listenTcp_Results_List(s *capnp.Segment, sz int32) (IpInterf
 // IpInterface_listenTcp_Results_Future is a wrapper for a IpInterface_listenTcp_Results promised by a client call.
 type IpInterface_listenTcp_Results_Future struct{ *capnp.Future }
 
-func (p IpInterface_listenTcp_Results_Future) Struct() (IpInterface_listenTcp_Results, error) {
-	s, err := p.Future.Struct()
-	return IpInterface_listenTcp_Results(s), err
+func (f IpInterface_listenTcp_Results_Future) Struct() (IpInterface_listenTcp_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpInterface_listenTcp_Results(p.Struct()), err
 }
-
 func (p IpInterface_listenTcp_Results_Future) Handle() util.Handle {
 	return util.Handle(p.Future.Field(0, nil).Client())
 }
@@ -1201,11 +1287,10 @@ func NewIpInterface_listenUdp_Params_List(s *capnp.Segment, sz int32) (IpInterfa
 // IpInterface_listenUdp_Params_Future is a wrapper for a IpInterface_listenUdp_Params promised by a client call.
 type IpInterface_listenUdp_Params_Future struct{ *capnp.Future }
 
-func (p IpInterface_listenUdp_Params_Future) Struct() (IpInterface_listenUdp_Params, error) {
-	s, err := p.Future.Struct()
-	return IpInterface_listenUdp_Params(s), err
+func (f IpInterface_listenUdp_Params_Future) Struct() (IpInterface_listenUdp_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpInterface_listenUdp_Params(p.Struct()), err
 }
-
 func (p IpInterface_listenUdp_Params_Future) Port() UdpPort {
 	return UdpPort(p.Future.Field(0, nil).Client())
 }
@@ -1287,11 +1372,10 @@ func NewIpInterface_listenUdp_Results_List(s *capnp.Segment, sz int32) (IpInterf
 // IpInterface_listenUdp_Results_Future is a wrapper for a IpInterface_listenUdp_Results promised by a client call.
 type IpInterface_listenUdp_Results_Future struct{ *capnp.Future }
 
-func (p IpInterface_listenUdp_Results_Future) Struct() (IpInterface_listenUdp_Results, error) {
-	s, err := p.Future.Struct()
-	return IpInterface_listenUdp_Results(s), err
+func (f IpInterface_listenUdp_Results_Future) Struct() (IpInterface_listenUdp_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpInterface_listenUdp_Results(p.Struct()), err
 }
-
 func (p IpInterface_listenUdp_Results_Future) Handle() util.Handle {
 	return util.Handle(p.Future.Field(0, nil).Client())
 }
@@ -1334,12 +1418,34 @@ func (c IpRemoteHost) GetUdpPort(ctx context.Context, params func(IpRemoteHost_g
 	return IpRemoteHost_getUdpPort_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c IpRemoteHost) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c IpRemoteHost) AddRef() IpRemoteHost {
 	return IpRemoteHost(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c IpRemoteHost) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c IpRemoteHost) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c IpRemoteHost) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1350,11 +1456,34 @@ func (IpRemoteHost) DecodeFromPtr(p capnp.Ptr) IpRemoteHost {
 	return IpRemoteHost(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c IpRemoteHost) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A IpRemoteHost_Server is a IpRemoteHost with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c IpRemoteHost) IsSame(other IpRemoteHost) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c IpRemoteHost) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c IpRemoteHost) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A IpRemoteHost_Server is a IpRemoteHost with a local implementation.
 type IpRemoteHost_Server interface {
 	GetTcpPort(context.Context, IpRemoteHost_getTcpPort) error
 
@@ -1517,9 +1646,9 @@ func NewIpRemoteHost_getTcpPort_Params_List(s *capnp.Segment, sz int32) (IpRemot
 // IpRemoteHost_getTcpPort_Params_Future is a wrapper for a IpRemoteHost_getTcpPort_Params promised by a client call.
 type IpRemoteHost_getTcpPort_Params_Future struct{ *capnp.Future }
 
-func (p IpRemoteHost_getTcpPort_Params_Future) Struct() (IpRemoteHost_getTcpPort_Params, error) {
-	s, err := p.Future.Struct()
-	return IpRemoteHost_getTcpPort_Params(s), err
+func (f IpRemoteHost_getTcpPort_Params_Future) Struct() (IpRemoteHost_getTcpPort_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpRemoteHost_getTcpPort_Params(p.Struct()), err
 }
 
 type IpRemoteHost_getTcpPort_Results capnp.Struct
@@ -1599,11 +1728,10 @@ func NewIpRemoteHost_getTcpPort_Results_List(s *capnp.Segment, sz int32) (IpRemo
 // IpRemoteHost_getTcpPort_Results_Future is a wrapper for a IpRemoteHost_getTcpPort_Results promised by a client call.
 type IpRemoteHost_getTcpPort_Results_Future struct{ *capnp.Future }
 
-func (p IpRemoteHost_getTcpPort_Results_Future) Struct() (IpRemoteHost_getTcpPort_Results, error) {
-	s, err := p.Future.Struct()
-	return IpRemoteHost_getTcpPort_Results(s), err
+func (f IpRemoteHost_getTcpPort_Results_Future) Struct() (IpRemoteHost_getTcpPort_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpRemoteHost_getTcpPort_Results(p.Struct()), err
 }
-
 func (p IpRemoteHost_getTcpPort_Results_Future) Port() TcpPort {
 	return TcpPort(p.Future.Field(0, nil).Client())
 }
@@ -1675,9 +1803,9 @@ func NewIpRemoteHost_getUdpPort_Params_List(s *capnp.Segment, sz int32) (IpRemot
 // IpRemoteHost_getUdpPort_Params_Future is a wrapper for a IpRemoteHost_getUdpPort_Params promised by a client call.
 type IpRemoteHost_getUdpPort_Params_Future struct{ *capnp.Future }
 
-func (p IpRemoteHost_getUdpPort_Params_Future) Struct() (IpRemoteHost_getUdpPort_Params, error) {
-	s, err := p.Future.Struct()
-	return IpRemoteHost_getUdpPort_Params(s), err
+func (f IpRemoteHost_getUdpPort_Params_Future) Struct() (IpRemoteHost_getUdpPort_Params, error) {
+	p, err := f.Future.Ptr()
+	return IpRemoteHost_getUdpPort_Params(p.Struct()), err
 }
 
 type IpRemoteHost_getUdpPort_Results capnp.Struct
@@ -1757,11 +1885,10 @@ func NewIpRemoteHost_getUdpPort_Results_List(s *capnp.Segment, sz int32) (IpRemo
 // IpRemoteHost_getUdpPort_Results_Future is a wrapper for a IpRemoteHost_getUdpPort_Results promised by a client call.
 type IpRemoteHost_getUdpPort_Results_Future struct{ *capnp.Future }
 
-func (p IpRemoteHost_getUdpPort_Results_Future) Struct() (IpRemoteHost_getUdpPort_Results, error) {
-	s, err := p.Future.Struct()
-	return IpRemoteHost_getUdpPort_Results(s), err
+func (f IpRemoteHost_getUdpPort_Results_Future) Struct() (IpRemoteHost_getUdpPort_Results, error) {
+	p, err := f.Future.Ptr()
+	return IpRemoteHost_getUdpPort_Results(p.Struct()), err
 }
-
 func (p IpRemoteHost_getUdpPort_Results_Future) Port() UdpPort {
 	return UdpPort(p.Future.Field(0, nil).Client())
 }
@@ -1788,12 +1915,34 @@ func (c TcpPort) Connect(ctx context.Context, params func(TcpPort_connect_Params
 	return TcpPort_connect_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c TcpPort) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c TcpPort) AddRef() TcpPort {
 	return TcpPort(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c TcpPort) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c TcpPort) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c TcpPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1804,11 +1953,34 @@ func (TcpPort) DecodeFromPtr(p capnp.Ptr) TcpPort {
 	return TcpPort(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c TcpPort) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A TcpPort_Server is a TcpPort with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c TcpPort) IsSame(other TcpPort) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c TcpPort) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c TcpPort) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A TcpPort_Server is a TcpPort with a local implementation.
 type TcpPort_Server interface {
 	Connect(context.Context, TcpPort_connect) error
 }
@@ -1950,11 +2122,10 @@ func NewTcpPort_connect_Params_List(s *capnp.Segment, sz int32) (TcpPort_connect
 // TcpPort_connect_Params_Future is a wrapper for a TcpPort_connect_Params promised by a client call.
 type TcpPort_connect_Params_Future struct{ *capnp.Future }
 
-func (p TcpPort_connect_Params_Future) Struct() (TcpPort_connect_Params, error) {
-	s, err := p.Future.Struct()
-	return TcpPort_connect_Params(s), err
+func (f TcpPort_connect_Params_Future) Struct() (TcpPort_connect_Params, error) {
+	p, err := f.Future.Ptr()
+	return TcpPort_connect_Params(p.Struct()), err
 }
-
 func (p TcpPort_connect_Params_Future) Downstream() util.ByteStream {
 	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
@@ -2036,11 +2207,10 @@ func NewTcpPort_connect_Results_List(s *capnp.Segment, sz int32) (TcpPort_connec
 // TcpPort_connect_Results_Future is a wrapper for a TcpPort_connect_Results promised by a client call.
 type TcpPort_connect_Results_Future struct{ *capnp.Future }
 
-func (p TcpPort_connect_Results_Future) Struct() (TcpPort_connect_Results, error) {
-	s, err := p.Future.Struct()
-	return TcpPort_connect_Results(s), err
+func (f TcpPort_connect_Results_Future) Struct() (TcpPort_connect_Results, error) {
+	p, err := f.Future.Ptr()
+	return TcpPort_connect_Results(p.Struct()), err
 }
-
 func (p TcpPort_connect_Results_Future) Upstream() util.ByteStream {
 	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
@@ -2067,12 +2237,34 @@ func (c UdpPort) Send(ctx context.Context, params func(UdpPort_send_Params) erro
 	return UdpPort_send_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c UdpPort) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c UdpPort) AddRef() UdpPort {
 	return UdpPort(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c UdpPort) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c UdpPort) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c UdpPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -2083,11 +2275,34 @@ func (UdpPort) DecodeFromPtr(p capnp.Ptr) UdpPort {
 	return UdpPort(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c UdpPort) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A UdpPort_Server is a UdpPort with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c UdpPort) IsSame(other UdpPort) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c UdpPort) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c UdpPort) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A UdpPort_Server is a UdpPort with a local implementation.
 type UdpPort_Server interface {
 	Send(context.Context, UdpPort_send) error
 }
@@ -2242,11 +2457,10 @@ func NewUdpPort_send_Params_List(s *capnp.Segment, sz int32) (UdpPort_send_Param
 // UdpPort_send_Params_Future is a wrapper for a UdpPort_send_Params promised by a client call.
 type UdpPort_send_Params_Future struct{ *capnp.Future }
 
-func (p UdpPort_send_Params_Future) Struct() (UdpPort_send_Params, error) {
-	s, err := p.Future.Struct()
-	return UdpPort_send_Params(s), err
+func (f UdpPort_send_Params_Future) Struct() (UdpPort_send_Params, error) {
+	p, err := f.Future.Ptr()
+	return UdpPort_send_Params(p.Struct()), err
 }
-
 func (p UdpPort_send_Params_Future) ReturnPort() UdpPort {
 	return UdpPort(p.Future.Field(1, nil).Client())
 }
@@ -2311,9 +2525,9 @@ func NewUdpPort_send_Results_List(s *capnp.Segment, sz int32) (UdpPort_send_Resu
 // UdpPort_send_Results_Future is a wrapper for a UdpPort_send_Results promised by a client call.
 type UdpPort_send_Results_Future struct{ *capnp.Future }
 
-func (p UdpPort_send_Results_Future) Struct() (UdpPort_send_Results, error) {
-	s, err := p.Future.Struct()
-	return UdpPort_send_Results(s), err
+func (f UdpPort_send_Results_Future) Struct() (UdpPort_send_Results, error) {
+	p, err := f.Future.Ptr()
+	return UdpPort_send_Results(p.Struct()), err
 }
 
 type IpPortPowerboxMetadata capnp.Struct
@@ -2401,9 +2615,9 @@ func NewIpPortPowerboxMetadata_List(s *capnp.Segment, sz int32) (IpPortPowerboxM
 // IpPortPowerboxMetadata_Future is a wrapper for a IpPortPowerboxMetadata promised by a client call.
 type IpPortPowerboxMetadata_Future struct{ *capnp.Future }
 
-func (p IpPortPowerboxMetadata_Future) Struct() (IpPortPowerboxMetadata, error) {
-	s, err := p.Future.Struct()
-	return IpPortPowerboxMetadata(s), err
+func (f IpPortPowerboxMetadata_Future) Struct() (IpPortPowerboxMetadata, error) {
+	p, err := f.Future.Ptr()
+	return IpPortPowerboxMetadata(p.Struct()), err
 }
 
 type PersistentIpNetwork capnp.Client
@@ -2476,12 +2690,34 @@ func (c PersistentIpNetwork) Save(ctx context.Context, params func(persistent.Pe
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentIpNetwork) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentIpNetwork) AddRef() PersistentIpNetwork {
 	return PersistentIpNetwork(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentIpNetwork) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentIpNetwork) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentIpNetwork) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -2492,11 +2728,34 @@ func (PersistentIpNetwork) DecodeFromPtr(p capnp.Ptr) PersistentIpNetwork {
 	return PersistentIpNetwork(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentIpNetwork) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentIpNetwork_Server is a PersistentIpNetwork with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentIpNetwork) IsSame(other PersistentIpNetwork) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentIpNetwork) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentIpNetwork) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentIpNetwork_Server is a PersistentIpNetwork with a local implementation.
 type PersistentIpNetwork_Server interface {
 	GetRemoteHost(context.Context, IpNetwork_getRemoteHost) error
 
@@ -2656,12 +2915,34 @@ func (c PersistentIpInterface) Save(ctx context.Context, params func(persistent.
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentIpInterface) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentIpInterface) AddRef() PersistentIpInterface {
 	return PersistentIpInterface(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentIpInterface) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentIpInterface) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentIpInterface) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -2672,11 +2953,34 @@ func (PersistentIpInterface) DecodeFromPtr(p capnp.Ptr) PersistentIpInterface {
 	return PersistentIpInterface(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentIpInterface) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentIpInterface_Server is a PersistentIpInterface with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentIpInterface) IsSame(other PersistentIpInterface) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentIpInterface) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentIpInterface) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentIpInterface_Server is a PersistentIpInterface with a local implementation.
 type PersistentIpInterface_Server interface {
 	ListenTcp(context.Context, IpInterface_listenTcp) error
 

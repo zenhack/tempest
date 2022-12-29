@@ -5,9 +5,11 @@ package email
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
@@ -106,9 +108,9 @@ func NewEmailAddress_List(s *capnp.Segment, sz int32) (EmailAddress_List, error)
 // EmailAddress_Future is a wrapper for a EmailAddress promised by a client call.
 type EmailAddress_Future struct{ *capnp.Future }
 
-func (p EmailAddress_Future) Struct() (EmailAddress, error) {
-	s, err := p.Future.Struct()
-	return EmailAddress(s), err
+func (f EmailAddress_Future) Struct() (EmailAddress, error) {
+	p, err := f.Future.Ptr()
+	return EmailAddress(p.Struct()), err
 }
 
 type EmailAttachment capnp.Struct
@@ -237,9 +239,9 @@ func NewEmailAttachment_List(s *capnp.Segment, sz int32) (EmailAttachment_List, 
 // EmailAttachment_Future is a wrapper for a EmailAttachment promised by a client call.
 type EmailAttachment_Future struct{ *capnp.Future }
 
-func (p EmailAttachment_Future) Struct() (EmailAttachment, error) {
-	s, err := p.Future.Struct()
-	return EmailAttachment(s), err
+func (f EmailAttachment_Future) Struct() (EmailAttachment, error) {
+	p, err := f.Future.Ptr()
+	return EmailAttachment(p.Struct()), err
 }
 
 type EmailMessage capnp.Struct
@@ -344,7 +346,6 @@ func (s EmailMessage) NewTo(n int32) (EmailAddress_List, error) {
 	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
-
 func (s EmailMessage) Cc() (EmailAddress_List, error) {
 	p, err := capnp.Struct(s).Ptr(2)
 	return EmailAddress_List(p.List()), err
@@ -368,7 +369,6 @@ func (s EmailMessage) NewCc(n int32) (EmailAddress_List, error) {
 	err = capnp.Struct(s).SetPtr(2, l.ToPtr())
 	return l, err
 }
-
 func (s EmailMessage) Bcc() (EmailAddress_List, error) {
 	p, err := capnp.Struct(s).Ptr(3)
 	return EmailAddress_List(p.List()), err
@@ -392,7 +392,6 @@ func (s EmailMessage) NewBcc(n int32) (EmailAddress_List, error) {
 	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
 	return l, err
 }
-
 func (s EmailMessage) ReplyTo() (EmailAddress, error) {
 	p, err := capnp.Struct(s).Ptr(4)
 	return EmailAddress(p.Struct()), err
@@ -458,7 +457,6 @@ func (s EmailMessage) NewReferences(n int32) (capnp.TextList, error) {
 	err = capnp.Struct(s).SetPtr(6, l.ToPtr())
 	return l, err
 }
-
 func (s EmailMessage) InReplyTo() (capnp.TextList, error) {
 	p, err := capnp.Struct(s).Ptr(7)
 	return capnp.TextList(p.List()), err
@@ -482,7 +480,6 @@ func (s EmailMessage) NewInReplyTo(n int32) (capnp.TextList, error) {
 	err = capnp.Struct(s).SetPtr(7, l.ToPtr())
 	return l, err
 }
-
 func (s EmailMessage) Subject() (string, error) {
 	p, err := capnp.Struct(s).Ptr(8)
 	return p.Text(), err
@@ -573,15 +570,13 @@ func NewEmailMessage_List(s *capnp.Segment, sz int32) (EmailMessage_List, error)
 // EmailMessage_Future is a wrapper for a EmailMessage promised by a client call.
 type EmailMessage_Future struct{ *capnp.Future }
 
-func (p EmailMessage_Future) Struct() (EmailMessage, error) {
-	s, err := p.Future.Struct()
-	return EmailMessage(s), err
+func (f EmailMessage_Future) Struct() (EmailMessage, error) {
+	p, err := f.Future.Ptr()
+	return EmailMessage(p.Struct()), err
 }
-
 func (p EmailMessage_Future) From() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p EmailMessage_Future) ReplyTo() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(4, nil)}
 }
@@ -624,12 +619,34 @@ func (c EmailSendPort) HintAddress(ctx context.Context, params func(EmailSendPor
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c EmailSendPort) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c EmailSendPort) AddRef() EmailSendPort {
 	return EmailSendPort(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c EmailSendPort) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c EmailSendPort) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c EmailSendPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -640,11 +657,34 @@ func (EmailSendPort) DecodeFromPtr(p capnp.Ptr) EmailSendPort {
 	return EmailSendPort(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c EmailSendPort) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A EmailSendPort_Server is a EmailSendPort with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c EmailSendPort) IsSame(other EmailSendPort) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c EmailSendPort) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c EmailSendPort) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A EmailSendPort_Server is a EmailSendPort with a local implementation.
 type EmailSendPort_Server interface {
 	Send(context.Context, EmailSendPort_send) error
 
@@ -841,11 +881,10 @@ func NewEmailSendPort_PowerboxTag_List(s *capnp.Segment, sz int32) (EmailSendPor
 // EmailSendPort_PowerboxTag_Future is a wrapper for a EmailSendPort_PowerboxTag promised by a client call.
 type EmailSendPort_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p EmailSendPort_PowerboxTag_Future) Struct() (EmailSendPort_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return EmailSendPort_PowerboxTag(s), err
+func (f EmailSendPort_PowerboxTag_Future) Struct() (EmailSendPort_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return EmailSendPort_PowerboxTag(p.Struct()), err
 }
-
 func (p EmailSendPort_PowerboxTag_Future) FromHint() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(0, nil)}
 }
@@ -933,11 +972,10 @@ func NewEmailSendPort_send_Params_List(s *capnp.Segment, sz int32) (EmailSendPor
 // EmailSendPort_send_Params_Future is a wrapper for a EmailSendPort_send_Params promised by a client call.
 type EmailSendPort_send_Params_Future struct{ *capnp.Future }
 
-func (p EmailSendPort_send_Params_Future) Struct() (EmailSendPort_send_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailSendPort_send_Params(s), err
+func (f EmailSendPort_send_Params_Future) Struct() (EmailSendPort_send_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailSendPort_send_Params(p.Struct()), err
 }
-
 func (p EmailSendPort_send_Params_Future) Email() EmailMessage_Future {
 	return EmailMessage_Future{Future: p.Future.Field(0, nil)}
 }
@@ -1002,9 +1040,9 @@ func NewEmailSendPort_send_Results_List(s *capnp.Segment, sz int32) (EmailSendPo
 // EmailSendPort_send_Results_Future is a wrapper for a EmailSendPort_send_Results promised by a client call.
 type EmailSendPort_send_Results_Future struct{ *capnp.Future }
 
-func (p EmailSendPort_send_Results_Future) Struct() (EmailSendPort_send_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailSendPort_send_Results(s), err
+func (f EmailSendPort_send_Results_Future) Struct() (EmailSendPort_send_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailSendPort_send_Results(p.Struct()), err
 }
 
 type EmailSendPort_hintAddress_Params capnp.Struct
@@ -1090,11 +1128,10 @@ func NewEmailSendPort_hintAddress_Params_List(s *capnp.Segment, sz int32) (Email
 // EmailSendPort_hintAddress_Params_Future is a wrapper for a EmailSendPort_hintAddress_Params promised by a client call.
 type EmailSendPort_hintAddress_Params_Future struct{ *capnp.Future }
 
-func (p EmailSendPort_hintAddress_Params_Future) Struct() (EmailSendPort_hintAddress_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailSendPort_hintAddress_Params(s), err
+func (f EmailSendPort_hintAddress_Params_Future) Struct() (EmailSendPort_hintAddress_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailSendPort_hintAddress_Params(p.Struct()), err
 }
-
 func (p EmailSendPort_hintAddress_Params_Future) Address() EmailAddress_Future {
 	return EmailAddress_Future{Future: p.Future.Field(0, nil)}
 }
@@ -1159,9 +1196,9 @@ func NewEmailSendPort_hintAddress_Results_List(s *capnp.Segment, sz int32) (Emai
 // EmailSendPort_hintAddress_Results_Future is a wrapper for a EmailSendPort_hintAddress_Results promised by a client call.
 type EmailSendPort_hintAddress_Results_Future struct{ *capnp.Future }
 
-func (p EmailSendPort_hintAddress_Results_Future) Struct() (EmailSendPort_hintAddress_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailSendPort_hintAddress_Results(s), err
+func (f EmailSendPort_hintAddress_Results_Future) Struct() (EmailSendPort_hintAddress_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailSendPort_hintAddress_Results(p.Struct()), err
 }
 
 type VerifiedEmail capnp.Client
@@ -1169,12 +1206,34 @@ type VerifiedEmail capnp.Client
 // VerifiedEmail_TypeID is the unique identifier for the type VerifiedEmail.
 const VerifiedEmail_TypeID = 0xf88bf102464dfa5a
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c VerifiedEmail) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c VerifiedEmail) AddRef() VerifiedEmail {
 	return VerifiedEmail(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c VerifiedEmail) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c VerifiedEmail) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c VerifiedEmail) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1185,11 +1244,34 @@ func (VerifiedEmail) DecodeFromPtr(p capnp.Ptr) VerifiedEmail {
 	return VerifiedEmail(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c VerifiedEmail) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A VerifiedEmail_Server is a VerifiedEmail with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c VerifiedEmail) IsSame(other VerifiedEmail) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c VerifiedEmail) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c VerifiedEmail) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A VerifiedEmail_Server is a VerifiedEmail with a local implementation.
 type VerifiedEmail_Server interface {
 }
 
@@ -1332,9 +1414,9 @@ func NewVerifiedEmail_PowerboxTag_List(s *capnp.Segment, sz int32) (VerifiedEmai
 // VerifiedEmail_PowerboxTag_Future is a wrapper for a VerifiedEmail_PowerboxTag promised by a client call.
 type VerifiedEmail_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p VerifiedEmail_PowerboxTag_Future) Struct() (VerifiedEmail_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return VerifiedEmail_PowerboxTag(s), err
+func (f VerifiedEmail_PowerboxTag_Future) Struct() (VerifiedEmail_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return VerifiedEmail_PowerboxTag(p.Struct()), err
 }
 
 type VerifiedEmailSendPort capnp.Client
@@ -1375,12 +1457,34 @@ func (c VerifiedEmailSendPort) HintAddress(ctx context.Context, params func(Emai
 	return EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c VerifiedEmailSendPort) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c VerifiedEmailSendPort) AddRef() VerifiedEmailSendPort {
 	return VerifiedEmailSendPort(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c VerifiedEmailSendPort) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c VerifiedEmailSendPort) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c VerifiedEmailSendPort) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1391,11 +1495,34 @@ func (VerifiedEmailSendPort) DecodeFromPtr(p capnp.Ptr) VerifiedEmailSendPort {
 	return VerifiedEmailSendPort(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c VerifiedEmailSendPort) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A VerifiedEmailSendPort_Server is a VerifiedEmailSendPort with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c VerifiedEmailSendPort) IsSame(other VerifiedEmailSendPort) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c VerifiedEmailSendPort) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c VerifiedEmailSendPort) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A VerifiedEmailSendPort_Server is a VerifiedEmailSendPort with a local implementation.
 type VerifiedEmailSendPort_Server interface {
 	Send(context.Context, EmailSendPort_send) error
 
@@ -1564,15 +1691,13 @@ func NewVerifiedEmailSendPort_PowerboxTag_List(s *capnp.Segment, sz int32) (Veri
 // VerifiedEmailSendPort_PowerboxTag_Future is a wrapper for a VerifiedEmailSendPort_PowerboxTag promised by a client call.
 type VerifiedEmailSendPort_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p VerifiedEmailSendPort_PowerboxTag_Future) Struct() (VerifiedEmailSendPort_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return VerifiedEmailSendPort_PowerboxTag(s), err
+func (f VerifiedEmailSendPort_PowerboxTag_Future) Struct() (VerifiedEmailSendPort_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return VerifiedEmailSendPort_PowerboxTag(p.Struct()), err
 }
-
 func (p VerifiedEmailSendPort_PowerboxTag_Future) Verification() VerifiedEmail_PowerboxTag_Future {
 	return VerifiedEmail_PowerboxTag_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p VerifiedEmailSendPort_PowerboxTag_Future) Port() EmailSendPort_PowerboxTag_Future {
 	return EmailSendPort_PowerboxTag_Future{Future: p.Future.Field(1, nil)}
 }
@@ -1615,12 +1740,34 @@ func (c EmailVerifier) VerifyEmail(ctx context.Context, params func(EmailVerifie
 	return EmailVerifier_verifyEmail_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c EmailVerifier) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c EmailVerifier) AddRef() EmailVerifier {
 	return EmailVerifier(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c EmailVerifier) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c EmailVerifier) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c EmailVerifier) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1631,11 +1778,34 @@ func (EmailVerifier) DecodeFromPtr(p capnp.Ptr) EmailVerifier {
 	return EmailVerifier(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c EmailVerifier) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A EmailVerifier_Server is a EmailVerifier with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c EmailVerifier) IsSame(other EmailVerifier) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c EmailVerifier) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c EmailVerifier) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A EmailVerifier_Server is a EmailVerifier with a local implementation.
 type EmailVerifier_Server interface {
 	GetId(context.Context, EmailVerifier_getId) error
 
@@ -1791,9 +1961,9 @@ func NewEmailVerifier_getId_Params_List(s *capnp.Segment, sz int32) (EmailVerifi
 // EmailVerifier_getId_Params_Future is a wrapper for a EmailVerifier_getId_Params promised by a client call.
 type EmailVerifier_getId_Params_Future struct{ *capnp.Future }
 
-func (p EmailVerifier_getId_Params_Future) Struct() (EmailVerifier_getId_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailVerifier_getId_Params(s), err
+func (f EmailVerifier_getId_Params_Future) Struct() (EmailVerifier_getId_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailVerifier_getId_Params(p.Struct()), err
 }
 
 type EmailVerifier_getId_Results capnp.Struct
@@ -1868,9 +2038,9 @@ func NewEmailVerifier_getId_Results_List(s *capnp.Segment, sz int32) (EmailVerif
 // EmailVerifier_getId_Results_Future is a wrapper for a EmailVerifier_getId_Results promised by a client call.
 type EmailVerifier_getId_Results_Future struct{ *capnp.Future }
 
-func (p EmailVerifier_getId_Results_Future) Struct() (EmailVerifier_getId_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailVerifier_getId_Results(s), err
+func (f EmailVerifier_getId_Results_Future) Struct() (EmailVerifier_getId_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailVerifier_getId_Results(p.Struct()), err
 }
 
 type EmailVerifier_verifyEmail_Params capnp.Struct
@@ -1963,11 +2133,10 @@ func NewEmailVerifier_verifyEmail_Params_List(s *capnp.Segment, sz int32) (Email
 // EmailVerifier_verifyEmail_Params_Future is a wrapper for a EmailVerifier_verifyEmail_Params promised by a client call.
 type EmailVerifier_verifyEmail_Params_Future struct{ *capnp.Future }
 
-func (p EmailVerifier_verifyEmail_Params_Future) Struct() (EmailVerifier_verifyEmail_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailVerifier_verifyEmail_Params(s), err
+func (f EmailVerifier_verifyEmail_Params_Future) Struct() (EmailVerifier_verifyEmail_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailVerifier_verifyEmail_Params(p.Struct()), err
 }
-
 func (p EmailVerifier_verifyEmail_Params_Future) Verification() VerifiedEmail {
 	return VerifiedEmail(p.Future.Field(1, nil).Client())
 }
@@ -2049,9 +2218,9 @@ func NewEmailVerifier_verifyEmail_Results_List(s *capnp.Segment, sz int32) (Emai
 // EmailVerifier_verifyEmail_Results_Future is a wrapper for a EmailVerifier_verifyEmail_Results promised by a client call.
 type EmailVerifier_verifyEmail_Results_Future struct{ *capnp.Future }
 
-func (p EmailVerifier_verifyEmail_Results_Future) Struct() (EmailVerifier_verifyEmail_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailVerifier_verifyEmail_Results(s), err
+func (f EmailVerifier_verifyEmail_Results_Future) Struct() (EmailVerifier_verifyEmail_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailVerifier_verifyEmail_Results(p.Struct()), err
 }
 
 type EmailAgent capnp.Client
@@ -2092,12 +2261,34 @@ func (c EmailAgent) AddReceiver(ctx context.Context, params func(EmailAgent_addR
 	return EmailAgent_addReceiver_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c EmailAgent) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c EmailAgent) AddRef() EmailAgent {
 	return EmailAgent(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c EmailAgent) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c EmailAgent) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c EmailAgent) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -2108,11 +2299,34 @@ func (EmailAgent) DecodeFromPtr(p capnp.Ptr) EmailAgent {
 	return EmailAgent(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c EmailAgent) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A EmailAgent_Server is a EmailAgent with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c EmailAgent) IsSame(other EmailAgent) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c EmailAgent) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c EmailAgent) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A EmailAgent_Server is a EmailAgent with a local implementation.
 type EmailAgent_Server interface {
 	Send(context.Context, EmailAgent_send) error
 
@@ -2291,11 +2505,10 @@ func NewEmailAgent_send_Params_List(s *capnp.Segment, sz int32) (EmailAgent_send
 // EmailAgent_send_Params_Future is a wrapper for a EmailAgent_send_Params promised by a client call.
 type EmailAgent_send_Params_Future struct{ *capnp.Future }
 
-func (p EmailAgent_send_Params_Future) Struct() (EmailAgent_send_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailAgent_send_Params(s), err
+func (f EmailAgent_send_Params_Future) Struct() (EmailAgent_send_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailAgent_send_Params(p.Struct()), err
 }
-
 func (p EmailAgent_send_Params_Future) Email() EmailMessage_Future {
 	return EmailMessage_Future{Future: p.Future.Field(0, nil)}
 }
@@ -2360,9 +2573,9 @@ func NewEmailAgent_send_Results_List(s *capnp.Segment, sz int32) (EmailAgent_sen
 // EmailAgent_send_Results_Future is a wrapper for a EmailAgent_send_Results promised by a client call.
 type EmailAgent_send_Results_Future struct{ *capnp.Future }
 
-func (p EmailAgent_send_Results_Future) Struct() (EmailAgent_send_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailAgent_send_Results(s), err
+func (f EmailAgent_send_Results_Future) Struct() (EmailAgent_send_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailAgent_send_Results(p.Struct()), err
 }
 
 type EmailAgent_addReceiver_Params capnp.Struct
@@ -2442,11 +2655,10 @@ func NewEmailAgent_addReceiver_Params_List(s *capnp.Segment, sz int32) (EmailAge
 // EmailAgent_addReceiver_Params_Future is a wrapper for a EmailAgent_addReceiver_Params promised by a client call.
 type EmailAgent_addReceiver_Params_Future struct{ *capnp.Future }
 
-func (p EmailAgent_addReceiver_Params_Future) Struct() (EmailAgent_addReceiver_Params, error) {
-	s, err := p.Future.Struct()
-	return EmailAgent_addReceiver_Params(s), err
+func (f EmailAgent_addReceiver_Params_Future) Struct() (EmailAgent_addReceiver_Params, error) {
+	p, err := f.Future.Ptr()
+	return EmailAgent_addReceiver_Params(p.Struct()), err
 }
-
 func (p EmailAgent_addReceiver_Params_Future) Port() EmailSendPort {
 	return EmailSendPort(p.Future.Field(0, nil).Client())
 }
@@ -2528,11 +2740,10 @@ func NewEmailAgent_addReceiver_Results_List(s *capnp.Segment, sz int32) (EmailAg
 // EmailAgent_addReceiver_Results_Future is a wrapper for a EmailAgent_addReceiver_Results promised by a client call.
 type EmailAgent_addReceiver_Results_Future struct{ *capnp.Future }
 
-func (p EmailAgent_addReceiver_Results_Future) Struct() (EmailAgent_addReceiver_Results, error) {
-	s, err := p.Future.Struct()
-	return EmailAgent_addReceiver_Results(s), err
+func (f EmailAgent_addReceiver_Results_Future) Struct() (EmailAgent_addReceiver_Results, error) {
+	p, err := f.Future.Ptr()
+	return EmailAgent_addReceiver_Results(p.Struct()), err
 }
-
 func (p EmailAgent_addReceiver_Results_Future) Handle() util.Handle {
 	return util.Handle(p.Future.Field(0, nil).Client())
 }

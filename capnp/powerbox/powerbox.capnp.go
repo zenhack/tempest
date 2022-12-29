@@ -79,7 +79,6 @@ func (s PowerboxDescriptor) NewTags(n int32) (PowerboxDescriptor_Tag_List, error
 	err = capnp.Struct(s).SetPtr(0, l.ToPtr())
 	return l, err
 }
-
 func (s PowerboxDescriptor) Quality() PowerboxDescriptor_MatchQuality {
 	return PowerboxDescriptor_MatchQuality(capnp.Struct(s).Uint16(0))
 }
@@ -100,9 +99,9 @@ func NewPowerboxDescriptor_List(s *capnp.Segment, sz int32) (PowerboxDescriptor_
 // PowerboxDescriptor_Future is a wrapper for a PowerboxDescriptor promised by a client call.
 type PowerboxDescriptor_Future struct{ *capnp.Future }
 
-func (p PowerboxDescriptor_Future) Struct() (PowerboxDescriptor, error) {
-	s, err := p.Future.Struct()
-	return PowerboxDescriptor(s), err
+func (f PowerboxDescriptor_Future) Struct() (PowerboxDescriptor, error) {
+	p, err := f.Future.Ptr()
+	return PowerboxDescriptor(p.Struct()), err
 }
 
 type PowerboxDescriptor_Tag capnp.Struct
@@ -184,11 +183,10 @@ func NewPowerboxDescriptor_Tag_List(s *capnp.Segment, sz int32) (PowerboxDescrip
 // PowerboxDescriptor_Tag_Future is a wrapper for a PowerboxDescriptor_Tag promised by a client call.
 type PowerboxDescriptor_Tag_Future struct{ *capnp.Future }
 
-func (p PowerboxDescriptor_Tag_Future) Struct() (PowerboxDescriptor_Tag, error) {
-	s, err := p.Future.Struct()
-	return PowerboxDescriptor_Tag(s), err
+func (f PowerboxDescriptor_Tag_Future) Struct() (PowerboxDescriptor_Tag, error) {
+	p, err := f.Future.Ptr()
+	return PowerboxDescriptor_Tag(p.Struct()), err
 }
-
 func (p PowerboxDescriptor_Tag_Future) Value() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
@@ -373,19 +371,16 @@ func NewPowerboxDisplayInfo_List(s *capnp.Segment, sz int32) (PowerboxDisplayInf
 // PowerboxDisplayInfo_Future is a wrapper for a PowerboxDisplayInfo promised by a client call.
 type PowerboxDisplayInfo_Future struct{ *capnp.Future }
 
-func (p PowerboxDisplayInfo_Future) Struct() (PowerboxDisplayInfo, error) {
-	s, err := p.Future.Struct()
-	return PowerboxDisplayInfo(s), err
+func (f PowerboxDisplayInfo_Future) Struct() (PowerboxDisplayInfo, error) {
+	p, err := f.Future.Ptr()
+	return PowerboxDisplayInfo(p.Struct()), err
 }
-
 func (p PowerboxDisplayInfo_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p PowerboxDisplayInfo_Future) VerbPhrase() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(1, nil)}
 }
-
 func (p PowerboxDisplayInfo_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(2, nil)}
 }

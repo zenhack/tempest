@@ -5,9 +5,11 @@ package sandstormhttpbridge
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
 	powerbox "zenhack.net/go/sandstorm/capnp/powerbox"
@@ -115,12 +117,34 @@ func (c SandstormHttpBridge) GetSessionOffer(ctx context.Context, params func(Sa
 	return SandstormHttpBridge_getSessionOffer_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c SandstormHttpBridge) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c SandstormHttpBridge) AddRef() SandstormHttpBridge {
 	return SandstormHttpBridge(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c SandstormHttpBridge) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c SandstormHttpBridge) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c SandstormHttpBridge) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -131,11 +155,34 @@ func (SandstormHttpBridge) DecodeFromPtr(p capnp.Ptr) SandstormHttpBridge {
 	return SandstormHttpBridge(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c SandstormHttpBridge) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c SandstormHttpBridge) IsSame(other SandstormHttpBridge) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c SandstormHttpBridge) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c SandstormHttpBridge) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A SandstormHttpBridge_Server is a SandstormHttpBridge with a local implementation.
 type SandstormHttpBridge_Server interface {
 	GetSandstormApi(context.Context, SandstormHttpBridge_getSandstormApi) error
 
@@ -415,9 +462,9 @@ func NewSandstormHttpBridge_getSandstormApi_Params_List(s *capnp.Segment, sz int
 // SandstormHttpBridge_getSandstormApi_Params_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Params promised by a client call.
 type SandstormHttpBridge_getSandstormApi_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSandstormApi_Params_Future) Struct() (SandstormHttpBridge_getSandstormApi_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSandstormApi_Params(s), err
+func (f SandstormHttpBridge_getSandstormApi_Params_Future) Struct() (SandstormHttpBridge_getSandstormApi_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSandstormApi_Params(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSandstormApi_Results capnp.Struct
@@ -497,11 +544,10 @@ func NewSandstormHttpBridge_getSandstormApi_Results_List(s *capnp.Segment, sz in
 // SandstormHttpBridge_getSandstormApi_Results_Future is a wrapper for a SandstormHttpBridge_getSandstormApi_Results promised by a client call.
 type SandstormHttpBridge_getSandstormApi_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSandstormApi_Results_Future) Struct() (SandstormHttpBridge_getSandstormApi_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSandstormApi_Results(s), err
+func (f SandstormHttpBridge_getSandstormApi_Results_Future) Struct() (SandstormHttpBridge_getSandstormApi_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSandstormApi_Results(p.Struct()), err
 }
-
 func (p SandstormHttpBridge_getSandstormApi_Results_Future) Api() grain.SandstormApi {
 	return grain.SandstormApi(p.Future.Field(0, nil).Client())
 }
@@ -583,9 +629,9 @@ func NewSandstormHttpBridge_getSessionContext_Params_List(s *capnp.Segment, sz i
 // SandstormHttpBridge_getSessionContext_Params_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Params promised by a client call.
 type SandstormHttpBridge_getSessionContext_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionContext_Params_Future) Struct() (SandstormHttpBridge_getSessionContext_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionContext_Params(s), err
+func (f SandstormHttpBridge_getSessionContext_Params_Future) Struct() (SandstormHttpBridge_getSessionContext_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionContext_Params(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSessionContext_Results capnp.Struct
@@ -665,11 +711,10 @@ func NewSandstormHttpBridge_getSessionContext_Results_List(s *capnp.Segment, sz 
 // SandstormHttpBridge_getSessionContext_Results_Future is a wrapper for a SandstormHttpBridge_getSessionContext_Results promised by a client call.
 type SandstormHttpBridge_getSessionContext_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionContext_Results_Future) Struct() (SandstormHttpBridge_getSessionContext_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionContext_Results(s), err
+func (f SandstormHttpBridge_getSessionContext_Results_Future) Struct() (SandstormHttpBridge_getSessionContext_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionContext_Results(p.Struct()), err
 }
-
 func (p SandstormHttpBridge_getSessionContext_Results_Future) Context() grain.SessionContext {
 	return grain.SessionContext(p.Future.Field(0, nil).Client())
 }
@@ -751,9 +796,9 @@ func NewSandstormHttpBridge_getSavedIdentity_Params_List(s *capnp.Segment, sz in
 // SandstormHttpBridge_getSavedIdentity_Params_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Params promised by a client call.
 type SandstormHttpBridge_getSavedIdentity_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSavedIdentity_Params_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSavedIdentity_Params(s), err
+func (f SandstormHttpBridge_getSavedIdentity_Params_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSavedIdentity_Params(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSavedIdentity_Results capnp.Struct
@@ -833,11 +878,10 @@ func NewSandstormHttpBridge_getSavedIdentity_Results_List(s *capnp.Segment, sz i
 // SandstormHttpBridge_getSavedIdentity_Results_Future is a wrapper for a SandstormHttpBridge_getSavedIdentity_Results promised by a client call.
 type SandstormHttpBridge_getSavedIdentity_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSavedIdentity_Results(s), err
+func (f SandstormHttpBridge_getSavedIdentity_Results_Future) Struct() (SandstormHttpBridge_getSavedIdentity_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSavedIdentity_Results(p.Struct()), err
 }
-
 func (p SandstormHttpBridge_getSavedIdentity_Results_Future) Identity() identity.Identity {
 	return identity.Identity(p.Future.Field(0, nil).Client())
 }
@@ -919,11 +963,10 @@ func NewSandstormHttpBridge_saveIdentity_Params_List(s *capnp.Segment, sz int32)
 // SandstormHttpBridge_saveIdentity_Params_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Params promised by a client call.
 type SandstormHttpBridge_saveIdentity_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_saveIdentity_Params_Future) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_saveIdentity_Params(s), err
+func (f SandstormHttpBridge_saveIdentity_Params_Future) Struct() (SandstormHttpBridge_saveIdentity_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_saveIdentity_Params(p.Struct()), err
 }
-
 func (p SandstormHttpBridge_saveIdentity_Params_Future) Identity() identity.Identity {
 	return identity.Identity(p.Future.Field(0, nil).Client())
 }
@@ -988,9 +1031,9 @@ func NewSandstormHttpBridge_saveIdentity_Results_List(s *capnp.Segment, sz int32
 // SandstormHttpBridge_saveIdentity_Results_Future is a wrapper for a SandstormHttpBridge_saveIdentity_Results promised by a client call.
 type SandstormHttpBridge_saveIdentity_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_saveIdentity_Results_Future) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_saveIdentity_Results(s), err
+func (f SandstormHttpBridge_saveIdentity_Results_Future) Struct() (SandstormHttpBridge_saveIdentity_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_saveIdentity_Results(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSessionRequest_Params capnp.Struct
@@ -1070,9 +1113,9 @@ func NewSandstormHttpBridge_getSessionRequest_Params_List(s *capnp.Segment, sz i
 // SandstormHttpBridge_getSessionRequest_Params_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Params promised by a client call.
 type SandstormHttpBridge_getSessionRequest_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionRequest_Params_Future) Struct() (SandstormHttpBridge_getSessionRequest_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionRequest_Params(s), err
+func (f SandstormHttpBridge_getSessionRequest_Params_Future) Struct() (SandstormHttpBridge_getSessionRequest_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionRequest_Params(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSessionRequest_Results capnp.Struct
@@ -1158,9 +1201,9 @@ func NewSandstormHttpBridge_getSessionRequest_Results_List(s *capnp.Segment, sz 
 // SandstormHttpBridge_getSessionRequest_Results_Future is a wrapper for a SandstormHttpBridge_getSessionRequest_Results promised by a client call.
 type SandstormHttpBridge_getSessionRequest_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionRequest_Results_Future) Struct() (SandstormHttpBridge_getSessionRequest_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionRequest_Results(s), err
+func (f SandstormHttpBridge_getSessionRequest_Results_Future) Struct() (SandstormHttpBridge_getSessionRequest_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionRequest_Results(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSessionOffer_Params capnp.Struct
@@ -1240,9 +1283,9 @@ func NewSandstormHttpBridge_getSessionOffer_Params_List(s *capnp.Segment, sz int
 // SandstormHttpBridge_getSessionOffer_Params_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Params promised by a client call.
 type SandstormHttpBridge_getSessionOffer_Params_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionOffer_Params_Future) Struct() (SandstormHttpBridge_getSessionOffer_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionOffer_Params(s), err
+func (f SandstormHttpBridge_getSessionOffer_Params_Future) Struct() (SandstormHttpBridge_getSessionOffer_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionOffer_Params(p.Struct()), err
 }
 
 type SandstormHttpBridge_getSessionOffer_Results capnp.Struct
@@ -1345,15 +1388,13 @@ func NewSandstormHttpBridge_getSessionOffer_Results_List(s *capnp.Segment, sz in
 // SandstormHttpBridge_getSessionOffer_Results_Future is a wrapper for a SandstormHttpBridge_getSessionOffer_Results promised by a client call.
 type SandstormHttpBridge_getSessionOffer_Results_Future struct{ *capnp.Future }
 
-func (p SandstormHttpBridge_getSessionOffer_Results_Future) Struct() (SandstormHttpBridge_getSessionOffer_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormHttpBridge_getSessionOffer_Results(s), err
+func (f SandstormHttpBridge_getSessionOffer_Results_Future) Struct() (SandstormHttpBridge_getSessionOffer_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormHttpBridge_getSessionOffer_Results(p.Struct()), err
 }
-
-func (p SandstormHttpBridge_getSessionOffer_Results_Future) Offer() *capnp.Future {
-	return p.Future.Field(0, nil)
+func (p SandstormHttpBridge_getSessionOffer_Results_Future) Offer() capnp.Client {
+	return p.Future.Field(0, nil).Client()
 }
-
 func (p SandstormHttpBridge_getSessionOffer_Results_Future) Descriptor() powerbox.PowerboxDescriptor_Future {
 	return powerbox.PowerboxDescriptor_Future{Future: p.Future.Field(1, nil)}
 }
@@ -1412,12 +1453,34 @@ func (c AppHooks) Drop(ctx context.Context, params func(AppHooks_drop_Params) er
 	return AppHooks_drop_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c AppHooks) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c AppHooks) AddRef() AppHooks {
 	return AppHooks(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c AppHooks) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c AppHooks) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c AppHooks) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1428,11 +1491,34 @@ func (AppHooks) DecodeFromPtr(p capnp.Ptr) AppHooks {
 	return AppHooks(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c AppHooks) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A AppHooks_Server is a AppHooks with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c AppHooks) IsSame(other AppHooks) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c AppHooks) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c AppHooks) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A AppHooks_Server is a AppHooks with a local implementation.
 type AppHooks_Server interface {
 	GetViewInfo(context.Context, AppHooks_getViewInfo) error
 
@@ -1619,9 +1705,9 @@ func NewAppHooks_getViewInfo_Params_List(s *capnp.Segment, sz int32) (AppHooks_g
 // AppHooks_getViewInfo_Params_Future is a wrapper for a AppHooks_getViewInfo_Params promised by a client call.
 type AppHooks_getViewInfo_Params_Future struct{ *capnp.Future }
 
-func (p AppHooks_getViewInfo_Params_Future) Struct() (AppHooks_getViewInfo_Params, error) {
-	s, err := p.Future.Struct()
-	return AppHooks_getViewInfo_Params(s), err
+func (f AppHooks_getViewInfo_Params_Future) Struct() (AppHooks_getViewInfo_Params, error) {
+	p, err := f.Future.Ptr()
+	return AppHooks_getViewInfo_Params(p.Struct()), err
 }
 
 type AppHooks_restore_Params capnp.Struct
@@ -1695,11 +1781,10 @@ func NewAppHooks_restore_Params_List(s *capnp.Segment, sz int32) (AppHooks_resto
 // AppHooks_restore_Params_Future is a wrapper for a AppHooks_restore_Params promised by a client call.
 type AppHooks_restore_Params_Future struct{ *capnp.Future }
 
-func (p AppHooks_restore_Params_Future) Struct() (AppHooks_restore_Params, error) {
-	s, err := p.Future.Struct()
-	return AppHooks_restore_Params(s), err
+func (f AppHooks_restore_Params_Future) Struct() (AppHooks_restore_Params, error) {
+	p, err := f.Future.Ptr()
+	return AppHooks_restore_Params(p.Struct()), err
 }
-
 func (p AppHooks_restore_Params_Future) ObjectId() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
@@ -1781,13 +1866,12 @@ func NewAppHooks_restore_Results_List(s *capnp.Segment, sz int32) (AppHooks_rest
 // AppHooks_restore_Results_Future is a wrapper for a AppHooks_restore_Results promised by a client call.
 type AppHooks_restore_Results_Future struct{ *capnp.Future }
 
-func (p AppHooks_restore_Results_Future) Struct() (AppHooks_restore_Results, error) {
-	s, err := p.Future.Struct()
-	return AppHooks_restore_Results(s), err
+func (f AppHooks_restore_Results_Future) Struct() (AppHooks_restore_Results, error) {
+	p, err := f.Future.Ptr()
+	return AppHooks_restore_Results(p.Struct()), err
 }
-
-func (p AppHooks_restore_Results_Future) Cap() *capnp.Future {
-	return p.Future.Field(0, nil)
+func (p AppHooks_restore_Results_Future) Cap() capnp.Client {
+	return p.Future.Field(0, nil).Client()
 }
 
 type AppHooks_drop_Params capnp.Struct
@@ -1861,11 +1945,10 @@ func NewAppHooks_drop_Params_List(s *capnp.Segment, sz int32) (AppHooks_drop_Par
 // AppHooks_drop_Params_Future is a wrapper for a AppHooks_drop_Params promised by a client call.
 type AppHooks_drop_Params_Future struct{ *capnp.Future }
 
-func (p AppHooks_drop_Params_Future) Struct() (AppHooks_drop_Params, error) {
-	s, err := p.Future.Struct()
-	return AppHooks_drop_Params(s), err
+func (f AppHooks_drop_Params_Future) Struct() (AppHooks_drop_Params, error) {
+	p, err := f.Future.Ptr()
+	return AppHooks_drop_Params(p.Struct()), err
 }
-
 func (p AppHooks_drop_Params_Future) ObjectId() *capnp.Future {
 	return p.Future.Field(0, nil)
 }
@@ -1930,9 +2013,9 @@ func NewAppHooks_drop_Results_List(s *capnp.Segment, sz int32) (AppHooks_drop_Re
 // AppHooks_drop_Results_Future is a wrapper for a AppHooks_drop_Results promised by a client call.
 type AppHooks_drop_Results_Future struct{ *capnp.Future }
 
-func (p AppHooks_drop_Results_Future) Struct() (AppHooks_drop_Results, error) {
-	s, err := p.Future.Struct()
-	return AppHooks_drop_Results(s), err
+func (f AppHooks_drop_Results_Future) Struct() (AppHooks_drop_Results, error) {
+	p, err := f.Future.Ptr()
+	return AppHooks_drop_Results(p.Struct()), err
 }
 
 const schema_ac137d236832bb1e = "x\xda\xa4V_L\x1c\xd5\x17>gf\xf77\xfc\x12" +

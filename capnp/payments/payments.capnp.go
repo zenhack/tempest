@@ -5,10 +5,12 @@ package payments
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	persistent "capnproto.org/go/capnp/v3/std/capnp/persistent"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	supervisor "zenhack.net/go/sandstorm/capnp/supervisor"
 	util "zenhack.net/go/sandstorm/capnp/util"
@@ -36,12 +38,34 @@ func (c PaymentSource) GetTitle(ctx context.Context, params func(PaymentSource_g
 	return PaymentSource_getTitle_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PaymentSource) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PaymentSource) AddRef() PaymentSource {
 	return PaymentSource(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PaymentSource) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PaymentSource) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PaymentSource) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -52,11 +76,34 @@ func (PaymentSource) DecodeFromPtr(p capnp.Ptr) PaymentSource {
 	return PaymentSource(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PaymentSource) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PaymentSource_Server is a PaymentSource with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PaymentSource) IsSame(other PaymentSource) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PaymentSource) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PaymentSource) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PaymentSource_Server is a PaymentSource with a local implementation.
 type PaymentSource_Server interface {
 	GetTitle(context.Context, PaymentSource_getTitle) error
 }
@@ -181,9 +228,9 @@ func NewPaymentSource_getTitle_Params_List(s *capnp.Segment, sz int32) (PaymentS
 // PaymentSource_getTitle_Params_Future is a wrapper for a PaymentSource_getTitle_Params promised by a client call.
 type PaymentSource_getTitle_Params_Future struct{ *capnp.Future }
 
-func (p PaymentSource_getTitle_Params_Future) Struct() (PaymentSource_getTitle_Params, error) {
-	s, err := p.Future.Struct()
-	return PaymentSource_getTitle_Params(s), err
+func (f PaymentSource_getTitle_Params_Future) Struct() (PaymentSource_getTitle_Params, error) {
+	p, err := f.Future.Ptr()
+	return PaymentSource_getTitle_Params(p.Struct()), err
 }
 
 type PaymentSource_getTitle_Results capnp.Struct
@@ -269,11 +316,10 @@ func NewPaymentSource_getTitle_Results_List(s *capnp.Segment, sz int32) (Payment
 // PaymentSource_getTitle_Results_Future is a wrapper for a PaymentSource_getTitle_Results promised by a client call.
 type PaymentSource_getTitle_Results_Future struct{ *capnp.Future }
 
-func (p PaymentSource_getTitle_Results_Future) Struct() (PaymentSource_getTitle_Results, error) {
-	s, err := p.Future.Struct()
-	return PaymentSource_getTitle_Results(s), err
+func (f PaymentSource_getTitle_Results_Future) Struct() (PaymentSource_getTitle_Results, error) {
+	p, err := f.Future.Ptr()
+	return PaymentSource_getTitle_Results(p.Struct()), err
 }
-
 func (p PaymentSource_getTitle_Results_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
@@ -300,12 +346,34 @@ func (c PaymentAcceptor) CreatePayment(ctx context.Context, params func(PaymentA
 	return PaymentAcceptor_CreatePaymentResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PaymentAcceptor) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PaymentAcceptor) AddRef() PaymentAcceptor {
 	return PaymentAcceptor(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PaymentAcceptor) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PaymentAcceptor) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PaymentAcceptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -316,11 +384,34 @@ func (PaymentAcceptor) DecodeFromPtr(p capnp.Ptr) PaymentAcceptor {
 	return PaymentAcceptor(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PaymentAcceptor) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PaymentAcceptor_Server is a PaymentAcceptor with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PaymentAcceptor) IsSame(other PaymentAcceptor) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PaymentAcceptor) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PaymentAcceptor) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PaymentAcceptor_Server is a PaymentAcceptor with a local implementation.
 type PaymentAcceptor_Server interface {
 	CreatePayment(context.Context, PaymentAcceptor_createPayment) error
 }
@@ -548,11 +639,10 @@ func NewPaymentAcceptor_CreatePaymentResults_List(s *capnp.Segment, sz int32) (P
 // PaymentAcceptor_CreatePaymentResults_Future is a wrapper for a PaymentAcceptor_CreatePaymentResults promised by a client call.
 type PaymentAcceptor_CreatePaymentResults_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_CreatePaymentResults_Future) Struct() (PaymentAcceptor_CreatePaymentResults, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults(s), err
+func (f PaymentAcceptor_CreatePaymentResults_Future) Struct() (PaymentAcceptor_CreatePaymentResults, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_CreatePaymentResults(p.Struct()), err
 }
-
 func (p PaymentAcceptor_CreatePaymentResults_Future) Success() PaymentAcceptor_CreatePaymentResults_success_Future {
 	return PaymentAcceptor_CreatePaymentResults_success_Future{p.Future}
 }
@@ -560,11 +650,10 @@ func (p PaymentAcceptor_CreatePaymentResults_Future) Success() PaymentAcceptor_C
 // PaymentAcceptor_CreatePaymentResults_success_Future is a wrapper for a PaymentAcceptor_CreatePaymentResults_success promised by a client call.
 type PaymentAcceptor_CreatePaymentResults_success_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_CreatePaymentResults_success_Future) Struct() (PaymentAcceptor_CreatePaymentResults_success, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults_success(s), err
+func (f PaymentAcceptor_CreatePaymentResults_success_Future) Struct() (PaymentAcceptor_CreatePaymentResults_success, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_CreatePaymentResults_success(p.Struct()), err
 }
-
 func (p PaymentAcceptor_CreatePaymentResults_success_Future) Payment() Payment {
 	return Payment(p.Future.Field(0, nil).Client())
 }
@@ -576,11 +665,10 @@ func (p PaymentAcceptor_CreatePaymentResults_Future) Failed() PaymentAcceptor_Cr
 // PaymentAcceptor_CreatePaymentResults_failed_Future is a wrapper for a PaymentAcceptor_CreatePaymentResults_failed promised by a client call.
 type PaymentAcceptor_CreatePaymentResults_failed_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_CreatePaymentResults_failed_Future) Struct() (PaymentAcceptor_CreatePaymentResults_failed, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_CreatePaymentResults_failed(s), err
+func (f PaymentAcceptor_CreatePaymentResults_failed_Future) Struct() (PaymentAcceptor_CreatePaymentResults_failed, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_CreatePaymentResults_failed(p.Struct()), err
 }
-
 func (p PaymentAcceptor_CreatePaymentResults_failed_Future) Description() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
@@ -668,9 +756,9 @@ func NewPaymentAcceptor_Invoice_List(s *capnp.Segment, sz int32) (PaymentAccepto
 // PaymentAcceptor_Invoice_Future is a wrapper for a PaymentAcceptor_Invoice promised by a client call.
 type PaymentAcceptor_Invoice_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_Invoice_Future) Struct() (PaymentAcceptor_Invoice, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_Invoice(s), err
+func (f PaymentAcceptor_Invoice_Future) Struct() (PaymentAcceptor_Invoice, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_Invoice(p.Struct()), err
 }
 
 type PaymentAcceptor_Invoice_Item capnp.Struct
@@ -764,11 +852,10 @@ func NewPaymentAcceptor_Invoice_Item_List(s *capnp.Segment, sz int32) (PaymentAc
 // PaymentAcceptor_Invoice_Item_Future is a wrapper for a PaymentAcceptor_Invoice_Item promised by a client call.
 type PaymentAcceptor_Invoice_Item_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_Invoice_Item_Future) Struct() (PaymentAcceptor_Invoice_Item, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_Invoice_Item(s), err
+func (f PaymentAcceptor_Invoice_Item_Future) Struct() (PaymentAcceptor_Invoice_Item, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_Invoice_Item(p.Struct()), err
 }
-
 func (p PaymentAcceptor_Invoice_Item_Future) Title() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
@@ -874,11 +961,10 @@ func NewPaymentAcceptor_createPayment_Params_List(s *capnp.Segment, sz int32) (P
 // PaymentAcceptor_createPayment_Params_Future is a wrapper for a PaymentAcceptor_createPayment_Params promised by a client call.
 type PaymentAcceptor_createPayment_Params_Future struct{ *capnp.Future }
 
-func (p PaymentAcceptor_createPayment_Params_Future) Struct() (PaymentAcceptor_createPayment_Params, error) {
-	s, err := p.Future.Struct()
-	return PaymentAcceptor_createPayment_Params(s), err
+func (f PaymentAcceptor_createPayment_Params_Future) Struct() (PaymentAcceptor_createPayment_Params, error) {
+	p, err := f.Future.Ptr()
+	return PaymentAcceptor_createPayment_Params(p.Struct()), err
 }
-
 func (p PaymentAcceptor_createPayment_Params_Future) Source() PaymentSource {
 	return PaymentSource(p.Future.Field(0, nil).Client())
 }
@@ -909,12 +995,34 @@ func (c Payment) Commit(ctx context.Context, params func(Payment_commit_Params) 
 	return Payment_commit_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c Payment) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c Payment) AddRef() Payment {
 	return Payment(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c Payment) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c Payment) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c Payment) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -925,11 +1033,34 @@ func (Payment) DecodeFromPtr(p capnp.Ptr) Payment {
 	return Payment(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c Payment) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A Payment_Server is a Payment with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c Payment) IsSame(other Payment) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c Payment) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c Payment) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A Payment_Server is a Payment with a local implementation.
 type Payment_Server interface {
 	Commit(context.Context, Payment_commit) error
 }
@@ -1054,9 +1185,9 @@ func NewPayment_commit_Params_List(s *capnp.Segment, sz int32) (Payment_commit_P
 // Payment_commit_Params_Future is a wrapper for a Payment_commit_Params promised by a client call.
 type Payment_commit_Params_Future struct{ *capnp.Future }
 
-func (p Payment_commit_Params_Future) Struct() (Payment_commit_Params, error) {
-	s, err := p.Future.Struct()
-	return Payment_commit_Params(s), err
+func (f Payment_commit_Params_Future) Struct() (Payment_commit_Params, error) {
+	p, err := f.Future.Ptr()
+	return Payment_commit_Params(p.Struct()), err
 }
 
 type Payment_commit_Results capnp.Struct
@@ -1119,9 +1250,9 @@ func NewPayment_commit_Results_List(s *capnp.Segment, sz int32) (Payment_commit_
 // Payment_commit_Results_Future is a wrapper for a Payment_commit_Results promised by a client call.
 type Payment_commit_Results_Future struct{ *capnp.Future }
 
-func (p Payment_commit_Results_Future) Struct() (Payment_commit_Results, error) {
-	s, err := p.Future.Struct()
-	return Payment_commit_Results(s), err
+func (f Payment_commit_Results_Future) Struct() (Payment_commit_Results, error) {
+	p, err := f.Future.Ptr()
+	return Payment_commit_Results(p.Struct()), err
 }
 
 type PersistentPaymentSource capnp.Client
@@ -1178,12 +1309,34 @@ func (c PersistentPaymentSource) Save(ctx context.Context, params func(persisten
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentPaymentSource) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentPaymentSource) AddRef() PersistentPaymentSource {
 	return PersistentPaymentSource(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentPaymentSource) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentPaymentSource) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentPaymentSource) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1194,11 +1347,34 @@ func (PersistentPaymentSource) DecodeFromPtr(p capnp.Ptr) PersistentPaymentSourc
 	return PersistentPaymentSource(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentPaymentSource) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentPaymentSource_Server is a PersistentPaymentSource with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentPaymentSource) IsSame(other PersistentPaymentSource) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentPaymentSource) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentPaymentSource) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentPaymentSource_Server is a PersistentPaymentSource with a local implementation.
 type PersistentPaymentSource_Server interface {
 	GetTitle(context.Context, PaymentSource_getTitle) error
 
@@ -1328,12 +1504,34 @@ func (c PersistentPaymentAcceptor) Save(ctx context.Context, params func(persist
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentPaymentAcceptor) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentPaymentAcceptor) AddRef() PersistentPaymentAcceptor {
 	return PersistentPaymentAcceptor(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentPaymentAcceptor) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentPaymentAcceptor) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentPaymentAcceptor) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1344,11 +1542,34 @@ func (PersistentPaymentAcceptor) DecodeFromPtr(p capnp.Ptr) PersistentPaymentAcc
 	return PersistentPaymentAcceptor(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentPaymentAcceptor) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentPaymentAcceptor_Server is a PersistentPaymentAcceptor with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentPaymentAcceptor) IsSame(other PersistentPaymentAcceptor) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentPaymentAcceptor) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentPaymentAcceptor) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentPaymentAcceptor_Server is a PersistentPaymentAcceptor with a local implementation.
 type PersistentPaymentAcceptor_Server interface {
 	CreatePayment(context.Context, PaymentAcceptor_createPayment) error
 
@@ -1478,12 +1699,34 @@ func (c PersistentPayment) Save(ctx context.Context, params func(persistent.Pers
 	return persistent.Persistent_SaveResults_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c PersistentPayment) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c PersistentPayment) AddRef() PersistentPayment {
 	return PersistentPayment(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c PersistentPayment) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c PersistentPayment) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c PersistentPayment) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -1494,11 +1737,34 @@ func (PersistentPayment) DecodeFromPtr(p capnp.Ptr) PersistentPayment {
 	return PersistentPayment(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c PersistentPayment) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A PersistentPayment_Server is a PersistentPayment with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c PersistentPayment) IsSame(other PersistentPayment) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c PersistentPayment) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c PersistentPayment) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A PersistentPayment_Server is a PersistentPayment with a local implementation.
 type PersistentPayment_Server interface {
 	Commit(context.Context, Payment_commit) error
 

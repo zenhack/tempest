@@ -5,9 +5,11 @@ package hacksession
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	email "zenhack.net/go/sandstorm/capnp/email"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
 	identity "zenhack.net/go/sandstorm/capnp/identity"
@@ -340,12 +342,34 @@ func (c HackSessionContext) HintAddress(ctx context.Context, params func(email.E
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c HackSessionContext) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c HackSessionContext) AddRef() HackSessionContext {
 	return HackSessionContext(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c HackSessionContext) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c HackSessionContext) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c HackSessionContext) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -356,11 +380,34 @@ func (HackSessionContext) DecodeFromPtr(p capnp.Ptr) HackSessionContext {
 	return HackSessionContext(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c HackSessionContext) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A HackSessionContext_Server is a HackSessionContext with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c HackSessionContext) IsSame(other HackSessionContext) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c HackSessionContext) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c HackSessionContext) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A HackSessionContext_Server is a HackSessionContext with a local implementation.
 type HackSessionContext_Server interface {
 	GetPublicId(context.Context, HackSessionContext_getPublicId) error
 
@@ -946,11 +993,10 @@ func NewHackSessionContext_TokenInfo_List(s *capnp.Segment, sz int32) (HackSessi
 // HackSessionContext_TokenInfo_Future is a wrapper for a HackSessionContext_TokenInfo promised by a client call.
 type HackSessionContext_TokenInfo_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_TokenInfo_Future) Struct() (HackSessionContext_TokenInfo, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_TokenInfo(s), err
+func (f HackSessionContext_TokenInfo_Future) Struct() (HackSessionContext_TokenInfo, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_TokenInfo(p.Struct()), err
 }
-
 func (p HackSessionContext_TokenInfo_Future) UserInfo() identity.UserInfo_Future {
 	return identity.UserInfo_Future{Future: p.Future.Field(2, nil)}
 }
@@ -1015,9 +1061,9 @@ func NewHackSessionContext_getPublicId_Params_List(s *capnp.Segment, sz int32) (
 // HackSessionContext_getPublicId_Params_Future is a wrapper for a HackSessionContext_getPublicId_Params promised by a client call.
 type HackSessionContext_getPublicId_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getPublicId_Params_Future) Struct() (HackSessionContext_getPublicId_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_getPublicId_Params(s), err
+func (f HackSessionContext_getPublicId_Params_Future) Struct() (HackSessionContext_getPublicId_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_getPublicId_Params(p.Struct()), err
 }
 
 type HackSessionContext_getPublicId_Results capnp.Struct
@@ -1141,9 +1187,9 @@ func NewHackSessionContext_getPublicId_Results_List(s *capnp.Segment, sz int32) 
 // HackSessionContext_getPublicId_Results_Future is a wrapper for a HackSessionContext_getPublicId_Results promised by a client call.
 type HackSessionContext_getPublicId_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getPublicId_Results_Future) Struct() (HackSessionContext_getPublicId_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_getPublicId_Results(s), err
+func (f HackSessionContext_getPublicId_Results_Future) Struct() (HackSessionContext_getPublicId_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_getPublicId_Results(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteHttpGet_Params capnp.Struct
@@ -1223,9 +1269,9 @@ func NewHackSessionContext_obsoleteHttpGet_Params_List(s *capnp.Segment, sz int3
 // HackSessionContext_obsoleteHttpGet_Params_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Params promised by a client call.
 type HackSessionContext_obsoleteHttpGet_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteHttpGet_Params_Future) Struct() (HackSessionContext_obsoleteHttpGet_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteHttpGet_Params(s), err
+func (f HackSessionContext_obsoleteHttpGet_Params_Future) Struct() (HackSessionContext_obsoleteHttpGet_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteHttpGet_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteHttpGet_Results capnp.Struct
@@ -1318,9 +1364,9 @@ func NewHackSessionContext_obsoleteHttpGet_Results_List(s *capnp.Segment, sz int
 // HackSessionContext_obsoleteHttpGet_Results_Future is a wrapper for a HackSessionContext_obsoleteHttpGet_Results promised by a client call.
 type HackSessionContext_obsoleteHttpGet_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteHttpGet_Results_Future) Struct() (HackSessionContext_obsoleteHttpGet_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteHttpGet_Results(s), err
+func (f HackSessionContext_obsoleteHttpGet_Results_Future) Struct() (HackSessionContext_obsoleteHttpGet_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteHttpGet_Results(p.Struct()), err
 }
 
 type HackSessionContext_getUserAddress_Params capnp.Struct
@@ -1383,9 +1429,9 @@ func NewHackSessionContext_getUserAddress_Params_List(s *capnp.Segment, sz int32
 // HackSessionContext_getUserAddress_Params_Future is a wrapper for a HackSessionContext_getUserAddress_Params promised by a client call.
 type HackSessionContext_getUserAddress_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_getUserAddress_Params_Future) Struct() (HackSessionContext_getUserAddress_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_getUserAddress_Params(s), err
+func (f HackSessionContext_getUserAddress_Params_Future) Struct() (HackSessionContext_getUserAddress_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_getUserAddress_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteGenerateApiToken_Params capnp.Struct
@@ -1497,11 +1543,10 @@ func NewHackSessionContext_obsoleteGenerateApiToken_Params_List(s *capnp.Segment
 // HackSessionContext_obsoleteGenerateApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Params promised by a client call.
 type HackSessionContext_obsoleteGenerateApiToken_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGenerateApiToken_Params(s), err
+func (f HackSessionContext_obsoleteGenerateApiToken_Params_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGenerateApiToken_Params(p.Struct()), err
 }
-
 func (p HackSessionContext_obsoleteGenerateApiToken_Params_Future) UserInfo() identity.UserInfo_Future {
 	return identity.UserInfo_Future{Future: p.Future.Field(1, nil)}
 }
@@ -1619,9 +1664,9 @@ func NewHackSessionContext_obsoleteGenerateApiToken_Results_List(s *capnp.Segmen
 // HackSessionContext_obsoleteGenerateApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteGenerateApiToken_Results promised by a client call.
 type HackSessionContext_obsoleteGenerateApiToken_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGenerateApiToken_Results_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGenerateApiToken_Results(s), err
+func (f HackSessionContext_obsoleteGenerateApiToken_Results_Future) Struct() (HackSessionContext_obsoleteGenerateApiToken_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGenerateApiToken_Results(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteListApiTokens_Params capnp.Struct
@@ -1684,9 +1729,9 @@ func NewHackSessionContext_obsoleteListApiTokens_Params_List(s *capnp.Segment, s
 // HackSessionContext_obsoleteListApiTokens_Params_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Params promised by a client call.
 type HackSessionContext_obsoleteListApiTokens_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteListApiTokens_Params_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteListApiTokens_Params(s), err
+func (f HackSessionContext_obsoleteListApiTokens_Params_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteListApiTokens_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteListApiTokens_Results capnp.Struct
@@ -1772,9 +1817,9 @@ func NewHackSessionContext_obsoleteListApiTokens_Results_List(s *capnp.Segment, 
 // HackSessionContext_obsoleteListApiTokens_Results_Future is a wrapper for a HackSessionContext_obsoleteListApiTokens_Results promised by a client call.
 type HackSessionContext_obsoleteListApiTokens_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteListApiTokens_Results_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteListApiTokens_Results(s), err
+func (f HackSessionContext_obsoleteListApiTokens_Results_Future) Struct() (HackSessionContext_obsoleteListApiTokens_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteListApiTokens_Results(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteRevokeApiToken_Params capnp.Struct
@@ -1854,9 +1899,9 @@ func NewHackSessionContext_obsoleteRevokeApiToken_Params_List(s *capnp.Segment, 
 // HackSessionContext_obsoleteRevokeApiToken_Params_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Params promised by a client call.
 type HackSessionContext_obsoleteRevokeApiToken_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteRevokeApiToken_Params_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteRevokeApiToken_Params(s), err
+func (f HackSessionContext_obsoleteRevokeApiToken_Params_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteRevokeApiToken_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteRevokeApiToken_Results capnp.Struct
@@ -1919,9 +1964,9 @@ func NewHackSessionContext_obsoleteRevokeApiToken_Results_List(s *capnp.Segment,
 // HackSessionContext_obsoleteRevokeApiToken_Results_Future is a wrapper for a HackSessionContext_obsoleteRevokeApiToken_Results promised by a client call.
 type HackSessionContext_obsoleteRevokeApiToken_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteRevokeApiToken_Results_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteRevokeApiToken_Results(s), err
+func (f HackSessionContext_obsoleteRevokeApiToken_Results_Future) Struct() (HackSessionContext_obsoleteRevokeApiToken_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteRevokeApiToken_Results(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteGetIpNetwork_Params capnp.Struct
@@ -1984,9 +2029,9 @@ func NewHackSessionContext_obsoleteGetIpNetwork_Params_List(s *capnp.Segment, sz
 // HackSessionContext_obsoleteGetIpNetwork_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Params promised by a client call.
 type HackSessionContext_obsoleteGetIpNetwork_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpNetwork_Params_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpNetwork_Params(s), err
+func (f HackSessionContext_obsoleteGetIpNetwork_Params_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetIpNetwork_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteGetIpNetwork_Results capnp.Struct
@@ -2066,11 +2111,10 @@ func NewHackSessionContext_obsoleteGetIpNetwork_Results_List(s *capnp.Segment, s
 // HackSessionContext_obsoleteGetIpNetwork_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpNetwork_Results promised by a client call.
 type HackSessionContext_obsoleteGetIpNetwork_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpNetwork_Results(s), err
+func (f HackSessionContext_obsoleteGetIpNetwork_Results_Future) Struct() (HackSessionContext_obsoleteGetIpNetwork_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetIpNetwork_Results(p.Struct()), err
 }
-
 func (p HackSessionContext_obsoleteGetIpNetwork_Results_Future) Network() ip.IpNetwork {
 	return ip.IpNetwork(p.Future.Field(0, nil).Client())
 }
@@ -2135,9 +2179,9 @@ func NewHackSessionContext_obsoleteGetIpInterface_Params_List(s *capnp.Segment, 
 // HackSessionContext_obsoleteGetIpInterface_Params_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Params promised by a client call.
 type HackSessionContext_obsoleteGetIpInterface_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpInterface_Params_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpInterface_Params(s), err
+func (f HackSessionContext_obsoleteGetIpInterface_Params_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetIpInterface_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteGetIpInterface_Results capnp.Struct
@@ -2217,11 +2261,10 @@ func NewHackSessionContext_obsoleteGetIpInterface_Results_List(s *capnp.Segment,
 // HackSessionContext_obsoleteGetIpInterface_Results_Future is a wrapper for a HackSessionContext_obsoleteGetIpInterface_Results promised by a client call.
 type HackSessionContext_obsoleteGetIpInterface_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetIpInterface_Results(s), err
+func (f HackSessionContext_obsoleteGetIpInterface_Results_Future) Struct() (HackSessionContext_obsoleteGetIpInterface_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetIpInterface_Results(p.Struct()), err
 }
-
 func (p HackSessionContext_obsoleteGetIpInterface_Results_Future) Interface() ip.IpInterface {
 	return ip.IpInterface(p.Future.Field(0, nil).Client())
 }
@@ -2303,9 +2346,9 @@ func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Params_List(s *capnp.Seg
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Params promised by a client call.
 type HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(s), err
+func (f HackSessionContext_obsoleteGetUiViewForEndpoint_Params_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Params, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Params(p.Struct()), err
 }
 
 type HackSessionContext_obsoleteGetUiViewForEndpoint_Results capnp.Struct
@@ -2385,11 +2428,10 @@ func NewHackSessionContext_obsoleteGetUiViewForEndpoint_Results_List(s *capnp.Se
 // HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future is a wrapper for a HackSessionContext_obsoleteGetUiViewForEndpoint_Results promised by a client call.
 type HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future struct{ *capnp.Future }
 
-func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
-	s, err := p.Future.Struct()
-	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(s), err
+func (f HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) Struct() (HackSessionContext_obsoleteGetUiViewForEndpoint_Results, error) {
+	p, err := f.Future.Ptr()
+	return HackSessionContext_obsoleteGetUiViewForEndpoint_Results(p.Struct()), err
 }
-
 func (p HackSessionContext_obsoleteGetUiViewForEndpoint_Results_Future) View() grain.UiView {
 	return grain.UiView(p.Future.Field(0, nil).Client())
 }
@@ -2432,12 +2474,34 @@ func (c HackEmailSession) HintAddress(ctx context.Context, params func(email.Ema
 	return email.EmailSendPort_hintAddress_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c HackEmailSession) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c HackEmailSession) AddRef() HackEmailSession {
 	return HackEmailSession(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c HackEmailSession) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c HackEmailSession) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c HackEmailSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -2448,11 +2512,34 @@ func (HackEmailSession) DecodeFromPtr(p capnp.Ptr) HackEmailSession {
 	return HackEmailSession(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c HackEmailSession) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A HackEmailSession_Server is a HackEmailSession with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c HackEmailSession) IsSame(other HackEmailSession) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c HackEmailSession) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c HackEmailSession) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A HackEmailSession_Server is a HackEmailSession with a local implementation.
 type HackEmailSession_Server interface {
 	Send(context.Context, email.EmailSendPort_send) error
 

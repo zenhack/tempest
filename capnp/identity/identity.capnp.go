@@ -5,9 +5,11 @@ package identity
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	util "zenhack.net/go/sandstorm/capnp/util"
 )
 
@@ -33,12 +35,34 @@ func (c Identity) GetProfile(ctx context.Context, params func(Identity_getProfil
 	return Identity_getProfile_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c Identity) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c Identity) AddRef() Identity {
 	return Identity(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c Identity) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c Identity) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c Identity) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -49,11 +73,34 @@ func (Identity) DecodeFromPtr(p capnp.Ptr) Identity {
 	return Identity(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c Identity) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A Identity_Server is a Identity with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c Identity) IsSame(other Identity) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c Identity) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c Identity) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A Identity_Server is a Identity with a local implementation.
 type Identity_Server interface {
 	GetProfile(context.Context, Identity_getProfile) error
 }
@@ -201,9 +248,9 @@ func NewIdentity_PowerboxTag_List(s *capnp.Segment, sz int32) (Identity_Powerbox
 // Identity_PowerboxTag_Future is a wrapper for a Identity_PowerboxTag promised by a client call.
 type Identity_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p Identity_PowerboxTag_Future) Struct() (Identity_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return Identity_PowerboxTag(s), err
+func (f Identity_PowerboxTag_Future) Struct() (Identity_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return Identity_PowerboxTag(p.Struct()), err
 }
 
 type Identity_getProfile_Params capnp.Struct
@@ -266,9 +313,9 @@ func NewIdentity_getProfile_Params_List(s *capnp.Segment, sz int32) (Identity_ge
 // Identity_getProfile_Params_Future is a wrapper for a Identity_getProfile_Params promised by a client call.
 type Identity_getProfile_Params_Future struct{ *capnp.Future }
 
-func (p Identity_getProfile_Params_Future) Struct() (Identity_getProfile_Params, error) {
-	s, err := p.Future.Struct()
-	return Identity_getProfile_Params(s), err
+func (f Identity_getProfile_Params_Future) Struct() (Identity_getProfile_Params, error) {
+	p, err := f.Future.Ptr()
+	return Identity_getProfile_Params(p.Struct()), err
 }
 
 type Identity_getProfile_Results capnp.Struct
@@ -354,11 +401,10 @@ func NewIdentity_getProfile_Results_List(s *capnp.Segment, sz int32) (Identity_g
 // Identity_getProfile_Results_Future is a wrapper for a Identity_getProfile_Results promised by a client call.
 type Identity_getProfile_Results_Future struct{ *capnp.Future }
 
-func (p Identity_getProfile_Results_Future) Struct() (Identity_getProfile_Results, error) {
-	s, err := p.Future.Struct()
-	return Identity_getProfile_Results(s), err
+func (f Identity_getProfile_Results_Future) Struct() (Identity_getProfile_Results, error) {
+	p, err := f.Future.Ptr()
+	return Identity_getProfile_Results(p.Struct()), err
 }
-
 func (p Identity_getProfile_Results_Future) Profile() Profile_Future {
 	return Profile_Future{Future: p.Future.Field(0, nil)}
 }
@@ -490,15 +536,13 @@ func NewProfile_List(s *capnp.Segment, sz int32) (Profile_List, error) {
 // Profile_Future is a wrapper for a Profile promised by a client call.
 type Profile_Future struct{ *capnp.Future }
 
-func (p Profile_Future) Struct() (Profile, error) {
-	s, err := p.Future.Struct()
-	return Profile(s), err
+func (f Profile_Future) Struct() (Profile, error) {
+	p, err := f.Future.Ptr()
+	return Profile(p.Struct()), err
 }
-
 func (p Profile_Future) DisplayName() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p Profile_Future) Picture() util.StaticAsset {
 	return util.StaticAsset(p.Future.Field(2, nil).Client())
 }
@@ -708,7 +752,6 @@ func (s UserInfo) NewPermissions(n int32) (capnp.BitList, error) {
 	err = capnp.Struct(s).SetPtr(3, l.ToPtr())
 	return l, err
 }
-
 func (s UserInfo) IdentityId() ([]byte, error) {
 	p, err := capnp.Struct(s).Ptr(2)
 	return []byte(p.Data()), err
@@ -752,15 +795,13 @@ func NewUserInfo_List(s *capnp.Segment, sz int32) (UserInfo_List, error) {
 // UserInfo_Future is a wrapper for a UserInfo promised by a client call.
 type UserInfo_Future struct{ *capnp.Future }
 
-func (p UserInfo_Future) Struct() (UserInfo, error) {
-	s, err := p.Future.Struct()
-	return UserInfo(s), err
+func (f UserInfo_Future) Struct() (UserInfo, error) {
+	p, err := f.Future.Ptr()
+	return UserInfo(p.Struct()), err
 }
-
 func (p UserInfo_Future) DisplayName() util.LocalizedText_Future {
 	return util.LocalizedText_Future{Future: p.Future.Field(0, nil)}
 }
-
 func (p UserInfo_Future) Identity() Identity {
 	return Identity(p.Future.Field(6, nil).Client())
 }

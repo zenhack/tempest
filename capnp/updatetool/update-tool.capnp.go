@@ -104,9 +104,9 @@ func NewPublicSigningKey_List(s *capnp.Segment, sz int32) (PublicSigningKey_List
 // PublicSigningKey_Future is a wrapper for a PublicSigningKey promised by a client call.
 type PublicSigningKey_Future struct{ *capnp.Future }
 
-func (p PublicSigningKey_Future) Struct() (PublicSigningKey, error) {
-	s, err := p.Future.Struct()
-	return PublicSigningKey(s), err
+func (f PublicSigningKey_Future) Struct() (PublicSigningKey, error) {
+	p, err := f.Future.Ptr()
+	return PublicSigningKey(p.Struct()), err
 }
 
 type Signature capnp.Struct
@@ -232,9 +232,9 @@ func NewSignature_List(s *capnp.Segment, sz int32) (Signature_List, error) {
 // Signature_Future is a wrapper for a Signature promised by a client call.
 type Signature_Future struct{ *capnp.Future }
 
-func (p Signature_Future) Struct() (Signature, error) {
-	s, err := p.Future.Struct()
-	return Signature(s), err
+func (f Signature_Future) Struct() (Signature, error) {
+	p, err := f.Future.Ptr()
+	return Signature(p.Struct()), err
 }
 
 type UpdateSignature capnp.Struct
@@ -320,9 +320,9 @@ func NewUpdateSignature_List(s *capnp.Segment, sz int32) (UpdateSignature_List, 
 // UpdateSignature_Future is a wrapper for a UpdateSignature promised by a client call.
 type UpdateSignature_Future struct{ *capnp.Future }
 
-func (p UpdateSignature_Future) Struct() (UpdateSignature, error) {
-	s, err := p.Future.Struct()
-	return UpdateSignature(s), err
+func (f UpdateSignature_Future) Struct() (UpdateSignature, error) {
+	p, err := f.Future.Ptr()
+	return UpdateSignature(p.Struct()), err
 }
 
 const schema_96c3fff3f4beb8fe = "x\xda|\x93OH\x14Q\x1c\xc7\x7f\xdf\xf7{\xbb\xab" +

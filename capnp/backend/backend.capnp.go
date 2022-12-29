@@ -5,10 +5,12 @@ package backend
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	stream "capnproto.org/go/capnp/v3/std/capnp/stream"
 	context "context"
+	fmt "fmt"
 	strconv "strconv"
 	apisession "zenhack.net/go/sandstorm/capnp/apisession"
 	grain "zenhack.net/go/sandstorm/capnp/grain"
@@ -280,12 +282,34 @@ func (c Backend) GetGrainStorageUsage(ctx context.Context, params func(Backend_g
 	return Backend_getGrainStorageUsage_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c Backend) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c Backend) AddRef() Backend {
 	return Backend(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c Backend) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c Backend) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c Backend) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -296,11 +320,34 @@ func (Backend) DecodeFromPtr(p capnp.Ptr) Backend {
 	return Backend(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c Backend) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A Backend_Server is a Backend with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c Backend) IsSame(other Backend) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c Backend) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c Backend) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A Backend_Server is a Backend with a local implementation.
 type Backend_Server interface {
 	StartGrain(context.Context, Backend_startGrain) error
 
@@ -900,12 +947,34 @@ func (c Backend_PackageUploadStream) ExpectSize(ctx context.Context, params func
 	return util.ByteStream_expectSize_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c Backend_PackageUploadStream) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c Backend_PackageUploadStream) AddRef() Backend_PackageUploadStream {
 	return Backend_PackageUploadStream(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c Backend_PackageUploadStream) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c Backend_PackageUploadStream) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c Backend_PackageUploadStream) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -916,11 +985,34 @@ func (Backend_PackageUploadStream) DecodeFromPtr(p capnp.Ptr) Backend_PackageUpl
 	return Backend_PackageUploadStream(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c Backend_PackageUploadStream) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A Backend_PackageUploadStream_Server is a Backend_PackageUploadStream with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c Backend_PackageUploadStream) IsSame(other Backend_PackageUploadStream) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c Backend_PackageUploadStream) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c Backend_PackageUploadStream) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A Backend_PackageUploadStream_Server is a Backend_PackageUploadStream with a local implementation.
 type Backend_PackageUploadStream_Server interface {
 	SaveAs(context.Context, Backend_PackageUploadStream_saveAs) error
 
@@ -1104,9 +1196,9 @@ func NewBackend_PackageUploadStream_saveAs_Params_List(s *capnp.Segment, sz int3
 // Backend_PackageUploadStream_saveAs_Params_Future is a wrapper for a Backend_PackageUploadStream_saveAs_Params promised by a client call.
 type Backend_PackageUploadStream_saveAs_Params_Future struct{ *capnp.Future }
 
-func (p Backend_PackageUploadStream_saveAs_Params_Future) Struct() (Backend_PackageUploadStream_saveAs_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_PackageUploadStream_saveAs_Params(s), err
+func (f Backend_PackageUploadStream_saveAs_Params_Future) Struct() (Backend_PackageUploadStream_saveAs_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_PackageUploadStream_saveAs_Params(p.Struct()), err
 }
 
 type Backend_PackageUploadStream_saveAs_Results capnp.Struct
@@ -1228,11 +1320,10 @@ func NewBackend_PackageUploadStream_saveAs_Results_List(s *capnp.Segment, sz int
 // Backend_PackageUploadStream_saveAs_Results_Future is a wrapper for a Backend_PackageUploadStream_saveAs_Results promised by a client call.
 type Backend_PackageUploadStream_saveAs_Results_Future struct{ *capnp.Future }
 
-func (p Backend_PackageUploadStream_saveAs_Results_Future) Struct() (Backend_PackageUploadStream_saveAs_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_PackageUploadStream_saveAs_Results(s), err
+func (f Backend_PackageUploadStream_saveAs_Results_Future) Struct() (Backend_PackageUploadStream_saveAs_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_PackageUploadStream_saveAs_Results(p.Struct()), err
 }
-
 func (p Backend_PackageUploadStream_saveAs_Results_Future) Manifest() spk.Manifest_Future {
 	return spk.Manifest_Future{Future: p.Future.Field(1, nil)}
 }
@@ -1398,11 +1489,10 @@ func NewBackend_startGrain_Params_List(s *capnp.Segment, sz int32) (Backend_star
 // Backend_startGrain_Params_Future is a wrapper for a Backend_startGrain_Params promised by a client call.
 type Backend_startGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_startGrain_Params_Future) Struct() (Backend_startGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_startGrain_Params(s), err
+func (f Backend_startGrain_Params_Future) Struct() (Backend_startGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_startGrain_Params(p.Struct()), err
 }
-
 func (p Backend_startGrain_Params_Future) Command() spk.Manifest_Command_Future {
 	return spk.Manifest_Command_Future{Future: p.Future.Field(3, nil)}
 }
@@ -1484,11 +1574,10 @@ func NewBackend_startGrain_Results_List(s *capnp.Segment, sz int32) (Backend_sta
 // Backend_startGrain_Results_Future is a wrapper for a Backend_startGrain_Results promised by a client call.
 type Backend_startGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_startGrain_Results_Future) Struct() (Backend_startGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_startGrain_Results(s), err
+func (f Backend_startGrain_Results_Future) Struct() (Backend_startGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_startGrain_Results(p.Struct()), err
 }
-
 func (p Backend_startGrain_Results_Future) Supervisor() supervisor.Supervisor {
 	return supervisor.Supervisor(p.Future.Field(0, nil).Client())
 }
@@ -1588,9 +1677,9 @@ func NewBackend_getGrain_Params_List(s *capnp.Segment, sz int32) (Backend_getGra
 // Backend_getGrain_Params_Future is a wrapper for a Backend_getGrain_Params promised by a client call.
 type Backend_getGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getGrain_Params_Future) Struct() (Backend_getGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_getGrain_Params(s), err
+func (f Backend_getGrain_Params_Future) Struct() (Backend_getGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getGrain_Params(p.Struct()), err
 }
 
 type Backend_getGrain_Results capnp.Struct
@@ -1670,11 +1759,10 @@ func NewBackend_getGrain_Results_List(s *capnp.Segment, sz int32) (Backend_getGr
 // Backend_getGrain_Results_Future is a wrapper for a Backend_getGrain_Results promised by a client call.
 type Backend_getGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getGrain_Results_Future) Struct() (Backend_getGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_getGrain_Results(s), err
+func (f Backend_getGrain_Results_Future) Struct() (Backend_getGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getGrain_Results(p.Struct()), err
 }
-
 func (p Backend_getGrain_Results_Future) Supervisor() supervisor.Supervisor {
 	return supervisor.Supervisor(p.Future.Field(0, nil).Client())
 }
@@ -1774,9 +1862,9 @@ func NewBackend_deleteGrain_Params_List(s *capnp.Segment, sz int32) (Backend_del
 // Backend_deleteGrain_Params_Future is a wrapper for a Backend_deleteGrain_Params promised by a client call.
 type Backend_deleteGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteGrain_Params_Future) Struct() (Backend_deleteGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteGrain_Params(s), err
+func (f Backend_deleteGrain_Params_Future) Struct() (Backend_deleteGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteGrain_Params(p.Struct()), err
 }
 
 type Backend_deleteGrain_Results capnp.Struct
@@ -1839,9 +1927,9 @@ func NewBackend_deleteGrain_Results_List(s *capnp.Segment, sz int32) (Backend_de
 // Backend_deleteGrain_Results_Future is a wrapper for a Backend_deleteGrain_Results promised by a client call.
 type Backend_deleteGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteGrain_Results_Future) Struct() (Backend_deleteGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteGrain_Results(s), err
+func (f Backend_deleteGrain_Results_Future) Struct() (Backend_deleteGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteGrain_Results(p.Struct()), err
 }
 
 type Backend_installPackage_Params capnp.Struct
@@ -1904,9 +1992,9 @@ func NewBackend_installPackage_Params_List(s *capnp.Segment, sz int32) (Backend_
 // Backend_installPackage_Params_Future is a wrapper for a Backend_installPackage_Params promised by a client call.
 type Backend_installPackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_installPackage_Params_Future) Struct() (Backend_installPackage_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_installPackage_Params(s), err
+func (f Backend_installPackage_Params_Future) Struct() (Backend_installPackage_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_installPackage_Params(p.Struct()), err
 }
 
 type Backend_installPackage_Results capnp.Struct
@@ -1986,11 +2074,10 @@ func NewBackend_installPackage_Results_List(s *capnp.Segment, sz int32) (Backend
 // Backend_installPackage_Results_Future is a wrapper for a Backend_installPackage_Results promised by a client call.
 type Backend_installPackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_installPackage_Results_Future) Struct() (Backend_installPackage_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_installPackage_Results(s), err
+func (f Backend_installPackage_Results_Future) Struct() (Backend_installPackage_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_installPackage_Results(p.Struct()), err
 }
-
 func (p Backend_installPackage_Results_Future) Stream() Backend_PackageUploadStream {
 	return Backend_PackageUploadStream(p.Future.Field(0, nil).Client())
 }
@@ -2072,9 +2159,9 @@ func NewBackend_tryGetPackage_Params_List(s *capnp.Segment, sz int32) (Backend_t
 // Backend_tryGetPackage_Params_Future is a wrapper for a Backend_tryGetPackage_Params promised by a client call.
 type Backend_tryGetPackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_tryGetPackage_Params_Future) Struct() (Backend_tryGetPackage_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_tryGetPackage_Params(s), err
+func (f Backend_tryGetPackage_Params_Future) Struct() (Backend_tryGetPackage_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_tryGetPackage_Params(p.Struct()), err
 }
 
 type Backend_tryGetPackage_Results capnp.Struct
@@ -2196,11 +2283,10 @@ func NewBackend_tryGetPackage_Results_List(s *capnp.Segment, sz int32) (Backend_
 // Backend_tryGetPackage_Results_Future is a wrapper for a Backend_tryGetPackage_Results promised by a client call.
 type Backend_tryGetPackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_tryGetPackage_Results_Future) Struct() (Backend_tryGetPackage_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_tryGetPackage_Results(s), err
+func (f Backend_tryGetPackage_Results_Future) Struct() (Backend_tryGetPackage_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_tryGetPackage_Results(p.Struct()), err
 }
-
 func (p Backend_tryGetPackage_Results_Future) Manifest() spk.Manifest_Future {
 	return spk.Manifest_Future{Future: p.Future.Field(1, nil)}
 }
@@ -2282,9 +2368,9 @@ func NewBackend_deletePackage_Params_List(s *capnp.Segment, sz int32) (Backend_d
 // Backend_deletePackage_Params_Future is a wrapper for a Backend_deletePackage_Params promised by a client call.
 type Backend_deletePackage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deletePackage_Params_Future) Struct() (Backend_deletePackage_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_deletePackage_Params(s), err
+func (f Backend_deletePackage_Params_Future) Struct() (Backend_deletePackage_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deletePackage_Params(p.Struct()), err
 }
 
 type Backend_deletePackage_Results capnp.Struct
@@ -2347,9 +2433,9 @@ func NewBackend_deletePackage_Results_List(s *capnp.Segment, sz int32) (Backend_
 // Backend_deletePackage_Results_Future is a wrapper for a Backend_deletePackage_Results promised by a client call.
 type Backend_deletePackage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deletePackage_Results_Future) Struct() (Backend_deletePackage_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_deletePackage_Results(s), err
+func (f Backend_deletePackage_Results_Future) Struct() (Backend_deletePackage_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deletePackage_Results(p.Struct()), err
 }
 
 type Backend_backupGrain_Params capnp.Struct
@@ -2489,11 +2575,10 @@ func NewBackend_backupGrain_Params_List(s *capnp.Segment, sz int32) (Backend_bac
 // Backend_backupGrain_Params_Future is a wrapper for a Backend_backupGrain_Params promised by a client call.
 type Backend_backupGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_backupGrain_Params_Future) Struct() (Backend_backupGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_backupGrain_Params(s), err
+func (f Backend_backupGrain_Params_Future) Struct() (Backend_backupGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_backupGrain_Params(p.Struct()), err
 }
-
 func (p Backend_backupGrain_Params_Future) Info() grain.GrainInfo_Future {
 	return grain.GrainInfo_Future{Future: p.Future.Field(3, nil)}
 }
@@ -2558,9 +2643,9 @@ func NewBackend_backupGrain_Results_List(s *capnp.Segment, sz int32) (Backend_ba
 // Backend_backupGrain_Results_Future is a wrapper for a Backend_backupGrain_Results promised by a client call.
 type Backend_backupGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_backupGrain_Results_Future) Struct() (Backend_backupGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_backupGrain_Results(s), err
+func (f Backend_backupGrain_Results_Future) Struct() (Backend_backupGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_backupGrain_Results(p.Struct()), err
 }
 
 type Backend_restoreGrain_Params capnp.Struct
@@ -2676,9 +2761,9 @@ func NewBackend_restoreGrain_Params_List(s *capnp.Segment, sz int32) (Backend_re
 // Backend_restoreGrain_Params_Future is a wrapper for a Backend_restoreGrain_Params promised by a client call.
 type Backend_restoreGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_restoreGrain_Params_Future) Struct() (Backend_restoreGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_restoreGrain_Params(s), err
+func (f Backend_restoreGrain_Params_Future) Struct() (Backend_restoreGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_restoreGrain_Params(p.Struct()), err
 }
 
 type Backend_restoreGrain_Results capnp.Struct
@@ -2764,11 +2849,10 @@ func NewBackend_restoreGrain_Results_List(s *capnp.Segment, sz int32) (Backend_r
 // Backend_restoreGrain_Results_Future is a wrapper for a Backend_restoreGrain_Results promised by a client call.
 type Backend_restoreGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_restoreGrain_Results_Future) Struct() (Backend_restoreGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_restoreGrain_Results(s), err
+func (f Backend_restoreGrain_Results_Future) Struct() (Backend_restoreGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_restoreGrain_Results(p.Struct()), err
 }
-
 func (p Backend_restoreGrain_Results_Future) Info() grain.GrainInfo_Future {
 	return grain.GrainInfo_Future{Future: p.Future.Field(0, nil)}
 }
@@ -2850,9 +2934,9 @@ func NewBackend_uploadBackup_Params_List(s *capnp.Segment, sz int32) (Backend_up
 // Backend_uploadBackup_Params_Future is a wrapper for a Backend_uploadBackup_Params promised by a client call.
 type Backend_uploadBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_uploadBackup_Params_Future) Struct() (Backend_uploadBackup_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_uploadBackup_Params(s), err
+func (f Backend_uploadBackup_Params_Future) Struct() (Backend_uploadBackup_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_uploadBackup_Params(p.Struct()), err
 }
 
 type Backend_uploadBackup_Results capnp.Struct
@@ -2932,11 +3016,10 @@ func NewBackend_uploadBackup_Results_List(s *capnp.Segment, sz int32) (Backend_u
 // Backend_uploadBackup_Results_Future is a wrapper for a Backend_uploadBackup_Results promised by a client call.
 type Backend_uploadBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_uploadBackup_Results_Future) Struct() (Backend_uploadBackup_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_uploadBackup_Results(s), err
+func (f Backend_uploadBackup_Results_Future) Struct() (Backend_uploadBackup_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_uploadBackup_Results(p.Struct()), err
 }
-
 func (p Backend_uploadBackup_Results_Future) Stream() util.ByteStream {
 	return util.ByteStream(p.Future.Field(0, nil).Client())
 }
@@ -3036,11 +3119,10 @@ func NewBackend_downloadBackup_Params_List(s *capnp.Segment, sz int32) (Backend_
 // Backend_downloadBackup_Params_Future is a wrapper for a Backend_downloadBackup_Params promised by a client call.
 type Backend_downloadBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_downloadBackup_Params_Future) Struct() (Backend_downloadBackup_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_downloadBackup_Params(s), err
+func (f Backend_downloadBackup_Params_Future) Struct() (Backend_downloadBackup_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_downloadBackup_Params(p.Struct()), err
 }
-
 func (p Backend_downloadBackup_Params_Future) Stream() util.ByteStream {
 	return util.ByteStream(p.Future.Field(1, nil).Client())
 }
@@ -3105,9 +3187,9 @@ func NewBackend_downloadBackup_Results_List(s *capnp.Segment, sz int32) (Backend
 // Backend_downloadBackup_Results_Future is a wrapper for a Backend_downloadBackup_Results promised by a client call.
 type Backend_downloadBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_downloadBackup_Results_Future) Struct() (Backend_downloadBackup_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_downloadBackup_Results(s), err
+func (f Backend_downloadBackup_Results_Future) Struct() (Backend_downloadBackup_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_downloadBackup_Results(p.Struct()), err
 }
 
 type Backend_deleteBackup_Params capnp.Struct
@@ -3187,9 +3269,9 @@ func NewBackend_deleteBackup_Params_List(s *capnp.Segment, sz int32) (Backend_de
 // Backend_deleteBackup_Params_Future is a wrapper for a Backend_deleteBackup_Params promised by a client call.
 type Backend_deleteBackup_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteBackup_Params_Future) Struct() (Backend_deleteBackup_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteBackup_Params(s), err
+func (f Backend_deleteBackup_Params_Future) Struct() (Backend_deleteBackup_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteBackup_Params(p.Struct()), err
 }
 
 type Backend_deleteBackup_Results capnp.Struct
@@ -3252,9 +3334,9 @@ func NewBackend_deleteBackup_Results_List(s *capnp.Segment, sz int32) (Backend_d
 // Backend_deleteBackup_Results_Future is a wrapper for a Backend_deleteBackup_Results promised by a client call.
 type Backend_deleteBackup_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteBackup_Results_Future) Struct() (Backend_deleteBackup_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteBackup_Results(s), err
+func (f Backend_deleteBackup_Results_Future) Struct() (Backend_deleteBackup_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteBackup_Results(p.Struct()), err
 }
 
 type Backend_getUserStorageUsage_Params capnp.Struct
@@ -3334,9 +3416,9 @@ func NewBackend_getUserStorageUsage_Params_List(s *capnp.Segment, sz int32) (Bac
 // Backend_getUserStorageUsage_Params_Future is a wrapper for a Backend_getUserStorageUsage_Params promised by a client call.
 type Backend_getUserStorageUsage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getUserStorageUsage_Params_Future) Struct() (Backend_getUserStorageUsage_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_getUserStorageUsage_Params(s), err
+func (f Backend_getUserStorageUsage_Params_Future) Struct() (Backend_getUserStorageUsage_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getUserStorageUsage_Params(p.Struct()), err
 }
 
 type Backend_getUserStorageUsage_Results capnp.Struct
@@ -3406,9 +3488,9 @@ func NewBackend_getUserStorageUsage_Results_List(s *capnp.Segment, sz int32) (Ba
 // Backend_getUserStorageUsage_Results_Future is a wrapper for a Backend_getUserStorageUsage_Results promised by a client call.
 type Backend_getUserStorageUsage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getUserStorageUsage_Results_Future) Struct() (Backend_getUserStorageUsage_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_getUserStorageUsage_Results(s), err
+func (f Backend_getUserStorageUsage_Results_Future) Struct() (Backend_getUserStorageUsage_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getUserStorageUsage_Results(p.Struct()), err
 }
 
 type Backend_transferGrain_Params capnp.Struct
@@ -3524,9 +3606,9 @@ func NewBackend_transferGrain_Params_List(s *capnp.Segment, sz int32) (Backend_t
 // Backend_transferGrain_Params_Future is a wrapper for a Backend_transferGrain_Params promised by a client call.
 type Backend_transferGrain_Params_Future struct{ *capnp.Future }
 
-func (p Backend_transferGrain_Params_Future) Struct() (Backend_transferGrain_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_transferGrain_Params(s), err
+func (f Backend_transferGrain_Params_Future) Struct() (Backend_transferGrain_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_transferGrain_Params(p.Struct()), err
 }
 
 type Backend_transferGrain_Results capnp.Struct
@@ -3589,9 +3671,9 @@ func NewBackend_transferGrain_Results_List(s *capnp.Segment, sz int32) (Backend_
 // Backend_transferGrain_Results_Future is a wrapper for a Backend_transferGrain_Results promised by a client call.
 type Backend_transferGrain_Results_Future struct{ *capnp.Future }
 
-func (p Backend_transferGrain_Results_Future) Struct() (Backend_transferGrain_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_transferGrain_Results(s), err
+func (f Backend_transferGrain_Results_Future) Struct() (Backend_transferGrain_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_transferGrain_Results(p.Struct()), err
 }
 
 type Backend_deleteUser_Params capnp.Struct
@@ -3671,9 +3753,9 @@ func NewBackend_deleteUser_Params_List(s *capnp.Segment, sz int32) (Backend_dele
 // Backend_deleteUser_Params_Future is a wrapper for a Backend_deleteUser_Params promised by a client call.
 type Backend_deleteUser_Params_Future struct{ *capnp.Future }
 
-func (p Backend_deleteUser_Params_Future) Struct() (Backend_deleteUser_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteUser_Params(s), err
+func (f Backend_deleteUser_Params_Future) Struct() (Backend_deleteUser_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteUser_Params(p.Struct()), err
 }
 
 type Backend_deleteUser_Results capnp.Struct
@@ -3736,9 +3818,9 @@ func NewBackend_deleteUser_Results_List(s *capnp.Segment, sz int32) (Backend_del
 // Backend_deleteUser_Results_Future is a wrapper for a Backend_deleteUser_Results promised by a client call.
 type Backend_deleteUser_Results_Future struct{ *capnp.Future }
 
-func (p Backend_deleteUser_Results_Future) Struct() (Backend_deleteUser_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_deleteUser_Results(s), err
+func (f Backend_deleteUser_Results_Future) Struct() (Backend_deleteUser_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_deleteUser_Results(p.Struct()), err
 }
 
 type Backend_ping_Params capnp.Struct
@@ -3801,9 +3883,9 @@ func NewBackend_ping_Params_List(s *capnp.Segment, sz int32) (Backend_ping_Param
 // Backend_ping_Params_Future is a wrapper for a Backend_ping_Params promised by a client call.
 type Backend_ping_Params_Future struct{ *capnp.Future }
 
-func (p Backend_ping_Params_Future) Struct() (Backend_ping_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_ping_Params(s), err
+func (f Backend_ping_Params_Future) Struct() (Backend_ping_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_ping_Params(p.Struct()), err
 }
 
 type Backend_ping_Results capnp.Struct
@@ -3866,9 +3948,9 @@ func NewBackend_ping_Results_List(s *capnp.Segment, sz int32) (Backend_ping_Resu
 // Backend_ping_Results_Future is a wrapper for a Backend_ping_Results promised by a client call.
 type Backend_ping_Results_Future struct{ *capnp.Future }
 
-func (p Backend_ping_Results_Future) Struct() (Backend_ping_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_ping_Results(s), err
+func (f Backend_ping_Results_Future) Struct() (Backend_ping_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_ping_Results(p.Struct()), err
 }
 
 type Backend_getGrainStorageUsage_Params capnp.Struct
@@ -3966,9 +4048,9 @@ func NewBackend_getGrainStorageUsage_Params_List(s *capnp.Segment, sz int32) (Ba
 // Backend_getGrainStorageUsage_Params_Future is a wrapper for a Backend_getGrainStorageUsage_Params promised by a client call.
 type Backend_getGrainStorageUsage_Params_Future struct{ *capnp.Future }
 
-func (p Backend_getGrainStorageUsage_Params_Future) Struct() (Backend_getGrainStorageUsage_Params, error) {
-	s, err := p.Future.Struct()
-	return Backend_getGrainStorageUsage_Params(s), err
+func (f Backend_getGrainStorageUsage_Params_Future) Struct() (Backend_getGrainStorageUsage_Params, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getGrainStorageUsage_Params(p.Struct()), err
 }
 
 type Backend_getGrainStorageUsage_Results capnp.Struct
@@ -4038,9 +4120,9 @@ func NewBackend_getGrainStorageUsage_Results_List(s *capnp.Segment, sz int32) (B
 // Backend_getGrainStorageUsage_Results_Future is a wrapper for a Backend_getGrainStorageUsage_Results promised by a client call.
 type Backend_getGrainStorageUsage_Results_Future struct{ *capnp.Future }
 
-func (p Backend_getGrainStorageUsage_Results_Future) Struct() (Backend_getGrainStorageUsage_Results, error) {
-	s, err := p.Future.Struct()
-	return Backend_getGrainStorageUsage_Results(s), err
+func (f Backend_getGrainStorageUsage_Results_Future) Struct() (Backend_getGrainStorageUsage_Results, error) {
+	p, err := f.Future.Ptr()
+	return Backend_getGrainStorageUsage_Results(p.Struct()), err
 }
 
 type GatewayRouter capnp.Client
@@ -4193,12 +4275,34 @@ func (c GatewayRouter) KeepaliveApiToken(ctx context.Context, params func(Gatewa
 	return GatewayRouter_keepaliveApiToken_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c GatewayRouter) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c GatewayRouter) AddRef() GatewayRouter {
 	return GatewayRouter(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c GatewayRouter) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c GatewayRouter) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c GatewayRouter) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -4209,11 +4313,34 @@ func (GatewayRouter) DecodeFromPtr(p capnp.Ptr) GatewayRouter {
 	return GatewayRouter(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c GatewayRouter) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A GatewayRouter_Server is a GatewayRouter with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c GatewayRouter) IsSame(other GatewayRouter) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c GatewayRouter) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c GatewayRouter) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A GatewayRouter_Server is a GatewayRouter with a local implementation.
 type GatewayRouter_Server interface {
 	OpenUiSession(context.Context, GatewayRouter_openUiSession) error
 
@@ -4652,9 +4779,9 @@ func NewGatewayRouter_StaticResource_List(s *capnp.Segment, sz int32) (GatewayRo
 // GatewayRouter_StaticResource_Future is a wrapper for a GatewayRouter_StaticResource promised by a client call.
 type GatewayRouter_StaticResource_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_StaticResource_Future) Struct() (GatewayRouter_StaticResource, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_StaticResource(s), err
+func (f GatewayRouter_StaticResource_Future) Struct() (GatewayRouter_StaticResource, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_StaticResource(p.Struct()), err
 }
 
 type GatewayRouter_ForeignHostnameInfo capnp.Struct
@@ -4784,9 +4911,9 @@ func NewGatewayRouter_ForeignHostnameInfo_List(s *capnp.Segment, sz int32) (Gate
 // GatewayRouter_ForeignHostnameInfo_Future is a wrapper for a GatewayRouter_ForeignHostnameInfo promised by a client call.
 type GatewayRouter_ForeignHostnameInfo_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_ForeignHostnameInfo_Future) Struct() (GatewayRouter_ForeignHostnameInfo, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_ForeignHostnameInfo(s), err
+func (f GatewayRouter_ForeignHostnameInfo_Future) Struct() (GatewayRouter_ForeignHostnameInfo, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_ForeignHostnameInfo(p.Struct()), err
 }
 
 type GatewayRouter_TlsKeyCallback capnp.Client
@@ -4811,12 +4938,34 @@ func (c GatewayRouter_TlsKeyCallback) SetKeys(ctx context.Context, params func(G
 	return GatewayRouter_TlsKeyCallback_setKeys_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c GatewayRouter_TlsKeyCallback) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c GatewayRouter_TlsKeyCallback) AddRef() GatewayRouter_TlsKeyCallback {
 	return GatewayRouter_TlsKeyCallback(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c GatewayRouter_TlsKeyCallback) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c GatewayRouter_TlsKeyCallback) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c GatewayRouter_TlsKeyCallback) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -4827,11 +4976,34 @@ func (GatewayRouter_TlsKeyCallback) DecodeFromPtr(p capnp.Ptr) GatewayRouter_Tls
 	return GatewayRouter_TlsKeyCallback(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c GatewayRouter_TlsKeyCallback) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A GatewayRouter_TlsKeyCallback_Server is a GatewayRouter_TlsKeyCallback with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c GatewayRouter_TlsKeyCallback) IsSame(other GatewayRouter_TlsKeyCallback) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c GatewayRouter_TlsKeyCallback) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c GatewayRouter_TlsKeyCallback) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A GatewayRouter_TlsKeyCallback_Server is a GatewayRouter_TlsKeyCallback with a local implementation.
 type GatewayRouter_TlsKeyCallback_Server interface {
 	SetKeys(context.Context, GatewayRouter_TlsKeyCallback_setKeys) error
 }
@@ -4991,9 +5163,9 @@ func NewGatewayRouter_TlsKeyCallback_setKeys_Params_List(s *capnp.Segment, sz in
 // GatewayRouter_TlsKeyCallback_setKeys_Params_Future is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Params promised by a client call.
 type GatewayRouter_TlsKeyCallback_setKeys_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_TlsKeyCallback_setKeys_Params_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_TlsKeyCallback_setKeys_Params(s), err
+func (f GatewayRouter_TlsKeyCallback_setKeys_Params_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_TlsKeyCallback_setKeys_Params(p.Struct()), err
 }
 
 type GatewayRouter_TlsKeyCallback_setKeys_Results capnp.Struct
@@ -5056,9 +5228,9 @@ func NewGatewayRouter_TlsKeyCallback_setKeys_Results_List(s *capnp.Segment, sz i
 // GatewayRouter_TlsKeyCallback_setKeys_Results_Future is a wrapper for a GatewayRouter_TlsKeyCallback_setKeys_Results promised by a client call.
 type GatewayRouter_TlsKeyCallback_setKeys_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_TlsKeyCallback_setKeys_Results_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_TlsKeyCallback_setKeys_Results(s), err
+func (f GatewayRouter_TlsKeyCallback_setKeys_Results_Future) Struct() (GatewayRouter_TlsKeyCallback_setKeys_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_TlsKeyCallback_setKeys_Results(p.Struct()), err
 }
 
 type GatewayRouter_openUiSession_Params capnp.Struct
@@ -5162,11 +5334,10 @@ func NewGatewayRouter_openUiSession_Params_List(s *capnp.Segment, sz int32) (Gat
 // GatewayRouter_openUiSession_Params_Future is a wrapper for a GatewayRouter_openUiSession_Params promised by a client call.
 type GatewayRouter_openUiSession_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openUiSession_Params_Future) Struct() (GatewayRouter_openUiSession_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_openUiSession_Params(s), err
+func (f GatewayRouter_openUiSession_Params_Future) Struct() (GatewayRouter_openUiSession_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_openUiSession_Params(p.Struct()), err
 }
-
 func (p GatewayRouter_openUiSession_Params_Future) Params() websession.WebSession_Params_Future {
 	return websession.WebSession_Params_Future{Future: p.Future.Field(1, nil)}
 }
@@ -5284,11 +5455,10 @@ func NewGatewayRouter_openUiSession_Results_List(s *capnp.Segment, sz int32) (Ga
 // GatewayRouter_openUiSession_Results_Future is a wrapper for a GatewayRouter_openUiSession_Results promised by a client call.
 type GatewayRouter_openUiSession_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openUiSession_Results_Future) Struct() (GatewayRouter_openUiSession_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_openUiSession_Results(s), err
+func (f GatewayRouter_openUiSession_Results_Future) Struct() (GatewayRouter_openUiSession_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_openUiSession_Results(p.Struct()), err
 }
-
 func (p GatewayRouter_openUiSession_Results_Future) Session() websession.WebSession {
 	return websession.WebSession(p.Future.Field(0, nil).Client())
 }
@@ -5398,11 +5568,10 @@ func NewGatewayRouter_openApiSession_Params_List(s *capnp.Segment, sz int32) (Ga
 // GatewayRouter_openApiSession_Params_Future is a wrapper for a GatewayRouter_openApiSession_Params promised by a client call.
 type GatewayRouter_openApiSession_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openApiSession_Params_Future) Struct() (GatewayRouter_openApiSession_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_openApiSession_Params(s), err
+func (f GatewayRouter_openApiSession_Params_Future) Struct() (GatewayRouter_openApiSession_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_openApiSession_Params(p.Struct()), err
 }
-
 func (p GatewayRouter_openApiSession_Params_Future) Params() apisession.ApiSession_Params_Future {
 	return apisession.ApiSession_Params_Future{Future: p.Future.Field(1, nil)}
 }
@@ -5484,11 +5653,10 @@ func NewGatewayRouter_openApiSession_Results_List(s *capnp.Segment, sz int32) (G
 // GatewayRouter_openApiSession_Results_Future is a wrapper for a GatewayRouter_openApiSession_Results promised by a client call.
 type GatewayRouter_openApiSession_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_openApiSession_Results_Future) Struct() (GatewayRouter_openApiSession_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_openApiSession_Results(s), err
+func (f GatewayRouter_openApiSession_Results_Future) Struct() (GatewayRouter_openApiSession_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_openApiSession_Results(p.Struct()), err
 }
-
 func (p GatewayRouter_openApiSession_Results_Future) Session() apisession.ApiSession {
 	return apisession.ApiSession(p.Future.Field(0, nil).Client())
 }
@@ -5570,9 +5738,9 @@ func NewGatewayRouter_getStaticAsset_Params_List(s *capnp.Segment, sz int32) (Ga
 // GatewayRouter_getStaticAsset_Params_Future is a wrapper for a GatewayRouter_getStaticAsset_Params promised by a client call.
 type GatewayRouter_getStaticAsset_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticAsset_Params_Future) Struct() (GatewayRouter_getStaticAsset_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getStaticAsset_Params(s), err
+func (f GatewayRouter_getStaticAsset_Params_Future) Struct() (GatewayRouter_getStaticAsset_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getStaticAsset_Params(p.Struct()), err
 }
 
 type GatewayRouter_getStaticAsset_Results capnp.Struct
@@ -5683,9 +5851,9 @@ func NewGatewayRouter_getStaticAsset_Results_List(s *capnp.Segment, sz int32) (G
 // GatewayRouter_getStaticAsset_Results_Future is a wrapper for a GatewayRouter_getStaticAsset_Results promised by a client call.
 type GatewayRouter_getStaticAsset_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticAsset_Results_Future) Struct() (GatewayRouter_getStaticAsset_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getStaticAsset_Results(s), err
+func (f GatewayRouter_getStaticAsset_Results_Future) Struct() (GatewayRouter_getStaticAsset_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getStaticAsset_Results(p.Struct()), err
 }
 
 type GatewayRouter_getStaticPublishingHost_Params capnp.Struct
@@ -5765,9 +5933,9 @@ func NewGatewayRouter_getStaticPublishingHost_Params_List(s *capnp.Segment, sz i
 // GatewayRouter_getStaticPublishingHost_Params_Future is a wrapper for a GatewayRouter_getStaticPublishingHost_Params promised by a client call.
 type GatewayRouter_getStaticPublishingHost_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticPublishingHost_Params_Future) Struct() (GatewayRouter_getStaticPublishingHost_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getStaticPublishingHost_Params(s), err
+func (f GatewayRouter_getStaticPublishingHost_Params_Future) Struct() (GatewayRouter_getStaticPublishingHost_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getStaticPublishingHost_Params(p.Struct()), err
 }
 
 type GatewayRouter_getStaticPublishingHost_Results capnp.Struct
@@ -5847,11 +6015,10 @@ func NewGatewayRouter_getStaticPublishingHost_Results_List(s *capnp.Segment, sz 
 // GatewayRouter_getStaticPublishingHost_Results_Future is a wrapper for a GatewayRouter_getStaticPublishingHost_Results promised by a client call.
 type GatewayRouter_getStaticPublishingHost_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getStaticPublishingHost_Results_Future) Struct() (GatewayRouter_getStaticPublishingHost_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getStaticPublishingHost_Results(s), err
+func (f GatewayRouter_getStaticPublishingHost_Results_Future) Struct() (GatewayRouter_getStaticPublishingHost_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getStaticPublishingHost_Results(p.Struct()), err
 }
-
 func (p GatewayRouter_getStaticPublishingHost_Results_Future) Supervisor() supervisor.Supervisor {
 	return supervisor.Supervisor(p.Future.Field(0, nil).Client())
 }
@@ -5933,9 +6100,9 @@ func NewGatewayRouter_routeForeignHostname_Params_List(s *capnp.Segment, sz int3
 // GatewayRouter_routeForeignHostname_Params_Future is a wrapper for a GatewayRouter_routeForeignHostname_Params promised by a client call.
 type GatewayRouter_routeForeignHostname_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_routeForeignHostname_Params_Future) Struct() (GatewayRouter_routeForeignHostname_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_routeForeignHostname_Params(s), err
+func (f GatewayRouter_routeForeignHostname_Params_Future) Struct() (GatewayRouter_routeForeignHostname_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_routeForeignHostname_Params(p.Struct()), err
 }
 
 type GatewayRouter_routeForeignHostname_Results capnp.Struct
@@ -6021,11 +6188,10 @@ func NewGatewayRouter_routeForeignHostname_Results_List(s *capnp.Segment, sz int
 // GatewayRouter_routeForeignHostname_Results_Future is a wrapper for a GatewayRouter_routeForeignHostname_Results promised by a client call.
 type GatewayRouter_routeForeignHostname_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_routeForeignHostname_Results_Future) Struct() (GatewayRouter_routeForeignHostname_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_routeForeignHostname_Results(s), err
+func (f GatewayRouter_routeForeignHostname_Results_Future) Struct() (GatewayRouter_routeForeignHostname_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_routeForeignHostname_Results(p.Struct()), err
 }
-
 func (p GatewayRouter_routeForeignHostname_Results_Future) Info() GatewayRouter_ForeignHostnameInfo_Future {
 	return GatewayRouter_ForeignHostnameInfo_Future{Future: p.Future.Field(0, nil)}
 }
@@ -6107,11 +6273,10 @@ func NewGatewayRouter_subscribeTlsKeys_Params_List(s *capnp.Segment, sz int32) (
 // GatewayRouter_subscribeTlsKeys_Params_Future is a wrapper for a GatewayRouter_subscribeTlsKeys_Params promised by a client call.
 type GatewayRouter_subscribeTlsKeys_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_subscribeTlsKeys_Params_Future) Struct() (GatewayRouter_subscribeTlsKeys_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_subscribeTlsKeys_Params(s), err
+func (f GatewayRouter_subscribeTlsKeys_Params_Future) Struct() (GatewayRouter_subscribeTlsKeys_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_subscribeTlsKeys_Params(p.Struct()), err
 }
-
 func (p GatewayRouter_subscribeTlsKeys_Params_Future) Callback() GatewayRouter_TlsKeyCallback {
 	return GatewayRouter_TlsKeyCallback(p.Future.Field(0, nil).Client())
 }
@@ -6176,9 +6341,9 @@ func NewGatewayRouter_subscribeTlsKeys_Results_List(s *capnp.Segment, sz int32) 
 // GatewayRouter_subscribeTlsKeys_Results_Future is a wrapper for a GatewayRouter_subscribeTlsKeys_Results promised by a client call.
 type GatewayRouter_subscribeTlsKeys_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_subscribeTlsKeys_Results_Future) Struct() (GatewayRouter_subscribeTlsKeys_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_subscribeTlsKeys_Results(s), err
+func (f GatewayRouter_subscribeTlsKeys_Results_Future) Struct() (GatewayRouter_subscribeTlsKeys_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_subscribeTlsKeys_Results(p.Struct()), err
 }
 
 type GatewayRouter_getApiHostOptions_Params capnp.Struct
@@ -6258,9 +6423,9 @@ func NewGatewayRouter_getApiHostOptions_Params_List(s *capnp.Segment, sz int32) 
 // GatewayRouter_getApiHostOptions_Params_Future is a wrapper for a GatewayRouter_getApiHostOptions_Params promised by a client call.
 type GatewayRouter_getApiHostOptions_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getApiHostOptions_Params_Future) Struct() (GatewayRouter_getApiHostOptions_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getApiHostOptions_Params(s), err
+func (f GatewayRouter_getApiHostOptions_Params_Future) Struct() (GatewayRouter_getApiHostOptions_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getApiHostOptions_Params(p.Struct()), err
 }
 
 type GatewayRouter_getApiHostOptions_Results capnp.Struct
@@ -6346,9 +6511,9 @@ func NewGatewayRouter_getApiHostOptions_Results_List(s *capnp.Segment, sz int32)
 // GatewayRouter_getApiHostOptions_Results_Future is a wrapper for a GatewayRouter_getApiHostOptions_Results promised by a client call.
 type GatewayRouter_getApiHostOptions_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getApiHostOptions_Results_Future) Struct() (GatewayRouter_getApiHostOptions_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getApiHostOptions_Results(s), err
+func (f GatewayRouter_getApiHostOptions_Results_Future) Struct() (GatewayRouter_getApiHostOptions_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getApiHostOptions_Results(p.Struct()), err
 }
 
 type GatewayRouter_getApiHostResource_Params capnp.Struct
@@ -6446,9 +6611,9 @@ func NewGatewayRouter_getApiHostResource_Params_List(s *capnp.Segment, sz int32)
 // GatewayRouter_getApiHostResource_Params_Future is a wrapper for a GatewayRouter_getApiHostResource_Params promised by a client call.
 type GatewayRouter_getApiHostResource_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getApiHostResource_Params_Future) Struct() (GatewayRouter_getApiHostResource_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getApiHostResource_Params(s), err
+func (f GatewayRouter_getApiHostResource_Params_Future) Struct() (GatewayRouter_getApiHostResource_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getApiHostResource_Params(p.Struct()), err
 }
 
 type GatewayRouter_getApiHostResource_Results capnp.Struct
@@ -6534,11 +6699,10 @@ func NewGatewayRouter_getApiHostResource_Results_List(s *capnp.Segment, sz int32
 // GatewayRouter_getApiHostResource_Results_Future is a wrapper for a GatewayRouter_getApiHostResource_Results promised by a client call.
 type GatewayRouter_getApiHostResource_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_getApiHostResource_Results_Future) Struct() (GatewayRouter_getApiHostResource_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_getApiHostResource_Results(s), err
+func (f GatewayRouter_getApiHostResource_Results_Future) Struct() (GatewayRouter_getApiHostResource_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_getApiHostResource_Results(p.Struct()), err
 }
-
 func (p GatewayRouter_getApiHostResource_Results_Future) Resource() GatewayRouter_StaticResource_Future {
 	return GatewayRouter_StaticResource_Future{Future: p.Future.Field(0, nil)}
 }
@@ -6628,9 +6792,9 @@ func NewGatewayRouter_keepaliveApiToken_Params_List(s *capnp.Segment, sz int32) 
 // GatewayRouter_keepaliveApiToken_Params_Future is a wrapper for a GatewayRouter_keepaliveApiToken_Params promised by a client call.
 type GatewayRouter_keepaliveApiToken_Params_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_keepaliveApiToken_Params_Future) Struct() (GatewayRouter_keepaliveApiToken_Params, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_keepaliveApiToken_Params(s), err
+func (f GatewayRouter_keepaliveApiToken_Params_Future) Struct() (GatewayRouter_keepaliveApiToken_Params, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_keepaliveApiToken_Params(p.Struct()), err
 }
 
 type GatewayRouter_keepaliveApiToken_Results capnp.Struct
@@ -6693,9 +6857,9 @@ func NewGatewayRouter_keepaliveApiToken_Results_List(s *capnp.Segment, sz int32)
 // GatewayRouter_keepaliveApiToken_Results_Future is a wrapper for a GatewayRouter_keepaliveApiToken_Results promised by a client call.
 type GatewayRouter_keepaliveApiToken_Results_Future struct{ *capnp.Future }
 
-func (p GatewayRouter_keepaliveApiToken_Results_Future) Struct() (GatewayRouter_keepaliveApiToken_Results, error) {
-	s, err := p.Future.Struct()
-	return GatewayRouter_keepaliveApiToken_Results(s), err
+func (f GatewayRouter_keepaliveApiToken_Results_Future) Struct() (GatewayRouter_keepaliveApiToken_Results, error) {
+	p, err := f.Future.Ptr()
+	return GatewayRouter_keepaliveApiToken_Results(p.Struct()), err
 }
 
 type ShellCli capnp.Client
@@ -6752,12 +6916,34 @@ func (c ShellCli) RenewCertificateNow(ctx context.Context, params func(ShellCli_
 	return ShellCli_renewCertificateNow_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c ShellCli) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c ShellCli) AddRef() ShellCli {
 	return ShellCli(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c ShellCli) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c ShellCli) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c ShellCli) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -6768,11 +6954,34 @@ func (ShellCli) DecodeFromPtr(p capnp.Ptr) ShellCli {
 	return ShellCli(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c ShellCli) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A ShellCli_Server is a ShellCli with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c ShellCli) IsSame(other ShellCli) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c ShellCli) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c ShellCli) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A ShellCli_Server is a ShellCli with a local implementation.
 type ShellCli_Server interface {
 	CreateAcmeAccount(context.Context, ShellCli_createAcmeAccount) error
 
@@ -7002,9 +7211,9 @@ func NewShellCli_createAcmeAccount_Params_List(s *capnp.Segment, sz int32) (Shel
 // ShellCli_createAcmeAccount_Params_Future is a wrapper for a ShellCli_createAcmeAccount_Params promised by a client call.
 type ShellCli_createAcmeAccount_Params_Future struct{ *capnp.Future }
 
-func (p ShellCli_createAcmeAccount_Params_Future) Struct() (ShellCli_createAcmeAccount_Params, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_createAcmeAccount_Params(s), err
+func (f ShellCli_createAcmeAccount_Params_Future) Struct() (ShellCli_createAcmeAccount_Params, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_createAcmeAccount_Params(p.Struct()), err
 }
 
 type ShellCli_createAcmeAccount_Results capnp.Struct
@@ -7067,9 +7276,9 @@ func NewShellCli_createAcmeAccount_Results_List(s *capnp.Segment, sz int32) (She
 // ShellCli_createAcmeAccount_Results_Future is a wrapper for a ShellCli_createAcmeAccount_Results promised by a client call.
 type ShellCli_createAcmeAccount_Results_Future struct{ *capnp.Future }
 
-func (p ShellCli_createAcmeAccount_Results_Future) Struct() (ShellCli_createAcmeAccount_Results, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_createAcmeAccount_Results(s), err
+func (f ShellCli_createAcmeAccount_Results_Future) Struct() (ShellCli_createAcmeAccount_Results, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_createAcmeAccount_Results(p.Struct()), err
 }
 
 type ShellCli_setAcmeChallenge_Params capnp.Struct
@@ -7167,9 +7376,9 @@ func NewShellCli_setAcmeChallenge_Params_List(s *capnp.Segment, sz int32) (Shell
 // ShellCli_setAcmeChallenge_Params_Future is a wrapper for a ShellCli_setAcmeChallenge_Params promised by a client call.
 type ShellCli_setAcmeChallenge_Params_Future struct{ *capnp.Future }
 
-func (p ShellCli_setAcmeChallenge_Params_Future) Struct() (ShellCli_setAcmeChallenge_Params, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_setAcmeChallenge_Params(s), err
+func (f ShellCli_setAcmeChallenge_Params_Future) Struct() (ShellCli_setAcmeChallenge_Params, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_setAcmeChallenge_Params(p.Struct()), err
 }
 
 type ShellCli_setAcmeChallenge_Results capnp.Struct
@@ -7232,9 +7441,9 @@ func NewShellCli_setAcmeChallenge_Results_List(s *capnp.Segment, sz int32) (Shel
 // ShellCli_setAcmeChallenge_Results_Future is a wrapper for a ShellCli_setAcmeChallenge_Results promised by a client call.
 type ShellCli_setAcmeChallenge_Results_Future struct{ *capnp.Future }
 
-func (p ShellCli_setAcmeChallenge_Results_Future) Struct() (ShellCli_setAcmeChallenge_Results, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_setAcmeChallenge_Results(s), err
+func (f ShellCli_setAcmeChallenge_Results_Future) Struct() (ShellCli_setAcmeChallenge_Results, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_setAcmeChallenge_Results(p.Struct()), err
 }
 
 type ShellCli_renewCertificateNow_Params capnp.Struct
@@ -7297,9 +7506,9 @@ func NewShellCli_renewCertificateNow_Params_List(s *capnp.Segment, sz int32) (Sh
 // ShellCli_renewCertificateNow_Params_Future is a wrapper for a ShellCli_renewCertificateNow_Params promised by a client call.
 type ShellCli_renewCertificateNow_Params_Future struct{ *capnp.Future }
 
-func (p ShellCli_renewCertificateNow_Params_Future) Struct() (ShellCli_renewCertificateNow_Params, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_renewCertificateNow_Params(s), err
+func (f ShellCli_renewCertificateNow_Params_Future) Struct() (ShellCli_renewCertificateNow_Params, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_renewCertificateNow_Params(p.Struct()), err
 }
 
 type ShellCli_renewCertificateNow_Results capnp.Struct
@@ -7362,9 +7571,9 @@ func NewShellCli_renewCertificateNow_Results_List(s *capnp.Segment, sz int32) (S
 // ShellCli_renewCertificateNow_Results_Future is a wrapper for a ShellCli_renewCertificateNow_Results promised by a client call.
 type ShellCli_renewCertificateNow_Results_Future struct{ *capnp.Future }
 
-func (p ShellCli_renewCertificateNow_Results_Future) Struct() (ShellCli_renewCertificateNow_Results, error) {
-	s, err := p.Future.Struct()
-	return ShellCli_renewCertificateNow_Results(s), err
+func (f ShellCli_renewCertificateNow_Results_Future) Struct() (ShellCli_renewCertificateNow_Results, error) {
+	p, err := f.Future.Ptr()
+	return ShellCli_renewCertificateNow_Results(p.Struct()), err
 }
 
 type SandstormCoreFactory capnp.Client
@@ -7421,12 +7630,34 @@ func (c SandstormCoreFactory) GetShellCli(ctx context.Context, params func(Sands
 	return SandstormCoreFactory_getShellCli_Results_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c SandstormCoreFactory) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c SandstormCoreFactory) AddRef() SandstormCoreFactory {
 	return SandstormCoreFactory(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c SandstormCoreFactory) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c SandstormCoreFactory) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c SandstormCoreFactory) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -7437,11 +7668,34 @@ func (SandstormCoreFactory) DecodeFromPtr(p capnp.Ptr) SandstormCoreFactory {
 	return SandstormCoreFactory(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c SandstormCoreFactory) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A SandstormCoreFactory_Server is a SandstormCoreFactory with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c SandstormCoreFactory) IsSame(other SandstormCoreFactory) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c SandstormCoreFactory) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c SandstormCoreFactory) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A SandstormCoreFactory_Server is a SandstormCoreFactory with a local implementation.
 type SandstormCoreFactory_Server interface {
 	GetSandstormCore(context.Context, SandstormCoreFactory_getSandstormCore) error
 
@@ -7645,9 +7899,9 @@ func NewSandstormCoreFactory_getSandstormCore_Params_List(s *capnp.Segment, sz i
 // SandstormCoreFactory_getSandstormCore_Params_Future is a wrapper for a SandstormCoreFactory_getSandstormCore_Params promised by a client call.
 type SandstormCoreFactory_getSandstormCore_Params_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getSandstormCore_Params_Future) Struct() (SandstormCoreFactory_getSandstormCore_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getSandstormCore_Params(s), err
+func (f SandstormCoreFactory_getSandstormCore_Params_Future) Struct() (SandstormCoreFactory_getSandstormCore_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getSandstormCore_Params(p.Struct()), err
 }
 
 type SandstormCoreFactory_getSandstormCore_Results capnp.Struct
@@ -7727,11 +7981,10 @@ func NewSandstormCoreFactory_getSandstormCore_Results_List(s *capnp.Segment, sz 
 // SandstormCoreFactory_getSandstormCore_Results_Future is a wrapper for a SandstormCoreFactory_getSandstormCore_Results promised by a client call.
 type SandstormCoreFactory_getSandstormCore_Results_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getSandstormCore_Results_Future) Struct() (SandstormCoreFactory_getSandstormCore_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getSandstormCore_Results(s), err
+func (f SandstormCoreFactory_getSandstormCore_Results_Future) Struct() (SandstormCoreFactory_getSandstormCore_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getSandstormCore_Results(p.Struct()), err
 }
-
 func (p SandstormCoreFactory_getSandstormCore_Results_Future) Core() supervisor.SandstormCore {
 	return supervisor.SandstormCore(p.Future.Field(0, nil).Client())
 }
@@ -7796,9 +8049,9 @@ func NewSandstormCoreFactory_getGatewayRouter_Params_List(s *capnp.Segment, sz i
 // SandstormCoreFactory_getGatewayRouter_Params_Future is a wrapper for a SandstormCoreFactory_getGatewayRouter_Params promised by a client call.
 type SandstormCoreFactory_getGatewayRouter_Params_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getGatewayRouter_Params_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getGatewayRouter_Params(s), err
+func (f SandstormCoreFactory_getGatewayRouter_Params_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getGatewayRouter_Params(p.Struct()), err
 }
 
 type SandstormCoreFactory_getGatewayRouter_Results capnp.Struct
@@ -7878,11 +8131,10 @@ func NewSandstormCoreFactory_getGatewayRouter_Results_List(s *capnp.Segment, sz 
 // SandstormCoreFactory_getGatewayRouter_Results_Future is a wrapper for a SandstormCoreFactory_getGatewayRouter_Results promised by a client call.
 type SandstormCoreFactory_getGatewayRouter_Results_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getGatewayRouter_Results(s), err
+func (f SandstormCoreFactory_getGatewayRouter_Results_Future) Struct() (SandstormCoreFactory_getGatewayRouter_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getGatewayRouter_Results(p.Struct()), err
 }
-
 func (p SandstormCoreFactory_getGatewayRouter_Results_Future) Router() GatewayRouter {
 	return GatewayRouter(p.Future.Field(0, nil).Client())
 }
@@ -7947,9 +8199,9 @@ func NewSandstormCoreFactory_getShellCli_Params_List(s *capnp.Segment, sz int32)
 // SandstormCoreFactory_getShellCli_Params_Future is a wrapper for a SandstormCoreFactory_getShellCli_Params promised by a client call.
 type SandstormCoreFactory_getShellCli_Params_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getShellCli_Params_Future) Struct() (SandstormCoreFactory_getShellCli_Params, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getShellCli_Params(s), err
+func (f SandstormCoreFactory_getShellCli_Params_Future) Struct() (SandstormCoreFactory_getShellCli_Params, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getShellCli_Params(p.Struct()), err
 }
 
 type SandstormCoreFactory_getShellCli_Results capnp.Struct
@@ -8029,11 +8281,10 @@ func NewSandstormCoreFactory_getShellCli_Results_List(s *capnp.Segment, sz int32
 // SandstormCoreFactory_getShellCli_Results_Future is a wrapper for a SandstormCoreFactory_getShellCli_Results promised by a client call.
 type SandstormCoreFactory_getShellCli_Results_Future struct{ *capnp.Future }
 
-func (p SandstormCoreFactory_getShellCli_Results_Future) Struct() (SandstormCoreFactory_getShellCli_Results, error) {
-	s, err := p.Future.Struct()
-	return SandstormCoreFactory_getShellCli_Results(s), err
+func (f SandstormCoreFactory_getShellCli_Results_Future) Struct() (SandstormCoreFactory_getShellCli_Results, error) {
+	p, err := f.Future.Ptr()
+	return SandstormCoreFactory_getShellCli_Results(p.Struct()), err
 }
-
 func (p SandstormCoreFactory_getShellCli_Results_Future) ShellCli() ShellCli {
 	return ShellCli(p.Future.Field(0, nil).Client())
 }

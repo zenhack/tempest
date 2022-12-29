@@ -5,9 +5,11 @@ package apisession
 import (
 	capnp "capnproto.org/go/capnp/v3"
 	text "capnproto.org/go/capnp/v3/encoding/text"
+	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
 	context "context"
+	fmt "fmt"
 	ip "zenhack.net/go/sandstorm/capnp/ip"
 	websession "zenhack.net/go/sandstorm/capnp/websession"
 )
@@ -306,12 +308,34 @@ func (c ApiSession) Patch(ctx context.Context, params func(websession.WebSession
 	return websession.WebSession_Response_Future{Future: ans.Future()}, release
 }
 
+// String returns a string that identifies this capability for debugging
+// purposes.  Its format should not be depended on: in particular, it
+// should not be used to compare clients.  Use IsSame to compare clients
+// for equality.
+func (c ApiSession) String() string {
+	return fmt.Sprintf("%T(%v)", c, capnp.Client(c))
+}
+
+// AddRef creates a new Client that refers to the same capability as c.
+// If c is nil or has resolved to null, then AddRef returns nil.
 func (c ApiSession) AddRef() ApiSession {
 	return ApiSession(capnp.Client(c).AddRef())
 }
 
+// Release releases a capability reference.  If this is the last
+// reference to the capability, then the underlying resources associated
+// with the capability will be released.
+//
+// Release will panic if c has already been released, but not if c is
+// nil or resolved to null.
 func (c ApiSession) Release() {
 	capnp.Client(c).Release()
+}
+
+// Resolve blocks until the capability is fully resolved or the Context
+// expires.
+func (c ApiSession) Resolve(ctx context.Context) error {
+	return capnp.Client(c).Resolve(ctx)
 }
 
 func (c ApiSession) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
@@ -322,11 +346,34 @@ func (ApiSession) DecodeFromPtr(p capnp.Ptr) ApiSession {
 	return ApiSession(capnp.Client{}.DecodeFromPtr(p))
 }
 
+// IsValid reports whether c is a valid reference to a capability.
+// A reference is invalid if it is nil, has resolved to null, or has
+// been released.
 func (c ApiSession) IsValid() bool {
 	return capnp.Client(c).IsValid()
 }
 
-// A ApiSession_Server is a ApiSession with a local implementation.
+// IsSame reports whether c and other refer to a capability created by the
+// same call to NewClient.  This can return false negatives if c or other
+// are not fully resolved: use Resolve if this is an issue.  If either
+// c or other are released, then IsSame panics.
+func (c ApiSession) IsSame(other ApiSession) bool {
+	return capnp.Client(c).IsSame(capnp.Client(other))
+}
+
+// Update the flowcontrol.FlowLimiter used to manage flow control for
+// this client. This affects all future calls, but not calls already
+// waiting to send. Passing nil sets the value to flowcontrol.NopLimiter,
+// which is also the default.
+func (c ApiSession) SetFlowLimiter(lim fc.FlowLimiter) {
+	capnp.Client(c).SetFlowLimiter(lim)
+}
+
+// Get the current flowcontrol.FlowLimiter used to manage flow control
+// for this client.
+func (c ApiSession) GetFlowLimiter() fc.FlowLimiter {
+	return capnp.Client(c).GetFlowLimiter()
+} // A ApiSession_Server is a ApiSession with a local implementation.
 type ApiSession_Server interface {
 	Get(context.Context, websession.WebSession_get) error
 
@@ -695,11 +742,10 @@ func NewApiSession_Params_List(s *capnp.Segment, sz int32) (ApiSession_Params_Li
 // ApiSession_Params_Future is a wrapper for a ApiSession_Params promised by a client call.
 type ApiSession_Params_Future struct{ *capnp.Future }
 
-func (p ApiSession_Params_Future) Struct() (ApiSession_Params, error) {
-	s, err := p.Future.Struct()
-	return ApiSession_Params(s), err
+func (f ApiSession_Params_Future) Struct() (ApiSession_Params, error) {
+	p, err := f.Future.Ptr()
+	return ApiSession_Params(p.Struct()), err
 }
-
 func (p ApiSession_Params_Future) RemoteAddress() ip.IpAddress_Future {
 	return ip.IpAddress_Future{Future: p.Future.Field(0, nil)}
 }
@@ -792,7 +838,6 @@ func (s ApiSession_PowerboxTag) NewOauthScopes(n int32) (ApiSession_PowerboxTag_
 	err = capnp.Struct(s).SetPtr(1, l.ToPtr())
 	return l, err
 }
-
 func (s ApiSession_PowerboxTag) Authentication() (string, error) {
 	p, err := capnp.Struct(s).Ptr(2)
 	return p.Text(), err
@@ -823,9 +868,9 @@ func NewApiSession_PowerboxTag_List(s *capnp.Segment, sz int32) (ApiSession_Powe
 // ApiSession_PowerboxTag_Future is a wrapper for a ApiSession_PowerboxTag promised by a client call.
 type ApiSession_PowerboxTag_Future struct{ *capnp.Future }
 
-func (p ApiSession_PowerboxTag_Future) Struct() (ApiSession_PowerboxTag, error) {
-	s, err := p.Future.Struct()
-	return ApiSession_PowerboxTag(s), err
+func (f ApiSession_PowerboxTag_Future) Struct() (ApiSession_PowerboxTag, error) {
+	p, err := f.Future.Ptr()
+	return ApiSession_PowerboxTag(p.Struct()), err
 }
 
 type ApiSession_PowerboxTag_OAuthScope capnp.Struct
@@ -905,9 +950,9 @@ func NewApiSession_PowerboxTag_OAuthScope_List(s *capnp.Segment, sz int32) (ApiS
 // ApiSession_PowerboxTag_OAuthScope_Future is a wrapper for a ApiSession_PowerboxTag_OAuthScope promised by a client call.
 type ApiSession_PowerboxTag_OAuthScope_Future struct{ *capnp.Future }
 
-func (p ApiSession_PowerboxTag_OAuthScope_Future) Struct() (ApiSession_PowerboxTag_OAuthScope, error) {
-	s, err := p.Future.Struct()
-	return ApiSession_PowerboxTag_OAuthScope(s), err
+func (f ApiSession_PowerboxTag_OAuthScope_Future) Struct() (ApiSession_PowerboxTag_OAuthScope, error) {
+	p, err := f.Future.Ptr()
+	return ApiSession_PowerboxTag_OAuthScope(p.Struct()), err
 }
 
 const schema_eb014c0c3413cbfb = "x\xda\x84\x92\xcfk\x13A\x1c\xc5\xdfwf\xd7\xad\x98" +
