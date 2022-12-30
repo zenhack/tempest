@@ -333,6 +333,7 @@ func buildGo(r *BuildRecord) error {
 		{"sandstorm-legacy-tool", false},
 		{"sandstorm-next", false},
 		{"sandstorm-grain-agent", true},
+		{"test-app", true},
 	}
 	for _, exe := range exes {
 		err = compileGoExe(exe.name, exe.static)
@@ -353,6 +354,15 @@ func compileGoExe(name string, static bool) error {
 		cmd.Env = append(cmd.Env, "CGO_ENABLED=1")
 	}
 	return withMyOuts(cmd).Run()
+}
+
+func buildTestSpk() error {
+	return runInDir("go/cmd/test-app",
+		"spk", "pack",
+		"--keyring", "./sandstorm-keyring",
+		"../../../_build/test-app.spk",
+	)
+
 }
 
 // Run configure if its outputs aren't already present.
@@ -389,6 +399,7 @@ func run(args ...string) {
 		buildConfig(r)
 		chkfatal(buildC())
 		chkfatal(buildGo(r))
+		chkfatal(buildTestSpk())
 		r.Save()
 	case "configure":
 		cfg := &Config{}
