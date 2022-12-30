@@ -2,6 +2,12 @@ all: build
 build install dev test-app export-import:
 	@# Just shell out to make.go.
 	go run go/internal/make/make.go $@
+update-deps:
+	# Update the versions of these in go.mod:
+	go get capnproto.org/go/capnp/v3
+	go get zenhack.net/go/sandstorm
+	go get zenhack.net/go/util
+	go get zenhack.net/go/vdom
 clean:
 	cd c && $(MAKE) clean
 	rm -rf _build
