@@ -524,5 +524,6 @@ func populateContext(wsCtx websession.WebSession_Context, req *http.Request, res
 		}
 	}
 
-	panic("TODO")
+	//panic("TODO")
+	return nil
 }
