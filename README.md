@@ -95,8 +95,8 @@ sudo make dev`
 `sandstorm-next` will start a web server on port 8000; to connect to the
 UI, go to `http://local.sandstorm.io:8000`.
 
-To log in with a developer account, go to `/login/dev`, and enter the
-dev account's name, e.g. "Alice Dev Admin."
+To log in with a developer account, click "Log in with dev account", and
+enter the dev account's name, e.g. "Alice Dev Admin."
 
 Once you have logged in, a list of grains the user owns will be
 displayed; click the links to open the grains.
