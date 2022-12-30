@@ -399,8 +399,10 @@ func run(args ...string) {
 		buildConfig(r)
 		chkfatal(buildC())
 		chkfatal(buildGo(r))
-		chkfatal(buildTestSpk())
 		r.Save()
+	case "test-app":
+		run("build")
+		chkfatal(buildTestSpk())
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
