@@ -69,6 +69,17 @@ You can then import the snapshot into sandstorm-next via:
 ./_build/sandstorm-legacy-tool --snapshot-dir /path/to/snapshot import
 ```
 
+For some development, it can be useful to export & import from legacy
+sandstorm frequently. Therefore, we have a Makefile target for this:
+
+```
+sudo make export-import
+```
+
+...which will automate the above, using the default values to
+sandstorm-legacy-tool's flags. It will also destroy the old database
+and fix permissions on the new one.
+
 # Running
 
 At present, sandstorm-next has no user interface, and no way to install

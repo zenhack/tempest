@@ -1,5 +1,5 @@
 all: build
-build install dev test-app:
+build install dev test-app export-import:
 	@# Just shell out to make.go.
 	go run go/internal/make/make.go $@
 clean:

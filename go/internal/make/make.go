@@ -403,6 +403,10 @@ func run(args ...string) {
 	case "test-app":
 		run("build")
 		chkfatal(buildTestSpk())
+	case "export-import":
+		maybeConfigure()
+		run("build")
+		exportImport(readConfig())
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
@@ -543,4 +547,12 @@ type FileStamp struct {
 type FileSig struct {
 	Stamp FileStamp
 	Hash  []byte
+}
+
+func exportImport(cfg Config) {
+	dbPath := cfg.Localstatedir + "/sandstorm/sandstorm.sqlite3"
+	chkfatal(runInDir(".", "_build/sandstorm-legacy-tool", "export"))
+	chkfatal(os.Remove(dbPath))
+	chkfatal(runInDir(".", "_build/sandstorm-legacy-tool", "import"))
+	chkfatal(runInDir(".", "chown", cfg.User+":"+cfg.Group, dbPath))
 }
