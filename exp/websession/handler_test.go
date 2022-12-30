@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/tj/assert"
@@ -44,7 +45,7 @@ func TestGetBody(t *testing.T) {
 			func(t *testing.T) {
 				t.Parallel()
 
-				rec := doRequest(c, httptest.NewRequest("GET", "/test", nil))
+				rec := doRequest(c, httptest.NewRequest("GET", "/expected-body", nil))
 
 				assert.Equal(t, http.StatusOK, rec.Code)
 				assert.Equal(t, expected, rec.Body.String())
@@ -59,6 +60,17 @@ func TestGetBody(t *testing.T) {
 			})
 	}
 
+}
+
+func TestGetPath(t *testing.T) {
+	t.Parallel()
+	expected := "path-body/example"
+
+	rec := doRequest(
+		testWebSessionImpl{},
+		httptest.NewRequest("GET", "/"+expected, nil),
+	)
+	assert.Equal(t, expected, rec.Body.String())
 }
 
 func doRequest(t testWebSessionImpl, req *http.Request) *httptest.ResponseRecorder {
@@ -79,14 +91,22 @@ type testWebSessionImpl struct {
 
 func (t testWebSessionImpl) Get(ctx context.Context, p websession.WebSession_get) error {
 	args := p.Args()
-	/*
-		path, err := args.Path()
-		util.Chkfatal(err)
-	*/
+	path, err := args.Path()
+	util.Chkfatal(err)
 	wsCtx, err := args.Context()
 	util.Chkfatal(err)
 	response, err := p.AllocResults()
 	util.Chkfatal(err)
+
+	var actualBody string
+	switch {
+	case path == "expected-body":
+		actualBody = t.expectedBody
+	case strings.HasPrefix(path, "path-body/"):
+		actualBody = path
+	default:
+		panic("Unexpected path: " + path)
+	}
 
 	response.SetContent()
 	content := response.Content()
@@ -101,20 +121,20 @@ func (t testWebSessionImpl) Get(ctx context.Context, p websession.WebSession_get
 		go func() {
 			if t.callExpectSize {
 				_, rel := responseStream.ExpectSize(ctx, func(p utilcp.ByteStream_expectSize_Params) error {
-					p.SetSize(uint64(len(t.expectedBody)))
+					p.SetSize(uint64(len(actualBody)))
 					return nil
 				})
 				defer rel()
 			}
 			_, rel := responseStream.Write(ctx, func(p utilcp.ByteStream_write_Params) error {
-				return p.SetData([]byte(t.expectedBody))
+				return p.SetData([]byte(actualBody))
 			})
 			defer rel()
 			_, rel = responseStream.Done(ctx, nil)
 			defer rel()
 		}()
 	} else {
-		body.SetBytes([]byte(t.expectedBody))
+		body.SetBytes([]byte(actualBody))
 	}
 	return nil
 }
