@@ -29,6 +29,7 @@ type Config struct {
 
 	WithGoSandstorm string
 	WithGoCapnp     string
+	WithWasmExecJs  string
 
 	TinyGo bool
 }
@@ -64,6 +65,7 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 
 	fs.StringVar(&c.WithGoSandstorm, "with-go-sandstorm", "", "path to go.sandstorm source")
 	fs.StringVar(&c.WithGoCapnp, "with-go-capnp", "", "path to go-capnp source")
+	fs.StringVar(&c.WithWasmExecJs, "with-wasm_exec.js", "", "path to wasm_exec.js")
 
 	fs.BoolVar(&c.TinyGo, "use-tinygo", true, "Use tinygo for webassembly build")
 
@@ -256,13 +258,54 @@ func buildCapnp(r *BuildRecord) {
 	}
 }
 
+func findWasmExecJs(cfg Config) (string, error) {
+	if cfg.WithWasmExecJs != "" {
+		return cfg.WithWasmExecJs, nil
+	}
+	if cfg.TinyGo {
+		// Try to find wasm_exec.js based on the location of tinygo;
+		// e.g. if tinygo is at /usr/bin/tinygo, we look under
+		// /usr/lib/tinygo, /usr/lib32/tinygo, /usr/lib64/tinygo
+		tinygoExe, err := exec.LookPath("tinygo")
+		if err != nil {
+			return "", fmt.Errorf("Can't find tinygo executable: %w", err)
+		}
+		prefix := filepath.Dir(filepath.Dir(tinygoExe)) + "/lib"
+		suffix := "/tinygo/targets/wasm_exec.js"
+		candidates := []string{"", "32", "64"}
+		for _, c := range candidates {
+			path := prefix + c + suffix
+			if _, err := os.Stat(path); err == nil {
+				return path, nil
+			}
+		}
+		return "", fmt.Errorf("Failed to find wasm_exec.js")
+	}
+	// Regular go toolchain
+	cmd := exec.Command("go", "env", "GOROOT")
+	cmd.Env = append(cmd.Env, os.Environ()...)
+	goroot, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("Could not determine GOROOT: %v", err)
+	}
+	path := strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
+	if _, err := os.Stat(path); err != nil {
+		return "", fmt.Errorf("Could not stat %q: %v", path, err)
+	}
+	return path, nil
+}
+
 func buildWebui(cfg Config) error {
 	const (
 		targetPath = "../../internal/server/embed/webui.wasm"
 		workDir    = "go/cmd/webui"
 	)
 
-	var wasmExecSrc string
+	wasmExecSrc, err := findWasmExecJs(cfg)
+	if err != nil {
+		return err
+	}
+
 	// Build the webassembly binary:
 	log.Println("Building wasm binary")
 	if cfg.TinyGo {
@@ -275,12 +318,6 @@ func buildWebui(cfg Config) error {
 		if err != nil {
 			return err
 		}
-
-		// FIXME: be smarter about the source location;
-		// this will fail if tinygo is installed via a different path.
-		// The stock Go toolchain has this at a location relative to $GOROOT,
-		// but I don't know how to adaptively find it for tinygo.
-		wasmExecSrc = "/usr/lib/tinygo/targets/wasm_exec.js"
 	} else {
 		// Use the tsandard go toolchain.
 		cmd := exec.Command("go", "build", "-o", targetPath)
@@ -291,14 +328,6 @@ func buildWebui(cfg Config) error {
 		if err != nil {
 			return err
 		}
-
-		cmd = exec.Command("go", "env", "GOROOT")
-		cmd.Env = append(cmd.Env, os.Environ()...)
-		goroot, err := cmd.Output()
-		if err != nil {
-			return err
-		}
-		wasmExecSrc = strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
 	}
 	runInDir(workDir, "du", "-hs", targetPath)
 	return copyFile("go/internal/server/embed/wasm_exec.js", wasmExecSrc)
