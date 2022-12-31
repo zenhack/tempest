@@ -75,6 +75,7 @@ Vagrant.configure("2") do |config|
     dnf install -y \
       go \
       tinygo \
+      binaryen \
       capnproto
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
