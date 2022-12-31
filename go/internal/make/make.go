@@ -295,10 +295,11 @@ func findWasmExecJs(cfg Config) (string, error) {
 	return path, nil
 }
 
-func buildWebui(cfg Config) error {
+func buildWebui(r *BuildRecord, cfg Config) error {
 	const (
-		targetPath = "../../internal/server/embed/webui.wasm"
-		workDir    = "go/cmd/webui"
+		tmpPath   = "_build/webui.wasm"
+		finalPath = "go/internal/server/embed/webui.wasm"
+		srcDir    = "./go/cmd/webui"
 	)
 
 	wasmExecSrc, err := findWasmExecJs(cfg)
@@ -309,19 +310,19 @@ func buildWebui(cfg Config) error {
 	// Build the webassembly binary:
 	log.Println("Building wasm binary")
 	if cfg.TinyGo {
-		err := runInDir(workDir,
+		err := runInDir(".",
 			"tinygo", "build",
 			"-target", "wasm",
 			"-panic", "trap",
 			"-no-debug",
-			"-o="+targetPath)
+			"-o="+tmpPath,
+			srcDir)
 		if err != nil {
 			return err
 		}
 	} else {
 		// Use the tsandard go toolchain.
-		cmd := exec.Command("go", "build", "-o", targetPath)
-		cmd.Dir = workDir
+		cmd := exec.Command("go", "build", "-o", tmpPath, srcDir)
 		cmd.Env = append(cmd.Env, os.Environ()...)
 		cmd.Env = append(cmd.Env, "GOOS=js", "GOARCH=wasm")
 		err := withMyOuts(cmd).Run()
@@ -329,7 +330,12 @@ func buildWebui(cfg Config) error {
 			return err
 		}
 	}
-	runInDir(workDir, "du", "-hs", targetPath)
+	if !r.IsModified(tmpPath) {
+		return nil
+	}
+	chkfatal(r.RecordFile(tmpPath))
+	runInDir(".", "du", "-hs", tmpPath)
+	chkfatal(copyFile(finalPath, tmpPath))
 	return copyFile("go/internal/server/embed/wasm_exec.js", wasmExecSrc)
 }
 
@@ -351,7 +357,7 @@ func copyFile(dest, src string) error {
 func buildGo(r *BuildRecord) error {
 	buildCapnp(r)
 
-	err := buildWebui(readConfig())
+	err := buildWebui(r, readConfig())
 	if err != nil {
 		return err
 	}
