@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "debian/bullseye64"
+  config.vm.box = "fedora/37-cloud-base"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -72,39 +72,12 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     set -euo pipefail
 
-    apt-get update
-    apt-get install -y \
-      build-essential \
-      golang-1.19 \
-      curl
-
-    echo 'export PATH="$PATH:/usr/lib/go-1.19/bin:$HOME/go/bin"' > /etc/profile.d/go.sh
-    . /etc/profile.d/go.sh
-
-    # Bullseye ships capnp 0.7, which is too old, so we build from source.
-    which capnp || {
-      [ -d $HOME/capnp ] || mkdir $HOME/capnp
-      cd $HOME/capnp
-
-      wget https://capnproto.org/capnproto-c++-0.10.3.tar.gz
-      tar zxf capnproto-c++-0.10.3.tar.gz
-      cd capnproto-c++-0.10.3
-      # We disable as much as we can, since all we actually need is
-      # the schema compiler frontend. TODO: we can probably cut this
-      # down even more by doing make <target> for the right value of
-      # <target> instead of just make.
-      ./configure \
-        --enable-fast-install \
-        --disable-dependency-tracking \
-        --disable-shared \
-        --disable-static
-      make -j$(nproc)
-      sudo make install
-    }
+    dnf install -y \
+      go \
+      tinygo \
+      capnproto
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
-
-    # TODO: install tinygo. For now you can develop using --use-tinygo=false
 
     # Install legacy sandstorm:
     curl https://install.sandstorm.io/ 2>&1 > ~/install-sandstorm.sh
@@ -116,6 +89,6 @@ Vagrant.configure("2") do |config|
     sudo sed --in-place='' \
             --expression='s/^BIND_IP=.*/BIND_IP=0.0.0.0/' \
             /opt/sandstorm/sandstorm.conf
-    sudo service sandstorm restart
+    sudo systemctl restart sandstorm
   SHELL
 end
