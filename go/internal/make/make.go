@@ -514,7 +514,14 @@ func (r *BuildRecord) IsModified(path string) bool {
 		return true
 	}
 
-	return stamp != sig.Stamp
+	if stamp == sig.Stamp {
+		return false
+	}
+	hash, err := HashFile(path)
+	if err != nil {
+		return true
+	}
+	return bytes.Compare(hash, sig.Hash) != 0
 }
 
 func (r *BuildRecord) RecordFile(path string) error {
