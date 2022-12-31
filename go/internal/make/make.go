@@ -405,20 +405,6 @@ func maybeConfigure() {
 	run("configure")
 }
 
-func runJobs(jobs ...func() error) {
-	chans := make([]<-chan error, len(jobs))
-	errs := make([]error, len(jobs))
-	for i := range jobs {
-		chans[i] = spawnErr(jobs[i])
-	}
-	for i := range chans {
-		errs[i] = <-chans[i]
-	}
-	for i := range errs {
-		chkfatal(errs[i])
-	}
-}
-
 func run(args ...string) {
 	switch args[0] {
 	case "build":
