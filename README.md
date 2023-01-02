@@ -54,21 +54,21 @@ couple extra things underneath that path, namely:
 
 Tempest comes with a tool to import some data from a legacy
 sandstorm installation's database; after running `make`, there will be
-an executable at `_build/sandstorm-legacy-tool`. On a typical sandstorm
+an executable at `_build/sandstorm-import-tool`. On a typical sandstorm
 server you can export the contents of the database via:
 
 ```
-./_build/sandstorm-legacy-tool --snapshot-dir /desired/path/to/snapshot export
+./_build/sandstorm-import-tool --snapshot-dir /desired/path/to/snapshot export
 ```
 
 If your sandstorm installation is in a non-standard path or mongoDB is
 listening on a different port, you may have to supply additional
-options; see `sandstorm-legacy-tool --help` to see the full list.
+options; see `sandstorm-import-tool --help` to see the full list.
 
 You can then import the snapshot into tempest via:
 
 ```
-./_build/sandstorm-legacy-tool --snapshot-dir /path/to/snapshot import
+./_build/sandstorm-import-tool --snapshot-dir /path/to/snapshot import
 ```
 
 For some development, it can be useful to export & import from legacy
@@ -79,7 +79,7 @@ sudo make export-import
 ```
 
 ...which will automate the above, using the default values to
-sandstorm-legacy-tool's flags. It will also destroy the old database
+sandstorm-import-tool's flags. It will also destroy the old database
 and fix permissions on the new one.
 
 # Running

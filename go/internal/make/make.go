@@ -365,7 +365,7 @@ func buildGo(r *BuildRecord) error {
 		name   string
 		static bool
 	}{
-		{"sandstorm-legacy-tool", false},
+		{"sandstorm-import-tool", false},
 		{"tempest", false},
 		{"sandstorm-grain-agent", true},
 		{"test-app", true},
@@ -579,8 +579,8 @@ type FileSig struct {
 
 func exportImport(cfg Config) {
 	dbPath := cfg.Localstatedir + "/sandstorm/sandstorm.sqlite3"
-	chkfatal(runInDir(".", "_build/sandstorm-legacy-tool", "export"))
+	chkfatal(runInDir(".", "_build/sandstorm-import-tool", "export"))
 	chkfatal(os.Remove(dbPath))
-	chkfatal(runInDir(".", "_build/sandstorm-legacy-tool", "import"))
+	chkfatal(runInDir(".", "_build/sandstorm-import-tool", "import"))
 	chkfatal(runInDir(".", "chown", cfg.User+":"+cfg.Group, dbPath))
 }

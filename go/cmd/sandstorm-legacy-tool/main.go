@@ -23,7 +23,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) != 1 {
-		fmt.Fprintln(os.Stderr, "usage: sandstorm-legacy-tool [ flags ] <export | import>")
+		fmt.Fprintln(os.Stderr, "usage: sandstorm-import-tool [ flags ] <export | import>")
 		os.Exit(1)
 	}
 	switch args[0] {
