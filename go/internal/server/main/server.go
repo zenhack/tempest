@@ -141,11 +141,13 @@ func (s *server) Handler() http.Handler {
 					}
 					mainView := grain.MainView(c.Bootstrap.AddRef())
 					ctx := req.Context()
-					fut, rel := mainView.NewSession(ctx, func(p grain.UiView_newSession_Params) error {
-						// TODO
-						p.SetSessionType(websession.WebSession_TypeID)
-						return nil
-					})
+					fut, rel := mainView.NewSession(
+						ctx,
+						func(p grain.UiView_newSession_Params) error {
+							// TODO
+							p.SetSessionType(websession.WebSession_TypeID)
+							return nil
+						})
 					defer rel()
 					res, err := fut.Struct()
 					if err != nil {
