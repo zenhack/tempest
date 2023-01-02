@@ -1,8 +1,8 @@
 This repository contains an experimental rewrite of Sandstorm.
 
 Currently, most of the sandbox setup code is built, and sandstorm-next
-is capable of spawning sandstorm-http-bridge based apps and plumbing
-http traffic to them from the outside.
+is capable of spawning sandstorm apps and plumbing http traffic to them
+from the outside, though many http features are not yet implemented.
 
 # Building
 
