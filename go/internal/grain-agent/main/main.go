@@ -95,18 +95,20 @@ func Main() {
 		"command":  cmd.Args,
 	}).Info("Starting up app")
 
-	if cmd.Args[0] != "/sandstorm-http-bridge" {
-		lg.Fatal("Only sandstorm-http-bridge apps are supported.")
-	}
-	if len(cmd.Args) < 4 {
-		// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
-		lg.Fatal("Too few arugments")
-	}
-	//portNo, err := strconv.Atoi(cmd.Args[1])
-	util.Chkfatal(err)
-	if cmd.Args[2] != "--" {
-		lg.Fatal("Error: second argument should be '--' separator.")
-	}
+	/*
+		if cmd.Args[0] != "/sandstorm-http-bridge" {
+			lg.Fatal("Only sandstorm-http-bridge apps are supported.")
+		}
+		if len(cmd.Args) < 4 {
+			// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
+			lg.Fatal("Too few arugments")
+		}
+		//portNo, err := strconv.Atoi(cmd.Args[1])
+		util.Chkfatal(err)
+		if cmd.Args[2] != "--" {
+			lg.Fatal("Error: second argument should be '--' separator.")
+		}
+	*/
 	//cmd.Args = cmd.Args[3:]
 	osCmd := cmd.ToOsCmd()
 
