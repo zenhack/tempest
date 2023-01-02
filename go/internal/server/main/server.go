@@ -140,6 +140,7 @@ func (s *server) Handler() http.Handler {
 						return
 					}
 					mainView := grain.MainView(c.Bootstrap.AddRef())
+					defer mainView.Release()
 					ctx := req.Context()
 					fut, rel := mainView.NewSession(
 						ctx,
