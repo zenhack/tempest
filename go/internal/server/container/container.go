@@ -10,12 +10,12 @@ import (
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"golang.org/x/sys/unix"
 
-	"zenhack.net/go/tempest/capnp/container"
-	"zenhack.net/go/tempest/go/internal/config"
-	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/sandstorm/capnp/grain"
 	utilcp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"
+	"zenhack.net/go/tempest/capnp/container"
+	"zenhack.net/go/tempest/go/internal/config"
+	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )
@@ -104,7 +104,7 @@ func startContainer(
 	grainSock := os.NewFile(uintptr(fds[0]), "grain api socket")
 	supervisorSock := os.NewFile(uintptr(fds[1]), "supervisor api socket")
 	cmd := exec.Command(
-		config.Libexecdir+"/sandstorm/sandstorm-sandbox-launcher",
+		config.Libexecdir+"/tempest/tempest-sandbox-launcher",
 		packageId,
 		grainId,
 	)

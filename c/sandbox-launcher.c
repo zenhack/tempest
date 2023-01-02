@@ -1,7 +1,7 @@
 /* This program is responsible for actually setting up the grain sandbox.
- * Sandstorm invokes it as:
+ * Tempest invokes it as:
  *
- * sandstorm-sandbox-launcher <package-id> <grain-id>
+ * tempest-sandbox-launcher <package-id> <grain-id>
  *
  * It configures a sandbox using the directories for that package & grain, and
  * then inovkes execveat() to start the `tempest-grain-agent` executable, which then
