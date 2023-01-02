@@ -4,9 +4,11 @@ import (
 	"context"
 	"crypto/rand"
 	"net/http"
+	"strings"
 	"sync"
 
 	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/pogs"
 	"capnproto.org/go/capnp/v3/rpc"
 	"github.com/apex/log"
 	"github.com/gorilla/mux"
@@ -20,6 +22,25 @@ import (
 	"zenhack.net/go/sandstorm/capnp/websession"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
+
+type webSessionParams struct {
+	BasePath            string
+	UserAgent           string
+	AcceptableLanguages []string
+}
+
+func (p *webSessionParams) FromRequest(req *http.Request) {
+	p.BasePath = req.URL.Scheme + "://" + req.URL.Host
+	p.UserAgent = req.Header.Get("User-Agent")
+	p.AcceptableLanguages = strings.Split(
+		req.Header.Get("Accept-Language"),
+		",",
+	)
+}
+
+func (p *webSessionParams) Insert(into websession.WebSession_Params) error {
+	return pogs.Insert(websession.WebSession_Params_TypeID, capnp.Struct(into), p)
+}
 
 // A server encapsulates the state of a running server.
 type server struct {
@@ -142,11 +163,21 @@ func (s *server) Handler() http.Handler {
 					mainView := grain.MainView(c.Bootstrap.AddRef())
 					defer mainView.Release()
 					ctx := req.Context()
+					sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})
 					fut, rel := mainView.NewSession(
 						ctx,
 						func(p grain.UiView_newSession_Params) error {
-							// TODO
 							p.SetSessionType(websession.WebSession_TypeID)
+							p.SetContext(sessionCtx)
+							p.SetTabId([]byte("TODO"))
+							params, err := websession.NewWebSession_Params(p.Segment())
+							if err != nil {
+								return err
+							}
+							var wsp webSessionParams
+							wsp.FromRequest(req)
+							wsp.Insert(params)
+							p.SetSessionParams(params.ToPtr())
 							return nil
 						})
 					defer rel()
