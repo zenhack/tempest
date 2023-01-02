@@ -1,12 +1,12 @@
-This repository contains an experimental rewrite of Sandstorm.
+This repository contains an experimental replacement for [Sandstorm][1].
 
-Currently, most of the sandbox setup code is built, and sandstorm-next
+Currently, most of the sandbox setup code is built, and tempest
 is capable of spawning sandstorm apps and plumbing http traffic to them
 from the outside, though many http features are not yet implemented.
 
 # Building
 
-To build sandstorm-next, you will need:
+To build tempest, you will need:
 
 - Go 1.19 or later
 - [tinygo](https://tinygo.org/)
@@ -39,12 +39,12 @@ need to supply the paths to the repositories checked out above:
 make
 ```
 
-Then run `make install` to install sandstorm-next system wide.
+Then run `make install` to install tempest system wide.
 
-Tip: you can configure sandstorm-next to share a grain/app storage
+Tip: you can configure tempest to share a grain/app storage
 directory with a legacy sandstorm system by passing
 `--localstatedir=/opt/sandstorm/var` to `./configure`.  In addition to
-the files used by legacy sandstorm, `sandstorm-next` will create a
+the files used by legacy sandstorm, `tempest` will create a
 couple extra things underneath that path, namely:
 
 - an extra directory at `sandstorm/mnt`
@@ -52,7 +52,7 @@ couple extra things underneath that path, namely:
 
 # Importing data from legacy sandstorm
 
-Sandstorm-next comes with a tool to import some data from a legacy
+Tempest comes with a tool to import some data from a legacy
 sandstorm installation's database; after running `make`, there will be
 an executable at `_build/sandstorm-legacy-tool`. On a typical sandstorm
 server you can export the contents of the database via:
@@ -65,7 +65,7 @@ If your sandstorm installation is in a non-standard path or mongoDB is
 listening on a different port, you may have to supply additional
 options; see `sandstorm-legacy-tool --help` to see the full list.
 
-You can then import the snapshot into sandstorm-next via:
+You can then import the snapshot into tempest via:
 
 ```
 ./_build/sandstorm-legacy-tool --snapshot-dir /path/to/snapshot import
@@ -84,28 +84,28 @@ and fix permissions on the new one.
 
 # Running
 
-At present, sandstorm-next has no user interface, and no way to install
+At present, tempest has no user interface, and no way to install
 apps or create grains; to experiment with it you must separately arrange
 a suitable grain storage directory and populate the database. The easiest
 way to do this is to point it at an existing sandstorm installation, and
 import database info using `sandstsorm-legacy-tool`, per above.
 
-`sandstorm-next` should be run as the user and group chosen by the via
+`tempest` should be run as the user and group chosen by the via
 the `--user` and --group` flags to `./configure` (by default both
 `sandstorm`).  The easiest way to do this is to run as root:
 
 ```
-sudo -u sandstorm -g sandstorm /path/to/sandstorm-next
+sudo -u sandstorm -g sandstorm /path/to/tempest
 ```
 
 For development purposes, the Makefile includes a `dev` target that will
-rebuild, reinstall, and then spawn sandstorm-next; simply run:
+rebuild, reinstall, and then spawn tempest; simply run:
 
 ```
 sudo make dev`
 ```
 
-`sandstorm-next` will start a web server on port 8000; to connect to the
+`tempest` will start a web server on port 8000; to connect to the
 UI, go to `http://local.sandstorm.io:8000`.
 
 To log in with a developer account, click "Log in with dev account", and
@@ -117,3 +117,5 @@ displayed; click the links to open the grains.
 This will display the grain's UI within an iframe. Things like
 offer iframes and anything that uses sandstorm specific APIs will not
 work currently.
+
+[1]: https://sandstorm.io

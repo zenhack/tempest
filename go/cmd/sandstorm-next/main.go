@@ -1,7 +1,7 @@
 package main
 
 import (
-	servermain "zenhack.net/go/sandstorm-next/go/internal/server/main"
+	servermain "zenhack.net/go/tempest/go/internal/server/main"
 )
 
 func main() {

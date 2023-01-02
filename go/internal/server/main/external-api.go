@@ -5,10 +5,10 @@ import (
 	"errors"
 
 	"capnproto.org/go/capnp/v3"
-	"zenhack.net/go/sandstorm-next/capnp/collection"
-	"zenhack.net/go/sandstorm-next/capnp/external"
-	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/session"
+	"zenhack.net/go/tempest/capnp/collection"
+	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/go/internal/database"
+	"zenhack.net/go/tempest/go/internal/server/session"
 	"zenhack.net/go/util/exn"
 )
 

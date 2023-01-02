@@ -10,9 +10,9 @@ import (
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"golang.org/x/sys/unix"
 
-	"zenhack.net/go/sandstorm-next/capnp/container"
-	"zenhack.net/go/sandstorm-next/go/internal/config"
-	"zenhack.net/go/sandstorm-next/go/internal/database"
+	"zenhack.net/go/tempest/capnp/container"
+	"zenhack.net/go/tempest/go/internal/config"
+	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/sandstorm/capnp/grain"
 	utilcp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"

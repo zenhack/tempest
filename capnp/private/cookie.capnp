@@ -5,7 +5,7 @@
 
 using Go = import "/go.capnp";
 $Go.package("cookie");
-$Go.import("zenhack.net/go/sandstorm-next/capnp/private/cookie");
+$Go.import("zenhack.net/go/tempest/capnp/private/cookie");
 
 struct UserSession {
   # Session cookie for a user's login. Stored in the

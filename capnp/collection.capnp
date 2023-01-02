@@ -4,7 +4,7 @@
 
 using Go = import "/go.capnp";
 $Go.package("collection");
-$Go.import("zenhack.net/go/sandstorm-next/capnp/collection");
+$Go.import("zenhack.net/go/tempest/capnp/collection");
 
 using Util = import "/util.capnp";
 

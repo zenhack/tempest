@@ -1,5 +1,5 @@
 This file documents known issues that must be addressed before
-sandstorm-next should be relied upon.
+tempest should be relied upon.
 
 Absolute blockers:
 
@@ -16,6 +16,6 @@ Absolute blockers:
   - [ ] Sanity check cookies have proper attributes/aren't visible from js etc.
 
 Things that really *should* be dealt with, but aren't regressions from
-sandstorm-legacy:
+sandstorm:
 
 - [ ] Performance isolation with cgroups

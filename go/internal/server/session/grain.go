@@ -1,6 +1,6 @@
 package session
 
-import "zenhack.net/go/sandstorm-next/capnp/private/cookie"
+import "zenhack.net/go/tempest/capnp/private/cookie"
 
 type GrainSession struct {
 	GrainId   string

@@ -11,7 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"zenhack.net/go/sandstorm-next/go/internal/database"
+	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/util/exn"
 )
 

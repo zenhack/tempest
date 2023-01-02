@@ -3,8 +3,8 @@ package browsermain
 import (
 	"context"
 
-	"zenhack.net/go/sandstorm-next/capnp/collection"
-	"zenhack.net/go/sandstorm-next/capnp/external"
+	"zenhack.net/go/tempest/capnp/collection"
+	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/util/exn"
 )
 

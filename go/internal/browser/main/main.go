@@ -6,8 +6,8 @@ import (
 
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
-	"zenhack.net/go/sandstorm-next/capnp/collection"
-	"zenhack.net/go/sandstorm-next/capnp/external"
+	"zenhack.net/go/tempest/capnp/collection"
+	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/vdom"
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )

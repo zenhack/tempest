@@ -2,7 +2,7 @@
 
 using Go = import "/go.capnp";
 $Go.package("http");
-$Go.import("zenhack.net/go/sandstorm-next/capnp/http");
+$Go.import("zenhack.net/go/tempest/capnp/http");
 
 using Util = import "/util.capnp";
 

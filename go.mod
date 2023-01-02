@@ -1,10 +1,10 @@
-module zenhack.net/go/sandstorm-next
+module zenhack.net/go/tempest
 
 go 1.19
 
 // NOTE: this *must not* be updated to v1.11; that version drops support for
 // version 2 of the wire protocol, which is the most recent supported by the
-// (ancient) version of mongo bundled with legacy sandstorm.
+// (ancient) version of mongo bundled with sandstorm.
 require go.mongodb.org/mongo-driver v1.10.0
 
 require (

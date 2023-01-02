@@ -3,8 +3,8 @@ package servermain
 import (
 	"context"
 
-	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/container"
+	"zenhack.net/go/tempest/go/internal/database"
+	"zenhack.net/go/tempest/go/internal/server/container"
 	"zenhack.net/go/sandstorm/capnp/grain"
 )
 

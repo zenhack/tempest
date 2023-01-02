@@ -12,7 +12,7 @@ import (
 
 	"capnproto.org/go/capnp/v3"
 	"github.com/apex/log"
-	httpcp "zenhack.net/go/sandstorm-next/capnp/http"
+	httpcp "zenhack.net/go/tempest/capnp/http"
 	"zenhack.net/go/sandstorm/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 )

@@ -366,7 +366,7 @@ func buildGo(r *BuildRecord) error {
 		static bool
 	}{
 		{"sandstorm-legacy-tool", false},
-		{"sandstorm-next", false},
+		{"tempest", false},
 		{"sandstorm-grain-agent", true},
 		{"test-app", true},
 	}
@@ -440,7 +440,7 @@ func run(args ...string) {
 	case "install":
 		run("build")
 		c := readConfig()
-		installExe(c, "sandstorm-next", c.Bindir, "cap_net_bind_service+ep")
+		installExe(c, "tempest", c.Bindir, "cap_net_bind_service+ep")
 		installExe(c, "sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm",
 			"cap_sys_admin,cap_net_admin,cap_mknod+ep")
 		installExe(c, "sandstorm-grain-agent", c.Libexecdir+"/sandstorm", "")
@@ -452,7 +452,7 @@ func run(args ...string) {
 			exec.Command("sudo",
 				"-u", c.User,
 				"-g", c.Group,
-				c.Bindir+"/sandstorm-next"),
+				c.Bindir+"/tempest"),
 		).Run())
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])

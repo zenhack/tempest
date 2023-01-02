@@ -1,7 +1,7 @@
 package session
 
 import (
-	"zenhack.net/go/sandstorm-next/capnp/private/cookie"
+	"zenhack.net/go/tempest/capnp/private/cookie"
 )
 
 type UserSession struct {

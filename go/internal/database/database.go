@@ -5,7 +5,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
-	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/tempest/go/internal/config"
 	"zenhack.net/go/util/exn"
 )
 

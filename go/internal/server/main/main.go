@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"zenhack.net/go/sandstorm-next/go/internal/database"
-	"zenhack.net/go/sandstorm-next/go/internal/server/session"
+	"zenhack.net/go/tempest/go/internal/database"
+	"zenhack.net/go/tempest/go/internal/server/session"
 	"zenhack.net/go/util"
 )
 

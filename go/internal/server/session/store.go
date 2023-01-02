@@ -9,7 +9,7 @@ import (
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
-	"zenhack.net/go/sandstorm-next/go/internal/config"
+	"zenhack.net/go/tempest/go/internal/config"
 	"zenhack.net/go/util/exn"
 )
 

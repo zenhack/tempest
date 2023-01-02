@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 8000, host: 8000 # sandstorm-next
+  config.vm.network "forwarded_port", guest: 8000, host: 8000 # tempest
   config.vm.network "forwarded_port", guest: 6090, host: 6090 # legacy sandstorm
 
   # Create a forwarded port mapping which allows access to a specific port
