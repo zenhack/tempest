@@ -13,6 +13,7 @@ import (
 	"zenhack.net/go/sandstorm-next/capnp/container"
 	"zenhack.net/go/sandstorm-next/go/internal/config"
 	"zenhack.net/go/sandstorm-next/go/internal/database"
+	"zenhack.net/go/sandstorm/capnp/grain"
 	utilcp "zenhack.net/go/sandstorm/capnp/util"
 	"zenhack.net/go/sandstorm/exp/util/handle"
 	"zenhack.net/go/util"
@@ -29,7 +30,7 @@ func (c *Container) Release() {
 	c.Handle.Release()
 }
 
-func Start(ctx context.Context, db database.DB, grainId string) (*Container, error) {
+func Start(ctx context.Context, db database.DB, grainId string, api grain.SandstormApi) (*Container, error) {
 	return exn.Try(func(throw func(error)) *Container {
 		tx, err := db.Begin()
 		throw(err)
@@ -44,6 +45,7 @@ func Start(ctx context.Context, db database.DB, grainId string) (*Container, err
 			// TODO: bootstrap
 			util.Chkfatal(p.SetPackageId(pkgId))
 			util.Chkfatal(p.SetGrainId(grainId))
+			util.Chkfatal(p.SetBootstrap(capnp.Client(api)))
 			return nil
 		})
 		defer rel()

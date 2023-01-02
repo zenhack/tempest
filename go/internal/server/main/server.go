@@ -150,7 +150,6 @@ func (s *server) Handler() http.Handler {
 				}
 				gs, ok := s.lk.grainSessions[key]
 				if !ok {
-
 					c, err := s.lk.containers.Get(context.Background(), s.db, sess.GrainId)
 					if err != nil {
 						w.WriteHeader(http.StatusInternalServerError)

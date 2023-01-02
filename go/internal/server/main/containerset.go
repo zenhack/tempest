@@ -5,6 +5,7 @@ import (
 
 	"zenhack.net/go/sandstorm-next/go/internal/database"
 	"zenhack.net/go/sandstorm-next/go/internal/server/container"
+	"zenhack.net/go/sandstorm/capnp/grain"
 )
 
 type ContainerSet struct {
@@ -22,7 +23,8 @@ func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId strin
 	if ok {
 		return c, nil
 	}
-	c, err := container.Start(ctx, db, grainId)
+	api := grain.SandstormApi_ServerToClient(sandstormApiImpl{})
+	c, err := container.Start(ctx, db, grainId, api)
 	if err == nil {
 		cset.containersByGrainId[grainId] = c
 	}
