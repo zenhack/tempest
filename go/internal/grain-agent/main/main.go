@@ -1,4 +1,4 @@
-// `sandstorm-grain-agent` runs inside the grain's sandbox, and is the first
+// `tempest-grain-agent` runs inside the grain's sandbox, and is the first
 // program executed during grain startup. Its file descriptor #3 is a socket
 // over which we can speak capnp to the sandstorm server outside the sandbox.
 //

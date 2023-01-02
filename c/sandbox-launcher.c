@@ -4,7 +4,7 @@
  * sandstorm-sandbox-launcher <package-id> <grain-id>
  *
  * It configures a sandbox using the directories for that package & grain, and
- * then inovkes execveat() to start the `sandstorm-grain-agent` executable, which then
+ * then inovkes execveat() to start the `tempest-grain-agent` executable, which then
  * takes over starting up and interfacing with the grain proper.
  *
  * This program is written in C, rather than Go, because:
@@ -75,7 +75,7 @@
 
 #define IMAGE_DIR     SANDSTORM_STATE   "/apps"
 #define SANDBOX_DIR   SANDSTORM_STATE   "/grains"
-#define AGENT_PATH    SANDSTORM_LIBEXEC "/sandstorm-grain-agent"
+#define AGENT_PATH    SANDSTORM_LIBEXEC "/tempest-grain-agent"
 #define CHROOT_MNT    SANDSTORM_STATE   "/mnt"
 
 #define PKG_ID_SIZE 32
@@ -336,7 +336,7 @@ int main(int argc, char **argv) {
 		REQUIRE(setsid() != -1);
 		//REQUIRE(setpgid(0, 0) == 0);
 
-		char *const agent_argv[] = {"sandstorm-grain-agent", NULL};
+		char *const agent_argv[] = {"tempest-grain-agent", NULL};
 		char *const agent_envp[] = {NULL};
 		syscall(SYS_execveat, agent_fd, "", agent_argv, agent_envp, AT_EMPTY_PATH);
 

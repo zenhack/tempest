@@ -367,7 +367,7 @@ func buildGo(r *BuildRecord) error {
 	}{
 		{"sandstorm-import-tool", false},
 		{"tempest", false},
-		{"sandstorm-grain-agent", true},
+		{"tempest-grain-agent", true},
 		{"test-app", true},
 	}
 	for _, exe := range exes {
@@ -443,7 +443,7 @@ func run(args ...string) {
 		installExe(c, "tempest", c.Bindir, "cap_net_bind_service+ep")
 		installExe(c, "sandstorm-sandbox-launcher", c.Libexecdir+"/sandstorm",
 			"cap_sys_admin,cap_net_admin,cap_mknod+ep")
-		installExe(c, "sandstorm-grain-agent", c.Libexecdir+"/sandstorm", "")
+		installExe(c, "tempest-grain-agent", c.Libexecdir+"/sandstorm", "")
 		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
 	case "dev":
 		run("install")
