@@ -11,9 +11,6 @@ import (
 	"golang.org/x/sys/unix"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
-	utilcp "zenhack.net/go/sandstorm/capnp/util"
-	"zenhack.net/go/sandstorm/exp/util/handle"
-	"zenhack.net/go/tempest/capnp/container"
 	"zenhack.net/go/tempest/go/internal/config"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/util"
@@ -22,84 +19,40 @@ import (
 
 type Container struct {
 	Bootstrap capnp.Client
-	Handle    utilcp.Handle
+	cancel    context.CancelFunc // cancel causes the container to shut down.
+	exited    <-chan struct{}    // closed when the container has exited.
 }
 
-func (c *Container) Release() {
+func (c Container) Release() {
 	c.Bootstrap.Release()
-	c.Handle.Release()
+	c.cancel()
+	<-c.exited
 }
 
-func Start(ctx context.Context, db database.DB, grainId string, api grain.SandstormApi) (*Container, error) {
-	return exn.Try(func(throw func(error)) *Container {
+func Start(ctx context.Context, db database.DB, grainId string, api grain.SandstormApi) (Container, error) {
+	return exn.Try(func(throw func(error)) Container {
 		tx, err := db.Begin()
 		throw(err)
 		defer tx.Rollback()
 		pkgId, err := tx.GetGrainPackageId(grainId)
 		throw(err)
 		throw(tx.Commit())
-
-		spawner := container.Spawner_ServerToClient(Spawner{})
-		defer spawner.Release()
-		fut, rel := spawner.Spawn(ctx, func(p container.Spawner_spawn_Params) error {
-			// TODO: bootstrap
-			util.Chkfatal(p.SetPackageId(pkgId))
-			util.Chkfatal(p.SetGrainId(grainId))
-			util.Chkfatal(p.SetBootstrap(capnp.Client(api)))
-			return nil
-		})
-		defer rel()
-		results, err := fut.Struct()
+		ret, err := startContainer(ctx, capnp.Client(api), pkgId, grainId)
 		throw(err)
-		return &Container{
-			Bootstrap: results.Bootstrap().AddRef(),
-			Handle:    results.Handle().AddRef(),
-		}
+		return ret
 	})
-}
-
-type Spawner struct {
-}
-
-func (Spawner) Spawn(_ context.Context, p container.Spawner_spawn) error {
-	args := p.Args()
-	packageId, err := args.PackageId()
-	if err != nil {
-		return err
-	}
-	grainId, err := args.GrainId()
-	if err != nil {
-		return err
-	}
-
-	supervisorBootstrap := args.Bootstrap()
-
-	results, err := p.AllocResults()
-	if err != nil {
-		return err
-	}
-
-	ctx, cancel := handle.WithCancel(context.Background())
-	grainBootstrap, err := startContainer(ctx, supervisorBootstrap.AddRef(), packageId, grainId)
-	if err != nil {
-		cancel.Release()
-		return err
-	}
-
-	results.SetBootstrap(grainBootstrap)
-	results.SetHandle(cancel)
-	return nil
 }
 
 func startContainer(
 	ctx context.Context,
 	supervisorBootstrap capnp.Client,
 	packageId, grainId string,
-) (capnp.Client, error) {
+) (Container, error) {
+	ctx, cancel := context.WithCancel(ctx)
 	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_STREAM, 0)
 	if err != nil {
 		supervisorBootstrap.Release()
-		return capnp.Client{}, err
+		return Container{}, err
 	}
 	grainSock := os.NewFile(uintptr(fds[0]), "grain api socket")
 	supervisorSock := os.NewFile(uintptr(fds[1]), "supervisor api socket")
@@ -118,7 +71,7 @@ func startContainer(
 		supervisorBootstrap.Release()
 		grainSock.Close()
 		supervisorSock.Close()
-		return capnp.Client{}, err
+		return Container{}, err
 	}
 	trans := transport.NewStream(supervisorSock)
 	var options *rpc.Options
@@ -129,6 +82,7 @@ func startContainer(
 	}
 	conn := rpc.NewConn(trans, options)
 	grainBootstrap := conn.Bootstrap(ctx)
+	exited := make(chan struct{})
 	go func() {
 		<-ctx.Done()
 		// I(isd) don't see a sensible behavior if we fail to shut down the
@@ -136,6 +90,11 @@ func startContainer(
 		util.Chkfatal(cmd.Process.Kill())
 		util.Must(cmd.Process.Wait())
 		<-conn.Done()
+		close(exited)
 	}()
-	return grainBootstrap, nil
+	return Container{
+		Bootstrap: grainBootstrap,
+		cancel:    cancel,
+		exited:    exited,
+	}, nil
 }

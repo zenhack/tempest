@@ -3,9 +3,9 @@ package servermain
 import (
 	"context"
 
+	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/tempest/go/internal/server/container"
-	"zenhack.net/go/sandstorm/capnp/grain"
 )
 
 type ContainerSet struct {
@@ -15,10 +15,10 @@ type ContainerSet struct {
 	//   give us a clear way to ever shut down containers.
 	// - We need to think about detecting containers shutting down on
 	//   their own.
-	containersByGrainId map[string]*container.Container
+	containersByGrainId map[string]container.Container
 }
 
-func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId string) (*container.Container, error) {
+func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId string) (container.Container, error) {
 	c, ok := cset.containersByGrainId[grainId]
 	if ok {
 		return c, nil
