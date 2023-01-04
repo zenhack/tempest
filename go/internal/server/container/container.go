@@ -23,9 +23,12 @@ type Container struct {
 	exited    <-chan struct{}    // closed when the container has exited.
 }
 
-func (c Container) Release() {
+func (c Container) Kill() {
 	c.Bootstrap.Release()
 	c.cancel()
+}
+
+func (c Container) Wait() {
 	<-c.exited
 }
 
