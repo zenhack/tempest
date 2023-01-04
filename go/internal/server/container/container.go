@@ -8,12 +8,12 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
+	"github.com/apex/log"
 	"golang.org/x/sys/unix"
 
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/tempest/go/internal/config"
 	"zenhack.net/go/tempest/go/internal/database"
-	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )
 
@@ -32,7 +32,10 @@ func (c Container) Wait() {
 	<-c.exited
 }
 
-func Start(ctx context.Context, db database.DB, grainId string, api grain.SandstormApi) (Container, error) {
+func Start(ctx context.Context, lg log.Interface, db database.DB, grainId string, api grain.SandstormApi) (Container, error) {
+	lg.WithFields(log.Fields{
+		"grainId": grainId,
+	}).Info("Starting grain")
 	return exn.Try(func(throw func(error)) Container {
 		tx, err := db.Begin()
 		throw(err)
@@ -40,7 +43,7 @@ func Start(ctx context.Context, db database.DB, grainId string, api grain.Sandst
 		pkgId, err := tx.GetGrainPackageId(grainId)
 		throw(err)
 		throw(tx.Commit())
-		ret, err := startContainer(ctx, capnp.Client(api), pkgId, grainId)
+		ret, err := startContainer(ctx, lg, capnp.Client(api), pkgId, grainId)
 		throw(err)
 		return ret
 	})
@@ -48,6 +51,7 @@ func Start(ctx context.Context, db database.DB, grainId string, api grain.Sandst
 
 func startContainer(
 	ctx context.Context,
+	lg log.Interface,
 	supervisorBootstrap capnp.Client,
 	packageId, grainId string,
 ) (Container, error) {
@@ -76,6 +80,11 @@ func startContainer(
 		supervisorSock.Close()
 		return Container{}, err
 	}
+	lg.WithFields(log.Fields{
+		"grainId":   grainId,
+		"packageId": packageId,
+		"pid":       cmd.Process.Pid,
+	}).Debug("Started grain process")
 	trans := transport.NewStream(supervisorSock)
 	var options *rpc.Options
 	if (supervisorBootstrap != capnp.Client{}) {
@@ -90,8 +99,20 @@ func startContainer(
 		<-ctx.Done()
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
-		util.Chkfatal(cmd.Process.Kill())
-		util.Must(cmd.Process.Wait())
+		if err := cmd.Process.Kill(); err != nil {
+			lg.WithFields(log.Fields{
+				"error":   err,
+				"grainId": grainId,
+				"pid":     cmd.Process.Pid,
+			}).Fatal("Failed to kill grain")
+		}
+		if _, err := cmd.Process.Wait(); err != nil {
+			lg.WithFields(log.Fields{
+				"error":   err,
+				"grainId": grainId,
+				"pid":     cmd.Process.Pid,
+			}).Fatal("Failed to wait() on grain")
+		}
 		<-conn.Done()
 		close(exited)
 	}()

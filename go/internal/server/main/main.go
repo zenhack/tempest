@@ -24,6 +24,7 @@ func Main() {
 	rootDomain := defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io")
 	listenAddr := defaultTo(os.Getenv("LISTEN_ADDR"), ":8000")
 
+	log.SetLevel(log.DebugLevel)
 	lg := log.Log
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))

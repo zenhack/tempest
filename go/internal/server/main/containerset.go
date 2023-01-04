@@ -3,6 +3,7 @@ package servermain
 import (
 	"context"
 
+	"github.com/apex/log"
 	"zenhack.net/go/sandstorm/capnp/grain"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/tempest/go/internal/server/container"
@@ -18,13 +19,13 @@ type ContainerSet struct {
 	containersByGrainId map[string]container.Container
 }
 
-func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId string) (container.Container, error) {
+func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainId string) (container.Container, error) {
 	c, ok := cset.containersByGrainId[grainId]
 	if ok {
 		return c, nil
 	}
 	api := grain.SandstormApi_ServerToClient(sandstormApiImpl{})
-	c, err := container.Start(ctx, db, grainId, api)
+	c, err := container.Start(ctx, lg, db, grainId, api)
 	if err == nil {
 		cset.containersByGrainId[grainId] = c
 	}
