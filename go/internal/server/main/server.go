@@ -84,6 +84,10 @@ type grainSession struct {
 	webSession websession.WebSession
 }
 
+func (s grainSession) Release() {
+	s.webSession.Release()
+}
+
 func (s *server) Handler() http.Handler {
 	r := mux.NewRouter()
 
@@ -273,4 +277,13 @@ func (s *server) Handler() http.Handler {
 	r.Host(s.rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 
 	return r
+}
+
+func (s *server) Release() {
+	s.db.Close()
+	s.lk.containers.Release()
+	for _, sess := range s.lk.grainSessions {
+		sess.Release()
+	}
+	*s = server{}
 }
