@@ -13,13 +13,13 @@ import (
 	"github.com/apex/log"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"zenhack.net/go/sandstorm/capnp/grain"
+	"zenhack.net/go/sandstorm/capnp/websession"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/tempest/go/internal/server/container"
 	"zenhack.net/go/tempest/go/internal/server/embed"
 	"zenhack.net/go/tempest/go/internal/server/session"
-	"zenhack.net/go/sandstorm/capnp/grain"
-	"zenhack.net/go/sandstorm/capnp/websession"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
@@ -66,7 +66,7 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 		sessionStore: sessionStore,
 	}
 	srv.lk.containers = ContainerSet{
-		containersByGrainId: make(map[string]*container.Container),
+		containersByGrainId: make(map[string]container.Container),
 	}
 	srv.lk.grainSessions = make(map[grainSessionKey]grainSession)
 	return srv
