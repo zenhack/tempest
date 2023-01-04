@@ -281,6 +281,8 @@ func (s *server) Handler() http.Handler {
 
 func (s *server) Release() {
 	s.db.Close()
+	s.lk.Lock()
+	defer s.lk.Unlock()
 	s.lk.containers.Release()
 	for _, sess := range s.lk.grainSessions {
 		sess.Release()
