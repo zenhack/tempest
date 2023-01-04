@@ -42,9 +42,11 @@ func monitorSignals(srv *http.Server) {
 	defer srv.Close()
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs,
+		// Signals that would normally kill us. Instead, stop the server
+		// and let main() do shutdown.
 		syscall.SIGINT,
 		syscall.SIGTERM,
-		// TODO: other signals?
+		syscall.SIGHUP,
 	)
 	defer signal.Stop(sigs)
 	<-sigs
