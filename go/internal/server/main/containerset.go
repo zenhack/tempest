@@ -33,6 +33,9 @@ func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId strin
 
 func (cset *ContainerSet) Release() {
 	for _, c := range cset.containersByGrainId {
-		c.Release()
+		c.Kill()
+	}
+	for _, c := range cset.containersByGrainId {
+		c.Wait()
 	}
 }
