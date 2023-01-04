@@ -3,6 +3,8 @@ package servermain
 import (
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/apex/log"
 	"zenhack.net/go/tempest/go/internal/database"
@@ -25,10 +27,25 @@ func Main() {
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
 	srv := newServer(rootDomain, lg, db, sessionStore)
+	defer srv.Release()
 
 	http.Handle("/", srv.Handler())
 	lg.Infof("Listening on %v", listenAddr)
-	http.ListenAndServe(listenAddr, nil)
+	httpSrv := &http.Server{Addr: listenAddr}
+	go monitorSignals(httpSrv)
+	httpSrv.ListenAndServe()
+}
+
+func monitorSignals(srv *http.Server) {
+	defer srv.Close()
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		// TODO: other signals?
+	)
+	defer signal.Stop(sigs)
+	<-sigs
 }
 
 func badRequest(w http.ResponseWriter, msg string) {

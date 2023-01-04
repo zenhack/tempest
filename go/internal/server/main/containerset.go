@@ -30,3 +30,9 @@ func (cset *ContainerSet) Get(ctx context.Context, db database.DB, grainId strin
 	}
 	return c, err
 }
+
+func (cset *ContainerSet) Release() {
+	for _, c := range cset.containersByGrainId {
+		c.Release()
+	}
+}
