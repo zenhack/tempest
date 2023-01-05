@@ -287,5 +287,4 @@ func (s *server) Release() {
 	for _, sess := range s.lk.grainSessions {
 		sess.Release()
 	}
-	*s = server{}
 }

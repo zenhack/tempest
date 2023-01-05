@@ -7,6 +7,11 @@
  * then inovkes execveat() to start the `tempest-grain-agent` executable, which then
  * takes over starting up and interfacing with the grain proper.
  *
+ * The grain will be given access to stdout, stderr. and file descriptor #3 (used
+ * as a Cap'n Proto RPC socket). The (external) pid for root of the grain's pid
+ * namespace is printed to file descriptor #4, which is then closed; the caller should
+ * send SIGKILL to this process to stop the grain, then wait on the sandbox launcher.
+ *
  * This program is written in C, rather than Go, because:
  *
  * 1. There have historically been many bugs and gotchas around multi-threaded
@@ -203,6 +208,7 @@ int main(int argc, char **argv) {
 
 	   - stdout & stderr -- these are logged by the supervisor.
 	   - fd #3, which is the rpc socket
+	   - fd #4, which we use later to log the grain's pid
 	   - agent_fd, which we still need to pass to execveat when we're done. It's close-on-exec,
 	     so this is fine.
 
@@ -210,7 +216,7 @@ int main(int argc, char **argv) {
 	descriptor, and none of the other errors are relevant to us. */
 	close(0);
 	long max_fds = sysconf(_SC_OPEN_MAX);
-	for(int i = 4; i < max_fds; i++) {
+	for(int i = 5; i < max_fds; i++) {
 		if(i != agent_fd) {
 			close(i);
 		}
@@ -260,8 +266,14 @@ int main(int argc, char **argv) {
 	pid_t pid = fork();
 	REQUIRE(pid != -1);
 	if(pid != 0) {
-		/* parent */
+		/* parent. First log the pid, so tempest knows who to kill: */
+		FILE *f = fdopen(4, "w");
+		REQUIRE(f != NULL);
+		REQUIRE(fprintf(f, "%d", pid) >= 0);
+		REQUIRE(fflush(f) == 0);
+
 		/* Close the remaining file descriptors. */
+		fclose(f);
 		close(1);
 		close(2);
 		close(3);
@@ -276,6 +288,10 @@ int main(int argc, char **argv) {
 		   agent in the child, and reaping processes in the parent. We can't have the
 		   agent do this itself, since it's written in go and the runtime does weird
 		   things with clone(). */
+		REQUIRE(getpid() == 1);
+
+		/* First, close fd #4; that's for the parent to use to log our external pid: */
+		close(4);
 
 		/* NOTE: This block is adapted from the code at http://ewontfix.com/14/. Which is
 		   copyright (c) Rich Felker, 2014. The following (standard MIT) license applies:
@@ -297,7 +313,6 @@ int main(int argc, char **argv) {
 		   AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 		   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-
 		/* First, make sure something like SIGCHLD doesn't kill us: */
 		sigset_t set;
 		int status;
@@ -313,10 +328,7 @@ int main(int argc, char **argv) {
 			close(3);
 			close(agent_fd);
 
-			/* We *should* be pid 1 in the new pid namespace: */
-			REQUIRE(getpid() == 1);
-
-			/* So start acting like init and reap processes: */
+			/* ...and start acting like init and reap processes: */
 			while(true) {
 				pid_t reaped_pid = wait(&status);
 				if(reaped_pid == pid) {

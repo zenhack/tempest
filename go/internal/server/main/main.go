@@ -1,7 +1,6 @@
 package servermain
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -35,8 +34,7 @@ func Main() {
 	lg.Infof("Listening on %v", listenAddr)
 	httpSrv := &http.Server{Addr: listenAddr}
 	go monitorSignals(httpSrv)
-	fmt.Println(httpSrv.ListenAndServe())
-	os.Exit(1) // Only reachable if ListenAndServe() errors.
+	panic(httpSrv.ListenAndServe())
 }
 
 func monitorSignals(srv *http.Server) {
