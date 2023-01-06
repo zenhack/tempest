@@ -1,4 +1,5 @@
 This repository contains an experimental replacement for [Sandstorm][1].
+See the [Blog Post][2].
 
 Currently, most of the sandbox setup code is built, and tempest
 is capable of spawning sandstorm apps and plumbing http traffic to them
@@ -119,3 +120,4 @@ offer iframes and anything that uses sandstorm specific APIs will not
 work currently.
 
 [1]: https://sandstorm.io
+[2]: https://zenhack.net/2023/01/05/introducing-tempest.html
