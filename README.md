@@ -120,4 +120,4 @@ offer iframes and anything that uses sandstorm specific APIs will not
 work currently.
 
 [1]: https://sandstorm.io
-[2]: https://zenhack.net/2023/01/05/introducing-tempest.html
+[2]: https://zenhack.net/2023/01/06/introducing-tempest.html
