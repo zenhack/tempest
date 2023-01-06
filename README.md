@@ -43,18 +43,18 @@ make
 Then run `make install` to install tempest system wide.
 
 Tip: you can configure tempest to share a grain/app storage
-directory with a legacy sandstorm system by passing
+directory with a sandstorm system by passing
 `--localstatedir=/opt/sandstorm/var` to `./configure`.  In addition to
-the files used by legacy sandstorm, `tempest` will create a
-couple extra things underneath that path, namely:
+the files used by sandstorm, `tempest` will create a couple extra things
+underneath that path, namely:
 
 - an extra directory at `sandstorm/mnt`
 - a sqlite3 database at `sandstorm/sandstorm.sqlite3`
 
-# Importing data from legacy sandstorm
+# Importing data from sandstorm
 
-Tempest comes with a tool to import some data from a legacy
-sandstorm installation's database; after running `make`, there will be
+Tempest comes with a tool to import some data from a sandstorm
+installation's database; after running `make`, there will be
 an executable at `_build/sandstorm-import-tool`. On a typical sandstorm
 server you can export the contents of the database via:
 
@@ -72,8 +72,8 @@ You can then import the snapshot into tempest via:
 ./_build/sandstorm-import-tool --snapshot-dir /path/to/snapshot import
 ```
 
-For some development, it can be useful to export & import from legacy
-sandstorm frequently. Therefore, we have a Makefile target for this:
+For some development, it can be useful to export & import from sandstorm
+frequently. Therefore, we have a Makefile target for this:
 
 ```
 sudo make export-import
@@ -89,7 +89,7 @@ At present, tempest has no user interface, and no way to install
 apps or create grains; to experiment with it you must separately arrange
 a suitable grain storage directory and populate the database. The easiest
 way to do this is to point it at an existing sandstorm installation, and
-import database info using `sandstsorm-legacy-tool`, per above.
+import database info using `sandstsorm-import-tool`, per above.
 
 `tempest` should be run as the user and group chosen by the via
 the `--user` and --group` flags to `./configure` (by default both
