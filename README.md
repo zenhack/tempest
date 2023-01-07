@@ -36,20 +36,20 @@ need to supply the paths to the repositories checked out above:
 ```
 ./configure \
     --with-go-capnp=../deps/go-capnproto2 \
-    --with-go-sandstorm=../deps/go.sandstorm
+    --with-go-sandstorm=../deps/go.sandstorm \
+    --localstatedir=/opt/sandstorm/var
 make
 ```
 
-Then run `make install` to install tempest system wide.
-
-Tip: you can configure tempest to share a grain/app storage
-directory with a sandstorm system by passing
-`--localstatedir=/opt/sandstorm/var` to `./configure`.  In addition to
+Note: this will also configure tempest to share a grain/app storage
+directory with a sandstorm system.  In addition to
 the files used by sandstorm, `tempest` will create a couple extra things
 underneath that path, namely:
 
 - an extra directory at `sandstorm/mnt`
 - a sqlite3 database at `sandstorm/sandstorm.sqlite3`
+
+Then run `make install` to install tempest system wide.
 
 # Importing data from sandstorm
 
@@ -59,7 +59,8 @@ an executable at `_build/sandstorm-import-tool`. On a typical sandstorm
 server you can export the contents of the database via:
 
 ```
-./_build/sandstorm-import-tool --snapshot-dir /desired/path/to/snapshot export
+mkdir ../sandstormexport
+./_build/sandstorm-import-tool --snapshot-dir ../sandstormexport export
 ```
 
 If your sandstorm installation is in a non-standard path or mongoDB is
@@ -69,7 +70,7 @@ options; see `sandstorm-import-tool --help` to see the full list.
 You can then import the snapshot into tempest via:
 
 ```
-./_build/sandstorm-import-tool --snapshot-dir /path/to/snapshot import
+./_build/sandstorm-import-tool --snapshot-dir ../sandstormexport import
 ```
 
 For some development, it can be useful to export & import from sandstorm
@@ -96,7 +97,7 @@ the `--user` and --group` flags to `./configure` (by default both
 `sandstorm`).  The easiest way to do this is to run as root:
 
 ```
-sudo -u sandstorm -g sandstorm /path/to/tempest
+sudo -u sandstorm -g sandstorm ./_build/tempest
 ```
 
 For development purposes, the Makefile includes a `dev` target that will
