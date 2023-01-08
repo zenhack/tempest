@@ -32,6 +32,10 @@
 	--success-bgcolor: var(--green-6);
 	--warning-bgcolor: var(--yellow-6);
 
+	/* will change this later, but right now I just need something more
+	 * visible than blue: */
+	--topbar-link-color: var(--yellow-6);
+
 	--topbar-bgcolor: var(--grey-1);
 	--topbar-bgcolor-hover: var(--grey-6);
 	--topbar-bgcolor-active: var(--grey-8);
@@ -66,11 +70,19 @@ body {
 	background-color: var(--topbar-bgcolor);
 	color: var(--topbar-color);
 }
+.main-ui__topbar a {
+	color: var(--topbar-link-color);
+}
 
 .main-ui__sidebar {
 	/* XXX: either rename --topbar-* or use a different variable here. */
 	background-color: var(--topbar-bgcolor);
 	color: var(--topbar-color);
+}
+
+.main-ui__sidebar a {
+	/* XXX: either rename --topbar-* or use a different variable here. */
+	color: var(--topbar-link-color);
 }
 
 .main-ui__grain-iframe {
