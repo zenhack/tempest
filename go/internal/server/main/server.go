@@ -30,7 +30,11 @@ type webSessionParams struct {
 }
 
 func (p *webSessionParams) FromRequest(req *http.Request) {
-	p.BasePath = req.URL.Scheme + "://" + req.URL.Host
+	p.BasePath = "http"
+	if req.TLS != nil {
+		p.BasePath += "s"
+	}
+	p.BasePath += "://" + req.Host
 	p.UserAgent = req.Header.Get("User-Agent")
 	p.AcceptableLanguages = strings.Split(
 		req.Header.Get("Accept-Language"),
@@ -157,8 +161,8 @@ func (s *server) Handler() http.Handler {
 					userSessionId: string(sess.SessionId),
 					grainId:       sess.GrainId,
 
-					basePath:        wsp.BasePath,
-					userAgent:       wsp.UserAgent,
+					basePath:            wsp.BasePath,
+					userAgent:           wsp.UserAgent,
 					acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
 				}
 				gs, ok := s.lk.grainSessions[key]
