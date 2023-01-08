@@ -76,11 +76,11 @@
 #include <sys/prctl.h>
 
 #define SANDSTORM_STATE   LOCALSTATEDIR "/sandstorm"
-#define SANDSTORM_LIBEXEC LIBEXECDIR    "/sandstorm"
+#define TEMPEST_LIBEXEC LIBEXECDIR    "/tempest"
 
 #define IMAGE_DIR     SANDSTORM_STATE   "/apps"
 #define SANDBOX_DIR   SANDSTORM_STATE   "/grains"
-#define AGENT_PATH    SANDSTORM_LIBEXEC "/tempest-grain-agent"
+#define AGENT_PATH    TEMPEST_LIBEXEC "/tempest-grain-agent"
 #define CHROOT_MNT    SANDSTORM_STATE   "/mnt"
 
 #define PKG_ID_SIZE 32
