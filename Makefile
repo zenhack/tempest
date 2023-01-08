@@ -8,6 +8,8 @@ update-deps:
 	go get zenhack.net/go/sandstorm
 	go get zenhack.net/go/util
 	go get zenhack.net/go/vdom
+	# and clean up:
+	go mod tidy
 clean:
 	cd c && $(MAKE) clean
 	rm -rf _build

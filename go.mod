@@ -8,7 +8,7 @@ go 1.19
 require go.mongodb.org/mongo-driver v1.10.0
 
 require (
-	capnproto.org/go/capnp/v3 v3.0.0-alpha.17
+	capnproto.org/go/capnp/v3 v3.0.0-alpha.18
 	github.com/apex/log v1.9.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/sys v0.1.0
-	zenhack.net/go/sandstorm v0.0.0-20221230022141-69e05a97f586
+	zenhack.net/go/sandstorm v0.0.0-20230108073559-44f1aeef0f5b
 	zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5
 	zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0
 	zenhack.net/go/websocket-capnp v0.0.0-20221212021612-7ca853314aec

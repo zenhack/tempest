@@ -1,5 +1,5 @@
-capnproto.org/go/capnp/v3 v3.0.0-alpha.17 h1:ikm/GhGmZdAtAAOFLm+RBfTbgEmwzSI3GuKVX1QNk1E=
-capnproto.org/go/capnp/v3 v3.0.0-alpha.17/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.18 h1:58GV9qbCjf2+P/iKwfwB2NLs9jpO85tnMnLp6sbmuXM=
+capnproto.org/go/capnp/v3 v3.0.0-alpha.18/go.mod h1:Dynqh9/LE2Wy7jYd2wIoYgqFwh3hZHCmG7j6/uCWX6c=
 github.com/apex/log v1.9.0 h1:FHtw/xuaM8AgmvDDTI9fiwoAL25Sq2cxojnZICUU8l0=
 github.com/apex/log v1.9.0/go.mod h1:m82fZlWIuiWzWP04XCTXmnX0xRkYYbCdYn8jbJeLBEA=
 github.com/apex/logs v1.0.0/go.mod h1:XzxuLZ5myVHDy9SAmYpamKKRNApGj54PfYLcFrXqDwo=
@@ -126,10 +126,8 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
-zenhack.net/go/sandstorm v0.0.0-20221229025036-bf36e49c929a h1:uIM8iJ+6vWhevLhIa00GxwBJE+kEyXFAor7eHtWbzR0=
-zenhack.net/go/sandstorm v0.0.0-20221229025036-bf36e49c929a/go.mod h1:P5hZMX8qLj6XEhfOQRC3IeZCUbKRG+j6uIuR70K2dXo=
-zenhack.net/go/sandstorm v0.0.0-20221230022141-69e05a97f586 h1:Od0Hnpy8WwDCbm/oV25QkbNCqqKVmyZ9X7eQnzoztCo=
-zenhack.net/go/sandstorm v0.0.0-20221230022141-69e05a97f586/go.mod h1:P5hZMX8qLj6XEhfOQRC3IeZCUbKRG+j6uIuR70K2dXo=
+zenhack.net/go/sandstorm v0.0.0-20230108073559-44f1aeef0f5b h1:SyDS7VjIy8rBo35LghlCVPttCUhOfzQHQTjOQVPlCvg=
+zenhack.net/go/sandstorm v0.0.0-20230108073559-44f1aeef0f5b/go.mod h1:P5hZMX8qLj6XEhfOQRC3IeZCUbKRG+j6uIuR70K2dXo=
 zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5 h1:u/+juAxlCMpZHhD93kmqc4Dcq9zf6NAtUS1mqTJnBw0=
 zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5/go.mod h1:0lafdGg7tDb7RcXASgmJmRbLFLkAxu328+KGIs7icDE=
 zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0 h1:b47/PxX40kcz1D2glkLjSAfDAISRpytnMqOpdsAe4Rk=
