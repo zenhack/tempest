@@ -75,9 +75,11 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 type grainSessionKey struct {
 	userSessionId string
 	grainId       string
-	// TODO: we'll want the ability to have more than one session
-	// per user session, e.g. for powerbox requests, maybe multiple
-	// tabs.
+
+	// Things that go in WebSession.Params.
+	basePath            string
+	userAgent           string
+	acceptableLanguages string
 }
 
 type grainSession struct {
@@ -148,9 +150,16 @@ func (s *server) Handler() http.Handler {
 				}
 				defer unlock()
 
+				var wsp webSessionParams
+				wsp.FromRequest(req)
+
 				key := grainSessionKey{
 					userSessionId: string(sess.SessionId),
 					grainId:       sess.GrainId,
+
+					basePath:        wsp.BasePath,
+					userAgent:       wsp.UserAgent,
+					acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
 				}
 				gs, ok := s.lk.grainSessions[key]
 				if !ok {
@@ -177,8 +186,6 @@ func (s *server) Handler() http.Handler {
 							if err != nil {
 								return err
 							}
-							var wsp webSessionParams
-							wsp.FromRequest(req)
 							wsp.Insert(params)
 							p.SetSessionParams(params.ToPtr())
 							return nil
