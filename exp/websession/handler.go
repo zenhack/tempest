@@ -248,7 +248,7 @@ type hasErrorBody interface {
 
 // populateResponseHeaders fills in the response headers based on the contents of the response.
 func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp websession.WebSession_Response) error {
-	isHttps := req.URL.Scheme == "https"
+	isHttps := req.TLS != nil
 
 	setCookies, err := resp.SetCookies()
 	if err != nil {
