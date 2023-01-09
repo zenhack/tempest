@@ -86,11 +86,11 @@ and fix permissions on the new one.
 
 # Running
 
-At present, tempest has no user interface, and no way to install
-apps or create grains; to experiment with it you must separately arrange
-a suitable grain storage directory and populate the database. The easiest
-way to do this is to point it at an existing sandstorm installation, and
-import database info using `sandstorm-import-tool`, per above.
+At present, tempest has no way to install apps or create grains; to
+experiment with it you must separately arrange a suitable grain storage
+directory and populate the database. The easiest way to do this is to
+point it at an existing sandstorm installation, and import database info
+using `sandstorm-import-tool`, per above.
 
 `tempest` should be run as the user and group chosen by the via
 the `--user` and --group` flags to `./configure` (by default both
