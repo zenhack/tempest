@@ -104,7 +104,7 @@ For development purposes, the Makefile includes a `dev` target that will
 rebuild, reinstall, and then spawn tempest; simply run:
 
 ```
-sudo make dev`
+sudo make dev
 ```
 
 `tempest` will start a web server on port 8000; to connect to the
