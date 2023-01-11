@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 8000, host: 8000 # tempest
-  config.vm.network "forwarded_port", guest: 6090, host: 6090 # legacy sandstorm
+  config.vm.network "forwarded_port", guest: 6090, host: 6090 # sandstorm
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
 
-    # Install legacy sandstorm:
+    # Install sandstorm:
     curl https://install.sandstorm.io/ 2>&1 > ~/install-sandstorm.sh
     bash ~/install-sandstorm.sh -d -e -p 6090
     # Make the vagrant user part of the sandstorm group so that commands like
