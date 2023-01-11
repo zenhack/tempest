@@ -17,26 +17,23 @@ To build tempest, you will need:
 - capnp (command line tool) version 0.8 or later.
 - capnpc-go code generator plugin
 
-You will also need to separately check out the source for go-capnp and
-go.sandstorm:
+You will also need to separately check out the source for go-capnp:
 
 ```
 mkdir ../deps
 cd ../deps
 git clone https://github.com/capnproto/go-capnproto2
-git clone https://github.com/zenhack/go.sandstorm
 cd -
 ```
 
 Then, run the configure script and then `make`. The configure script
 accepts
 most of the same options as typical gnu packages. Additionally you will
-need to supply the paths to the repositories checked out above:
+need to supply the paths to the repository checked out above:
 
 ```
 ./configure \
     --with-go-capnp=../deps/go-capnproto2 \
-    --with-go-sandstorm=../deps/go.sandstorm \
     --localstatedir=/opt/sandstorm/var
 make
 ```

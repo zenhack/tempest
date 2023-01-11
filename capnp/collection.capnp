@@ -6,7 +6,7 @@ using Go = import "/go.capnp";
 $Go.package("collection");
 $Go.import("zenhack.net/go/tempest/capnp/collection");
 
-using Util = import "/util.capnp";
+using Util = import "util.capnp";
 
 interface Pusher(K, V) {
   # A pusher is a write-only refers to a collection with keys of type K and

@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"syscall/js"
 
-	"zenhack.net/go/sandstorm/capnp/util"
+	"zenhack.net/go/tempest/capnp/util"
 )
 
 func initModel() Model {

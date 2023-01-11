@@ -5,7 +5,6 @@ build install dev test-app export-import:
 update-deps:
 	# Update the versions of these in go.mod:
 	go get capnproto.org/go/capnp/v3
-	go get zenhack.net/go/sandstorm
 	go get zenhack.net/go/util
 	go get zenhack.net/go/vdom
 	# and clean up:

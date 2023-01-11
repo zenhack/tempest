@@ -13,7 +13,7 @@ import (
 	"github.com/apex/log"
 	"golang.org/x/sys/unix"
 
-	"zenhack.net/go/sandstorm/capnp/grain"
+	"zenhack.net/go/tempest/capnp/grain"
 	"zenhack.net/go/tempest/go/internal/config"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/util"

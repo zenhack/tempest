@@ -27,9 +27,8 @@ type Config struct {
 	Libexecdir    string
 	Localstatedir string
 
-	WithGoSandstorm string
-	WithGoCapnp     string
-	WithWasmExecJs  string
+	WithGoCapnp    string
+	WithWasmExecJs string
 
 	TinyGo bool
 }
@@ -63,7 +62,6 @@ func (c *Config) ParseFlags(args []string, name string, errorHandling flag.Error
 	fs.StringVar(&c.Localstatedir, "localstatedir", "",
 		`path to store run-time data (default "${PREFIX}/var/lib")`)
 
-	fs.StringVar(&c.WithGoSandstorm, "with-go-sandstorm", "", "path to go.sandstorm source")
 	fs.StringVar(&c.WithGoCapnp, "with-go-capnp", "", "path to go-capnp source")
 	fs.StringVar(&c.WithWasmExecJs, "with-wasm_exec.js", "", "path to wasm_exec.js")
 
@@ -233,7 +231,6 @@ func buildCapnp(r *BuildRecord) {
 				"-o-",
 				"--src-prefix="+d+"/",
 				"-I", c.WithGoCapnp+"/std",
-				"-I", c.WithGoSandstorm+"/capnp",
 				file,
 			)
 			cmd.Stderr = os.Stderr

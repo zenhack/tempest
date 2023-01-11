@@ -13,7 +13,7 @@ using Go = import "/go.capnp";
 $Go.package("external");
 $Go.import("zenhack.net/go/tempest/capnp/external");
 
-using Util = import "/util.capnp";
+using Util = import "util.capnp";
 using Collection = import "collection.capnp";
 
 interface ExternalApi {

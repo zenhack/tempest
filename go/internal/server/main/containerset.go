@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/apex/log"
-	"zenhack.net/go/sandstorm/capnp/grain"
+	"zenhack.net/go/tempest/capnp/grain"
 	"zenhack.net/go/tempest/go/internal/database"
 	"zenhack.net/go/tempest/go/internal/server/container"
 )

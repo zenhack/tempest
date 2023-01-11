@@ -4,7 +4,7 @@ using Go = import "/go.capnp";
 $Go.package("http");
 $Go.import("zenhack.net/go/tempest/capnp/http");
 
-using Util = import "/util.capnp";
+using Util = import "util.capnp";
 
 using Header = Util.KeyValue;
 

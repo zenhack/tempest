@@ -16,7 +16,7 @@ import (
 
 	"capnproto.org/go/capnp/v3"
 	"github.com/apex/log"
-	"zenhack.net/go/sandstorm/capnp/spk"
+	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util"
 )
 
