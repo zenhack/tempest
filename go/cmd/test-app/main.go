@@ -7,7 +7,11 @@ import (
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		log.Printf("Incoming request. method = %v, headers:", req.Method)
+		log.Println("Incoming request.")
+		log.Println("method = ", req.Method)
+		log.Printf("url = %q\n", req.URL)
+		log.Println("Headers:")
+
 		for k, vs := range req.Header {
 			for _, v := range vs {
 				log.Printf("%v: %v", k, v)
