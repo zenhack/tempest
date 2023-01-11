@@ -23,9 +23,9 @@ type Handler struct {
 func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
-		h.doGet(w, req, true)
-	case "HEAD":
 		h.doGet(w, req, false)
+	case "HEAD":
+		h.doGet(w, req, true)
 	default:
 		panic("TODO")
 	}
