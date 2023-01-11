@@ -94,7 +94,6 @@ func (r *responseStreamImpl) Write(ctx context.Context, p util.ByteStream_write)
 	if err := r.waitReady(ctx); err != nil {
 		return err
 	}
-	r.tooLateForExpectSize = true
 	data, err := p.Args().Data()
 	if err != nil {
 		return err
