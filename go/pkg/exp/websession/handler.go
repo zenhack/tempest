@@ -70,18 +70,32 @@ type hasPathContext interface {
 	NewContext() (websession.Context, error)
 }
 
+func makeResponseStream(w http.ResponseWriter) (*responseStreamImpl, util.ByteStream) {
+	srv := newResponseStreamImpl(w)
+	client := util.ByteStream_ServerToClient(srv)
+	return srv, client
+}
+
 // doGet makes a request using the WebSession.get() method.
 func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool) {
 	// TODO: block sending the body when ignoreBody = true
-	responseStreamServer := newResponseStreamImpl(w)
-	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
-
+	srv, client := makeResponseStream(w)
 	respFut, rel := h.Session.Get(req.Context(), func(p websession.WebSession_get_Params) error {
 		p.SetIgnoreBody(ignoreBody)
-		return placePathContext(p, req, responseStreamClient)
+		return placePathContext(p, req, client)
 	})
 	defer rel()
-	relayResponse(w, req, respFut, responseStreamServer)
+	relayResponse(w, req, respFut, srv)
+}
+
+// doDelete makes a request using the WebSession.delete() method.
+func (h Handler) doDelete(w http.ResponseWriter, req *http.Request) {
+	srv, client := makeResponseStream(w)
+	respFut, rel := h.Session.Delete(req.Context(), func(p websession.WebSession_delete_Params) error {
+		return placePathContext(p, req, client)
+	})
+	defer rel()
+	relayResponse(w, req, respFut, srv)
 }
 
 // Handle a streaming post or put request.
@@ -130,8 +144,7 @@ func callNonStreamingPostLike[Params nonStreamingPostLikeParams](
 	req *http.Request,
 	body []byte,
 ) {
-	responseStreamServer := newResponseStreamImpl(w)
-	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
+	srv, client := makeResponseStream(w)
 	respFut, rel := call(req.Context(), func(p Params) error {
 		content, err := p.NewContent()
 		if err != nil {
@@ -140,10 +153,10 @@ func callNonStreamingPostLike[Params nonStreamingPostLikeParams](
 		if err = placeRequestContent(content, req, body); err != nil {
 			return err
 		}
-		return placePathContext(p, req, responseStreamClient)
+		return placePathContext(p, req, client)
 	})
 	defer rel()
-	relayResponse(w, req, respFut, responseStreamServer)
+	relayResponse(w, req, respFut, srv)
 }
 
 // nonStreamingPostLikeParams captures common arguments for WebSession.post, put, and patch.
