@@ -38,7 +38,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
   # application's storage was written and may automatically implement etags based on hashing the
   # content.
 
-  struct Params {
+  struct Params @0xd7051b9757f6b096 {
     # Startup params for web sessions.  See `UiView.newSession()`.
 
     basePath @0 :Text;
@@ -107,7 +107,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
   options @16 (path :Text, context :Context) -> Options;
   # OPTIONS request.
 
-  struct Context {
+  struct Context @0xf5cae52becabc767 {
     # Additional per-request context.
 
     cookies @0 :List(Util.KeyValue);
@@ -174,7 +174,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     ];
   }
 
-  struct PostContent {
+  struct PostContent @0xb7d82eac416ab63e {
     # TODO(apibump): Rename this to just `Content` or maybe `RequestContent`.
 
     mimeType @0 :Text;
@@ -190,14 +190,14 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     encoding @2 :Text;  # Content-Encoding header (optional).
   }
 
-  struct ETag {
+  struct ETag @0xd22c0be5b9c16558 {
     value @0 :Text;  # does not include quotes
     weak @1 :Bool;
     # denotes that the resource may not be byte-for-byte identical, but is
     # semantically equivalent
   }
 
-  struct Cookie {
+  struct Cookie @0xa87d65bed9b60243 {
     # Strings here must not contain ';' nor ','. Also, `name` cannot contain '='.
 
     name @0 :Text;
@@ -213,7 +213,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     # We don't include "secure" because the platform automatically forces all cookies to be secure.
   }
 
-  struct AcceptedType {
+  struct AcceptedType @0xaaf9021b627cc1f9 {
     # In the accept header, there is a list of these elements.
     # The qValue is optional and defaults to 1.
     #
@@ -223,7 +223,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     qValue @1 :Float32 = 1;
   }
 
-  struct AcceptedEncoding {
+  struct AcceptedEncoding @0xbda585bffe1dc7e8 {
     # The Accept-Encoding header contains a list of valid content codings.
     # Each content coding could be "*", indicating an arbitrary encoding.
     # Each content coding comes with a qValue, defaulting to 1.
@@ -233,11 +233,11 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     qValue @1 :Float32 = 1;
   }
 
-  struct Response {
+  struct Response @0x8193ac6cb5429c83 {
     setCookies @0 :List(Cookie);
     cachePolicy @16 :CachePolicy;
 
-    enum SuccessCode {
+    enum SuccessCode @0x82130007ccd2888f {
       # 2xx-level status codes that we allow an app to return.
       #
       # We do not permit arbitrary status codes because some have semantic meaning that could
@@ -265,7 +265,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
       #   Others:  Not standard.
     }
 
-    enum ClientErrorCode {
+    enum ClientErrorCode @0x8ea31bdb4c044f01 {
       # 4xx-level status codes that we allow an app to return.
       #
       # It's unclear whether status codes other than 400, 403, and 404 have any real utility;
@@ -428,7 +428,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
       value @1 :Text;
     }
 
-    struct ErrorBody {
+    struct ErrorBody @0x9497e63b399a2c01 {
       data @0 :Data;
       encoding @1 :Text;  # Content-Encoding header (optional).
       language @2 :Text;  # Content-Language header (optional).
@@ -449,7 +449,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
 
   }
 
-  interface RequestStream extends(Util.ByteStream) {
+  interface RequestStream @0x99ffc2f3f69a6a9f extends(Util.ByteStream) {
     # A streaming request. The request body is streamed in via the methods of ByteStream.
 
     getResponse @0 () -> Response;
@@ -469,7 +469,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     # dropped.
   }
 
-  interface WebSocketStream {
+  interface WebSocketStream @0xf001fc1d5e574a07 {
     sendBytes @0 (message :Data $Go.name("msg")) -> stream;
     # Send some bytes.  WARNING:  At present, we just send the raw bytes of the WebSocket protocol.
     # In the future, this will be replaced with a `sendMessage()` method that sends one WebSocket
@@ -478,8 +478,8 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     # TODO(apibump): Send whole WebSocket messages.
   }
 
-  struct CachePolicy {
-    enum Scope {
+  struct CachePolicy @0xb37b21e300864885 {
+    enum Scope @0x81535505f60de028 {
       # Defines the scope in which caching is allowed. For security reasons, the resource MUST NOT
       # be stored in a cache with a broader scope, even if it is never actually served from that
       # cache.
@@ -528,14 +528,14 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     # of these inputs.
   }
 
-  struct Options {
+  struct Options @0xe9ff06beec4e73d6 {
     davClass1 @0 :Bool = false;
     davClass2 @1 :Bool = false;
     davClass3 @2 :Bool = false;
     davExtensions @3 :List(Text);
   }
 
-  enum PropfindDepth {
+  enum PropfindDepth @0xb39cc44599b3a41b {
     infinity @0 $Cxx.name("infinity_");  # INFINITY is a macro in C
     zero @1;
     one @2;
