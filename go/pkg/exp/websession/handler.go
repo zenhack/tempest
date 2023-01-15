@@ -293,7 +293,7 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 	wHeaders := w.Header()
 	for i := 0; i < additionalHeaders.Len(); i++ {
 		item := additionalHeaders.At(i)
-		name, err := item.Name()
+		name, err := item.Key()
 		if err != nil {
 			return err
 		}
@@ -514,7 +514,7 @@ func populateContext(wsCtx websession.WebSession_Context, req *http.Request, res
 	for k, vs := range additionalHeaders {
 		for _, v := range vs {
 			h := dstAdditionalHeaders.At(i)
-			if err := h.SetName(k); err != nil {
+			if err := h.SetKey(k); err != nil {
 				return err
 			}
 			if err := h.SetValue(v); err != nil {

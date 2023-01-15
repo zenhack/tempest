@@ -138,14 +138,9 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
       matchesNoneOf @7 :List(ETag);  # If-None-Match
     }
 
-    additionalHeaders @3 :List(Header);
+    additionalHeaders @3 :List(Util.KeyValue);
     # Additional headers present in the request. Only whitelisted headers are
     # permitted.
-
-    struct Header {
-      name @0 :Text;  # lower-cased name
-      value @1 :Text;
-    }
 
     const headerWhitelist :List(Text) = [
       # Non-standard request headers which are whitelisted for backwards-compatibility
@@ -409,14 +404,9 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
       #   the app?
     }
 
-    additionalHeaders @20 :List(Header);
+    additionalHeaders @20 :List(Util.KeyValue);
     # Additional headers present in the reponse. Only whitelisted headers are
     # permitted.
-
-    struct Header {
-      name @0 :Text;  # lower-cased name
-      value @1 :Text;
-    }
 
     struct ErrorBody @0x9497e63b399a2c01 {
       data @0 :Data;
