@@ -110,7 +110,7 @@ func (t testWebSessionImpl) Get(ctx context.Context, p websession.WebSession_get
 
 	response.SetContent()
 	content := response.Content()
-	content.SetStatusCode(websession.WebSession_Response_SuccessCode_ok)
+	content.SetStatusCode(websession.SuccessCode_ok)
 	content.SetMimeType("text/plain")
 
 	body := content.Body()
