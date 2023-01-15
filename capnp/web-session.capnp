@@ -61,10 +61,10 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
   # If `ignoreBody` is true, then the caller intends to ignore any content body returned. The
   # caller may choose to return an empty body. (This is used e.g. for HEAD requests.)
 
-  post @1 (path :Text, content :PostContent, context :Context) -> Response;
-  put @3 (path :Text, content :PutContent, context :Context) -> Response;
+  post @1 (path :Text, content :RequestContent, context :Context) -> Response;
+  put @3 (path :Text, content :RequestContent, context :Context) -> Response;
   delete @4 (path :Text, context :Context) -> Response;
-  patch @17 (path :Text, content :PostContent, context :Context) -> Response;
+  patch @17 (path :Text, content :RequestContent, context :Context) -> Response;
 
   postStreaming @5 (path :Text, mimeType :Text, context :Context, encoding :Text)
       -> (stream :RequestStream);
@@ -85,14 +85,14 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
 
   propfind @7 (path :Text, xmlContent :Text, depth :PropfindDepth, context :Context) -> Response;
   proppatch @8 (path :Text, xmlContent :Text, context :Context) -> Response;
-  mkcol @9 (path :Text, content :PostContent, context :Context) -> Response;
+  mkcol @9 (path :Text, content :RequestContent, context :Context) -> Response;
   copy @10 (path :Text, destination :Text, noOverwrite :Bool,
             shallow :Bool, context :Context) -> Response;
   move @11 (path :Text, destination :Text, noOverwrite :Bool, context :Context) -> Response;
   lock @12 (path :Text, xmlContent :Text, shallow :Bool, context :Context) -> Response;
   unlock @13 (path :Text, lockToken :Text, context :Context) -> Response;
   acl @14 (path :Text, xmlContent :Text, context :Context) -> Response;
-  report @15 (path :Text, content :PostContent, context :Context) -> Response;
+  report @15 (path :Text, content :RequestContent, context :Context) -> Response;
   # WebDAV methods
   #
   # "destination" is a *path*, but *not* a URI -- the origin is stripped, and there is no leading
@@ -174,17 +174,7 @@ interface WebSession @0xa50711a14d35a8ce extends(Grain.UiSession) {
     ];
   }
 
-  struct PostContent @0xb7d82eac416ab63e {
-    # TODO(apibump): Rename this to just `Content` or maybe `RequestContent`.
-
-    mimeType @0 :Text;
-    content @1 :Data;
-    encoding @2 :Text;  # Content-Encoding header (optional).
-  }
-
-  struct PutContent {
-    # TODO(apibump): Remove this and replace it with `PostContent` (renamed to `Content`).
-
+  struct RequestContent @0xb7d82eac416ab63e {
     mimeType @0 :Text;
     content @1 :Data;
     encoding @2 :Text;  # Content-Encoding header (optional).
