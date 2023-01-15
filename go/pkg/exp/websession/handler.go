@@ -534,17 +534,19 @@ func populateHasContentHeaders(dst http.Header, src hasContent) error {
 		}
 		dst.Set("Content-Language", v)
 	}
-	contentType, err := src.MimeType()
-	if err != nil {
-		return err
+	if src.HasMimeType() {
+		contentType, err := src.MimeType()
+		if err != nil {
+			return err
+		}
+		// parse & re-format to ensure well-formedness:
+		mimeType, params, err := mime.ParseMediaType(contentType)
+		if err != nil {
+			return err
+		}
+		contentType = mime.FormatMediaType(mimeType, params)
+		dst.Set("Content-Type", contentType)
 	}
-	// parse & re-format to ensure well-formedness:
-	mimeType, params, err := mime.ParseMediaType(contentType)
-	if err != nil {
-		return err
-	}
-	contentType = mime.FormatMediaType(mimeType, params)
-	dst.Set("Content-Type", contentType)
 	return nil
 }
 
@@ -553,6 +555,7 @@ type hasContent interface {
 	Encoding() (string, error)
 	HasLanguage() bool
 	Language() (string, error)
+	HasMimeType() bool
 	MimeType() (string, error)
 }
 
