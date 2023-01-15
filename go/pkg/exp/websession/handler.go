@@ -81,17 +81,7 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 		return placePathContext(p, req, responseStreamClient)
 	})
 	defer rel()
-	resp, err := respFut.Struct()
-	if err != nil {
-		replyErr(w, err)
-		return
-	}
-	relayResponse(
-		w,
-		req,
-		resp,
-		responseStreamServer,
-	)
+	relayResponse(w, req, respFut, responseStreamServer)
 }
 
 // Handle a streaming post or put request.
@@ -153,17 +143,7 @@ func callNonStreamingPostLike[Params nonStreamingPostLikeParams](
 		return placePathContext(p, req, responseStreamClient)
 	})
 	defer rel()
-	resp, err := respFut.Struct()
-	if err != nil {
-		replyErr(w, err)
-		return
-	}
-	relayResponse(
-		w,
-		req,
-		resp,
-		responseStreamServer,
-	)
+	relayResponse(w, req, respFut, responseStreamServer)
 }
 
 // nonStreamingPostLikeParams captures common arguments for WebSession.post, put, and patch.
@@ -201,9 +181,15 @@ func placeRequestContent(
 func relayResponse(
 	w http.ResponseWriter,
 	req *http.Request,
-	resp websession.Response,
+	respFut websession.Response_Future,
 	responseStream *responseStreamImpl,
 ) {
+	resp, err := respFut.Struct()
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+
 	status, err := responseStatus(req, resp)
 	if err != nil {
 		replyErr(w, err)
