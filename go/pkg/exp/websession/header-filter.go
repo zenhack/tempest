@@ -12,10 +12,10 @@ import (
 
 var (
 	// ContextHeaderFilter is a header filter for WebSession.Context.additionalHeaders
-	ContextHeaderFilter = util.Must(ParseHeaderWhitelist(websession.WebSession_Context_headerWhitelist))
+	ContextHeaderFilter = util.Must(ParseHeaderWhitelist(websession.Context_headerWhitelist))
 
 	// ResponseHeaderFilter is a header filter for WebSession.Response.additionalHeaders
-	ResponseHeaderFilter = util.Must(ParseHeaderWhitelist(websession.WebSession_Response_headerWhitelist))
+	ResponseHeaderFilter = util.Must(ParseHeaderWhitelist(websession.Response_headerWhitelist))
 )
 
 // A HeaderFilter filters headers based on an allow list.

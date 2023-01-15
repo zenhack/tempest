@@ -42,8 +42,8 @@ func (p *webSessionParams) FromRequest(req *http.Request) {
 	)
 }
 
-func (p *webSessionParams) Insert(into websession.WebSession_Params) error {
-	return pogs.Insert(websession.WebSession_Params_TypeID, capnp.Struct(into), p)
+func (p *webSessionParams) Insert(into websession.Params) error {
+	return pogs.Insert(websession.Params_TypeID, capnp.Struct(into), p)
 }
 
 // A server encapsulates the state of a running server.
@@ -186,7 +186,7 @@ func (s *server) Handler() http.Handler {
 							p.SetSessionType(websession.WebSession_TypeID)
 							p.SetContext(sessionCtx)
 							p.SetTabId([]byte("TODO"))
-							params, err := websession.NewWebSession_Params(p.Segment())
+							params, err := websession.NewParams(p.Segment())
 							if err != nil {
 								return err
 							}

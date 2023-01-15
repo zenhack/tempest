@@ -74,13 +74,13 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 
 // relayResponse relays a response received from a WebSession back to an http.ResponseWriter.
 //
-// responseStream should be the value of WebSession.Context.responseStream that was passed in
+// responseStream should be the value of websession.Context.responseStream that was passed in
 // to the request.
 func relayResponse(
 	ctx context.Context,
 	w http.ResponseWriter,
 	req *http.Request,
-	resp websession.WebSession_Response,
+	resp websession.Response,
 	responseStream *responseStreamImpl,
 ) {
 	status, err := responseStatus(req, resp)
@@ -90,10 +90,10 @@ func relayResponse(
 		return
 	}
 
-	if resp.Which() == websession.WebSession_Response_Which_content {
+	if resp.Which() == websession.Response_Which_content {
 		content := resp.Content()
 		body := content.Body()
-		if body.Which() == websession.WebSession_Response_content_body_Which_stream {
+		if body.Which() == websession.Response_content_body_Which_stream {
 			defer body.Stream().Release()
 			responseStream.used = true
 
@@ -137,29 +137,29 @@ func relayResponse(
 
 // responseStatus returns the correct HTTP status code for the the response.
 // req is the original request that this is a response to.
-func responseStatus(req *http.Request, resp websession.WebSession_Response) (int, error) {
+func responseStatus(req *http.Request, resp websession.Response) (int, error) {
 	switch resp.Which() {
-	case websession.WebSession_Response_Which_content:
+	case websession.Response_Which_content:
 		successCode := resp.Content().StatusCode()
 		status, ok := successCodeStatuses[successCode]
 		if ok {
 			return status, nil
 		}
 		return 0, fmt.Errorf("Unknown success code enumerant: %v", successCode)
-	case websession.WebSession_Response_Which_noContent:
+	case websession.Response_Which_noContent:
 		if resp.NoContent().ShouldResetForm() {
 			return http.StatusResetContent, nil
 		} else {
 			return http.StatusNoContent, nil
 		}
-	case websession.WebSession_Response_Which_preconditionFailed:
+	case websession.Response_Which_preconditionFailed:
 		if (req.Method == "GET" || req.Method == "HEAD") &&
 			req.Header.Get("If-None-Match") != "" {
 
 			return http.StatusNotModified, nil
 		}
 		return http.StatusPreconditionFailed, nil
-	case websession.WebSession_Response_Which_redirect:
+	case websession.Response_Which_redirect:
 		r := resp.Redirect()
 		switch {
 		case r.IsPermanent() && r.SwitchToGet():
@@ -171,14 +171,14 @@ func responseStatus(req *http.Request, resp websession.WebSession_Response) (int
 		default: // !r.IsPermanent() && !r.SwitchToGet():
 			return http.StatusTemporaryRedirect, nil
 		}
-	case websession.WebSession_Response_Which_clientError:
+	case websession.Response_Which_clientError:
 		errorCode := resp.ClientError().StatusCode()
 		status, ok := clientErrorCodeStatuses[errorCode]
 		if ok {
 			return status, nil
 		}
 		return 0, fmt.Errorf("Unknown error code enumerant: %v", errorCode)
-	case websession.WebSession_Response_Which_serverError:
+	case websession.Response_Which_serverError:
 		return http.StatusInternalServerError, nil
 	default:
 		return 0, fmt.Errorf("Unknown response variant: %v", resp.Which())
@@ -187,27 +187,27 @@ func responseStatus(req *http.Request, resp websession.WebSession_Response) (int
 
 // Return a []byte with the body of the response. This will return an error for
 // streaming responses.
-func responseBodyBytes(resp websession.WebSession_Response) ([]byte, error) {
+func responseBodyBytes(resp websession.Response) ([]byte, error) {
 	switch resp.Which() {
-	case websession.WebSession_Response_Which_content:
+	case websession.Response_Which_content:
 		body := resp.Content().Body()
 		switch body.Which() {
-		case websession.WebSession_Response_content_body_Which_bytes:
+		case websession.Response_content_body_Which_bytes:
 			return body.Bytes()
-		case websession.WebSession_Response_content_body_Which_stream:
+		case websession.Response_content_body_Which_stream:
 			return nil, fmt.Errorf("Can't get []byte for streaming body")
 		default:
 			return nil, fmt.Errorf("Unknown body variant: %v", body.Which())
 		}
-	case websession.WebSession_Response_Which_noContent:
+	case websession.Response_Which_noContent:
 		return nil, nil
-	case websession.WebSession_Response_Which_preconditionFailed:
+	case websession.Response_Which_preconditionFailed:
 		return nil, nil
-	case websession.WebSession_Response_Which_redirect:
+	case websession.Response_Which_redirect:
 		return nil, nil
-	case websession.WebSession_Response_Which_clientError:
+	case websession.Response_Which_clientError:
 		return errorBodyBytes(resp.ClientError())
-	case websession.WebSession_Response_Which_serverError:
+	case websession.Response_Which_serverError:
 		return errorBodyBytes(resp.ServerError())
 	default:
 		return nil, fmt.Errorf("Unknown response variant: %v", resp.Which())
@@ -242,12 +242,12 @@ func populateErrorBodyHeaders(dst http.Header, src hasErrorBody) error {
 
 type hasErrorBody interface {
 	DescriptionHtml() (string, error)
-	NonHtmlBody() (websession.WebSession_Response_ErrorBody, error)
+	NonHtmlBody() (websession.ErrorBody, error)
 	HasNonHtmlBody() bool
 }
 
 // populateResponseHeaders fills in the response headers based on the contents of the response.
-func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp websession.WebSession_Response) error {
+func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp websession.Response) error {
 	isHttps := req.TLS != nil
 
 	setCookies, err := resp.SetCookies()
@@ -276,10 +276,10 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 		}
 		expires := setCookie.Expires()
 		switch expires.Which() {
-		case websession.WebSession_Cookie_expires_Which_none:
-		case websession.WebSession_Cookie_expires_Which_absolute:
+		case websession.Cookie_expires_Which_none:
+		case websession.Cookie_expires_Which_absolute:
 			cookie.Expires = time.Unix(expires.Absolute(), 0)
-		case websession.WebSession_Cookie_expires_Which_relative:
+		case websession.Cookie_expires_Which_relative:
 			cookie.Expires = time.Now().Add(time.Duration(expires.Relative()) * time.Second)
 		}
 		http.SetCookie(w, cookie)
@@ -308,9 +308,9 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 	}
 
 	switch resp.Which() {
-	case websession.WebSession_Response_Which_content:
+	case websession.Response_Which_content:
 		return populateContentResponseHeaders(wHeaders, resp.Content())
-	case websession.WebSession_Response_Which_noContent:
+	case websession.Response_Which_noContent:
 		nc := resp.NoContent()
 		if nc.HasETag() {
 			etag, err := nc.ETag()
@@ -320,7 +320,7 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 			return setETag(wHeaders, etag)
 		}
 		return nil
-	case websession.WebSession_Response_Which_preconditionFailed:
+	case websession.Response_Which_preconditionFailed:
 		pf := resp.PreconditionFailed()
 		if pf.HasMatchingETag() {
 			etag, err := pf.MatchingETag()
@@ -330,23 +330,23 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 			return setETag(wHeaders, etag)
 		}
 		return nil
-	case websession.WebSession_Response_Which_redirect:
+	case websession.Response_Which_redirect:
 		loc, err := resp.Redirect().Location()
 		if err != nil {
 			return err
 		}
 		wHeaders.Set("Location", loc)
 		return nil
-	case websession.WebSession_Response_Which_clientError:
+	case websession.Response_Which_clientError:
 		return populateErrorBodyHeaders(w.Header(), resp.ClientError())
-	case websession.WebSession_Response_Which_serverError:
+	case websession.Response_Which_serverError:
 		return populateErrorBodyHeaders(w.Header(), resp.ServerError())
 	default:
 		return fmt.Errorf("Unknown response variant: %v", resp.Which())
 	}
 }
 
-func setETag(h http.Header, etag websession.WebSession_ETag) error {
+func setETag(h http.Header, etag websession.ETag) error {
 	s, err := eTagStr(etag)
 	if err != nil {
 		return err
@@ -355,7 +355,7 @@ func setETag(h http.Header, etag websession.WebSession_ETag) error {
 	return nil
 }
 
-func eTagStr(etag websession.WebSession_ETag) (string, error) {
+func eTagStr(etag websession.ETag) (string, error) {
 	value, err := etag.Value()
 	if err != nil {
 		return "", err
@@ -367,15 +367,15 @@ func eTagStr(etag websession.WebSession_ETag) (string, error) {
 	return "\"" + value + "\"", nil
 }
 
-func populateContentResponseHeaders(h http.Header, r websession.WebSession_Response_content) error {
+func populateContentResponseHeaders(h http.Header, r websession.Response_content) error {
 	if err := populateHasContentHeaders(h, r); err != nil {
 		return err
 	}
 	disposition := r.Disposition()
 	switch disposition.Which() {
-	case websession.WebSession_Response_content_disposition_Which_normal:
+	case websession.Response_content_disposition_Which_normal:
 		// Default
-	case websession.WebSession_Response_content_disposition_Which_download:
+	case websession.Response_content_disposition_Which_download:
 		filename, err := disposition.Download()
 		if err != nil {
 			return err
@@ -453,7 +453,7 @@ func replyErr(w http.ResponseWriter, err error) {
 
 // populateContext populates a websession context based on the request, using the supplied
 // value for the responseStream field. The reference to responseStream is stolen.
-func populateContext(wsCtx websession.WebSession_Context, req *http.Request, responseStream util.ByteStream) error {
+func populateContext(wsCtx websession.Context, req *http.Request, responseStream util.ByteStream) error {
 	// Copy in cookies
 	reqCookies := req.Cookies()
 	wsCookies, err := wsCtx.NewCookies(int32(len(reqCookies)))

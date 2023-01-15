@@ -24,7 +24,7 @@ using Supervisor = import "supervisor.capnp".Supervisor;
 using SandstormCore = import "supervisor.capnp".SandstormCore;
 using GrainInfo = import "grain.capnp".GrainInfo;
 
-using WebSession = import "web-session.capnp".WebSession;
+using WebSession = import "web-session.capnp";
 using ApiSession = import "api-session.capnp".ApiSession;
 
 interface Backend {
@@ -119,7 +119,7 @@ interface GatewayRouter {
   # it does not know how to handle directly.
 
   openUiSession @0 (sessionCookie :Text, params :WebSession.Params)
-                -> (session :WebSession, loadingIndicator :Util.Handle, parentOrigin :Text);
+                -> (session :WebSession.WebSession, loadingIndicator :Util.Handle, parentOrigin :Text);
   # Given a sandstorm-sid cookie value for a UI session, find the WebSession to handle requests.
   #
   # The gateway may cache the session capability, associated with this cookie value, for as long
