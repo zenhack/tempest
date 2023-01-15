@@ -87,7 +87,6 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 		return
 	}
 	relayResponse(
-		req.Context(),
 		w,
 		req,
 		resp,
@@ -160,7 +159,6 @@ func callNonStreamingPostLike[Params nonStreamingPostLikeParams](
 		return
 	}
 	relayResponse(
-		req.Context(),
 		w,
 		req,
 		resp,
@@ -201,7 +199,6 @@ func placeRequestContent(
 // responseStream should be the value of websession.Context.responseStream that was passed in
 // to the request.
 func relayResponse(
-	ctx context.Context,
 	w http.ResponseWriter,
 	req *http.Request,
 	resp websession.Response,
@@ -222,7 +219,7 @@ func relayResponse(
 			responseStream.used = true
 
 			select {
-			case <-ctx.Done():
+			case <-req.Context().Done():
 				return
 			case size, ok := <-responseStream.size:
 				if ok {
@@ -236,7 +233,7 @@ func relayResponse(
 			w.WriteHeader(status)
 			close(responseStream.ready)
 			select {
-			case <-ctx.Done():
+			case <-req.Context().Done():
 			case <-responseStream.done:
 			case <-responseStream.shutdown:
 			}
