@@ -3,12 +3,14 @@ package websession
 import (
 	"context"
 	"fmt"
+	"io"
 	"mime"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/util"
 	websession "zenhack.net/go/tempest/capnp/web-session"
 )
@@ -19,6 +21,11 @@ type Handler struct {
 	Session websession.WebSession
 }
 
+// maxNonStreamingBodySize is the maximum size (in bytes) of a request body that we
+// will read into memory; anything larger than this must be serviced with one of
+// the streaing methods.
+const maxNonStreamingBodySize = 1 << 16
+
 // ServeHTTP implements http.Handler.ServeHTTP
 func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
@@ -26,9 +33,41 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.doGet(w, req, false)
 	case "HEAD":
 		h.doGet(w, req, true)
+	case "POST", "PUT":
+		length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+		if err != nil || length < 0 || length > maxNonStreamingBodySize {
+			h.doStreamingPostLike(w, req)
+			return
+		}
+		fallthrough
+	case "PATCH":
+		h.doNonStreamingPostLike(w, req)
 	default:
 		panic("TODO")
 	}
+}
+
+// placePathContext fills in the path and context fields of p based on the other arguments.
+func placePathContext(p hasPathContext, req *http.Request, responseStream util.ByteStream) error {
+	if !strings.HasPrefix(req.RequestURI, "/") {
+		return fmt.Errorf("Error: malformed RequestURI (no leading slash): %q", req.RequestURI)
+	}
+	path := req.RequestURI[1:]
+	if err := p.SetPath(path); err != nil {
+		return err
+	}
+	wsCtx, err := p.NewContext()
+	if err != nil {
+		return err
+	}
+
+	return placeContext(wsCtx, req, responseStream)
+}
+
+// hasPathContext captures the common path and context fields for many WebSession methods.
+type hasPathContext interface {
+	SetPath(string) error
+	NewContext() (websession.Context, error)
 }
 
 // doGet makes a request using the WebSession.get() method.
@@ -38,24 +77,8 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
 
 	respFut, rel := h.Session.Get(req.Context(), func(p websession.WebSession_get_Params) error {
-		if !strings.HasPrefix(req.RequestURI, "/") {
-			return fmt.Errorf("Error: malformed RequestURI (no leading slash): %q", req.RequestURI)
-		}
-		path := req.RequestURI[1:]
-		if err := p.SetPath(path); err != nil {
-			return err
-		}
-		wsCtx, err := p.NewContext()
-		if err != nil {
-			return err
-		}
-
-		if err = populateContext(wsCtx, req, responseStreamClient); err != nil {
-			return err
-		}
-
 		p.SetIgnoreBody(ignoreBody)
-		return nil
+		return placePathContext(p, req, responseStreamClient)
 	})
 	defer rel()
 	resp, err := respFut.Struct()
@@ -70,6 +93,107 @@ func (h Handler) doGet(w http.ResponseWriter, req *http.Request, ignoreBody bool
 		resp,
 		responseStreamServer,
 	)
+}
+
+// Handle a streaming post or put request.
+func (Handler) doStreamingPostLike(w http.ResponseWriter, req *http.Request) {
+	panic("TODO")
+}
+
+// Handle a non-streaming post, put, or patch request.
+func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request) {
+	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+	if length < 0 || length > maxNonStreamingBodySize {
+		replyErr(w, fmt.Errorf(
+			"Request body too big (%v bytes, max %v)",
+			length,
+			maxNonStreamingBodySize))
+		return
+	}
+	// TODO(perf): Right now, it isn't safe to block inside a go-capnp placeArgs
+	// function. Once that's fixed, we should just allocate the buffer from the
+	// arguemnt struct directly, to avoid an extra copy.
+	body := make([]byte, length)
+	if _, err := io.ReadFull(req.Body, body); err != nil {
+		replyErr(w, fmt.Errorf("Reading request body: %w", err))
+		return
+	}
+	switch req.Method {
+	case "POST":
+		callNonStreamingPostLike(h.Session.Post, w, req, body)
+	case "PUT":
+		callNonStreamingPostLike(h.Session.Put, w, req, body)
+	case "PATCH":
+		callNonStreamingPostLike(h.Session.Patch, w, req, body)
+	}
+}
+
+// Invoke a non-streaming post-like method with arguments based on req and body, and marshal
+// the response into w. call should be a method on a WebSession with a suitable argument
+// & return type.
+func callNonStreamingPostLike[Params nonStreamingPostLikeParams](
+	call func(context.Context, func(Params) error) (websession.Response_Future, capnp.ReleaseFunc),
+	w http.ResponseWriter,
+	req *http.Request,
+	body []byte,
+) {
+	responseStreamServer := newResponseStreamImpl(w)
+	responseStreamClient := util.ByteStream_ServerToClient(responseStreamServer)
+	respFut, rel := call(req.Context(), func(p Params) error {
+		content, err := p.NewContent()
+		if err != nil {
+			return err
+		}
+		if err = placeRequestContent(content, req, body); err != nil {
+			return err
+		}
+		return placePathContext(p, req, responseStreamClient)
+	})
+	defer rel()
+	resp, err := respFut.Struct()
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+	relayResponse(
+		req.Context(),
+		w,
+		req,
+		resp,
+		responseStreamServer,
+	)
+}
+
+// nonStreamingPostLikeParams captures common arguments for WebSession.post, put, and patch.
+type nonStreamingPostLikeParams interface {
+	hasPathContext
+	NewContent() (websession.RequestContent, error)
+}
+
+// placeRequestContent populates content based on the request, where body
+// has already been read from the request.
+func placeRequestContent(
+	content websession.RequestContent,
+	req *http.Request,
+	body []byte,
+) error {
+	encoding := req.Header.Get("Content-Encoding")
+	if encoding != "" {
+		if err := content.SetEncoding(encoding); err != nil {
+			return err
+		}
+	}
+	contentType := req.Header.Get("Content-Type")
+	if contentType != "" {
+		if err := content.SetMimeType(contentType); err != nil {
+			return err
+		}
+	}
+	return content.SetContent(body)
 }
 
 // relayResponse relays a response received from a WebSession back to an http.ResponseWriter.
@@ -451,9 +575,9 @@ func replyErr(w http.ResponseWriter, err error) {
 	w.Write([]byte(err.Error()))
 }
 
-// populateContext populates a websession context based on the request, using the supplied
+// placeContext populates a websession context based on the request, using the supplied
 // value for the responseStream field. The reference to responseStream is stolen.
-func populateContext(wsCtx websession.Context, req *http.Request, responseStream util.ByteStream) error {
+func placeContext(wsCtx websession.Context, req *http.Request, responseStream util.ByteStream) error {
 	// Copy in cookies
 	reqCookies := req.Cookies()
 	wsCookies, err := wsCtx.NewCookies(int32(len(reqCookies)))
