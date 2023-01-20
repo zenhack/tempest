@@ -34,15 +34,15 @@
 
 	/* will change this later, but right now I just need something more
 	 * visible than blue: */
-	--topbar-link-color: var(--yellow-6);
+	--sidebar-link-color: var(--yellow-6);
 
-	--topbar-bgcolor: var(--grey-1);
-	--topbar-bgcolor-hover: var(--grey-6);
-	--topbar-bgcolor-active: var(--grey-8);
-	--topbar-color: var(--grey-6);
-	--topbar-color-hover: var(--grey-9);
-	--topbar-color-active: var(--grey-1);
-	--topbar-border-color: var(--grey-3);
+	--sidebar-bgcolor: var(--grey-1);
+	--sidebar-bgcolor-hover: var(--grey-6);
+	--sidebar-bgcolor-active: var(--grey-8);
+	--sidebar-color: var(--grey-6);
+	--sidebar-color-hover: var(--grey-9);
+	--sidebar-color-active: var(--grey-1);
+	--sidebar-border-color: var(--grey-3);
 
 	--default-content-bgcolor: var(--grey-8);
 	--default-content-color: var(--grey-1);
@@ -66,23 +66,13 @@ body {
 	flex: 1;
 }
 
-.main-ui__topbar {
-	background-color: var(--topbar-bgcolor);
-	color: var(--topbar-color);
-}
-.main-ui__topbar a {
-	color: var(--topbar-link-color);
-}
-
 .main-ui__sidebar {
-	/* XXX: either rename --topbar-* or use a different variable here. */
-	background-color: var(--topbar-bgcolor);
-	color: var(--topbar-color);
+	background-color: var(--sidebar-bgcolor);
+	color: var(--sidebar-color);
 }
 
 .main-ui__sidebar a {
-	/* XXX: either rename --topbar-* or use a different variable here. */
-	color: var(--topbar-link-color);
+	color: var(--sidebar-link-color);
 }
 
 .main-ui__grain-iframe {
