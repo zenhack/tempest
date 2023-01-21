@@ -30,7 +30,11 @@ const maxNonStreamingBodySize = 1 << 16
 func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
-		h.doGet(w, req, false)
+		if req.Header.Get("Upgrade") == "websocket" {
+			h.doWebsocket(w, req)
+		} else {
+			h.doGet(w, req, false)
+		}
 	case "HEAD":
 		h.doGet(w, req, true)
 	case "POST", "PUT":
@@ -45,6 +49,11 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	default:
 		panic("TODO")
 	}
+}
+
+func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte("TODO: websockets not yet supported"))
 }
 
 // placePathContext fills in the path and context fields of p based on the other arguments.
