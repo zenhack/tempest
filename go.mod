@@ -18,7 +18,7 @@ require (
 	github.com/ulikunitz/xz v0.5.10
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/sys v0.1.0
-	zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5
+	zenhack.net/go/util v0.0.0-20230122201906-2fd576937fdf
 	zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0
 	zenhack.net/go/websocket-capnp v0.0.0-20230122013820-cb32f4dfbb0b
 )

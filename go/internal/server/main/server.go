@@ -21,6 +21,7 @@ import (
 	"zenhack.net/go/tempest/go/internal/server/container"
 	"zenhack.net/go/tempest/go/internal/server/embed"
 	"zenhack.net/go/tempest/go/internal/server/session"
+	"zenhack.net/go/util"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
@@ -146,13 +147,7 @@ func (s *server) Handler() http.Handler {
 				}).Debug("Access to grain UI denied")
 			default:
 				s.lk.Lock()
-				var unlocked bool
-				unlock := func() { // idempotent wrapper around s.lk.Unlock
-					if !unlocked {
-						s.lk.Unlock()
-						unlocked = true
-					}
-				}
+				unlock := util.Idempotent(s.lk.Unlock)
 				defer unlock()
 
 				var wsp webSessionParams
