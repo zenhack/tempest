@@ -8,10 +8,10 @@ go 1.19
 require go.mongodb.org/mongo-driver v1.10.0
 
 require (
-	capnproto.org/go/capnp/v3 v3.0.0-alpha.19
+	capnproto.org/go/capnp/v3 v3.0.0-alpha.23
 	github.com/apex/log v1.9.0
+	github.com/gobwas/ws v1.1.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.5.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.7.0
 	github.com/tj/assert v0.0.3
@@ -20,11 +20,13 @@ require (
 	golang.org/x/sys v0.1.0
 	zenhack.net/go/util v0.0.0-20221212041830-211f2079c6f5
 	zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0
-	zenhack.net/go/websocket-capnp v0.0.0-20221212021612-7ca853314aec
+	zenhack.net/go/websocket-capnp v0.0.0-20230122013820-cb32f4dfbb0b
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

@@ -10,9 +10,10 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
 	"capnproto.org/go/capnp/v3/rpc"
+	"capnproto.org/go/capnp/v3/rpc/transport"
 	"github.com/apex/log"
+	"github.com/gobwas/ws"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
 	websession "zenhack.net/go/tempest/capnp/web-session"
@@ -263,16 +264,23 @@ func (s *server) Handler() http.Handler {
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			err := session.ReadCookie(s.sessionStore, req, &sess)
-			up := &websocket.Upgrader{
-				Subprotocols:      []string{"capnp-rpc"},
-				EnableCompression: true,
-			}
-			wsConn, err := up.Upgrade(w, req, nil)
 			if err != nil {
+				s.log.WithField("error", err).
+					Error("Failed to read session cookie")
 				return
 			}
-			wsConn.EnableWriteCompression(true)
-			transport := websocketcapnp.NewTransport(wsConn)
+			codec, err := websocketcapnp.UpgradeHTTP(
+				ws.HTTPUpgrader{
+					Protocol: func(s string) bool {
+						return s == "capnp-rpc"
+					},
+				}, req, w)
+			if err != nil {
+				s.log.WithField("error", err).
+					Error("Failed to upgrade http connection")
+				return
+			}
+			transport := transport.New(codec)
 			defer transport.Close()
 			bootstrap := externalApiImpl{
 				db:           s.db,
@@ -281,6 +289,7 @@ func (s *server) Handler() http.Handler {
 			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
 				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),
+				ErrorReporter:   logErrorReporter{log: s.log},
 			})
 			<-rpcConn.Done()
 		})
@@ -298,4 +307,14 @@ func (s *server) Release() {
 	for _, sess := range s.lk.grainSessions {
 		sess.Release()
 	}
+}
+
+// Implementation of capnp.ErrorReporter on top of our logger. TODO(cleanup):
+// move this somewhere more appropriate.
+type logErrorReporter struct {
+	log log.Interface
+}
+
+func (l logErrorReporter) ReportError(err error) {
+	l.log.WithField("error", err).Error("capnp-rpc error")
 }

@@ -7,6 +7,7 @@ update-deps:
 	go get capnproto.org/go/capnp/v3
 	go get zenhack.net/go/util
 	go get zenhack.net/go/vdom
+	go get zenhack.net/go/websocket-capnp
 	# and clean up:
 	go mod tidy
 clean:
