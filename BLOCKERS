@@ -14,6 +14,7 @@ Absolute blockers:
   - [ ] from apps
 - [ ] Audit session implementation
   - [ ] Sanity check cookies have proper attributes/aren't visible from js etc.
+  - [ ] Make sure we're checking Origin headers and such everywhere we can to mitigate CSRF.
 
 Things that really *should* be dealt with, but aren't regressions from
 sandstorm:
