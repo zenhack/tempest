@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
+	"github.com/gobwas/ws"
 	"zenhack.net/go/tempest/capnp/util"
 	websession "zenhack.net/go/tempest/capnp/web-session"
+	"zenhack.net/go/tempest/go/pkg/exp/websession/websocket"
 )
 
 // A Handler implements http.Handler on top of a WebSession. NOTE: this is work in progress
@@ -52,8 +54,106 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte("TODO: websockets not yet supported"))
+	clientProtos := strings.Split(req.Header.Get("Sec-WebSocket-Protocol"), ",")
+	for i, p := range clientProtos {
+		clientProtos[i] = strings.TrimSpace(p)
+	}
+	pw := newPromiseWriter()
+	clientW := websession.WebSocketStream_ServerToClient(
+		websocket.WriterStream{W: pw},
+	)
+	fut, rel := h.Session.OpenWebSocket(
+		req.Context(),
+		func(p websession.WebSession_openWebSocket_Params) error {
+			// NOTE: we leave responseStream null, since it isn't actually
+			// used by openWebSocket.
+			err := placePathContext(p, req, util.ByteStream{})
+			if err != nil {
+				return err
+			}
+			argProtos, err := p.NewProtocol(int32(len(clientProtos)))
+			if err != nil {
+				return err
+			}
+			for i, v := range clientProtos {
+				argProtos.Set(i, v)
+			}
+			return p.SetClientStream(clientW)
+		})
+	defer rel()
+	replyErr := func(err error) {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		pw.fulfill(io.Discard)
+	}
+	res, err := fut.Struct()
+	if err != nil {
+		replyErr(err)
+		return
+	}
+	retProto, err := res.Protocol()
+	if err != nil {
+		replyErr(err)
+		return
+	}
+	srvProto := make([]string, 0, retProto.Len())
+	for i := 0; i < retProto.Len(); i++ {
+		p, err := retProto.At(i)
+		if err != nil {
+			replyErr(err)
+			return
+		}
+		srvProto = append(srvProto, p)
+	}
+	conn, bufRw, _, err := ws.HTTPUpgrader{
+		Protocol: func(s string) bool {
+			for _, p := range srvProto {
+				if s == p {
+					return true
+				}
+			}
+			return false
+		},
+	}.Upgrade(req, w)
+	if err != nil {
+		replyErr(err)
+		return
+	}
+	if err = bufRw.Flush(); err != nil {
+		replyErr(err)
+		return
+	}
+	pw.fulfill(conn)
+	srvW := websocket.StreamWriter{
+		Context: req.Context(),
+		Stream:  res.ServerStream(),
+	}
+	io.Copy(srvW, conn)
+	<-req.Context().Done()
+}
+
+// wraps a Writer and blocks until ready is closed, then shells out to w.
+// TODO: once go-capnp supports creating promise/fulfiller pairs, drop this
+// and use that instead.
+type promiseWriter struct {
+	ready chan struct{}
+	w     io.Writer
+}
+
+func newPromiseWriter() *promiseWriter {
+	return &promiseWriter{
+		ready: make(chan struct{}),
+	}
+}
+
+func (p *promiseWriter) fulfill(w io.Writer) {
+	p.w = w
+	close(p.ready)
+}
+
+func (p *promiseWriter) Write(data []byte) (n int, err error) {
+	<-p.ready
+	return p.w.Write(data)
 }
 
 // placePathContext fills in the path and context fields of p based on the other arguments.
