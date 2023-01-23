@@ -50,18 +50,3 @@ func monitorSignals(srv *http.Server) {
 	defer signal.Stop(sigs)
 	<-sigs
 }
-
-func badRequest(w http.ResponseWriter, msg string) {
-	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write([]byte(`<!doctype html>
-		<html>
-			<head>
-				<meta charset="utf-8" />
-				<title>Bad Request</title>
-			</head>
-			<body>
-				<p>Bad Request: ` + msg + `</p>
-			</body>
-		</html>`))
-}
