@@ -41,7 +41,6 @@
 $import "/capnp/c++.capnp".namespace("sandstorm");
 
 using Util = import "util.capnp";
-using SystemPersistent = import "supervisor.capnp".SystemPersistent;
 
 interface IpNetwork @0xa982576b7a2a2040 {
   # Capability to connect or send messages to arbitrary destinations on an IP network.
@@ -207,8 +206,6 @@ struct IpPortPowerboxMetadata {
   # letting the user specify the hostname there.
 }
 
-interface PersistentIpNetwork extends (IpNetwork, SystemPersistent) {}
-interface PersistentIpInterface extends (IpInterface, SystemPersistent) {}
 using Go = import "/go.capnp";
 $Go.package("ip");
 $Go.import("zenhack.net/go/tempest/capnp/ip");
