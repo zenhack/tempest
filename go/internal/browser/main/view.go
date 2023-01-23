@@ -44,16 +44,6 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 			vb.H("div", vb.A{"class": "main-ui__main"}, nil,
 				vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
 					vb.H("a", vb.A{"href": "/"}, nil, vb.T("Tempest")),
-					vb.H("nav", nil, nil,
-						vb.H("ul", nil, nil,
-							vb.H("li", nil, nil,
-								vb.H("a",
-									vb.A{"href": "/login/dev"}, nil,
-									vb.T("Login with dev account"),
-								),
-							),
-						),
-					),
 					vb.H("p", nil, nil, vb.T("Sidebar")),
 					vb.H("ul", nil, nil, grainNodes...),
 				),
@@ -71,6 +61,9 @@ func newDomainNonce() string {
 
 func viewLoginForm() vdom.VNode {
 	return vb.H("form", vb.A{"action": "/login/dev", "method": "post"}, nil,
+		vb.H("label", vb.A{"for": "name"}, nil,
+			vb.T("Dev account login"),
+		),
 		vb.H("input", vb.A{
 			"name":        "name",
 			"placeholder": "e.g. Alice Dev Admin",
