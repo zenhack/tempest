@@ -62,16 +62,7 @@ func newDomainNonce() string {
 
 func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
 	onClick := func(vdom.Event) any {
-		msgs <- func(m Model) Model {
-			m.FocusedGrain = id
-			_, ok := m.OpenGrains[id]
-			if !ok {
-				m.OpenGrains[id] = OpenGrain{
-					DomainNonce: newDomainNonce(),
-				}
-			}
-			return m
-		}
+		msgs <- FocusGrain{Id: id}
 		return nil
 	}
 	return vb.H("li", nil, nil,

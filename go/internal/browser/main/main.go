@@ -44,8 +44,8 @@ func Main() {
 		m := initModel()
 		for {
 			up.Update(m.View(uiMsgs))
-			f := <-uiMsgs
-			m = f(m)
+			msg := <-uiMsgs
+			m = msg.Apply(m)
 		}
 	}()
 
