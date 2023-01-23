@@ -1,5 +1,11 @@
 package browsermain
 
+import (
+	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/util/maybe"
+	"zenhack.net/go/util/orerr"
+)
+
 type Msg interface {
 	Apply(Model) Model
 }
@@ -17,6 +23,10 @@ type ClearGrains struct{}
 
 type FocusGrain struct {
 	Id ID[Grain]
+}
+
+type LoginSessionResult struct {
+	Result orerr.T[external.LoginSession]
 }
 
 func (msg UpsertGrain) Apply(m Model) Model {
@@ -44,5 +54,10 @@ func (msg FocusGrain) Apply(m Model) Model {
 			DomainNonce: newDomainNonce(),
 		}
 	}
+	return m
+}
+
+func (msg LoginSessionResult) Apply(m Model) Model {
+	m.LoginSession = maybe.New(msg.Result)
 	return m
 }

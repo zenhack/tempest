@@ -8,6 +8,7 @@ import (
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/util/orerr"
 	"zenhack.net/go/vdom"
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
@@ -60,10 +61,9 @@ func Main() {
 		return nil
 	})
 	defer rel()
-	_, err := fut.Struct()
-	if err != nil {
-		println("getLoginSesion(): " + err.Error())
+	res, err := fut.Struct()
+	uiMsgs <- LoginSessionResult{
+		Result: orerr.New(res.Session().AddRef(), err),
 	}
-
-	<-conn.Done()
+	<-ctx.Done()
 }

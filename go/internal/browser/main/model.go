@@ -4,7 +4,10 @@ import (
 	"net/url"
 	"syscall/js"
 
+	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/util"
+	"zenhack.net/go/util/maybe"
+	"zenhack.net/go/util/orerr"
 )
 
 func initModel() Model {
@@ -50,6 +53,8 @@ type Model struct {
 
 	Grains     map[ID[Grain]]Grain
 	OpenGrains map[ID[Grain]]OpenGrain
+
+	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
 
 type Grain struct {

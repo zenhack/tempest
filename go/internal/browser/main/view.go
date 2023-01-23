@@ -21,7 +21,16 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	}
 	var content vdom.VNode
 	if m.FocusedGrain == "" {
-		content = vb.T("some text")
+		session, ok := m.LoginSession.Get()
+		if !ok {
+			content = vb.T("Loading...")
+		} else if session.Err() != nil {
+			// TODO: deferrentiate between disconnects/failures. Or maybe just
+			// tweak the API to return all this info in-band?
+			content = viewLoginForm()
+		} else {
+			content = vb.T("Placeholder; select a grain.")
+		}
 	} else {
 		content = viewGrainIframe(
 			m.ServerAddr,
@@ -58,6 +67,16 @@ func newDomainNonce() string {
 	var buf [16]byte
 	rand.Read(buf[:])
 	return hex.EncodeToString(buf[:])
+}
+
+func viewLoginForm() vdom.VNode {
+	return vb.H("form", vb.A{"action": "/login/dev", "method": "post"}, nil,
+		vb.H("input", vb.A{
+			"name":        "name",
+			"placeholder": "e.g. Alice Dev Admin",
+		}, nil),
+		vb.H("button", vb.A{"type": "submit"}, nil, vb.T("Submit")),
+	)
 }
 
 func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
