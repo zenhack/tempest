@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"net/http"
 	"strings"
-	"sync"
 
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/pogs"
@@ -21,7 +20,7 @@ import (
 	"zenhack.net/go/tempest/go/internal/server/container"
 	"zenhack.net/go/tempest/go/internal/server/embed"
 	"zenhack.net/go/tempest/go/internal/server/session"
-	"zenhack.net/go/util"
+	"zenhack.net/go/util/sync/mutex"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
@@ -54,28 +53,29 @@ type server struct {
 	log          log.Interface
 	db           database.DB
 	sessionStore session.Store
+	state        mutex.Mutex[serverState]
+}
 
-	// State that requires synchronization when accessed by multiple goroutines;
-	// the mutex must be held when accessin these fields:
-	lk struct {
-		sync.Mutex
-		grainSessions map[grainSessionKey]grainSession
-		containers    ContainerSet
-	}
+// Server state that requires synchronization when accessed by multiple goroutines;
+// this is factored out so we can put a lock around it.
+type serverState struct {
+	grainSessions map[grainSessionKey]grainSession
+	containers    ContainerSet
 }
 
 func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore session.Store) *server {
-	srv := &server{
+	return &server{
 		rootDomain:   rootDomain,
 		log:          lg,
 		db:           db,
 		sessionStore: sessionStore,
+		state: mutex.New[serverState](serverState{
+			containers: ContainerSet{
+				containersByGrainId: make(map[string]container.Container),
+			},
+			grainSessions: make(map[grainSessionKey]grainSession),
+		}),
 	}
-	srv.lk.containers = ContainerSet{
-		containersByGrainId: make(map[string]container.Container),
-	}
-	srv.lk.grainSessions = make(map[grainSessionKey]grainSession)
-	return srv
 }
 
 type grainSessionKey struct {
@@ -146,70 +146,19 @@ func (s *server) Handler() http.Handler {
 					},
 				}).Debug("Access to grain UI denied")
 			default:
-				s.lk.Lock()
-				unlock := util.Idempotent(s.lk.Unlock)
-				defer unlock()
-
 				var wsp webSessionParams
 				wsp.FromRequest(req)
-
-				key := grainSessionKey{
-					userSessionId: string(sess.SessionId),
-					grainId:       sess.GrainId,
-
-					basePath:            wsp.BasePath,
-					userAgent:           wsp.UserAgent,
-					acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
+				session, err := s.getWebSession(req.Context(), wsp, sess)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					s.log.WithFields(log.Fields{
+						"grainId": sess.GrainId,
+						"params":  wsp,
+						"error":   err,
+					}).Error("Could not get web session reference")
+					return
 				}
-				gs, ok := s.lk.grainSessions[key]
-				if !ok {
-					c, err := s.lk.containers.Get(context.Background(), s.log, s.db, sess.GrainId)
-					if err != nil {
-						w.WriteHeader(http.StatusInternalServerError)
-						s.log.WithFields(log.Fields{
-							"grainId": sess.GrainId,
-							"error":   err,
-						}).Error("Failed to open grain")
-						return
-					}
-					mainView := grain.MainView(c.Bootstrap.AddRef())
-					defer mainView.Release()
-					ctx := req.Context()
-					sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})
-					fut, rel := mainView.NewSession(
-						ctx,
-						func(p grain.UiView_newSession_Params) error {
-							p.SetSessionType(websession.WebSession_TypeID)
-							p.SetContext(sessionCtx)
-							p.SetTabId([]byte("TODO"))
-							params, err := websession.NewParams(p.Segment())
-							if err != nil {
-								return err
-							}
-							wsp.Insert(params)
-							p.SetSessionParams(params.ToPtr())
-							return nil
-						})
-					defer rel()
-					res, err := fut.Struct()
-					if err != nil {
-						w.WriteHeader(http.StatusInternalServerError)
-						s.log.WithFields(log.Fields{
-							"grainId": sess.GrainId,
-							"error":   err,
-						}).Error("UiView.newSession() failed")
-						return
-					}
-
-					webSession := websession.WebSession(res.Session().AddRef())
-					gs = grainSession{
-						webSession: webSession,
-					}
-					s.lk.grainSessions[key] = gs
-				}
-				session := gs.webSession.AddRef()
 				defer session.Release()
-				unlock()
 				ServeApp(session, w, req)
 			}
 		})
@@ -295,14 +244,64 @@ func (s *server) Handler() http.Handler {
 	return r
 }
 
+func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess session.GrainSession) (websession.WebSession, error) {
+
+	key := grainSessionKey{
+		userSessionId: string(sess.SessionId),
+		grainId:       sess.GrainId,
+
+		basePath:            wsp.BasePath,
+		userAgent:           wsp.UserAgent,
+		acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
+	}
+	return mutex.With2(&s.state, func(state *serverState) (websession.WebSession, error) {
+		gs, ok := state.grainSessions[key]
+		if !ok {
+			c, err := state.containers.Get(context.Background(), s.log, s.db, sess.GrainId)
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+			mainView := grain.MainView(c.Bootstrap.AddRef())
+			defer mainView.Release()
+			sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})
+			fut, rel := mainView.NewSession(
+				ctx,
+				func(p grain.UiView_newSession_Params) error {
+					p.SetSessionType(websession.WebSession_TypeID)
+					p.SetContext(sessionCtx)
+					p.SetTabId([]byte("TODO"))
+					params, err := websession.NewParams(p.Segment())
+					if err != nil {
+						return err
+					}
+					wsp.Insert(params)
+					p.SetSessionParams(params.ToPtr())
+					return nil
+				})
+			defer rel()
+			res, err := fut.Struct()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+
+			webSession := websession.WebSession(res.Session().AddRef())
+			gs = grainSession{
+				webSession: webSession,
+			}
+			state.grainSessions[key] = gs
+		}
+		return gs.webSession.AddRef(), nil
+	})
+}
+
 func (s *server) Release() {
 	s.db.Close()
-	s.lk.Lock()
-	defer s.lk.Unlock()
-	s.lk.containers.Release()
-	for _, sess := range s.lk.grainSessions {
-		sess.Release()
-	}
+	s.state.With(func(state *serverState) {
+		state.containers.Release()
+		for _, sess := range state.grainSessions {
+			sess.Release()
+		}
+	})
 }
 
 // Implementation of capnp.ErrorReporter on top of our logger. TODO(cleanup):
