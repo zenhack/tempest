@@ -261,8 +261,9 @@ func (s *server) Handler() http.Handler {
 			err := session.ReadCookie(s.sessionStore, req, &sess)
 			if err != nil {
 				s.log.WithField("error", err).
-					Error("Failed to read session cookie")
-				return
+					Debug("Failed to read session cookie; treating as anonymous")
+				// Don't rely on ReadCookie leaving the zero value in place:
+				sess = session.UserSession{}
 			}
 			codec, err := websocketcapnp.UpgradeHTTP(
 				ws.HTTPUpgrader{
