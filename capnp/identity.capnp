@@ -17,6 +17,9 @@
 @0xc822108a5c3d7d25;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("identity");
+$Go.import("zenhack.net/go/tempest/capnp/identity");
 
 using Util = import "util.capnp";
 
@@ -146,6 +149,3 @@ struct UserInfo @0x94b9d1efb35d11d3 {
   identity @7 :Identity;
   # The identity capability for this user. null if the user is not logged in.
 }
-using Go = import "/go.capnp";
-$Go.package("identity");
-$Go.import("zenhack.net/go/tempest/capnp/identity");

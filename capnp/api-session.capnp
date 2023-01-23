@@ -17,6 +17,9 @@
 @0xeb014c0c3413cbfb;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("apisession");
+$Go.import("zenhack.net/go/tempest/capnp/api-session");
 
 using WebSession = import "web-session.capnp";
 using IpAddress = import "ip.capnp".IpAddress;
@@ -134,6 +137,3 @@ interface ApiSession @0xc879e379c625cdc7 extends(WebSession.WebSession) {
     # null, so that it is not considered for matching.
   }
 }
-using Go = import "/go.capnp";
-$Go.package("apisession");
-$Go.import("zenhack.net/go/tempest/capnp/api-session");

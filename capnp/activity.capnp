@@ -17,6 +17,9 @@
 @0xa4e001d4cbcf33fa;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("activity");
+$Go.import("zenhack.net/go/tempest/capnp/activity");
 
 using Util = import "util.capnp";
 using Identity = import "identity.capnp";
@@ -228,6 +231,3 @@ interface OngoingNotification @0xfe851ddbb88940cd {
   # TODO(someday): We could allow the app to return some text to display to the user asking if
   #   they really want to shut down.
 }
-using Go = import "/go.capnp";
-$Go.package("activity");
-$Go.import("zenhack.net/go/tempest/capnp/activity");

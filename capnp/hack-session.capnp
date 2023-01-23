@@ -21,6 +21,9 @@
 # available, these hacks should go away. Consider them pre-deprecated.
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("hacksession");
+$Go.import("zenhack.net/go/tempest/capnp/hacksession");
 
 using Grain = import "grain.capnp";
 using Email = import "email.capnp";
@@ -79,6 +82,3 @@ interface HackEmailSession @0xc3b5ced7344b04a6 extends(Grain.UiSession, Email.Em
   # abusing the UI session API only because the correct way to open non-UI communications
   # channels -- i.e. persistent capabilities and Powerbox interactions -- is not implemented.
 }
-using Go = import "/go.capnp";
-$Go.package("hacksession");
-$Go.import("zenhack.net/go/tempest/capnp/hacksession");

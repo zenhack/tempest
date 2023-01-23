@@ -17,6 +17,9 @@
 @0xd5d3e63bd0a552b6;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("webpublishing");
+$Go.import("zenhack.net/go/tempest/capnp/webpublishing");
 
 using Util = import "util.capnp";
 using Handle = Util.Handle;
@@ -96,6 +99,3 @@ interface WebSite @0xdddcca47803e2377 {
 
   # TODO(someday): Allow transactionally changing a bunch of things at once.
 }
-using Go = import "/go.capnp";
-$Go.package("webpublishing");
-$Go.import("zenhack.net/go/tempest/capnp/webpublishing");

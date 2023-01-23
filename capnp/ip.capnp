@@ -39,6 +39,9 @@
 # socket API.
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("ip");
+$Go.import("zenhack.net/go/tempest/capnp/ip");
 
 using Util = import "util.capnp";
 
@@ -205,7 +208,3 @@ struct IpPortPowerboxMetadata {
   # asking the user for a hostname at all and instead making the Powerbox request right off and
   # letting the user specify the hostname there.
 }
-
-using Go = import "/go.capnp";
-$Go.package("ip");
-$Go.import("zenhack.net/go/tempest/capnp/ip");

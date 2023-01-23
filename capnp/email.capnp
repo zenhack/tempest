@@ -20,6 +20,9 @@
 @0xdd10df585a82c6d8;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("email");
+$Go.import("zenhack.net/go/tempest/capnp/email");
 
 using Grain = import "grain.capnp";
 using Util = import "util.capnp";
@@ -229,6 +232,3 @@ interface EmailAgent @0x8b6f158d70cbc773 {
 }
 
 # TODO(someday): Support remote mailboxes, e.g. IMAP. Look at Nylas API for design hints!
-using Go = import "/go.capnp";
-$Go.package("email");
-$Go.import("zenhack.net/go/tempest/capnp/email");

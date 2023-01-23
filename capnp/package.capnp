@@ -18,6 +18,9 @@
 # This file contains schemas relevant to the Sandstorm package format.  See also the `spk` tool.
 
 $import "/capnp/c++.capnp".namespace("sandstorm::spk");
+using Go = import "/go.capnp";
+$Go.package("spk");
+$Go.import("zenhack.net/go/tempest/capnp/package");
 
 using Util = import "util.capnp";
 using Powerbox = import "powerbox.capnp";
@@ -750,6 +753,3 @@ struct Archive {
     }
   }
 }
-using Go = import "/go.capnp";
-$Go.package("spk");
-$Go.import("zenhack.net/go/tempest/capnp/package");

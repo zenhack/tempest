@@ -17,6 +17,9 @@
 @0xc8d91463cfc4fb4a;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("grain");
+$Go.import("zenhack.net/go/tempest/capnp/grain");
 
 using Util = import "util.capnp";
 using Powerbox = import "powerbox.capnp";
@@ -822,6 +825,3 @@ interface MainView(AppObjectId) extends(UiView) {
   # In some rare cases, `drop()` may be called more than once on the same object. The app should
   # make sure `drop()` is idempotent.
 }
-using Go = import "/go.capnp";
-$Go.package("grain");
-$Go.import("zenhack.net/go/tempest/capnp/grain");

@@ -18,6 +18,9 @@
 
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("websession");
+$Go.import("zenhack.net/go/tempest/capnp/web-session");
 
 using Grain = import "grain.capnp";
 using Util = import "util.capnp";
@@ -611,7 +614,3 @@ enum PropfindDepth @0xb39cc44599b3a41b {
   zero @1;
   one @2;
 }
-
-using Go = import "/go.capnp";
-$Go.package("websession");
-$Go.import("zenhack.net/go/tempest/capnp/web-session");

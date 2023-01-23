@@ -17,6 +17,9 @@
 @0xf6c200ab14cd53e4;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("powerbox");
+$Go.import("zenhack.net/go/tempest/capnp/powerbox");
 
 using Util = import "util.capnp";
 
@@ -36,7 +39,7 @@ using Util = import "util.capnp";
 # `UiView.newRequestSession()` is called on the providing grain and the resulting UI session is
 # displayed embedded in the powerbox. The providing grain can render a UI which prompts the user
 # for additional details if needed, or implements some sort of additional picker. Once the grain
-# knows which capability to provide, it calls `SessionContext.fulfillRequest()` to fulfill the 
+# knows which capability to provide, it calls `SessionContext.fulfillRequest()` to fulfill the
 # original request.
 #
 # In "offer" mode, an app initiates the powerbox by calling `SessionContext.offer()` in a normal,
@@ -219,6 +222,3 @@ struct PowerboxDisplayInfo {
   # Long-form description of what the capability represents.  Should be roughly a paragraph that
   # could be displayed e.g. in a tooltip.
 }
-using Go = import "/go.capnp";
-$Go.package("powerbox");
-$Go.import("zenhack.net/go/tempest/capnp/powerbox");

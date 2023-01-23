@@ -38,6 +38,9 @@
 #   is not changing; only the signing key is changing.
 
 $import "/capnp/c++.capnp".namespace("sandstorm::spk");
+using Go = import "/go.capnp";
+$Go.package("appidreplacements");
+$Go.import("zenhack.net/go/tempest/capnp/appid-replacements");
 
 struct AppIdReplacement {
   # Specifies that packages signed by the app ID specified in `replacement` shall henceforth be
@@ -114,6 +117,3 @@ const appIdReplacementList :List(AppIdReplacement) = [
 
   # Add your entry here!
 ];
-using Go = import "/go.capnp";
-$Go.package("appidreplacements");
-$Go.import("zenhack.net/go/tempest/capnp/appid-replacements");

@@ -17,6 +17,9 @@
 @0xecd50d792c3d9992;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("util");
+$Go.import("zenhack.net/go/tempest/capnp/util");
 
 using DateInNs = Int64;
 using DurationInNs = UInt64;
@@ -192,6 +195,3 @@ interface StaticAsset @0xfabb5e621fa9a23f {
   getUrl @0 () -> (protocol: Protocol, hostPath :Text);
   # To reconstruct the full URL from the return value, concatenate: `protocol + "://" + hostPath`.
 }
-using Go = import "/go.capnp";
-$Go.package("util");
-$Go.import("zenhack.net/go/tempest/capnp/util");

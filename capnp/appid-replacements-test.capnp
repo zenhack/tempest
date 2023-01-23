@@ -17,6 +17,10 @@
 @0xbee445adfb01a777;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("appidreplacementstest");
+$Go.import("zenhack.net/go/tempest/capnp/appid-replacements-test");
+
 using AppIdReplacement = import "appid-replacements.capnp".AppIdReplacement;
 
 struct TestIds {  # namespace only
@@ -47,6 +51,3 @@ const testAppIdReplacementList :List(AppIdReplacement) = [
   (original = TestIds.app5, replacement = TestIds.app6,
    revokeExceptPackageIds = [TestIds.pkg3]),
 ];
-using Go = import "/go.capnp";
-$Go.package("appidreplacementstest");
-$Go.import("zenhack.net/go/tempest/capnp/appid-replacements-test");

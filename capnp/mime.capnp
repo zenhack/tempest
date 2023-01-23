@@ -17,6 +17,9 @@
 @0x9dc702ea30180791;
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("mime");
+$Go.import("zenhack.net/go/tempest/capnp/mime");
 
 struct MimeTypeInfo {
   name @0 :Text;
@@ -893,6 +896,3 @@ const mimeTypeInfoTable :List(MimeTypeInfo) = [
   (name = "video/x-smv", extensions = ["smv"]),
   (name = "x-conference/x-cooltalk", extensions = ["ice"]),
 ];
-using Go = import "/go.capnp";
-$Go.package("mime");
-$Go.import("zenhack.net/go/tempest/capnp/mime");

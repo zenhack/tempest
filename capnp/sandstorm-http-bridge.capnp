@@ -19,6 +19,10 @@
 # Sandstorm platform features.
 
 $import "/capnp/c++.capnp".namespace("sandstorm");
+using Go = import "/go.capnp";
+$Go.package("sandstormhttpbridge");
+$Go.import("zenhack.net/go/tempest/capnp/sandstormhttpbridge");
+
 using Grain = import "grain.capnp";
 using Identity = import "identity.capnp";
 using Powerbox = import "powerbox.capnp";
@@ -76,6 +80,3 @@ interface AppHooks (AppObjectId) {
   drop @2 (objectId :AppObjectId);
   # Like Grain.MainView.drop. See the comments for restore.
 }
-using Go = import "/go.capnp";
-$Go.package("sandstormhttpbridge");
-$Go.import("zenhack.net/go/tempest/capnp/sandstormhttpbridge");
