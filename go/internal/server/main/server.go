@@ -278,6 +278,8 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 					p.SetSessionParams(params.ToPtr())
 					return nil
 				})
+			// FIXME: Do this outside of With2 somehow (probably by inserting a promise
+			// into the map). Otherwise, the grain can block all other sessions from starting...
 			defer rel()
 			res, err := fut.Struct()
 			if err != nil {
