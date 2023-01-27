@@ -81,6 +81,37 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				ownerId VARCHAR NOT NULL REFERENCES accounts(id)
 			)`)
 		throw(err)
+		_, err = tx.Exec(
+			`-- A SturdyRef is a random token that grants access to a live capability.
+			 --
+			 -- This table stores information necessary to restore a sturdyRef. We
+			 -- do not store the token itself; instead, we store a sha256 hash, so
+			 -- that a database leak does not reveal the necessary information to
+			 -- actually restore a sturdyref; the original token must be presented,
+			 -- and it is not derivable from the contents of the database.
+			CREATE TABLE IF NOT EXISTS sturdyRefs (
+				-- raw sha256 hash of the token.
+				sha256 BLOB PRIMARY KEY NOT NULL,
+				-- The "scope" of this token; this determines who is allowed to
+				-- restore the sturdyRef, and from where. The meaning of scopes
+				-- are:
+				--
+				-- * grain-FOO must be restored via SandstormApi.restore(), from
+				--   the grain with grainId FOO
+				-- * userkeyring-FOO where FOO is in accounts.id: not restorable
+				--   directly; logically each user has a "keyring" of capabilities
+				--   reachable via APIs that require them to be logged in; some of
+				--   those APIs look for this scope.
+				scope VARCHAR NOT NULL,
+
+				-- Unix timestamp after which this entry is invalid.
+				expires INTEGER,
+
+				-- If not null, this is a reference hosted by the grain with
+				-- id 'grainId'.
+				grainId VARCHAR(22) REFERENCES grains(id)
+			)`)
+		throw(err)
 		throw(tx.Commit())
 		return DB{sqlDB: sqlDB}
 	})
