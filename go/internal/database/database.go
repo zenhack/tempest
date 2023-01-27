@@ -56,7 +56,6 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 		throw(err)
 		_, err = tx.Exec(
 			// TODO: research SSO support libraries for Go.
-			// TODO: add unique/primary key constraint for (type, scopedId).
 			`CREATE TABLE IF NOT EXISTS credentials (
 				accountId VARCHAR NOT NULL REFERENCES accounts(id),
 				-- Whether this credential is sufficient for logging
@@ -67,7 +66,8 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				-- The name of the credential, within the type's naming system.
 				-- e.g. for an email authentication system this would just be
 				-- the email address.
-				scopedId VARCHAR NOT NULL
+				scopedId VARCHAR NOT NULL,
+				PRIMARY KEY (type, scopedId)
 			)`)
 		throw(err)
 		_, err = tx.Exec(
