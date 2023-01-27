@@ -92,7 +92,7 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			CREATE TABLE IF NOT EXISTS sturdyRefs (
 				-- raw sha256 hash of the token.
 				sha256 BLOB PRIMARY KEY NOT NULL,
-				-- The "scope" of this token; this determines who is allowed to
+				-- The "owner" of this token; this determines who is allowed to
 				-- restore the sturdyRef, and from where. The meaning of scopes
 				-- are:
 				--
@@ -102,14 +102,36 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				--   directly; logically each user has a "keyring" of capabilities
 				--   reachable via APIs that require them to be logged in; some of
 				--   those APIs look for this scope.
-				scope VARCHAR NOT NULL,
+				owner VARCHAR NOT NULL,
 
 				-- Unix timestamp after which this entry is invalid.
 				expires INTEGER,
 
 				-- If not null, this is a reference hosted by the grain with
-				-- id 'grainId'.
-				grainId VARCHAR(22) REFERENCES grains(id)
+				-- id 'grainId'. Otherwise, this is provided by the platform
+				-- itself.
+				grainId VARCHAR(22) REFERENCES grains(id) ON DELETE CASCADE,
+
+				-- This is a single packed capnp message describing the object
+				-- this sturdyRef refers to. It grainId is not null, then
+				-- the root object of the message is the ObjectId returned
+				-- by AppPersistent.save() (see grain.capnp). If this is null,
+				-- then this sturdyRef refers to the root UiView exported by
+				-- the grain.
+				--
+				-- When we first define a sturdyRef type provided by the platform,
+				-- we will have to define a format for "system" object ids.
+				objectId BLOB
+			)`)
+		throw(err)
+		_, err = tx.Exec(
+			`-- Extended fields for sturdyRefs that refer to uiViews.
+			CREATE TABLE IF NOT EXISTS uiViewSturdyRefs (
+				-- Hash of the token. The corresponding entry in sturdyRefs
+				-- must have a non-null grainId.
+				sha256 BLOB PRIMARY KEY NOT NULL REFERENCES sturdyRefs(id) ON DELETE CASCADE
+
+				-- TODO: add permissions data and whatever else we need.
 			)`)
 		throw(err)
 		throw(tx.Commit())
