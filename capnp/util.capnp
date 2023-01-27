@@ -165,7 +165,7 @@ interface Assignable(T) {
   # Return a write-only capability for this assignable, co-hosted with the assignable itself for
   # performance.  If the assignable is persistent, the setter is as well.
 
-  interface Getter {
+  interface Getter @0x80f2f65360d64224 {
     get @0 () -> (value :T);
 
     subscribe @1 (setter :Setter) -> (handle :Handle);
@@ -174,7 +174,7 @@ interface Assignable(T) {
     # be persistent.
   }
 
-  interface Setter {
+  interface Setter @0xd5256a3f93589d2f {
     set @0 (value :T) -> ();
   }
 }
