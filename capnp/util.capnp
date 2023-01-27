@@ -164,19 +164,23 @@ interface Assignable(T) {
   asSetter @2 () -> (setter :Setter);
   # Return a write-only capability for this assignable, co-hosted with the assignable itself for
   # performance.  If the assignable is persistent, the setter is as well.
+}
 
-  interface Getter @0x80f2f65360d64224 {
-    get @0 () -> (value :T);
+interface Getter @0x80f2f65360d64224 (T) {
+  # A Getter(T) supports fetching a value of type T, or subscribingn to updates.
 
-    subscribe @1 (setter :Setter) -> (handle :Handle);
-    # Subscribe to updates. Calls the given setter any time the assignable's value changes.  Drop
-    # the returned handle to stop receiving updates. If `setter` is persistent, `handle` will also
-    # be persistent.
-  }
+  get @0 () -> (value :T);
+  # Get the current value.
 
-  interface Setter @0xd5256a3f93589d2f {
-    set @0 (value :T) -> ();
-  }
+  subscribe @1 (setter :Setter) -> (handle :Handle);
+  # Subscribe to updates. Calls the given setter any time the assignable's value changes.  Drop
+  # the returned handle to stop receiving updates. If `setter` is persistent, `handle` will also
+  # be persistent.
+}
+
+interface Setter @0xd5256a3f93589d2f (T) {
+  set @0 (value :T) -> ();
+  # Set the value.
 }
 
 interface StaticAsset @0xfabb5e621fa9a23f {

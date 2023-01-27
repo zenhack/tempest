@@ -456,7 +456,7 @@ interface SessionContext {
   # particular session.  This can be used e.g. to ask the platform to present certain system
   # dialogs to the user.
 
-  getSharedPermissions @0 () -> (var :Util.Assignable(Identity.PermissionSet).Getter);
+  getSharedPermissions @0 () -> (var :Util.Getter(Identity.PermissionSet));
   # Returns an observer on the permissions held by the user of this session.
   # This observer can be persisted beyond the end of the session.  This is useful for detecting if
   # the user later loses their access and auto-revoking things in that case.  See also `tieToUser()`
