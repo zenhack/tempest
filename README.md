@@ -14,8 +14,7 @@ To build tempest, you will need:
   - If the build complains about missing `wasm-opt`, you may also need
     to install the `binaryen` package.
 - Standard C development tools (make, a C compiler, etc).
-- The `bpf_asm` command. In the `bpf` package on some distros, included
-  in the linux kernel source tree.
+- The `bpf_asm` command, included in the linux kernel source tree.
 - capnp (command line tool) version 0.8 or later.
 - capnpc-go code generator plugin
 
