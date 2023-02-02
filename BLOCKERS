@@ -5,7 +5,7 @@ Absolute blockers:
 
 - [ ] Address all FIXME comments in the source code.
 - [x] Load a seccomp-bpf filter in the sandbox launcher.
-- [ ] Set max file limits in sandbox setup (setrlimit(RLIMIT_NOFILE, ...)).
+- [x] Set max file limits in sandbox setup (setrlimit(RLIMIT_NOFILE, ...)).
 - [ ] Do some verification that sandbox-launcher actually
       properly drops privileges; right now this isn't well tested.
 - [ ] Do actual filtering of http traffic, rather than just passing everything through.

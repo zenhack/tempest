@@ -72,6 +72,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/* setrlimit and such: */
+#include <sys/resource.h>
+
 /* prctl and associated constants */
 #include <sys/prctl.h>
 
@@ -143,6 +146,13 @@ int main(int argc, char **argv) {
 
 	/* Set it to close-on-exec, so we don't leak the fd into the sandbox. */
 	REQUIRE(fcntl(agent_fd, F_SETFD, fcntl(agent_fd, F_GETFD) | FD_CLOEXEC) != -1);
+
+	/* Set limits on the number of open file descriptors. */
+	struct rlimit limit = (struct rlimit) {
+		.rlim_cur = 1024,
+		.rlim_max = 4096,
+	};
+	REQUIRE(setrlimit(RLIMIT_NOFILE, &limit) == 0);
 
 	/* Unshare basically all of the namespaces. We leave out user namespaces, since they
 	   aren't universally supported. */

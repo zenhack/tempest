@@ -15,7 +15,7 @@ Sandstorm's isolation:
   copy the BPF assembly directly from Sandstorm. This will give us
   isolation equivalent to Sandstorm with `USE_EXPERIMENTAL_SECCOMP_FILTER=true`;
   this is supposed to displace the old filter eventually anyway.
-- [ ] Set max file limits in sandbox setup (`setrlimit(RLIMIT_NOFILE, ...)`).
+- [x] Set max file limits in sandbox setup (`setrlimit(RLIMIT_NOFILE, ...)`).
 - [ ] Set CSP and any other security headers on HTTP responses.
 
 See also `BLOCKERS` at the root of the repository for a checklist of things that
