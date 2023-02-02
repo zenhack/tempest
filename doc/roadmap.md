@@ -11,7 +11,7 @@ Things that interact with running apps that still need implementing
 A few pieces of the sandbox still need to be added to reach parity with
 Sandstorm's isolation:
 
-- [ ] Load a seccomp-bpf filter in the sandbox launcher. We can just
+- [x] Load a seccomp-bpf filter in the sandbox launcher. We can just
   copy the BPF assembly directly from Sandstorm. This will give us
   isolation equivalent to Sandstorm with `USE_EXPERIMENTAL_SECCOMP_FILTER=true`;
   this is supposed to displace the old filter eventually anyway.

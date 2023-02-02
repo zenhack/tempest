@@ -75,6 +75,11 @@
 /* prctl and associated constants */
 #include <sys/prctl.h>
 
+/* struct sock_fprog/sock_filter */
+#include <linux/filter.h>
+
+#include <seccomp.h>
+
 #define SANDSTORM_STATE   LOCALSTATEDIR "/sandstorm"
 #define TEMPEST_LIBEXEC LIBEXECDIR    "/tempest"
 
@@ -114,6 +119,15 @@ void require_valid_grain_id(const char *str) {
 		str++;
 	}
 }
+
+static struct sock_filter seccomp_filter[] = {
+#include "bpf_filter.h"
+};
+
+static struct sock_fprog seccomp_fprog = (struct sock_fprog) {
+	.len = sizeof seccomp_filter / sizeof seccomp_filter[0],
+	.filter = &seccomp_filter[0],
+};
 
 int main(int argc, char **argv) {
 	REQUIRE(argc == 3);
@@ -261,7 +275,8 @@ int main(int argc, char **argv) {
 	REQUIRE(chdir("/") == 0);
 	REQUIRE(close(old_root) == 0);
 
-	/* TODO: install a seccomp-bpf filter. */
+	/* Install the seccomp filter: */
+	REQUIRE(syscall(SYS_seccomp, SECCOMP_SET_MODE_FILTER, 0, &seccomp_fprog) == 0);
 
 	pid_t pid = fork();
 	REQUIRE(pid != -1);
