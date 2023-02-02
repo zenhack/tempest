@@ -8,7 +8,7 @@ Absolute blockers:
 - [x] Set max file limits in sandbox setup (setrlimit(RLIMIT_NOFILE, ...)).
 - [ ] Do some verification that sandbox-launcher actually
       properly drops privileges; right now this isn't well tested.
-- [ ] Do actual filtering of http traffic, rather than just passing everything through.
+- [x] Do actual filtering of http traffic, rather than just passing everything through.
 - [ ] Memory limits on capnp connections
   - [ ] from the outside
   - [ ] from apps

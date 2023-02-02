@@ -159,7 +159,7 @@ func (s *server) Handler() http.Handler {
 					return
 				}
 				defer session.Release()
-				ServeApp(session, w, req)
+				ServeApp(session, w, req, s.rootDomain)
 			}
 		})
 
