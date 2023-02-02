@@ -11,6 +11,7 @@ Things that interact with running apps that still need implementing
 These are things that are not related to isolation of apps, but are
 necessary for the functioning of some existing apps.
 
+- [ ] Support passing WebDAV methods through to apps.
 - [ ] Pass all necessary information through to grains when spawning a
   session.
   - [ ] Permissions
