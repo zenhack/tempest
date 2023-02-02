@@ -6,21 +6,6 @@ parallel.
 
 Things that interact with running apps that still need implementing
 
-## Sandbox
-
-A few pieces of the sandbox still need to be added to reach parity with
-Sandstorm's isolation:
-
-- [x] Load a seccomp-bpf filter in the sandbox launcher. We can just
-  copy the BPF assembly directly from Sandstorm. This will give us
-  isolation equivalent to Sandstorm with `USE_EXPERIMENTAL_SECCOMP_FILTER=true`;
-  this is supposed to displace the old filter eventually anyway.
-- [x] Set max file limits in sandbox setup (`setrlimit(RLIMIT_NOFILE, ...)`).
-- [x] Set CSP and any other security headers on HTTP responses.
-
-See also `BLOCKERS` at the root of the repository for a checklist of things that
-need to  be done before anyone should rely on Tempest for security.
-
 ## Platform API Features
 
 These are things that are not related to isolation of apps, but are
