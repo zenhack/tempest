@@ -1,9 +1,11 @@
 package servermain
 
 import (
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/apex/log"
@@ -20,8 +22,16 @@ func defaultTo(val, def string) string {
 }
 
 func Main() {
-	rootDomain := defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io")
-	listenAddr := defaultTo(os.Getenv("LISTEN_ADDR"), ":8000")
+	rootDomain := defaultTo(os.Getenv("ROOT_DOMAIN"), "local.sandstorm.io:8000")
+	var port string
+	if strings.Contains(rootDomain, ":") {
+		var err error
+		_, port, err = net.SplitHostPort(rootDomain)
+		util.Chkfatal(err)
+	} else {
+		port = "80"
+	}
+	listenAddr := ":" + port
 
 	log.SetLevel(log.DebugLevel)
 	lg := log.Log
