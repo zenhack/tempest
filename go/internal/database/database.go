@@ -113,7 +113,7 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				grainId VARCHAR(22) REFERENCES grains(id) ON DELETE CASCADE,
 
 				-- This is a single packed capnp message describing the object
-				-- this sturdyRef refers to. It grainId is not null, then
+				-- this sturdyRef refers to. If grainId is not null, then
 				-- the root object of the message is the ObjectId returned
 				-- by AppPersistent.save() (see grain.capnp). If this is null,
 				-- then this sturdyRef refers to the root UiView exported by
