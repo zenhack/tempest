@@ -91,7 +91,7 @@ point it at an existing sandstorm installation, and import database info
 using `sandstorm-import-tool`, per above.
 
 `tempest` should be run as the user and group chosen by the via
-the `--user` and --group` flags to `./configure` (by default both
+the `--user` and `--group` flags to `./configure` (by default both
 `sandstorm`).  The easiest way to do this is to run as root:
 
 ```
