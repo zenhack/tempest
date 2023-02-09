@@ -37,6 +37,11 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 		tx, err := sqlDB.Begin()
 		throw(err)
 		defer tx.Rollback()
+
+		// Some general notes about the schema:
+		//
+		// - Anywhere we store a capnp value in a column, it is stored as a single segment
+		//   (no headers) in packed encoding.
 		_, err = tx.Exec(
 			`CREATE TABLE IF NOT EXISTS packages (
 				-- 128-bit prefix of the sha256 hash of the spk file, hex encoded:
@@ -78,7 +83,9 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				packageId VARCHAR(32) NOT NULL REFERENCES packages(id),
 				-- Human readable title chosen by the grain owner:
 				title VARCHAR NOT NULL,
-				ownerId VARCHAR NOT NULL REFERENCES accounts(id)
+				ownerId VARCHAR NOT NULL REFERENCES accounts(id),
+				-- cached results for .getViewInfo() on the grain's main UiView.
+				cachedViewInfo BLOB
 			)`)
 		throw(err)
 		_, err = tx.Exec(
@@ -112,12 +119,11 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				-- itself.
 				grainId VARCHAR(22) REFERENCES grains(id) ON DELETE CASCADE,
 
-				-- This is a single packed capnp message describing the object
-				-- this sturdyRef refers to. If grainId is not null, then
-				-- the root object of the message is the ObjectId returned
-				-- by AppPersistent.save() (see grain.capnp). If this is null,
-				-- then this sturdyRef refers to the root UiView exported by
-				-- the grain.
+				-- capnp struct describing the object this sturdyRef refers to.
+				-- If grainId is not null, then the root object of the message
+				-- is the ObjectId returned by AppPersistent.save() (see grain.capnp).
+				-- If this is null, then this sturdyRef refers to the root UiView
+				-- exported by the grain.
 				--
 				-- When we first define a sturdyRef type provided by the platform,
 				-- we will have to define a format for "system" object ids.

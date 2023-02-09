@@ -264,7 +264,12 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 			mainView := grain.MainView(c.Bootstrap.AddRef())
 			defer mainView.Release()
 			sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})
-			fut, rel := mainView.NewSession(
+			// TODO: we shouldn't need to do this for every session we get, only on
+			// grain boot.
+			viewInfoFut, rel := mainView.GetViewInfo(ctx, nil)
+			defer rel()
+
+			newSessionFut, rel := mainView.NewSession(
 				ctx,
 				func(p grain.UiView_newSession_Params) error {
 					p.SetSessionType(websession.WebSession_TypeID)
@@ -281,12 +286,28 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 			// FIXME: Do this outside of With2 somehow (probably by inserting a promise
 			// into the map). Otherwise, the grain can block all other sessions from starting...
 			defer rel()
-			res, err := fut.Struct()
+			newSessionRes, err := newSessionFut.Struct()
 			if err != nil {
 				return websession.WebSession{}, err
 			}
 
-			webSession := websession.WebSession(res.Session().AddRef())
+			viewInfo, err := viewInfoFut.Struct()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+			tx, err := s.db.Begin()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+			defer tx.Rollback()
+			if err = tx.SetGrainViewInfo(sess.GrainId, viewInfo); err != nil {
+				return websession.WebSession{}, err
+			}
+			if err = tx.Commit(); err != nil {
+				return websession.WebSession{}, err
+			}
+
+			webSession := websession.WebSession(newSessionRes.Session().AddRef())
 			gs = grainSession{
 				webSession: webSession,
 			}

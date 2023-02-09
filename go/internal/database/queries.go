@@ -1,5 +1,11 @@
 package database
 
+import (
+	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/packed"
+	"zenhack.net/go/tempest/capnp/grain"
+)
+
 func (tx Tx) AddPackage(pkgId string) error {
 	_, err := tx.sqlTx.Exec(
 		`INSERT INTO packages(id) VALUES (?)`,
@@ -111,4 +117,30 @@ func (tx Tx) GetCredentialGrains(typ, scopedId string) ([]GrainInfo, error) {
 		ret = append(ret, item)
 	}
 	return ret, rows.Err()
+}
+
+// encodeCapnp encodes a capnp struct in the format we store in the database,
+// i.e. a single packed segment.
+func encodeCapnp[T ~capnp.StructKind](v T) ([]byte, error) {
+	// We don't strictly need to canonicalize, but it's expedient.
+	buf, err := capnp.Canonicalize(capnp.Struct(v))
+	if err != nil {
+		return nil, err
+	}
+	return packed.Pack(nil, buf), nil
+}
+
+func (tx Tx) SetGrainViewInfo(grainId string, viewInfo grain.UiView_ViewInfo) error {
+	buf, err := encodeCapnp(viewInfo)
+	if err != nil {
+		return err
+	}
+	_, err = tx.sqlTx.Exec(
+		`UPDATE grains
+		SET cachedViewInfo = ?
+		WHERE id = ?`,
+		buf,
+		grainId,
+	)
+	return err
 }
