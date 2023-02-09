@@ -29,27 +29,54 @@
 	/* each of these will have shades 1-7, but I'm choosing them as I go. */
 	--red-6: #ffdddd;
 	--green-6: #ddffdd;
+	--yellow-3: hsl(60 100% 24%);
 	--yellow-6: hsl(60 100% 83.3%);
 
+
 	/*** Symbolic Constants ***/
-	--error-bgcolor: var(--red-6);
-	--success-bgcolor: var(--green-6);
-	--warning-bgcolor: var(--yellow-6);
+
+	/**** Light color profile: ****/
+	--error-bgcolor: var(--red-3);
+	--success-bgcolor: var(--green-3);
+	--warning-bgcolor: var(--yellow-3);
 
 	/* will change this later, but right now I just need something more
 	 * visible than blue: */
-	--sidebar-link-color: var(--yellow-6);
+	--sidebar-link-color: var(--yellow-3);
 
-	--sidebar-bgcolor: var(--grey-1);
-	--sidebar-bgcolor-hover: var(--grey-6);
-	--sidebar-bgcolor-active: var(--grey-8);
-	--sidebar-color: var(--grey-6);
-	--sidebar-color-hover: var(--grey-9);
-	--sidebar-color-active: var(--grey-1);
-	--sidebar-border-color: var(--grey-3);
+	--sidebar-bgcolor: var(--grey-9);
+	--sidebar-bgcolor-hover: var(--grey-3);
+	--sidebar-bgcolor-active: var(--grey-2);
+	--sidebar-color: var(--grey-3);
+	--sidebar-color-hover: var(--grey-1);
+	--sidebar-color-active: var(--grey-9);
+	--sidebar-border-color: var(--grey-6);
 
 	--default-content-bgcolor: var(--grey-8);
 	--default-content-color: var(--grey-1);
+}
+
+@media(prefers-color-scheme: dark) {
+	:root {
+		--error-bgcolor: var(--red-6);
+		--success-bgcolor: var(--green-6);
+		--warning-bgcolor: var(--yellow-6);
+
+		/* will change this later, but right now I just need something more
+		 * visible than blue: */
+		--sidebar-link-color: var(--yellow-6);
+
+		--sidebar-bgcolor: var(--grey-1);
+		--sidebar-bgcolor-hover: var(--grey-6);
+		--sidebar-bgcolor-active: var(--grey-8);
+		--sidebar-color: var(--grey-6);
+		--sidebar-color-hover: var(--grey-9);
+		--sidebar-color-active: var(--grey-1);
+		--sidebar-border-color: var(--grey-3);
+
+		--default-content-bgcolor: var(--grey-2);
+		--default-content-color: var(--grey-9);
+	}
 }
 
 body {
