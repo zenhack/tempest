@@ -15,17 +15,21 @@
 	--sandstorm-darkpurple: #65468e;
 
 	/** Greys (1-9) **/
-	--grey-1: #191919;
-	--grey-3: #383838;
-	--grey-6: #9e9e9e;
-	--grey-8: #efefef;
-	--grey-9: #ffffff;
+	--grey-1: hsl(0 0% 10%);
+	--grey-2: hsl(0 0% 20%);
+	--grey-3: hsl(0 0% 30%);
+	--grey-4: hsl(0 0% 40%);
+	--grey-5: hsl(0 0% 50%);
+	--grey-6: hsl(0 0% 60%);
+	--grey-7: hsl(0 0% 70%);
+	--grey-8: hsl(0 0% 80%);
+	--grey-9: hsl(0 0% 90%);
 
 	/** Accents **/
 	/* each of these will have shades 1-7, but I'm choosing them as I go. */
 	--red-6: #ffdddd;
 	--green-6: #ddffdd;
-	--yellow-6: #ffffaa;
+	--yellow-6: hsl(60 100% 83.3%);
 
 	/*** Symbolic Constants ***/
 	--error-bgcolor: var(--red-6);
