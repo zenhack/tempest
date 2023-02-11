@@ -20,7 +20,9 @@ import (
 	"zenhack.net/go/tempest/go/internal/server/container"
 	"zenhack.net/go/tempest/go/internal/server/embed"
 	"zenhack.net/go/tempest/go/internal/server/session"
+	"zenhack.net/go/util/orerr"
 	"zenhack.net/go/util/sync/mutex"
+	"zenhack.net/go/util/thunk"
 	websocketcapnp "zenhack.net/go/websocket-capnp"
 )
 
@@ -89,11 +91,14 @@ type grainSessionKey struct {
 }
 
 type grainSession struct {
-	webSession websession.WebSession
+	webSession *thunk.T[orerr.T[websession.WebSession]]
 }
 
 func (s grainSession) Release() {
-	s.webSession.Release()
+	sess, err := s.webSession.Force().Get()
+	if err == nil {
+		sess.Release()
+	}
 }
 
 func (s *server) Handler() http.Handler {
@@ -254,13 +259,16 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 		userAgent:           wsp.UserAgent,
 		acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
 	}
-	return mutex.With2(&s.state, func(state *serverState) (websession.WebSession, error) {
+	webSessionThunk := mutex.With1(&s.state, func(state *serverState) *thunk.T[orerr.T[websession.WebSession]] {
 		gs, ok := state.grainSessions[key]
-		if !ok {
-			c, err := state.containers.Get(context.Background(), s.log, s.db, sess.GrainId)
-			if err != nil {
-				return websession.WebSession{}, err
-			}
+		if ok {
+			return gs.webSession
+		}
+		c, err := state.containers.Get(context.Background(), s.log, s.db, sess.GrainId)
+		if err != nil {
+			return thunk.Ready(orerr.New(websession.WebSession{}, err))
+		}
+		webSessionThunk := thunk.Go(func() orerr.T[websession.WebSession] {
 			mainView := grain.MainView(c.Bootstrap.AddRef())
 			defer mainView.Release()
 			sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})
@@ -271,23 +279,23 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 
 			viewInfo, err := viewInfoFut.Struct()
 			if err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 			tx, err := s.db.Begin()
 			if err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 			defer tx.Rollback()
 			if err = tx.SetGrainViewInfo(sess.GrainId, viewInfo); err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 			if err = tx.Commit(); err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 
 			viewInfoPermissions, err := viewInfo.Permissions()
 			if err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 
 			newSessionFut, rel := mainView.NewSession(
@@ -320,22 +328,23 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 					p.SetSessionParams(params.ToPtr())
 					return nil
 				})
-			// FIXME: Do this outside of With2 somehow (probably by inserting a promise
-			// into the map). Otherwise, the grain can block all other sessions from starting...
 			defer rel()
 			newSessionRes, err := newSessionFut.Struct()
 			if err != nil {
-				return websession.WebSession{}, err
+				return orerr.New(websession.WebSession{}, err)
 			}
 
 			webSession := websession.WebSession(newSessionRes.Session().AddRef())
-			gs = grainSession{
-				webSession: webSession,
-			}
-			state.grainSessions[key] = gs
+			return orerr.New(webSession, nil)
+		})
+
+		state.grainSessions[key] = grainSession{
+			webSession: webSessionThunk,
 		}
-		return gs.webSession.AddRef(), nil
+		return webSessionThunk
 	})
+	webSession, err := webSessionThunk.Force().Get()
+	return webSession.AddRef(), err
 }
 
 func (s *server) Release() {
