@@ -269,9 +269,46 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 			viewInfoFut, rel := mainView.GetViewInfo(ctx, nil)
 			defer rel()
 
+			viewInfo, err := viewInfoFut.Struct()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+			tx, err := s.db.Begin()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+			defer tx.Rollback()
+			if err = tx.SetGrainViewInfo(sess.GrainId, viewInfo); err != nil {
+				return websession.WebSession{}, err
+			}
+			if err = tx.Commit(); err != nil {
+				return websession.WebSession{}, err
+			}
+
+			viewInfoPermissions, err := viewInfo.Permissions()
+			if err != nil {
+				return websession.WebSession{}, err
+			}
+
 			newSessionFut, rel := mainView.NewSession(
 				ctx,
 				func(p grain.UiView_newSession_Params) error {
+					userInfo, err := p.NewUserInfo()
+					if err != nil {
+						return err
+					}
+
+					// For now, just give the user all permissions.
+					// we'll store & retrieve this info properly
+					// later on.
+					permissions, err := userInfo.NewPermissions(int32(viewInfoPermissions.Len()))
+					if err != nil {
+						return err
+					}
+					for i := 0; i < permissions.Len(); i++ {
+						permissions.Set(i, true)
+					}
+
 					p.SetSessionType(websession.WebSession_TypeID)
 					p.SetContext(sessionCtx)
 					p.SetTabId([]byte("TODO"))
@@ -288,22 +325,6 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 			defer rel()
 			newSessionRes, err := newSessionFut.Struct()
 			if err != nil {
-				return websession.WebSession{}, err
-			}
-
-			viewInfo, err := viewInfoFut.Struct()
-			if err != nil {
-				return websession.WebSession{}, err
-			}
-			tx, err := s.db.Begin()
-			if err != nil {
-				return websession.WebSession{}, err
-			}
-			defer tx.Rollback()
-			if err = tx.SetGrainViewInfo(sess.GrainId, viewInfo); err != nil {
-				return websession.WebSession{}, err
-			}
-			if err = tx.Commit(); err != nil {
 				return websession.WebSession{}, err
 			}
 
