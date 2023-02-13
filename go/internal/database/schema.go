@@ -110,9 +110,15 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			CREATE TABLE IF NOT EXISTS uiViewSturdyRefs (
 				-- Hash of the token. The corresponding entry in sturdyRefs
 				-- must have a non-null grainId.
-				sha256 BLOB PRIMARY KEY NOT NULL REFERENCES sturdyRefs(id) ON DELETE CASCADE
+				sha256 BLOB PRIMARY KEY NOT NULL REFERENCES sturdyRefs(id) ON DELETE CASCADE,
 
-				-- TODO: add permissions data and whatever else we need.
+				-- The permissions defined by the app this sturdyref grants on the grain.
+				-- This is a logically a PermissionSet from identity.capnp, encoded as a string
+				-- of the characters 't' and 'f' indicating boolean values.
+				--
+				-- NOTE: if the user is the owner of a grain, then they have all
+				-- possible permissions, regardless of the value of this field.
+				appPermissions VARCHAR NOT NULL
 			)`)
 		throw(err)
 		throw(tx.Commit())

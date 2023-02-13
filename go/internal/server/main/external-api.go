@@ -60,22 +60,22 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		throw(err)
 		defer tx.Rollback()
 		c := s.userSession.Credential
-		info, err := tx.GetCredentialGrains(c.Type, c.ScopedId)
+		info, err := tx.GetCredentialUiViews(c.Type, c.ScopedId)
 		throw(err)
 		throw(tx.Commit())
 
 		_, rel := into.Clear(ctx, nil)
 		releaseFuncs := []capnp.ReleaseFunc{rel}
-		for _, grainInfo := range info {
+		for _, uiViewInfo := range info {
 			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
-				key, err := capnp.NewText(p.Segment(), grainInfo.Id)
+				key, err := capnp.NewText(p.Segment(), uiViewInfo.Grain.Id)
 				throw(err)
 				p.SetKey(key.ToPtr())
 				g, err := external.NewGrain(p.Segment())
 				throw(err)
-				g.SetTitle(grainInfo.Title)
+				g.SetTitle(uiViewInfo.Grain.Title)
 				sessionToken, err := session.GrainSession{
-					GrainId:   grainInfo.Id,
+					GrainId:   uiViewInfo.Grain.Id,
 					SessionId: s.userSession.SessionId,
 				}.Seal(s.sessionStore)
 				throw(err)
