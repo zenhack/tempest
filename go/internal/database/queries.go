@@ -31,10 +31,12 @@ type NewGrain struct {
 type NewAccount struct {
 	Id      string
 	IsAdmin bool
-	Profile struct {
-		DisplayName     string
-		PreferredHandle string
-	}
+	Profile Profile
+}
+
+type Profile struct {
+	DisplayName     string
+	PreferredHandle string
 }
 
 type NewCredential struct {
