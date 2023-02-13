@@ -132,14 +132,14 @@ func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
 		`SELECT
 			grains.id,
 			grains.title,
-			grains.owner,
+			grains.ownerId,
 			uiViewSturdyRefs.appPermissions
 		FROM
 			grains, sturdyRefs, uiViewSturdyRefs
 		WHERE
-			uiViewStudyRefs.sha256 = sturdyRefs.sha256,
-			AND sturdyRefs.grainId = grains.id,
-			AND sturdyRefs.owner = ?,
+			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
+			AND sturdyRefs.grainId = grains.id
+			AND sturdyRefs.owner = ?
 			AND sturdyRefs.expires > ?
 		`,
 

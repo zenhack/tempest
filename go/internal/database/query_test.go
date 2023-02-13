@@ -9,26 +9,38 @@ import (
 
 // Test the GetCredentialAccount method
 func TestGetCredentialAccount(t *testing.T) {
-	db := openTestDB(t)
-	defer db.Close()
-	tx, err := db.Begin()
-	assert.NoError(t, err)
-	defer func() {
-		assert.NoError(t, tx.Commit())
-	}()
-	addTestUsers(t, tx)
+	testWithTx(t, func(tx Tx) {
+		addTestData(t, tx)
 
-	id, err := tx.GetCredentialAccount("dev", "Alice Dev Admin")
-	assert.NoError(t, err)
-	assert.Equal(t, id, "id_alice")
+		id, err := tx.GetCredentialAccount("dev", "Alice Dev Admin")
+		assert.NoError(t, err)
+		assert.Equal(t, id, "id_alice")
 
-	id, err = tx.GetCredentialAccount("dev", "Bob Dev User")
-	assert.NoError(t, err)
-	assert.Equal(t, id, "id_bob")
+		id, err = tx.GetCredentialAccount("dev", "Bob Dev User")
+		assert.NoError(t, err)
+		assert.Equal(t, id, "id_bob")
+	})
 }
 
-// addTestUsers adds some user accounts to the database.
-func addTestUsers(t *testing.T, tx Tx) {
+func TestGetUiViews(t *testing.T) {
+	testWithTx(t, func(tx Tx) {
+		addTestData(t, tx)
+
+		views, err := tx.GetCredentialUiViews("dev", "Alice Dev Admin")
+		assert.NoError(t, err)
+
+		assert.Equal(t, 1, len(views))
+		assert.Equal(t, GrainInfo{
+			Id:    "grain123",
+			Title: "Example Grain",
+			Owner: "id_alice",
+		}, views[0].Grain)
+		assert.Equal(t, 0, len(views[0].Permissions))
+	})
+}
+
+// addTestData populates the database with some initial data.
+func addTestData(t *testing.T, tx Tx) {
 	accounts := []NewAccount{
 		{
 			Id:      "id_alice",
@@ -63,12 +75,46 @@ func addTestUsers(t *testing.T, tx Tx) {
 		},
 	}
 
+	packages := []string{
+		"abcdef",
+	}
+
+	grains := []NewGrain{
+		{
+			GrainId: "grain123",
+			PkgId:   "abcdef",
+			OwnerId: "id_alice",
+			Title:   "Example Grain",
+		},
+	}
+
 	for _, a := range accounts {
 		assert.NoError(t, tx.AddAccount(a), "Adding account: ", a)
 	}
 	for _, c := range credentials {
 		assert.NoError(t, tx.AddCredential(c), "Adding credential: ", c)
 	}
+	for _, p := range packages {
+		assert.NoError(t, tx.AddPackage(p), "Adding package: ", p)
+	}
+	for _, g := range grains {
+		assert.NoError(t, tx.AddGrain(g), "Adding grain: ", g)
+	}
+}
+
+// testWithTx runs f in a fresh transaction, then commits. It fails
+// the test if the commit fails.
+func testWithTx(t *testing.T, f func(tx Tx)) {
+	db := openTestDB(t)
+	defer db.Close()
+	tx, err := db.Begin()
+	assert.NoError(t, err)
+	defer mustCommit(t, tx)
+	f(tx)
+}
+
+func mustCommit(t *testing.T, tx Tx) {
+	assert.NoError(t, tx.Commit())
 }
 
 func openTestDB(t *testing.T) DB {
