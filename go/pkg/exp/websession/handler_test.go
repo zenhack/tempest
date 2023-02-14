@@ -126,11 +126,12 @@ func (t testWebSessionImpl) Get(ctx context.Context, p websession.WebSession_get
 				})
 				defer rel()
 			}
-			_, rel := responseStream.Write(ctx, func(p utilcp.ByteStream_write_Params) error {
+			// error doesn't matter, since if it's there it will interrupt the call to
+			// Done() as well.
+			_ = responseStream.Write(ctx, func(p utilcp.ByteStream_write_Params) error {
 				return p.SetData([]byte(actualBody))
 			})
-			defer rel()
-			_, rel = responseStream.Done(ctx, nil)
+			_, rel := responseStream.Done(ctx, nil)
 			defer rel()
 		}()
 	} else {
