@@ -16,9 +16,11 @@ func (w StreamWriter) Write(data []byte) (int, error) {
 	if err := w.Context.Err(); err != nil {
 		return 0, err
 	}
-	_, rel := w.Stream.SendBytes(w.Context, func(p websession.WebSocketStream_sendBytes_Params) error {
+	err := w.Stream.SendBytes(w.Context, func(p websession.WebSocketStream_sendBytes_Params) error {
 		return p.SetMsg(data)
 	})
-	go rel()
+	if err != nil {
+		return 0, err
+	}
 	return len(data), nil
 }

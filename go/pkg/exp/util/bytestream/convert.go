@@ -67,17 +67,25 @@ func (bs byteStreamWC) Write(data []byte) (n int, err error) {
 	if err != nil {
 		return 0, err
 	}
-	bs.stream.Write(bs.ctx, func(p util.ByteStream_write_Params) error {
+	err = bs.stream.Write(bs.ctx, func(p util.ByteStream_write_Params) error {
 		p.SetData(data)
 		return nil
 	})
+	if err != nil {
+		return 0, err
+	}
 	return len(data), nil
 }
 
 // Close calls Done on the ByteStream
 func (bs byteStreamWC) Close() error {
-	bs.stream.Done(bs.ctx, func(util.ByteStream_done_Params) error {
+	fut, rel := bs.stream.Done(bs.ctx, func(util.ByteStream_done_Params) error {
 		return nil
 	})
-	return nil
+	defer rel()
+	_, err := fut.Struct()
+	if err != nil {
+		return err
+	}
+	return bs.stream.WaitStreaming()
 }
