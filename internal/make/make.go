@@ -215,7 +215,7 @@ func buildCapnp(r *BuildRecord) {
 	c := readConfig()
 	dirs := []string{
 		"capnp",
-		"capnp/private",
+		"internal/capnp",
 	}
 
 	for _, d := range dirs {
