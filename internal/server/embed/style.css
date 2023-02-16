@@ -40,10 +40,6 @@
 	--success-bgcolor: var(--green-3);
 	--warning-bgcolor: var(--yellow-3);
 
-	/* will change this later, but right now I just need something more
-	 * visible than blue: */
-	--sidebar-link-color: var(--yellow-3);
-
 	--sidebar-bgcolor: var(--grey-9);
 	--sidebar-bgcolor-hover: var(--grey-3);
 	--sidebar-bgcolor-active: var(--grey-2);
@@ -61,10 +57,6 @@
 		--error-bgcolor: var(--red-6);
 		--success-bgcolor: var(--green-6);
 		--warning-bgcolor: var(--yellow-6);
-
-		/* will change this later, but right now I just need something more
-		 * visible than blue: */
-		--sidebar-link-color: var(--yellow-6);
 
 		--sidebar-bgcolor: var(--grey-1);
 		--sidebar-bgcolor-hover: var(--grey-6);
@@ -84,6 +76,21 @@ body {
 	padding: 0px;
 }
 
+.active-grain-list {
+	list-style: none;
+	padding-left: 0px;
+}
+
+.grain-tab:hover {
+	color: var(--sidebar-color-hover);
+	background-color: var(--sidebar-bgcolor-hover);
+}
+
+.grain-tab--focused {
+	color: var(--sidebar-color-active);
+	background-color: var(--sidebar-bgcolor-active);
+}
+
 .main-ui {
 	display: flex;
 	flex-direction: column;
@@ -100,10 +107,6 @@ body {
 .main-ui__sidebar {
 	background-color: var(--sidebar-bgcolor);
 	color: var(--sidebar-color);
-}
-
-.main-ui__sidebar a {
-	color: var(--sidebar-link-color);
 }
 
 .main-ui__grain-iframe {

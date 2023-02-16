@@ -17,7 +17,10 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		return kv.Value.Title
 	})
 	for _, kv := range items {
-		grainNodes = append(grainNodes, viewGrain(msgs, kv.Key, kv.Value))
+		grainNodes = append(
+			grainNodes,
+			viewGrain(msgs, kv.Key, kv.Value, m.FocusedGrain == kv.Key),
+		)
 	}
 	var content vdom.VNode
 	if m.FocusedGrain == "" {
@@ -45,7 +48,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 				vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
 					vb.H("a", vb.A{"href": "/"}, nil, vb.T("Tempest")),
 					vb.H("p", nil, nil, vb.T("Sidebar")),
-					vb.H("ul", nil, nil, grainNodes...),
+					vb.H("ul", vb.A{"class": "active-grain-list"}, nil, grainNodes...),
 				),
 				content,
 			),
@@ -72,12 +75,16 @@ func viewLoginForm() vdom.VNode {
 	)
 }
 
-func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
+func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain, isFocused bool) vdom.VNode {
 	onClick := func(vdom.Event) any {
 		msgs <- FocusGrain{Id: id}
 		return nil
 	}
-	return vb.H("li", nil, nil,
+	classes := "grain-tab"
+	if isFocused {
+		classes += " grain-tab--focused"
+	}
+	return vb.H("li", vb.A{"class": classes}, vb.E{"click": &onClick},
 		vb.H("a",
 			vb.A{"href": "#/grain/" + string(id)},
 			vb.E{"click": &onClick},
