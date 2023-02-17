@@ -13,6 +13,7 @@ import (
 func initModel() Model {
 	loc := js.Global().Get("window").Get("location")
 	return Model{
+		CurrentFocus: InitialFocus,
 		ServerAddr: ServerAddr{
 			TLS:  loc.Get("protocol").String() == "https:",
 			Host: loc.Get("host").String(),
@@ -53,6 +54,8 @@ const (
 	FocusGrainList Focus = iota
 	FocusOpenGrain
 )
+
+const InitialFocus = FocusGrainList
 
 type Model struct {
 	ServerAddr   ServerAddr
