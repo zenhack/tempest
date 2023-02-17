@@ -64,12 +64,12 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		)
 	}
 	var iframes []vdom.VNode
-	for _, k := range m.GrainDomOrder.Nodes {
+	for _, id := range m.GrainDomOrder.Items {
 		var vnode vdom.VNode
-		if k == "" {
+		if id == "" {
 			vnode = dummyNode
 		} else {
-			vnode = viewGrainIframe(m, k)
+			vnode = viewGrainIframe(m, id)
 		}
 		iframes = append(iframes, vnode)
 	}

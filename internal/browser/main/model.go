@@ -65,11 +65,13 @@ type Model struct {
 	Grains     map[ID[Grain]]Grain
 	OpenGrains map[ID[Grain]]OpenGrain
 
-	// TODO(cleanup): factor this out into its own type and clean up related code.
-	GrainDomOrder struct {
-		IDGen idgen
-		Nodes []ID[Grain]
-	}
+	// Keeps track of the order we need to display grain iframes in.
+	// Grain iframes must never change order or be detached from the
+	// DOM, or they will reload the page within them, losing state.
+	// So we keep them in a stable order, rendering empty slots
+	// as dummyNode, and hiding everything but the active grain
+	// with CSS (display: none).
+	GrainDomOrder PoolSlice[ID[Grain]]
 
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }

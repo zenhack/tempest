@@ -60,15 +60,10 @@ func (msg FocusGrain) Apply(m Model) Model {
 	m.FocusedGrain = msg.Id
 	_, ok := m.OpenGrains[msg.Id]
 	if !ok {
-		index := m.GrainDomOrder.IDGen.alloc()
+		index := m.GrainDomOrder.Add(msg.Id)
 		m.OpenGrains[msg.Id] = OpenGrain{
 			DomainNonce: newDomainNonce(),
 			DomIndex:    index,
-		}
-		if index == len(m.GrainDomOrder.Nodes) {
-			m.GrainDomOrder.Nodes = append(m.GrainDomOrder.Nodes, msg.Id)
-		} else {
-			m.GrainDomOrder.Nodes[index] = msg.Id
 		}
 	}
 	return m
