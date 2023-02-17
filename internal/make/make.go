@@ -262,14 +262,14 @@ func findWasmExecJs(cfg Config) (string, error) {
 	if cfg.TinyGo {
 		// Try to find wasm_exec.js based on the location of tinygo;
 		// e.g. if tinygo is at /usr/bin/tinygo, we look under
-		// /usr/lib/tinygo, /usr/lib32/tinygo, /usr/lib64/tinygo
+		// /usr/lib/tinygo and other similar directories.
 		tinygoExe, err := exec.LookPath("tinygo")
 		if err != nil {
 			return "", fmt.Errorf("Can't find tinygo executable: %w", err)
 		}
-		prefix := filepath.Dir(filepath.Dir(tinygoExe)) + "/lib"
+		prefix := filepath.Dir(filepath.Dir(tinygoExe))
+		candidates := []string{"/lib", "/lib32", "/lib64", "/share"}
 		suffix := "/tinygo/targets/wasm_exec.js"
-		candidates := []string{"", "32", "64"}
 		for _, c := range candidates {
 			path := prefix + c + suffix
 			if _, err := os.Stat(path); err == nil {
