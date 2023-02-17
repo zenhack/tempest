@@ -81,7 +81,7 @@
 /* struct sock_fprog/sock_filter */
 #include <linux/filter.h>
 
-#include <seccomp.h>
+#include <linux/seccomp.h>
 
 #define SANDSTORM_STATE   LOCALSTATEDIR "/sandstorm"
 #define TEMPEST_LIBEXEC LIBEXECDIR    "/tempest"
