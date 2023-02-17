@@ -52,7 +52,7 @@ this looks like requires a bit of research.
 - [ ] We should pick out pallets to use for color, size, and fonts early
   on. There is already a little bit of this in style.css, but it will
   need further definition.
-- [ ] We should think about how to do dark mode support early on.
+- [x] We should think about how to do dark mode support early on.
 
 # User Features
 
