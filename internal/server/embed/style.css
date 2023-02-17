@@ -76,17 +76,17 @@ body {
 	padding: 0px;
 }
 
-.active-grain-list {
+.nav-links {
 	list-style: none;
 	padding-left: 0px;
 }
 
-.grain-tab:hover {
+.nav-link:hover {
 	color: var(--sidebar-color-hover);
 	background-color: var(--sidebar-bgcolor-hover);
 }
 
-.grain-tab--focused {
+.nav-link--focused {
 	color: var(--sidebar-color-active);
 	background-color: var(--sidebar-bgcolor-active);
 }

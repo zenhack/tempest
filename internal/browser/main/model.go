@@ -47,8 +47,16 @@ func (sa ServerAddr) Subdomain(s string) url.URL {
 	return root
 }
 
+type Focus int
+
+const (
+	FocusGrainList Focus = iota
+	FocusOpenGrain
+)
+
 type Model struct {
 	ServerAddr   ServerAddr
+	CurrentFocus Focus
 	FocusedGrain ID[Grain] // ID for the currently focused grain
 
 	Grains     map[ID[Grain]]Grain

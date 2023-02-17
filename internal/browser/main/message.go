@@ -21,6 +21,10 @@ type RemoveGrain struct {
 
 type ClearGrains struct{}
 
+type ChangeFocus struct {
+	NewFocus Focus
+}
+
 type FocusGrain struct {
 	Id ID[Grain]
 }
@@ -46,7 +50,13 @@ func (ClearGrains) Apply(m Model) Model {
 	return m
 }
 
+func (msg ChangeFocus) Apply(m Model) Model {
+	m.CurrentFocus = msg.NewFocus
+	return m
+}
+
 func (msg FocusGrain) Apply(m Model) Model {
+	m.CurrentFocus = FocusOpenGrain
 	m.FocusedGrain = msg.Id
 	_, ok := m.OpenGrains[msg.Id]
 	if !ok {

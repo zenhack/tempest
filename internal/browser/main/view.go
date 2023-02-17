@@ -10,45 +10,89 @@ import (
 	vb "zenhack.net/go/vdom/builder"
 )
 
-func (m Model) View(msgs chan<- Msg) vdom.VNode {
-	var grainNodes []vdom.VNode
-	items := maps.Items(m.Grains)
-	slices.SortOn(items, func(kv maps.KV[ID[Grain], Grain]) string {
-		return kv.Value.Title
-	})
-	for _, kv := range items {
-		grainNodes = append(
-			grainNodes,
-			viewGrain(msgs, kv.Key, kv.Value, m.FocusedGrain == kv.Key),
-		)
+func msgEvent(msgs chan<- Msg, msg Msg) vdom.EventHandler {
+	ret := func(vdom.Event) any {
+		msgs <- msg
+		return nil
 	}
-	var content vdom.VNode
-	if m.FocusedGrain == "" {
-		session, ok := m.LoginSession.Get()
-		if !ok {
-			content = vb.T("Loading...")
-		} else if session.Err() != nil {
-			// TODO: deferrentiate between disconnects/failures. Or maybe just
-			// tweak the API to return all this info in-band?
-			content = viewLoginForm()
-		} else {
-			content = vb.T("Placeholder; select a grain.")
-		}
+	return &ret
+}
+
+func (m Model) View(msgs chan<- Msg) vdom.VNode {
+	var (
+		content vdom.VNode
+	)
+	session, loginReady := m.LoginSession.Get()
+	if !loginReady {
+		content = vb.T("Loading...")
+	} else if session.Err() != nil {
+		// TODO: deferrentiate between disconnects/failures. Or maybe just
+		// tweak the API to return all this info in-band?
+		content = viewLoginForm()
 	} else {
-		content = viewGrainIframe(
-			m.ServerAddr,
-			m.FocusedGrain,
-			m.Grains[m.FocusedGrain],
-			m.OpenGrains[m.FocusedGrain],
+		switch m.CurrentFocus {
+		case FocusGrainList:
+			kvs := maps.Items(m.Grains)
+			slices.SortOn(kvs, func(kv maps.KV[ID[Grain], Grain]) string {
+				return kv.Value.Title
+			})
+			var grainNodes []vdom.VNode
+			for _, kv := range kvs {
+				grainNodes = append(
+					grainNodes,
+					viewGrain(msgs, kv.Key, kv.Value),
+				)
+			}
+			content = vb.H("ul", nil, nil, grainNodes...)
+		case FocusOpenGrain:
+			if m.FocusedGrain == "" {
+				content = vb.T("Placeholder; select a grain.")
+			} else {
+				content = viewGrainIframe(
+					m.ServerAddr,
+					m.FocusedGrain,
+					m.Grains[m.FocusedGrain],
+					m.OpenGrains[m.FocusedGrain],
+				)
+			}
+		default:
+			panic("Unknown focus value")
+		}
+	}
+	keys := maps.Keys(m.OpenGrains)
+	slices.SortOn(keys, func(k ID[Grain]) string {
+		return m.Grains[k].Title
+	})
+	var activeGrainNodes []vdom.VNode
+	for _, k := range keys {
+		activeGrainNodes = append(
+			activeGrainNodes,
+			viewOpenGrain(msgs, k, m.Grains[k], m.FocusedGrain == k),
 		)
 	}
 	return vb.H("body", nil, nil,
 		vb.H("div", vb.A{"class": "main-ui"}, nil,
 			vb.H("div", vb.A{"class": "main-ui__main"}, nil,
 				vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
-					vb.H("a", vb.A{"href": "/"}, nil, vb.T("Tempest")),
-					vb.H("p", nil, nil, vb.T("Sidebar")),
-					vb.H("ul", vb.A{"class": "active-grain-list"}, nil, grainNodes...),
+					vb.H("h1", nil, nil,
+						vb.H("a", vb.A{"href": "/"}, nil, vb.T("Tempest")),
+					),
+					vb.H("nav", nil, nil, vb.H("ul", vb.A{"class": "nav-links"}, nil,
+						vb.H("li", vb.A{"class": "nav-link"}, nil,
+							vb.H("a",
+								vb.A{"href": "#/grains"},
+								vb.E{"click": msgEvent(
+									msgs,
+									ChangeFocus{FocusGrainList},
+								)},
+								vb.T("Grains"),
+							),
+						),
+					)),
+					vb.H("h2", nil, nil, vb.T("Grains")),
+					vb.H("nav", nil, nil,
+						vb.H("ul", vb.A{"class": "nav-links"}, nil, activeGrainNodes...),
+					),
 				),
 				content,
 			),
@@ -75,22 +119,24 @@ func viewLoginForm() vdom.VNode {
 	)
 }
 
-func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain, isFocused bool) vdom.VNode {
-	onClick := func(vdom.Event) any {
-		msgs <- FocusGrain{Id: id}
-		return nil
-	}
-	classes := "grain-tab"
+func viewOpenGrain(msgs chan<- Msg, id ID[Grain], grain Grain, isFocused bool) vdom.VNode {
+	onClick := msgEvent(msgs, FocusGrain{Id: id})
+	classes := "nav-link"
 	if isFocused {
-		classes += " grain-tab--focused"
+		classes += " nav-link--focused"
 	}
-	return vb.H("li", vb.A{"class": classes}, vb.E{"click": &onClick},
+	return vb.H("li", vb.A{"class": classes}, vb.E{"click": onClick},
 		vb.H("a",
 			vb.A{"href": "#/grain/" + string(id)},
-			vb.E{"click": &onClick},
+			vb.E{"click": onClick},
 			vb.T(grain.Title),
 		),
 	)
+}
+
+func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
+	// XXX
+	return viewOpenGrain(msgs, id, grain, false)
 }
 
 func viewGrainIframe(addr ServerAddr, id ID[Grain], grain Grain, open OpenGrain) vdom.VNode {
