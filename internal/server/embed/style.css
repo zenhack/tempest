@@ -109,10 +109,22 @@ body {
 	color: var(--sidebar-color);
 }
 
-.main-ui__grain-iframe {
+.main-ui__content {
 	flex: 1;
 	height: 100%;
 	border: none;
+}
+.grain-iframe {
+	height: 100%;
+	width: 100%;
+	border: none;
+}
+.grain-iframe--inactive {
+	display: none;
+}
+
+.dummy-node {
+	display: none;
 }
 
 /* vim: set ts=8 sw=8 noet : */

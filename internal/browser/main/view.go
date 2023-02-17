@@ -18,10 +18,10 @@ func msgEvent(msgs chan<- Msg, msg Msg) vdom.EventHandler {
 	return &ret
 }
 
+var dummyNode = vb.H("div", vb.A{"class": "dummy-node"}, nil)
+
 func (m Model) View(msgs chan<- Msg) vdom.VNode {
-	var (
-		content vdom.VNode
-	)
+	content := dummyNode
 	session, loginReady := m.LoginSession.Get()
 	if !loginReady {
 		content = vb.T("Loading...")
@@ -47,13 +47,6 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
 				content = vb.T("Placeholder; select a grain.")
-			} else {
-				content = viewGrainIframe(
-					m.ServerAddr,
-					m.FocusedGrain,
-					m.Grains[m.FocusedGrain],
-					m.OpenGrains[m.FocusedGrain],
-				)
 			}
 		default:
 			panic("Unknown focus value")
@@ -70,6 +63,17 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 			viewOpenGrain(msgs, k, m.Grains[k], m.FocusedGrain == k),
 		)
 	}
+	var iframes []vdom.VNode
+	for _, k := range m.GrainDomOrder.Nodes {
+		var vnode vdom.VNode
+		if k == "" {
+			vnode = dummyNode
+		} else {
+			vnode = viewGrainIframe(m, k)
+		}
+		iframes = append(iframes, vnode)
+	}
+	contentNodes := append([]vdom.VNode{content}, iframes...)
 	return vb.H("body", nil, nil,
 		vb.H("div", vb.A{"class": "main-ui"}, nil,
 			vb.H("div", vb.A{"class": "main-ui__main"}, nil,
@@ -94,7 +98,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 						vb.H("ul", vb.A{"class": "nav-links"}, nil, activeGrainNodes...),
 					),
 				),
-				content,
+				vb.H("div", vb.A{"class": "main-ui__content"}, nil, contentNodes...),
 			),
 		),
 	)
@@ -139,14 +143,22 @@ func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
 	return viewOpenGrain(msgs, id, grain, false)
 }
 
-func viewGrainIframe(addr ServerAddr, id ID[Grain], grain Grain, open OpenGrain) vdom.VNode {
-	grainUrl := addr.Subdomain("ui-" + open.DomainNonce)
+func viewGrainIframe(m Model, id ID[Grain]) vdom.VNode {
+	grain := m.Grains[id]
+	open := m.OpenGrains[id]
+
+	grainUrl := m.ServerAddr.Subdomain("ui-" + open.DomainNonce)
 	qv := grainUrl.Query()
 	qv.Set("sandstorm-sid", grain.SessionToken)
 	qv.Set("path", "/")
 	grainUrl.Path = "/_sandstorm-init"
 	grainUrl.RawQuery = qv.Encode()
-	return vb.H("iframe", vb.A{"src": grainUrl.String(),
-		"class": "main-ui__grain-iframe",
+	class := "grain-iframe"
+	if m.CurrentFocus != FocusOpenGrain || m.FocusedGrain != id {
+		class += " grain-iframe--inactive"
+	}
+	return vb.H("iframe", vb.A{
+		"src":   grainUrl.String(),
+		"class": class,
 	}, nil)
 }

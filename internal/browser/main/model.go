@@ -62,6 +62,12 @@ type Model struct {
 	Grains     map[ID[Grain]]Grain
 	OpenGrains map[ID[Grain]]OpenGrain
 
+	// TODO(cleanup): factor this out into its own type and clean up related code.
+	GrainDomOrder struct {
+		IDGen idgen
+		Nodes []ID[Grain]
+	}
+
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
 
@@ -75,4 +81,6 @@ type OpenGrain struct {
 	// The random part of the subdomain for this grain, i.e. the grain is
 	// served at http(s)://ui-${DomainNonce}.sandstorm.example.org/
 	DomainNonce string
+
+	DomIndex int
 }
