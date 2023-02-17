@@ -10,53 +10,6 @@ import (
 	"zenhack.net/go/util/orerr"
 )
 
-func initModel() Model {
-	loc := js.Global().Get("window").Get("location")
-	return Model{
-		CurrentFocus: InitialFocus,
-		ServerAddr: ServerAddr{
-			TLS:  loc.Get("protocol").String() == "https:",
-			Host: loc.Get("host").String(),
-		},
-		Grains:     make(map[ID[Grain]]Grain),
-		OpenGrains: make(map[ID[Grain]]OpenGrain),
-	}
-}
-
-type ID[T any] string
-
-type ServerAddr struct {
-	Host string
-	TLS  bool
-}
-
-func (sa ServerAddr) Root() url.URL {
-	ret := url.URL{
-		Host: sa.Host,
-	}
-	if sa.TLS {
-		ret.Scheme = "https"
-	} else {
-		ret.Scheme = "http"
-	}
-	return ret
-}
-
-func (sa ServerAddr) Subdomain(s string) url.URL {
-	root := sa.Root()
-	root.Host = s + "." + sa.Host
-	return root
-}
-
-type Focus int
-
-const (
-	FocusGrainList Focus = iota
-	FocusOpenGrain
-)
-
-const InitialFocus = FocusGrainList
-
 type Model struct {
 	ServerAddr   ServerAddr
 	CurrentFocus Focus
@@ -76,6 +29,22 @@ type Model struct {
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
 
+type ID[T any] string
+
+type ServerAddr struct {
+	Host string
+	TLS  bool
+}
+
+type Focus int
+
+const (
+	FocusGrainList Focus = iota
+	FocusOpenGrain
+
+	InitialFocus = FocusGrainList
+)
+
 type Grain struct {
 	Title        string
 	SessionToken string
@@ -88,4 +57,35 @@ type OpenGrain struct {
 	DomainNonce string
 
 	DomIndex int
+}
+
+func initModel() Model {
+	loc := js.Global().Get("window").Get("location")
+	return Model{
+		CurrentFocus: InitialFocus,
+		ServerAddr: ServerAddr{
+			TLS:  loc.Get("protocol").String() == "https:",
+			Host: loc.Get("host").String(),
+		},
+		Grains:     make(map[ID[Grain]]Grain),
+		OpenGrains: make(map[ID[Grain]]OpenGrain),
+	}
+}
+
+func (sa ServerAddr) Root() url.URL {
+	ret := url.URL{
+		Host: sa.Host,
+	}
+	if sa.TLS {
+		ret.Scheme = "https"
+	} else {
+		ret.Scheme = "http"
+	}
+	return ret
+}
+
+func (sa ServerAddr) Subdomain(s string) url.URL {
+	root := sa.Root()
+	root.Host = s + "." + sa.Host
+	return root
 }
