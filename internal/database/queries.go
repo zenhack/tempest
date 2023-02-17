@@ -10,10 +10,11 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
+	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util"
 )
 
-func (tx Tx) AddPackage(pkgId string) error {
+func (tx Tx) AddPackage(pkgId string, manifest spk.Manifest) error {
 	_, err := tx.sqlTx.Exec(
 		`INSERT INTO packages(id) VALUES (?)`,
 		pkgId,

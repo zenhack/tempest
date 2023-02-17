@@ -8,9 +8,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"capnproto.org/go/capnp/v3"
 	_ "github.com/mattn/go-sqlite3"
 
 	"go.mongodb.org/mongo-driver/bson"
+	spk "zenhack.net/go/tempest/capnp/package"
+	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/database"
 	"zenhack.net/go/util/exn"
 )
@@ -227,7 +230,17 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 			for _, e := range elts {
 				if e.Key() == "_id" {
 					id := e.Value().StringValue()
-					throw(tx.AddPackage(id))
+					path := config.Localstatedir +
+						"/sandstorm/apps/" +
+						id +
+						"/sandstorm-manifest"
+					buf, err := os.ReadFile(path)
+					throw(err)
+					msg, err := capnp.Unmarshal(buf)
+					throw(err)
+					manifest, err := spk.ReadRootManifest(msg)
+					throw(err)
+					throw(tx.AddPackage(id, manifest))
 					break
 				}
 			}
