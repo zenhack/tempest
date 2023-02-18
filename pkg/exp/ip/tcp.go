@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"zenhack.net/go/tempest/capnp/ip"
-	"zenhack.net/go/tempest/go/pkg/exp/util/bytestream"
+	"zenhack.net/go/tempest/pkg/exp/util/bytestream"
 
 	"capnproto.org/go/capnp/v3"
 )
