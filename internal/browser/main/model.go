@@ -8,6 +8,7 @@ import (
 	"zenhack.net/go/tempest/capnp/util"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
+	"zenhack.net/go/util/slices/poolslice"
 )
 
 type Model struct {
@@ -24,7 +25,7 @@ type Model struct {
 	// So we keep them in a stable order, rendering empty slots
 	// as dummyNode, and hiding everything but the active grain
 	// with CSS (display: none).
-	GrainDomOrder PoolSlice[ID[Grain]]
+	GrainDomOrder poolslice.PoolSlice[ID[Grain]]
 
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
