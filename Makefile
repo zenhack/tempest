@@ -17,9 +17,9 @@ clean:
 		go/internal/server/embed/*.wasm \
 		c/config.h  \
 		go/internal/config/config.go
-	find capnp -type f -name '*.capnp.go' -delete
-	find capnp -type f -name '*.cgr' -delete
-	find capnp -type d -empty -delete
+	find * -type f -name '*.capnp.go' -delete
+	find * -type f -name '*.cgr' -delete
+	find * -type d -empty -delete
 nuke: clean
 	rm -f config.json
 
