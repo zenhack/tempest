@@ -15,6 +15,7 @@ $Go.import("zenhack.net/go/tempest/capnp/external");
 
 using Util = import "util.capnp";
 using Collection = import "collection.capnp";
+using Spk = import "package.capnp";
 
 interface ExternalApi {
   # The bootstrap interface when connecting to the externally facing
@@ -36,6 +37,20 @@ interface LoginSession {
   # Return info about the user.
 
   listGrains @1 (into :Collection.Pusher(Text, Grain));
+
+  listPackages @2 (into :Collection.Pusher(Text, Package));
+}
+
+struct Package {
+  manifest @0 :Spk.Manifest;
+  controller @1 :Controller;
+
+  interface Controller {
+    create @0 (title :Text, actionIndex :UInt32) -> (grain :Grain);
+    # Create a new grain using this package, with the given title
+    # and using the action at the specified index in manifest.Actions
+    # to spawn. Right now the action must have input == none.
+  }
 }
 
 struct UserInfo {

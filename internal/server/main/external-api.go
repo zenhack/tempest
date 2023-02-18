@@ -93,3 +93,11 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		}
 	})
 }
+
+func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSession_listPackages) error {
+	//into := p.Args().Into()
+	p.Go()
+	return exn.Try0(func(throw func(error)) {
+		// TODO
+	})
+}
