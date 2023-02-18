@@ -20,7 +20,10 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 		_, err = tx.Exec(
 			`CREATE TABLE IF NOT EXISTS packages (
 				-- 128-bit prefix of the sha256 hash of the spk file, hex encoded:
-				id VARCHAR(32) PRIMARY KEY NOT NULL
+				id VARCHAR(32) PRIMARY KEY NOT NULL,
+
+				-- capnp-encoded package manifest
+				manifest BLOB NOT NULL
 			)`)
 		throw(err)
 		_, err = tx.Exec(

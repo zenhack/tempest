@@ -15,11 +15,44 @@ import (
 )
 
 func (tx Tx) AddPackage(pkgId string, manifest spk.Manifest) error {
-	_, err := tx.sqlTx.Exec(
-		`INSERT INTO packages(id) VALUES (?)`,
+	manifestBlob, err := encodeCapnp(manifest)
+	if err != nil {
+		return err
+	}
+	_, err = tx.sqlTx.Exec(
+		`INSERT INTO
+			packages(id, manifest)
+			VALUES (?, ?)
+		`,
 		pkgId,
+		manifestBlob,
 	)
 	return err
+}
+
+func (tx Tx) GetCredentialPackages(typ, scopedId string) ([]Package, error) {
+	rows, err := tx.sqlTx.Query("SELECT id, manifest FROM packages")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ret []Package
+	for rows.Next() {
+		var (
+			pkg           Package
+			manifestBytes []byte
+		)
+		err = rows.Scan(&pkg.Id, &manifestBytes)
+		if err != nil {
+			return nil, err
+		}
+		pkg.Manifest, err = decodeCapnp[spk.Manifest](manifestBytes)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, pkg)
+	}
+	return ret, nil
 }
 
 type NewGrain struct {
@@ -45,6 +78,11 @@ type NewCredential struct {
 	Login     bool
 	Type      string
 	ScopedId  string
+}
+
+type Package struct {
+	Id       string
+	Manifest spk.Manifest
 }
 
 func (tx Tx) AddAccount(a NewAccount) error {
@@ -254,6 +292,20 @@ func encodeCapnp[T ~capnp.StructKind](v T) ([]byte, error) {
 		return nil, err
 	}
 	return packed.Pack(nil, buf), nil
+}
+
+// Inverse of encodeCapnp
+func decodeCapnp[T ~capnp.StructKind](buf []byte) (T, error) {
+	buf, err := packed.Unpack(nil, buf)
+	if err != nil {
+		return T{}, err
+	}
+	msg, _, err := capnp.NewMessage(capnp.SingleSegment(buf))
+	if err != nil {
+		return T{}, err
+	}
+	ptr, err := msg.Root()
+	return T(ptr.Struct()), err
 }
 
 func (tx Tx) SetGrainViewInfo(grainId string, viewInfo grain.UiView_ViewInfo) error {
