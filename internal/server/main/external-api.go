@@ -95,9 +95,37 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 }
 
 func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSession_listPackages) error {
-	//into := p.Args().Into()
+	// TODO: too much boilerplate in common with ListGrains; factor some of this out.
 	p.Go()
+	into := p.Args().Into()
 	return exn.Try0(func(throw func(error)) {
-		// TODO
+		tx, err := s.db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		c := s.userSession.Credential
+		dbPkgs, err := tx.GetCredentialPackages(c.Type, c.ScopedId)
+		throw(err)
+		throw(tx.Commit())
+
+		_, rel := into.Clear(ctx, nil)
+		releaseFuncs := []capnp.ReleaseFunc{rel}
+		for _, dbPkg := range dbPkgs {
+			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
+				key, err := capnp.NewText(p.Segment(), dbPkg.Id)
+				throw(err)
+				p.SetKey(key.ToPtr())
+				pkg, err := external.NewPackage(p.Segment())
+				throw(err)
+				throw(pkg.SetManifest(dbPkg.Manifest))
+				// TODO: controller
+				return nil
+			})
+			releaseFuncs = append(releaseFuncs, rel)
+		}
+		_, rel = into.Ready(ctx, nil)
+		releaseFuncs = append(releaseFuncs, rel)
+		for _, rel := range releaseFuncs {
+			rel()
+		}
 	})
 }
