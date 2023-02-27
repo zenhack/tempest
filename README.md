@@ -23,7 +23,7 @@ You will also need to separately check out the source for go-capnp:
 ```
 mkdir ../deps
 cd ../deps
-git clone https://github.com/capnproto/go-capnproto2
+git clone https://github.com/capnproto/go-capnp
 cd -
 ```
 
@@ -34,7 +34,7 @@ need to supply the paths to the repository checked out above:
 
 ```
 ./configure \
-    --with-go-capnp=../deps/go-capnproto2 \
+    --with-go-capnp=../deps/go-capnp \
     --localstatedir=/opt/sandstorm/var
 make
 ```
