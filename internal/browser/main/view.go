@@ -45,7 +45,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 			}
 			content = vb.H("ul", nil, nil, grainNodes...)
 		case FocusApps:
-			content = vb.T("TODO: show packages.")
+			content = m.viewApps(msgs)
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
 				content = vb.T("Placeholder; select a grain.")
@@ -118,6 +118,33 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 			),
 		),
 	)
+}
+
+func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
+	var items []vdom.VNode
+	for _, pkg := range m.Packages {
+		manifest, err := pkg.Manifest()
+		if err != nil {
+			println("manifest: " + err.Error())
+			continue
+		}
+		l10nTitle, err := manifest.AppTitle()
+		if err != nil {
+			println("appTitle: " + err.Error())
+			continue
+		}
+		title, err := l10nTitle.DefaultText()
+		if err != nil {
+			println("defaultText: " + err.Error())
+			continue
+		}
+		println("title = " + title)
+		items = append(
+			items,
+			vb.H("li", nil, nil, vb.T(title)),
+		)
+	}
+	return vb.H("ul", nil, nil, items...)
 }
 
 func newDomainNonce() string {
