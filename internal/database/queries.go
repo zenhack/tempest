@@ -300,10 +300,7 @@ func decodeCapnp[T ~capnp.StructKind](buf []byte) (T, error) {
 	if err != nil {
 		return T{}, err
 	}
-	msg, _, err := capnp.NewMessage(capnp.SingleSegment(buf))
-	if err != nil {
-		return T{}, err
-	}
+	msg := &capnp.Message{Arena: capnp.SingleSegment(buf)}
 	ptr, err := msg.Root()
 	return T(ptr.Struct()), err
 }
