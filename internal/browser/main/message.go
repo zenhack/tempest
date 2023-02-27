@@ -9,8 +9,10 @@ import (
 	"zenhack.net/go/util/orerr"
 )
 
+type Cmd = func(context.Context, chan<- Msg)
+
 type Msg interface {
-	Apply(Model) Model
+	Apply(Model) (Model, Cmd)
 }
 
 type UpsertGrain struct {
@@ -47,47 +49,47 @@ type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
 }
 
-func (msg UpsertGrain) Apply(m Model) Model {
+func (msg UpsertGrain) Apply(m Model) (Model, Cmd) {
 	m.Grains[msg.Id].Handle.Release()
 	m.Grains[msg.Id] = msg.Grain
-	return m
+	return m, nil
 }
 
-func (msg RemoveGrain) Apply(m Model) Model {
+func (msg RemoveGrain) Apply(m Model) (Model, Cmd) {
 	m.Grains[msg.Id].Handle.Release()
 	delete(m.Grains, msg.Id)
-	return m
+	return m, nil
 }
 
-func (ClearGrains) Apply(m Model) Model {
+func (ClearGrains) Apply(m Model) (Model, Cmd) {
 	m.Grains = make(map[ID[Grain]]Grain)
-	return m
+	return m, nil
 }
 
-func (msg UpsertPackage) Apply(m Model) Model {
+func (msg UpsertPackage) Apply(m Model) (Model, Cmd) {
 	m.Packages[msg.Id].Controller().Release()
 	m.Packages[msg.Id] = msg.Pkg
-	return m
+	return m, nil
 }
 
-func (msg RemovePackage) Apply(m Model) Model {
+func (msg RemovePackage) Apply(m Model) (Model, Cmd) {
 	// TODO(perf): release the whole message?
 	m.Packages[msg.Id].Controller().Release()
 	delete(m.Packages, msg.Id)
-	return m
+	return m, nil
 }
 
-func (ClearPackages) Apply(m Model) Model {
+func (ClearPackages) Apply(m Model) (Model, Cmd) {
 	m.Packages = make(map[ID[external.Package]]external.Package)
-	return m
+	return m, nil
 }
 
-func (msg ChangeFocus) Apply(m Model) Model {
+func (msg ChangeFocus) Apply(m Model) (Model, Cmd) {
 	m.CurrentFocus = msg.NewFocus
-	return m
+	return m, nil
 }
 
-func (msg FocusGrain) Apply(m Model) Model {
+func (msg FocusGrain) Apply(m Model) (Model, Cmd) {
 	m.CurrentFocus = FocusOpenGrain
 	m.FocusedGrain = msg.Id
 	_, ok := m.OpenGrains[msg.Id]
@@ -98,28 +100,27 @@ func (msg FocusGrain) Apply(m Model) Model {
 			DomIndex:    index,
 		}
 	}
-	return m
+	return m, nil
 }
 
-func (msg LoginSessionResult) Apply(m Model) Model {
+func (msg LoginSessionResult) Apply(m Model) (Model, Cmd) {
 	m.LoginSession = maybe.New(msg.Result)
 	sess, err := msg.Result.Get()
-	if err == nil {
-		go func() {
-			pusher := collection.Pusher_ServerToClient(pkgPusher{
-				// TODO: pass the right one in:
-				uiMsgs: make(chan Msg),
-			})
-			ret, rel := sess.ListPackages(context.Background(), func(p external.LoginSession_listPackages_Params) error {
-				p.SetInto(pusher)
-				return nil
-			})
-			defer rel()
-			_, err := ret.Struct()
-			if err != nil {
-				println("listPackages(): " + err.Error())
-			}
-		}()
+	if err != nil {
+		return m, nil
 	}
-	return m
+	return m, func(ctx context.Context, uiMsgs chan<- Msg) {
+		pusher := collection.Pusher_ServerToClient(pkgPusher{
+			uiMsgs: uiMsgs,
+		})
+		ret, rel := sess.ListPackages(context.Background(), func(p external.LoginSession_listPackages_Params) error {
+			p.SetInto(pusher)
+			return nil
+		})
+		defer rel()
+		_, err := ret.Struct()
+		if err != nil {
+			println("listPackages(): " + err.Error())
+		}
+	}
 }

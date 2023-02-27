@@ -43,10 +43,14 @@ func Main() {
 	uiMsgs := make(chan Msg)
 	go func() {
 		m := initModel()
+		var cmd Cmd
 		for {
 			up.Update(m.View(uiMsgs))
 			msg := <-uiMsgs
-			m = msg.Apply(m)
+			m, cmd = msg.Apply(m)
+			if cmd != nil {
+				go cmd(ctx, uiMsgs)
+			}
 		}
 	}()
 
