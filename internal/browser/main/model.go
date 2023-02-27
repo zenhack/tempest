@@ -18,6 +18,7 @@ type Model struct {
 
 	Grains     map[ID[Grain]]Grain
 	OpenGrains map[ID[Grain]]OpenGrain
+	Packages   map[ID[external.Package]]external.Package
 
 	// Keeps track of the order we need to display grain iframes in.
 	// Grain iframes must never change order or be detached from the
@@ -70,6 +71,7 @@ func initModel() Model {
 		},
 		Grains:     make(map[ID[Grain]]Grain),
 		OpenGrains: make(map[ID[Grain]]OpenGrain),
+		Packages:   make(map[ID[external.Package]]external.Package),
 	}
 }
 
