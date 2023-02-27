@@ -42,6 +42,7 @@ type Focus int
 
 const (
 	FocusGrainList Focus = iota
+	FocusApps
 	FocusOpenGrain
 
 	InitialFocus = FocusGrainList

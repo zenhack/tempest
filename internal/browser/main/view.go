@@ -44,6 +44,8 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 				)
 			}
 			content = vb.H("ul", nil, nil, grainNodes...)
+		case FocusApps:
+			content = vb.T("TODO: show packages.")
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
 				content = vb.T("Placeholder; select a grain.")
@@ -86,6 +88,16 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 						),
 					),
 					vb.H("nav", nil, nil, vb.H("ul", vb.A{"class": "nav-links"}, nil,
+						vb.H("li", vb.A{"class": "nav-link"}, nil,
+							vb.H("a",
+								vb.A{"href": "#/apps"},
+								vb.E{"click": msgEvent(
+									msgs,
+									ChangeFocus{FocusApps},
+								)},
+								vb.T("Apps"),
+							),
+						),
 						vb.H("li", vb.A{"class": "nav-link"}, nil,
 							vb.H("a",
 								vb.A{"href": "#/grains"},
