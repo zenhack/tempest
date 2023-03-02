@@ -138,7 +138,6 @@ func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
 			println("defaultText: " + err.Error())
 			continue
 		}
-		println("title = " + title)
 		items = append(
 			items,
 			vb.H("li", nil, nil, vb.T(title)),
