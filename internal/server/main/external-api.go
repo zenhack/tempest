@@ -118,6 +118,7 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 				throw(err)
 				throw(pkg.SetManifest(dbPkg.Manifest))
 				// TODO: controller
+				p.SetValue(pkg.ToPtr())
 				return nil
 			})
 			releaseFuncs = append(releaseFuncs, rel)
