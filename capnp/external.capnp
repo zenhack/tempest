@@ -46,7 +46,7 @@ struct Package {
   controller @1 :Controller;
 
   interface Controller {
-    create @0 (title :Text, actionIndex :UInt32) -> (grain :Grain);
+    create @0 (title :Text, actionIndex :UInt32) -> (id :Text, grain :Grain);
     # Create a new grain using this package, with the given title
     # and using the action at the specified index in manifest.Actions
     # to spawn. Right now the action must have input == none.
