@@ -7,7 +7,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
-	"zenhack.net/go/tempest/internal/database"
+	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
 	"zenhack.net/go/util/exn"
 )

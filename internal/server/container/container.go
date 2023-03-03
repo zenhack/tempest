@@ -15,7 +15,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/grain"
 	"zenhack.net/go/tempest/internal/config"
-	"zenhack.net/go/tempest/internal/database"
+	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )

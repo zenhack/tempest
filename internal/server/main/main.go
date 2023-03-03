@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/apex/log"
-	"zenhack.net/go/tempest/internal/database"
+	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
 	"zenhack.net/go/util"
 )

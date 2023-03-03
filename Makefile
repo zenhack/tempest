@@ -20,7 +20,11 @@ clean:
 	find * -type f -name '*.capnp.go' -delete
 	find * -type f -name '*.cgr' -delete
 	find * -type d -empty -delete
+check: all
+	go test -v \
+		./internal/server/... \
+		./pkg/...
 nuke: clean
 	rm -f config.json
 
-.PHONY: all configure build run clean nuke install
+.PHONY: all configure build run check clean nuke install

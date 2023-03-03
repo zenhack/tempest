@@ -5,8 +5,8 @@ import (
 
 	"github.com/apex/log"
 	"zenhack.net/go/tempest/capnp/grain"
-	"zenhack.net/go/tempest/internal/database"
 	"zenhack.net/go/tempest/internal/server/container"
+	"zenhack.net/go/tempest/internal/server/database"
 )
 
 type ContainerSet struct {
