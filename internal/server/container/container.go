@@ -35,36 +35,47 @@ func (c Container) Wait() {
 	<-c.exited
 }
 
-func Start(ctx context.Context, lg log.Interface, db database.DB, grainId string, api grain.SandstormApi) (Container, error) {
-	lg.WithFields(log.Fields{
-		"grainId": grainId,
+type Command struct {
+	Log     log.Interface
+	DB      database.DB
+	GrainID string
+	Api     grain.SandstormApi
+	Args    []string
+}
+
+func (cmd Command) Start(ctx context.Context) (Container, error) {
+	cmd.Log.WithFields(log.Fields{
+		"grainId": cmd.GrainID,
 	}).Info("Starting grain")
 	return exn.Try(func(throw func(error)) Container {
-		tx, err := db.Begin()
+		tx, err := cmd.DB.Begin()
 		throw(err)
 		defer tx.Rollback()
-		pkgId, err := tx.GetGrainPackageId(grainId)
+		pkgId, err := tx.GetGrainPackageId(cmd.GrainID)
 		throw(err)
 		throw(tx.Commit())
-		ret, err := startContainer(ctx, lg, capnp.Client(api), pkgId, grainId)
+		ret, err := pkgCommand{
+			Command: cmd,
+			PkgID:   pkgId,
+		}.Start(ctx)
 		throw(err)
 		return ret
 	})
 }
 
-func startContainer(
-	ctx context.Context,
-	lg log.Interface,
-	supervisorBootstrap capnp.Client,
-	packageId, grainId string,
-) (Container, error) {
+type pkgCommand struct {
+	Command
+	PkgID string
+}
+
+func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	// See the comments at the top of sandbox-launcher.c for the details
 	// of how the sandbox launcher is supposed to be used.
 	ctx, cancel := context.WithCancel(ctx)
 	// RPC socket:
 	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_STREAM, 0)
 	if err != nil {
-		supervisorBootstrap.Release()
+		cmd.Api.Release()
 		return Container{}, err
 	}
 
@@ -80,70 +91,72 @@ func startContainer(
 	}
 	defer pidR.Close()
 
-	cmd := exec.Command(
+	args := append([]string{
+		cmd.PkgID,
+		cmd.GrainID,
+	}, cmd.Args...)
+	osCmd := exec.Command(
 		config.Libexecdir+"/tempest/tempest-sandbox-launcher",
-		packageId,
-		grainId,
+		args...,
 	)
-	// TODO(soon) capture/log stdout/stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 
-	cmd.ExtraFiles = []*os.File{grainSock, pidW}
-	err = cmd.Start()
+	// TODO(soon) capture/log stdout/stderr
+	osCmd.Stdout = os.Stdout
+	osCmd.Stderr = os.Stderr
+
+	osCmd.ExtraFiles = []*os.File{grainSock, pidW}
+	err = osCmd.Start()
 	pidW.Close() // Close this now, so when the child closes it we hit EOF.
 	if err != nil {
-		lg.WithFields(log.Fields{
-			"grainId": grainId,
+		cmd.Log.WithFields(log.Fields{
+			"grainId": cmd.GrainID,
 			"error":   err,
 		}).Error("Starting sandbox launcher failed")
-		supervisorBootstrap.Release()
+		cmd.Api.Release()
 		supervisorSock.Close()
 		return Container{}, err
 	}
-	lg.WithFields(log.Fields{
-		"launcher-pid": cmd.Process.Pid,
-		"grainId":      grainId,
+	cmd.Log.WithFields(log.Fields{
+		"launcher-pid": osCmd.Process.Pid,
+		"grainId":      cmd.GrainID,
 	}).Debug("Started launcher proccess")
 
 	pidBuf, err := io.ReadAll(pidR)
+	launcherPid := osCmd.Process.Pid
 	if err != nil {
-		lg.WithFields(log.Fields{
+		cmd.Log.WithFields(log.Fields{
 			"error":        err,
 			"read":         string(pidBuf),
-			"grainId":      grainId,
-			"launcher-pid": cmd.Process.Pid,
+			"grainId":      cmd.GrainID,
+			"launcher-pid": launcherPid,
 		}).Error("Failed to read grain pid")
 		return Container{}, err
 	}
 
 	grainPid, err := strconv.Atoi(string(pidBuf))
 	if err != nil {
-		lg.WithFields(log.Fields{
+		cmd.Log.WithFields(log.Fields{
 			"error":        err,
-			"grainId":      grainId,
-			"launcher-pid": cmd.Process.Pid,
+			"grainId":      cmd.GrainID,
+			"launcher-pid": launcherPid,
 			"bad-pid":      strconv.Quote(string(pidBuf)),
 		}).Error("bug: sandbox-launcher returned invalid pid")
 		supervisorSock.Close()
-		util.Chkfatal(cmd.Process.Kill())
-		util.Must(cmd.Process.Wait())
+		util.Chkfatal(osCmd.Process.Kill())
+		util.Must(osCmd.Process.Wait())
 		return Container{}, err
 	}
 	grainProc, err := os.FindProcess(grainPid)
 	util.Chkfatal(err) // Can't fail on unix
-	lg.WithFields(log.Fields{
-		"grainId":      grainId,
-		"packageId":    packageId,
-		"launcher-pid": cmd.Process.Pid,
+	cmd.Log.WithFields(log.Fields{
+		"grainId":      cmd.GrainID,
+		"packageId":    cmd.PkgID,
+		"launcher-pid": launcherPid,
 		"grain-pid":    grainPid,
 	}).Debug("Started grain process")
 	trans := transport.NewStream(supervisorSock)
-	var options *rpc.Options
-	if (supervisorBootstrap != capnp.Client{}) {
-		options = &rpc.Options{
-			BootstrapClient: supervisorBootstrap,
-		}
+	options := &rpc.Options{
+		BootstrapClient: capnp.Client(cmd.Api),
 	}
 	conn := rpc.NewConn(trans, options)
 	grainBootstrap := conn.Bootstrap(ctx)
@@ -153,23 +166,23 @@ func startContainer(
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
 		if err := grainProc.Kill(); err != nil {
-			lg.WithFields(log.Fields{
+			cmd.Log.WithFields(log.Fields{
 				"error":        err,
-				"grainId":      grainId,
-				"launcher-pid": cmd.Process.Pid,
+				"grainId":      cmd.GrainID,
+				"launcher-pid": launcherPid,
 				"grain-pid":    grainPid,
 			}).Fatal("Failed to kill grain")
 		}
-		lg.WithFields(log.Fields{"pid": grainPid}).Debug("Killed grain")
-		if _, err := cmd.Process.Wait(); err != nil {
-			lg.WithFields(log.Fields{
+		cmd.Log.WithFields(log.Fields{"pid": grainPid}).Debug("Killed grain")
+		if _, err := osCmd.Process.Wait(); err != nil {
+			cmd.Log.WithFields(log.Fields{
 				"error":        err,
-				"grainId":      grainId,
-				"launcher-pid": cmd.Process.Pid,
+				"grainId":      cmd.GrainID,
+				"launcher-pid": launcherPid,
 				"grain-pid":    grainPid,
 			}).Fatal("Failed to wait() on launcher")
 		}
-		lg.WithFields(log.Fields{"pid": cmd.Process.Pid}).Debug("Wait()ed for launcher")
+		cmd.Log.WithFields(log.Fields{"pid": launcherPid}).Debug("Wait()ed for launcher")
 		<-conn.Done()
 		close(exited)
 	}()
