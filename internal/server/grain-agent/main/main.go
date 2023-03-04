@@ -8,6 +8,7 @@
 package grainagentmain
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -17,6 +18,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"github.com/apex/log"
 	spk "zenhack.net/go/tempest/capnp/package"
+	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
 	"zenhack.net/go/util"
 )
 
@@ -85,62 +87,46 @@ func Main() {
 	util.Chkfatal(err)
 	appTitleText, err := appTitle.DefaultText()
 	util.Chkfatal(err)
-	spkCmd, err := manifest.ContinueCommand()
+
+	if len(os.Args) < 2 {
+		lg.Fatal("Too few arugments")
+	}
+	buf, err := base64.StdEncoding.DecodeString(os.Args[1])
 	util.Chkfatal(err)
-	cmd, err := parseCmd(spkCmd)
+	launchMsg := &capnp.Message{Arena: capnp.SingleSegment(buf)}
+	launchCmd, err := grainagent.ReadRootLaunchCommand(launchMsg)
 	util.Chkfatal(err)
 
-	lg.WithFields(log.Fields{
-		"appTitle": appTitleText,
-		"command":  cmd.Args,
-	}).Info("Starting up app")
-
-	/*
-		if cmd.Args[0] != "/sandstorm-http-bridge" {
-			lg.Fatal("Only sandstorm-http-bridge apps are supported.")
-		}
-		if len(cmd.Args) < 4 {
-			// should be like /sandstorm-http-bridge <port-no> -- /app/command ...args
-			lg.Fatal("Too few arugments")
-		}
-		//portNo, err := strconv.Atoi(cmd.Args[1])
+	switch launchCmd.Which() {
+	case grainagent.LaunchCommand_Which_continueGrain:
+		spkCmd, err := manifest.ContinueCommand()
 		util.Chkfatal(err)
-		if cmd.Args[2] != "--" {
-			lg.Fatal("Error: second argument should be '--' separator.")
-		}
-	*/
-	//cmd.Args = cmd.Args[3:]
-	osCmd := cmd.ToOsCmd()
+		cmd, err := parseCmd(spkCmd)
+		util.Chkfatal(err)
 
-	// TODO: make direct these in a more structured way?
-	osCmd.Stdout = os.Stdout
-	osCmd.Stderr = os.Stderr
+		lg.WithFields(log.Fields{
+			"appTitle": appTitleText,
+			"command":  cmd.Args,
+		}).Info("Starting up app")
 
-	apiSocket := os.NewFile(3, "supervisor socket")
-	osCmd.ExtraFiles = []*os.File{apiSocket}
+		osCmd := cmd.ToOsCmd()
 
-	//util.Chkfatal(startCapnpApi(lg))
+		// TODO: make direct these in a more structured way?
+		osCmd.Stdout = os.Stdout
+		osCmd.Stderr = os.Stderr
 
-	util.Chkfatal(osCmd.Start())
-	//go func() {
-	defer os.Exit(1)
-	util.Chkfatal(osCmd.Wait())
-	lg.Info("App exited; shutting down grain.")
-	//}()
+		apiSocket := os.NewFile(3, "supervisor socket")
+		osCmd.ExtraFiles = []*os.File{apiSocket}
 
-	/*
-		trans := transport.NewStream(apiSocket)
-		bootstrap := httpcp.Server_ServerToClient(&httpBridge{
-			portNo:       portNo,
-			roundTripper: http.DefaultTransport,
-			log:          lg,
-		})
-		conn := rpc.NewConn(trans, &rpc.Options{
-			BootstrapClient: capnp.Client(bootstrap),
-		})
-
-		<-conn.Done()
-	*/
+		util.Chkfatal(osCmd.Start())
+		defer os.Exit(1)
+		util.Chkfatal(osCmd.Wait())
+		lg.Info("App exited; shutting down grain.")
+	default:
+		lg.WithFields(log.Fields{
+			"launch command": launchCmd.Which(),
+		}).Error("BUG: Unrecognized launch command")
+	}
 }
 
 func startCapnpApi(lg log.Interface) error {
