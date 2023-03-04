@@ -1,11 +1,11 @@
 @0xbbb10ce386c6624a;
 # This file defines the schema for data stored in cookies;
 # the code for managing these is in the package
-# `go/internal/server/session`.
+# `internal/server/session`.
 
 using Go = import "/go.capnp";
 $Go.package("cookie");
-$Go.import("zenhack.net/go/tempest/capnp/private/cookie");
+$Go.import("zenhack.net/go/tempest/internal/capnp/cookie");
 
 struct UserSession {
   # Session cookie for a user's login. Stored in the
