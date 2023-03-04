@@ -1,11 +1,12 @@
 /* This program is responsible for actually setting up the grain sandbox.
  * Tempest invokes it as:
  *
- * tempest-sandbox-launcher <package-id> <grain-id>
+ * tempest-sandbox-launcher <package-id> <grain-id> [ args... ]
  *
  * It configures a sandbox using the directories for that package & grain, and
- * then inovkes execveat() to start the `tempest-grain-agent` executable, which then
- * takes over starting up and interfacing with the grain proper.
+ * then inovkes execveat() to start the `tempest-grain-agent` executable, passing
+ * any additional arguments. The grain agent then takes over starting up and
+ * interfacing with the grain proper.
  *
  * The grain will be given access to stdout, stderr. and file descriptor #3 (used
  * as a Cap'n Proto RPC socket). The (external) pid for root of the grain's pid
@@ -133,7 +134,7 @@ static struct sock_fprog seccomp_fprog = (struct sock_fprog) {
 };
 
 int main(int argc, char **argv) {
-	REQUIRE(argc == 3);
+	REQUIRE(argc >= 3);
 	require_valid_pkg_id(argv[1]);
 	require_valid_grain_id(argv[2]);
 
@@ -373,7 +374,11 @@ int main(int argc, char **argv) {
 		REQUIRE(setsid() != -1);
 		//REQUIRE(setpgid(0, 0) == 0);
 
-		char *const agent_argv[] = {"tempest-grain-agent", NULL};
+		// Re-use the arguments in argv after the ones we used. Swap out the program
+		// name.
+		argv[2] = "tempest-grain-agent";
+		char **const agent_argv = &argv[2];
+
 		char *const agent_envp[] = {NULL};
 		syscall(SYS_execveat, agent_fd, "", agent_argv, agent_envp, AT_EMPTY_PATH);
 
