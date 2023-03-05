@@ -27,8 +27,11 @@
 
 	/** Accents **/
 	/* each of these will have shades 1-7, but I'm choosing them as I go. */
-	--red-6: #ffdddd;
+	--red-3: hsl(0 70% 50%);
+	--red-6: hsl(0 13% 50%);
+
 	--green-6: #ddffdd;
+
 	--yellow-3: hsl(60 100% 24%);
 	--yellow-6: hsl(60 100% 83.3%);
 
@@ -125,6 +128,10 @@ body {
 
 .dummy-node {
 	display: none;
+}
+
+.error-notice {
+	background-color: var(--error-bgcolor);
 }
 
 /* vim: set ts=8 sw=8 noet : */

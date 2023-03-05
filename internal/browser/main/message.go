@@ -5,7 +5,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
-	"zenhack.net/go/util"
+	"zenhack.net/go/util/exn"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
 )
@@ -14,6 +14,10 @@ type Cmd = func(context.Context, chan<- Msg)
 
 type Msg interface {
 	Apply(Model) (Model, Cmd)
+}
+
+type NewError struct {
+	Err error
 }
 
 type UpsertGrain struct {
@@ -52,6 +56,11 @@ type SpawnGrain struct {
 
 type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
+}
+
+func (msg NewError) Apply(m Model) (Model, Cmd) {
+	m.Error = msg.Err
+	return m, nil
 }
 
 func (msg UpsertGrain) Apply(m Model) (Model, Cmd) {
@@ -114,37 +123,42 @@ func (msg SpawnGrain) Apply(m Model) (Model, Cmd) {
 	ctrl := pkg.Controller().AddRef()
 
 	return m, func(ctx context.Context, msgs chan<- Msg) {
-		defer ctrl.Release()
-		fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {
-			// TODO: pick something better, looking at the action/manifest:
-			p.SetTitle("Untitled Grain")
-			// TODO: provide a way to choose this:
-			p.SetActionIndex(0)
-			return nil
+		err := exn.Try0(func(throw func(error)) {
+			defer ctrl.Release()
+			fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {
+				// TODO: pick something better, looking at the action/manifest:
+				p.SetTitle("Untitled Grain")
+				// TODO: provide a way to choose this:
+				p.SetActionIndex(0)
+				return nil
+			})
+			defer rel()
+			res, err := fut.Struct()
+			throw(err)
+
+			id, err := res.Id()
+			throw(err)
+			grain, err := res.Grain()
+			throw(err)
+
+			title, err := grain.Title()
+			throw(err)
+			sessionToken, err := grain.SessionToken()
+			throw(err)
+
+			msgs <- UpsertGrain{
+				Id: ID[Grain](id),
+				Grain: Grain{
+					Title:        title,
+					SessionToken: sessionToken,
+					Handle:       grain.Handle().AddRef(),
+				},
+			}
+			msgs <- FocusGrain{Id: ID[Grain](id)}
 		})
-		defer rel()
-		res, err := fut.Struct()
-		util.Chkfatal(err) // FIXME: report this properly somehow.
-
-		id, err := res.Id()
-		util.Chkfatal(err) // FIXME
-		grain, err := res.Grain()
-		util.Chkfatal(err) // FIXME
-
-		title, err := grain.Title()
-		util.Chkfatal(err) // FIXME
-		sessionToken, err := grain.SessionToken()
-		util.Chkfatal(err) // FIXME
-
-		msgs <- UpsertGrain{
-			Id: ID[Grain](id),
-			Grain: Grain{
-				Title:        title,
-				SessionToken: sessionToken,
-				Handle:       grain.Handle().AddRef(),
-			},
+		if err != nil {
+			msgs <- NewError{Err: err}
 		}
-		msgs <- FocusGrain{Id: ID[Grain](id)}
 	}
 }
 

@@ -76,47 +76,57 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		iframes = append(iframes, vnode)
 	}
 	contentNodes := append([]vdom.VNode{content}, iframes...)
-	return vb.H("body", nil, nil,
-		vb.H("div", vb.A{"class": "main-ui"}, nil,
-			vb.H("div", vb.A{"class": "main-ui__main"}, nil,
-				vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
-					vb.H("h1", nil, nil,
-						vb.H("a",
-							vb.A{"href": "#"},
-							vb.E{"click": msgEvent(msgs, ChangeFocus{InitialFocus})},
-							vb.T("Tempest"),
-						),
-					),
-					vb.H("nav", nil, nil, vb.H("ul", vb.A{"class": "nav-links"}, nil,
-						vb.H("li", vb.A{"class": "nav-link"}, nil,
-							vb.H("a",
-								vb.A{"href": "#/apps"},
-								vb.E{"click": msgEvent(
-									msgs,
-									ChangeFocus{FocusApps},
-								)},
-								vb.T("Apps"),
-							),
-						),
-						vb.H("li", vb.A{"class": "nav-link"}, nil,
-							vb.H("a",
-								vb.A{"href": "#/grains"},
-								vb.E{"click": msgEvent(
-									msgs,
-									ChangeFocus{FocusGrainList},
-								)},
-								vb.T("Grains"),
-							),
-						),
-					)),
-					vb.H("h2", nil, nil, vb.T("Grains")),
-					vb.H("nav", nil, nil,
-						vb.H("ul", vb.A{"class": "nav-links"}, nil, activeGrainNodes...),
+
+	mainUiNodes := []vdom.VNode{
+		vb.H("div", vb.A{"class": "main-ui__main"}, nil,
+			vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
+				vb.H("h1", nil, nil,
+					vb.H("a",
+						vb.A{"href": "#"},
+						vb.E{"click": msgEvent(msgs, ChangeFocus{InitialFocus})},
+						vb.T("Tempest"),
 					),
 				),
-				vb.H("div", vb.A{"class": "main-ui__content"}, nil, contentNodes...),
+				vb.H("nav", nil, nil, vb.H("ul", vb.A{"class": "nav-links"}, nil,
+					vb.H("li", vb.A{"class": "nav-link"}, nil,
+						vb.H("a",
+							vb.A{"href": "#/apps"},
+							vb.E{"click": msgEvent(
+								msgs,
+								ChangeFocus{FocusApps},
+							)},
+							vb.T("Apps"),
+						),
+					),
+					vb.H("li", vb.A{"class": "nav-link"}, nil,
+						vb.H("a",
+							vb.A{"href": "#/grains"},
+							vb.E{"click": msgEvent(
+								msgs,
+								ChangeFocus{FocusGrainList},
+							)},
+							vb.T("Grains"),
+						),
+					),
+				)),
+				vb.H("h2", nil, nil, vb.T("Grains")),
+				vb.H("nav", nil, nil,
+					vb.H("ul", vb.A{"class": "nav-links"}, nil, activeGrainNodes...),
+				),
 			),
+			vb.H("div", vb.A{"class": "main-ui__content"}, nil, contentNodes...),
 		),
+	}
+
+	if m.Error != nil {
+		mainUiNodes = append(
+			mainUiNodes,
+			vb.H("div", vb.A{"class": "error-notice"}, nil, vb.T(m.Error.Error())),
+		)
+	}
+
+	return vb.H("body", nil, nil,
+		vb.H("div", vb.A{"class": "main-ui"}, nil, mainUiNodes...),
 	)
 }
 
