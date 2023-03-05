@@ -119,7 +119,13 @@ void require_valid_pkg_id(const char *str) {
 void require_valid_grain_id(const char *str) {
 	REQUIRE(strlen(str) == GRAIN_ID_SIZE);
 	while(*str) {
-		REQUIRE(isalpha(*str) || isdigit(*str));
+		/* grain IDs must be url-encoded base64: */
+		REQUIRE(
+			isalpha(*str) ||
+			isdigit(*str) ||
+			*str == '-' ||
+			*str == '_'
+		);
 		str++;
 	}
 }

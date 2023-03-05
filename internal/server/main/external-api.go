@@ -142,10 +142,12 @@ type pkgController struct {
 }
 
 func newGrainID() string {
-	buf := make([]byte, base64.URLEncoding.DecodedLen(22))
+	// Oversize buffer so we don't have to think too hard about decoded vs. encoded
+	// length:
+	var buf [64]byte
 	_, err := rand.Read(buf[:])
 	util.Chkfatal(err)
-	return base64.URLEncoding.EncodeToString(buf)
+	return base64.URLEncoding.EncodeToString(buf[:])[:22]
 }
 
 func (pc pkgController) Create(ctx context.Context, p external.Package_Controller_create) error {
