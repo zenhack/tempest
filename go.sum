@@ -139,6 +139,8 @@ zenhack.net/go/util v0.0.0-20230216234122-5622a28960db h1:UALBg+bDj/Xqcwg2bhc6L4
 zenhack.net/go/util v0.0.0-20230216234122-5622a28960db/go.mod h1:0lafdGg7tDb7RcXASgmJmRbLFLkAxu328+KGIs7icDE=
 zenhack.net/go/util v0.0.0-20230218002511-744d2d6d1739 h1:/QnbZBURrZUFvnxB4wDyRrPsWzh2KWbJ6AjUjohCHJ8=
 zenhack.net/go/util v0.0.0-20230218002511-744d2d6d1739/go.mod h1:0lafdGg7tDb7RcXASgmJmRbLFLkAxu328+KGIs7icDE=
+zenhack.net/go/util v0.0.0-20230305222753-27582c3a8381 h1:RMq4s41z4RoYcoWxtWfB53wjYMuid04b1ydiekJXJco=
+zenhack.net/go/util v0.0.0-20230305222753-27582c3a8381/go.mod h1:0lafdGg7tDb7RcXASgmJmRbLFLkAxu328+KGIs7icDE=
 zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0 h1:b47/PxX40kcz1D2glkLjSAfDAISRpytnMqOpdsAe4Rk=
 zenhack.net/go/vdom v0.0.0-20221212051524-f5d445b862c0/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/vdom v0.0.0-20230217005730-98b273ad5e92 h1:VfflWW9K1sz/QNzVTXUCyzlaS0pvdA5D2yq6vZoqu5E=

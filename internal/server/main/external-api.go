@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"capnproto.org/go/capnp/v3"
-	"capnproto.org/go/capnp/v3/exc"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/config"
@@ -150,74 +149,59 @@ func newGrainID() string {
 }
 
 func (pc pkgController) Create(ctx context.Context, p external.Package_Controller_create) error {
-	args := p.Args()
-	actionIndex := args.ActionIndex()
-	title, err := args.Title()
-	if err != nil {
-		return err
-	}
+	return exn.Try0(func(th exn.Thrower) {
+		args := p.Args()
+		actionIndex := args.ActionIndex()
+		title, err := args.Title()
+		exn.WrapThrow(th, "getting title", err)
 
-	actions, err := pc.pkg.Manifest.Actions()
-	if err != nil {
-		return err
-	}
-	if actionIndex >= uint32(actions.Len()) {
-		return errors.New("actionIndex out of bounds")
-	}
-	grainID := newGrainID()
+		actions, err := pc.pkg.Manifest.Actions()
+		exn.WrapThrow(th, "getting actions", err)
+		if actionIndex >= uint32(actions.Len()) {
+			th(errors.New("actionIndex out of bounds"))
+		}
+		grainID := newGrainID()
 
-	tx, err := pc.server.db.Begin()
-	if err != nil {
-		return exc.WrapError("Creating database transaction", err)
-	}
-	defer tx.Rollback()
-	accountID, err := tx.GetCredentialAccount(
-		pc.userSession.Credential.Type,
-		pc.userSession.Credential.ScopedId,
-	)
-	if err != nil {
-		return exc.WrapError("Getting account ID", err)
-	}
+		tx, err := pc.server.db.Begin()
+		exn.WrapThrow(th, "creating database transaction", err)
 
-	err = os.MkdirAll(
-		config.Localstatedir+"/sandstorm/grains/"+grainID+"/sandbox",
-		0770,
-	)
-	if err != nil {
-		return exc.WrapError("Creating grain sandbox directory", err)
-	}
+		defer tx.Rollback()
+		accountID, err := tx.GetCredentialAccount(
+			pc.userSession.Credential.Type,
+			pc.userSession.Credential.ScopedId,
+		)
+		exn.WrapThrow(th, "getting account id", err)
 
-	err = tx.AddGrain(database.NewGrain{
-		GrainId: grainID,
-		PkgId:   pc.pkg.Id,
-		Title:   title,
-		OwnerId: accountID,
+		err = os.MkdirAll(
+			config.Localstatedir+"/sandstorm/grains/"+grainID+"/sandbox",
+			0770,
+		)
+		exn.WrapThrow(th, "creating grain sandbox directory", err)
+		err = tx.AddGrain(database.NewGrain{
+			GrainId: grainID,
+			PkgId:   pc.pkg.Id,
+			Title:   title,
+			OwnerId: accountID,
+		})
+		exn.WrapThrow(th, "creating grain in database", err)
+
+		results, err := p.AllocResults()
+		th(err)
+
+		results.SetId(grainID)
+		g, err := results.NewGrain()
+		th(err)
+		th(g.SetTitle(title))
+		// FIXME: Start the grain with the right action; as is this will just get launched w/
+		// continue when it hits the UI. Will still work for many apps.
+		sessionToken, err := session.GrainSession{
+			GrainId:   grainID,
+			SessionId: pc.userSession.SessionId,
+		}.Seal(pc.sessionStore)
+		exn.WrapThrow(th, "creating grain session token", err)
+		th(g.SetSessionToken(sessionToken))
+		// TODO: set Handle.
+		exn.WrapThrow(th, "commiting database transaction", tx.Commit())
 	})
-	if err != nil {
-		return exc.WrapError("Creating grain in database", err)
-	}
-
-	results, err := p.AllocResults()
-	if err != nil {
-		return err
-	}
-	results.SetId(grainID)
-	g, err := results.NewGrain()
-	if err != nil {
-		return err
-	}
-	g.SetTitle(title)
-	// FIXME: Start the grain with the right action; as is this will just get launched w/
-	// continue when it hits the UI. Will still work for many apps.
-	sessionToken, err := session.GrainSession{
-		GrainId:   grainID,
-		SessionId: pc.userSession.SessionId,
-	}.Seal(pc.sessionStore)
-	if err != nil {
-		return err
-	}
-	g.SetSessionToken(sessionToken)
-	// TODO: set Handle.
-	return tx.Commit()
 
 }
