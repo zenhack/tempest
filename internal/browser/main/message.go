@@ -5,6 +5,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/util"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
 )
@@ -43,6 +44,10 @@ type ChangeFocus struct {
 
 type FocusGrain struct {
 	Id ID[Grain]
+}
+
+type SpawnGrain struct {
+	PkgID ID[external.Package]
 }
 
 type LoginSessionResult struct {
@@ -101,6 +106,46 @@ func (msg FocusGrain) Apply(m Model) (Model, Cmd) {
 		}
 	}
 	return m, nil
+}
+
+func (msg SpawnGrain) Apply(m Model) (Model, Cmd) {
+	pkg := m.Packages[msg.PkgID]
+
+	ctrl := pkg.Controller().AddRef()
+
+	return m, func(ctx context.Context, msgs chan<- Msg) {
+		defer ctrl.Release()
+		fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {
+			// TODO: pick something better, looking at the action/manifest:
+			p.SetTitle("Untitled Grain")
+			// TODO: provide a way to choose this:
+			p.SetActionIndex(0)
+			return nil
+		})
+		defer rel()
+		res, err := fut.Struct()
+		util.Chkfatal(err) // FIXME: report this properly somehow.
+
+		id, err := res.Id()
+		util.Chkfatal(err) // FIXME
+		grain, err := res.Grain()
+		util.Chkfatal(err) // FIXME
+
+		title, err := grain.Title()
+		util.Chkfatal(err) // FIXME
+		sessionToken, err := grain.SessionToken()
+		util.Chkfatal(err) // FIXME
+
+		msgs <- UpsertGrain{
+			Id: ID[Grain](id),
+			Grain: Grain{
+				Title:        title,
+				SessionToken: sessionToken,
+				Handle:       grain.Handle().AddRef(),
+			},
+		}
+		msgs <- FocusGrain{Id: ID[Grain](id)}
+	}
 }
 
 func (msg LoginSessionResult) Apply(m Model) (Model, Cmd) {

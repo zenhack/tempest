@@ -122,7 +122,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 
 func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
 	var items []vdom.VNode
-	for _, pkg := range m.Packages {
+	for id, pkg := range m.Packages {
 		manifest, err := pkg.Manifest()
 		if err != nil {
 			println("manifest: " + err.Error())
@@ -138,9 +138,19 @@ func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
 			println("defaultText: " + err.Error())
 			continue
 		}
+		link := vb.H("a",
+			vb.A{"href": "#/grain/new"},
+			vb.E{
+				"click": msgEvent(
+					msgs,
+					SpawnGrain{PkgID: id},
+				),
+			},
+			vb.T(title),
+		)
 		items = append(
 			items,
-			vb.H("li", nil, nil, vb.T(title)),
+			vb.H("li", nil, nil, link),
 		)
 	}
 	return vb.H("ul", nil, nil, items...)
