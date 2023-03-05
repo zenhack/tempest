@@ -233,7 +233,7 @@ func (s *server) Handler() http.Handler {
 			transport := transport.New(codec)
 			defer transport.Close()
 			bootstrap := externalApiImpl{
-				db:           s.db,
+				server:       s,
 				userSession:  sess,
 				sessionStore: s.sessionStore,
 			}
