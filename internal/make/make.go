@@ -428,7 +428,7 @@ func run(args ...string) {
 	case "configure":
 		cfg := &Config{}
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
-		jsonData, err := json.Marshal(cfg)
+		jsonData, err := json.MarshalIndent(cfg, "", "  ")
 		chkfatal(err)
 		chkfatal(ioutil.WriteFile(
 			"./config.json",
