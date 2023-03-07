@@ -21,7 +21,7 @@ clean:
 	find * -type f -name '*.cgr' -delete
 	find * -type d -empty -delete
 check: all
-	go test -v \
+	go test \
 		./internal/server/... \
 		./pkg/...
 nuke: clean
