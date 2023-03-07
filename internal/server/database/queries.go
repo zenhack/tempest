@@ -14,8 +14,8 @@ import (
 	"zenhack.net/go/util"
 )
 
-func (tx Tx) AddPackage(pkgId string, manifest spk.Manifest) error {
-	manifestBlob, err := encodeCapnp(manifest)
+func (tx Tx) AddPackage(pkg Package) error {
+	manifestBlob, err := encodeCapnp(pkg.Manifest)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (tx Tx) AddPackage(pkgId string, manifest spk.Manifest) error {
 			packages(id, manifest)
 			VALUES (?, ?)
 		`,
-		pkgId,
+		pkg.Id,
 		manifestBlob,
 	)
 	return err

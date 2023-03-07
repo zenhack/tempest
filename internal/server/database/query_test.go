@@ -75,8 +75,11 @@ func addTestData(t *testing.T, tx Tx) {
 		},
 	}
 
-	packages := []string{
-		"abcdef",
+	packages := []Package{
+		{
+			Id: "abcdef",
+			// FIXME: Manifest
+		},
 	}
 
 	grains := []NewGrain{

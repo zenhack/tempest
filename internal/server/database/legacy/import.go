@@ -240,7 +240,10 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 					throw(err)
 					manifest, err := spk.ReadRootManifest(msg)
 					throw(err)
-					throw(tx.AddPackage(id, manifest))
+					throw(tx.AddPackage(database.Package{
+						Id:       id,
+						Manifest: manifest,
+					}))
 					break
 				}
 			}
