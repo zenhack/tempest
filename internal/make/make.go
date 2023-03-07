@@ -31,6 +31,9 @@ type Config struct {
 	WithWasmExecJs string
 
 	TinyGo bool
+
+	// Actual arguments passed to configure:
+	Args []string
 }
 
 func getUid(name string) int {
@@ -50,6 +53,8 @@ func getGid(name string) int {
 }
 
 func (c *Config) ParseFlags(args []string, name string, errorHandling flag.ErrorHandling) {
+	c.Args = args[1:]
+
 	fs := flag.NewFlagSet(name, errorHandling)
 	fs.StringVar(&c.User, "user", "sandstorm", "the user to run as")
 	fs.StringVar(&c.Group, "group", "sandstorm", "the group to run as")
