@@ -59,7 +59,8 @@ this looks like requires a bit of research.
 Things users should be able to do, other than just interact with apps
 
 - [ ] Install apps
-- [ ] Create/delete grains
+- [x] Create grains
+- [ ] Delete grains
 - [ ] Sharing stuff
 
 # Administrative Features
