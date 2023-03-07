@@ -13,7 +13,7 @@ import (
 	"github.com/tj/assert"
 	utilcp "zenhack.net/go/tempest/capnp/util"
 	websession "zenhack.net/go/tempest/capnp/web-session"
-	"zenhack.net/go/tempest/go/pkg/exp/util/handle"
+	"zenhack.net/go/tempest/pkg/exp/util/handle"
 	"zenhack.net/go/util"
 )
 
