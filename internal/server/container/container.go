@@ -1,3 +1,4 @@
+// Package container manages spawning containers/sandboxes
 package container
 
 import (
@@ -20,29 +21,45 @@ import (
 	"zenhack.net/go/util/exn"
 )
 
+// A Container is a reference to a running container/sandboxed grain.
 type Container struct {
-	Bootstrap capnp.Client
+	Bootstrap capnp.Client       // Bootstrap interface for the Container.
 	cancel    context.CancelFunc // cancel causes the container to shut down.
 	exited    <-chan struct{}    // closed when the container has exited.
 }
 
+// Kill forcably shutds down the container. (Note: we do not provide a way
+// to ask nicely via SIGTERM or such); apps are expected to be crash-only
+// software.
+//
+// Does not wait for shutdown to complete; see Wait().
 func (c Container) Kill() {
 	c.Bootstrap.Release()
 	c.cancel()
 }
 
+// Wait blocks until the container has shut down and then returns.
 func (c Container) Wait() {
 	<-c.exited
 }
 
+// A Command specifies a task to start in a container.
 type Command struct {
-	Log     log.Interface
-	DB      database.DB
+	Log log.Interface
+	DB  database.DB
+
+	// GrainID is the ID of the grain to start
 	GrainID string
-	Api     grain.SandstormApi
-	Args    []string
+
+	// Api will be provided to the grain as our bootstrap interface.
+	Api grain.SandstormApi
+
+	// Args will be passed to the grain agent as extra arguments.
+	Args []string
 }
 
+// Start starts the container. It will shut down when ctx is canceled or
+// Kill() is called.
 func (cmd Command) Start(ctx context.Context) (Container, error) {
 	cmd.Log.WithFields(log.Fields{
 		"grainId": cmd.GrainID,
@@ -63,11 +80,14 @@ func (cmd Command) Start(ctx context.Context) (Container, error) {
 	})
 }
 
+// pkgCommand is like Command, but it also includes the package ID, so looking that
+// up in the database is unnecessary.
 type pkgCommand struct {
 	Command
 	PkgID string
 }
 
+// Start is like Command.Start
 func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	// See the comments at the top of sandbox-launcher.c for the details
 	// of how the sandbox launcher is supposed to be used.
