@@ -127,14 +127,10 @@ const (
 
 func (c Config) CSrc() string {
 	return fmt.Sprintf(`
-#ifndef SANDSTORM_CONFIG_H
-#define SANDSTORM_CONFIG_H
-
+#pragma once
 #define PREFIX %q
 #define LIBEXECDIR %q
 #define LOCALSTATEDIR %q
-
-#endif
 `,
 		c.Prefix,
 		c.Libexecdir,
