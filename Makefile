@@ -21,9 +21,7 @@ clean:
 	find * -type f -name '*.cgr' -delete
 	find * -type d -empty -delete
 check: all
-	go test \
-		./internal/server/... \
-		./pkg/...
+	./scripts/run-tests.sh
 nuke: clean
 	rm -f config.json
 
