@@ -8,6 +8,7 @@ import (
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/orerr"
 	"zenhack.net/go/vdom"
 	"zenhack.net/go/vdom/tea"
@@ -47,8 +48,9 @@ func Main() {
 	fut, rel := api.GetLoginSession(ctx, nil)
 	defer rel()
 	_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {
-		p.SetInto(collection.Pusher_ServerToClient(grainPusher{
+		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.Grain]{
 			sendMsg: app.SendMessage,
+			hooks:   grainPusher{},
 		}))
 		return nil
 	})

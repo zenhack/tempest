@@ -169,8 +169,9 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 		return m, nil
 	}
 	return m, func(ctx context.Context, sendMsg func(Msg)) {
-		pusher := collection.Pusher_ServerToClient(pkgPusher{
+		pusher := collection.Pusher_ServerToClient(pusher[types.ID[external.Package], external.Package]{
 			sendMsg: sendMsg,
+			hooks:   pkgPusher{},
 		})
 		ret, rel := sess.ListPackages(context.Background(), func(p external.LoginSession_listPackages_Params) error {
 			p.SetInto(pusher)

@@ -1,57 +1,39 @@
 package browsermain
 
 import (
-	"context"
 	"math"
 
 	"capnproto.org/go/capnp/v3"
-	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 )
 
+var _ pusherHooks[types.ID[external.Package], external.Package] = pkgPusher{}
+
 type pkgPusher struct {
-	sendMsg func(Msg)
 }
 
-func (pp pkgPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {
-	return exn.Try0(func(throw func(error)) {
-		args := p.Args()
-		key, err := args.Key()
-		throw(err)
-		val, err := args.Value()
-		throw(err)
-		srcPkg := external.Package{}.DecodeFromPtr(val)
-
+func (pp pkgPusher) Upsert(id types.ID[external.Package], pkg external.Package) (Msg, error) {
+	return exn.Try(func(throw func(error)) Msg {
+		// Copy over to a new message to avoid early release:
 		_, seg := capnp.NewSingleSegmentMessage(nil)
 		dstPkg, err := external.NewPackage(seg)
 		throw(err)
-		throw(capnp.Struct(dstPkg).CopyFrom(capnp.Struct(srcPkg)))
+		throw(capnp.Struct(dstPkg).CopyFrom(capnp.Struct(pkg)))
 		dstPkg.Message().ResetReadLimit(math.MaxUint64)
 
-		pp.sendMsg(UpsertPackage{
-			ID:  types.ID[external.Package](key.Text()),
+		return UpsertPackage{
+			ID:  id,
 			Pkg: dstPkg,
-		})
+		}
 	})
 }
 
-func (pp pkgPusher) Remove(ctx context.Context, p collection.Pusher_remove) error {
-	return exn.Try0(func(throw func(error)) {
-		key, err := p.Args().Key()
-		throw(err)
-		pp.sendMsg(RemovePackage{
-			ID: types.ID[external.Package](key.Text()),
-		})
-	})
+func (pp pkgPusher) Remove(id types.ID[external.Package]) Msg {
+	return RemovePackage{ID: id}
 }
 
-func (pp pkgPusher) Clear(context.Context, collection.Pusher_clear) error {
-	pp.sendMsg(ClearPackages{})
-	return nil
-}
-
-func (pkgPusher) Ready(context.Context, collection.Pusher_ready) error {
-	return nil
+func (pp pkgPusher) Clear() Msg {
+	return ClearPackages{}
 }

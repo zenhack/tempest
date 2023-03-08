@@ -1,58 +1,38 @@
 package browsermain
 
 import (
-	"context"
-
-	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 )
 
+var _ pusherHooks[types.GrainID, external.Grain] = grainPusher{}
+
 type grainPusher struct {
-	sendMsg func(Msg)
 }
 
-func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {
-	return exn.Try0(func(throw func(error)) {
-		args := p.Args()
-		key, err := args.Key()
-		throw(err)
-		val, err := args.Value()
-		throw(err)
-		grain := external.Grain{}.DecodeFromPtr(val)
-
+func (gp grainPusher) Upsert(id types.GrainID, grain external.Grain) (Msg, error) {
+	return exn.Try(func(throw func(error)) Msg {
 		title, err := grain.Title()
 		throw(err)
 		sessionToken, err := grain.SessionToken()
 		throw(err)
 
-		gp.sendMsg(UpsertGrain{
-			ID: types.GrainID(key.Text()),
+		return UpsertGrain{
+			ID: id,
 			Grain: Grain{
 				Title:        title,
 				SessionToken: sessionToken,
 				Handle:       grain.Handle().AddRef(),
 			},
-		})
+		}
 	})
 }
 
-func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) error {
-	return exn.Try0(func(throw func(error)) {
-		key, err := p.Args().Key()
-		throw(err)
-		gp.sendMsg(RemoveGrain{
-			ID: types.GrainID(key.Text()),
-		})
-	})
+func (gp grainPusher) Remove(id types.GrainID) Msg {
+	return RemoveGrain{ID: id}
 }
 
-func (gp grainPusher) Clear(context.Context, collection.Pusher_clear) error {
-	gp.sendMsg(ClearGrains{})
-	return nil
-}
-
-func (gp grainPusher) Ready(context.Context, collection.Pusher_ready) error {
-	return nil
+func (gp grainPusher) Clear() Msg {
+	return ClearGrains{}
 }
