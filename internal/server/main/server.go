@@ -52,7 +52,7 @@ func (p *webSessionParams) Insert(into websession.Params) error {
 
 // A server encapsulates the state of a running server.
 type server struct {
-	rootDomain   string // Main Sandstorm domain name
+	rootDomain   string // Main Tempest domain name
 	log          log.Interface
 	db           database.DB
 	sessionStore session.Store
