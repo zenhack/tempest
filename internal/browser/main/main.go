@@ -47,7 +47,7 @@ func Main() {
 		for {
 			up.Update(m.View(uiMsgs))
 			msg := <-uiMsgs
-			m, cmd = msg.Apply(m)
+			m, cmd = msg.Update(m)
 			if cmd != nil {
 				go cmd(ctx, uiMsgs)
 			}

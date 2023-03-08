@@ -14,7 +14,7 @@ import (
 type Cmd = func(context.Context, chan<- Msg)
 
 type Msg interface {
-	Apply(Model) (Model, Cmd)
+	Update(Model) (Model, Cmd)
 }
 
 type NewError struct {
@@ -59,52 +59,52 @@ type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
 }
 
-func (msg NewError) Apply(m Model) (Model, Cmd) {
+func (msg NewError) Update(m Model) (Model, Cmd) {
 	m.Error = msg.Err
 	return m, nil
 }
 
-func (msg UpsertGrain) Apply(m Model) (Model, Cmd) {
+func (msg UpsertGrain) Update(m Model) (Model, Cmd) {
 	m.Grains[msg.Id].Handle.Release()
 	m.Grains[msg.Id] = msg.Grain
 	return m, nil
 }
 
-func (msg RemoveGrain) Apply(m Model) (Model, Cmd) {
+func (msg RemoveGrain) Update(m Model) (Model, Cmd) {
 	m.Grains[msg.Id].Handle.Release()
 	delete(m.Grains, msg.Id)
 	return m, nil
 }
 
-func (ClearGrains) Apply(m Model) (Model, Cmd) {
+func (ClearGrains) Update(m Model) (Model, Cmd) {
 	m.Grains = make(map[types.ID[Grain]]Grain)
 	return m, nil
 }
 
-func (msg UpsertPackage) Apply(m Model) (Model, Cmd) {
+func (msg UpsertPackage) Update(m Model) (Model, Cmd) {
 	m.Packages[msg.Id].Controller().Release()
 	m.Packages[msg.Id] = msg.Pkg
 	return m, nil
 }
 
-func (msg RemovePackage) Apply(m Model) (Model, Cmd) {
+func (msg RemovePackage) Update(m Model) (Model, Cmd) {
 	// TODO(perf): release the whole message?
 	m.Packages[msg.Id].Controller().Release()
 	delete(m.Packages, msg.Id)
 	return m, nil
 }
 
-func (ClearPackages) Apply(m Model) (Model, Cmd) {
+func (ClearPackages) Update(m Model) (Model, Cmd) {
 	m.Packages = make(map[types.ID[external.Package]]external.Package)
 	return m, nil
 }
 
-func (msg ChangeFocus) Apply(m Model) (Model, Cmd) {
+func (msg ChangeFocus) Update(m Model) (Model, Cmd) {
 	m.CurrentFocus = msg.NewFocus
 	return m, nil
 }
 
-func (msg FocusGrain) Apply(m Model) (Model, Cmd) {
+func (msg FocusGrain) Update(m Model) (Model, Cmd) {
 	m.CurrentFocus = FocusOpenGrain
 	m.FocusedGrain = msg.Id
 	_, ok := m.OpenGrains[msg.Id]
@@ -118,7 +118,7 @@ func (msg FocusGrain) Apply(m Model) (Model, Cmd) {
 	return m, nil
 }
 
-func (msg SpawnGrain) Apply(m Model) (Model, Cmd) {
+func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 	pkg := m.Packages[msg.PkgID]
 
 	ctrl := pkg.Controller().AddRef()
@@ -163,7 +163,7 @@ func (msg SpawnGrain) Apply(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg LoginSessionResult) Apply(m Model) (Model, Cmd) {
+func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 	m.LoginSession = maybe.New(msg.Result)
 	sess, err := msg.Result.Get()
 	if err != nil {
