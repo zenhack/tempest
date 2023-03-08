@@ -1,9 +1,12 @@
 package session
 
-import "zenhack.net/go/tempest/internal/capnp/cookie"
+import (
+	"zenhack.net/go/tempest/internal/capnp/cookie"
+	"zenhack.net/go/tempest/internal/common/types"
+)
 
 type GrainSession struct {
-	GrainId   string
+	GrainId   types.GrainID
 	SessionId []byte
 }
 

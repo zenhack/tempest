@@ -6,6 +6,12 @@ package types
 // prevent mixing up identifiers for different types of objects.
 type ID[T any] string
 
+// Phantom type for use with ID.
+type Grain struct{}
+
+// GrainID is an alias for ID[Grain].
+type GrainID = ID[Grain]
+
 // A Credential is something that Tempest can authenticate a user as. Examples
 // (not necessarily all implemented) owner of an email address, SSO account.
 type Credential struct {

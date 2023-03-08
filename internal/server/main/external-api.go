@@ -10,6 +10,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
@@ -68,7 +69,7 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		releaseFuncs := []capnp.ReleaseFunc{rel}
 		for _, uiViewInfo := range info {
 			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
-				key, err := capnp.NewText(p.Segment(), uiViewInfo.Grain.Id)
+				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.Id))
 				throw(err)
 				p.SetKey(key.ToPtr())
 				g, err := external.NewGrain(p.Segment())
@@ -139,13 +140,13 @@ type pkgController struct {
 	pkg database.Package
 }
 
-func newGrainID() string {
+func newGrainID() types.GrainID {
 	// Oversize buffer so we don't have to think too hard about decoded vs. encoded
 	// length:
 	var buf [64]byte
 	_, err := rand.Read(buf[:])
 	util.Chkfatal(err)
-	return base64.URLEncoding.EncodeToString(buf[:])[:22]
+	return types.GrainID(base64.URLEncoding.EncodeToString(buf[:])[:22])
 }
 
 func (pc pkgController) Create(ctx context.Context, p external.Package_Controller_create) error {
@@ -170,7 +171,7 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		exn.WrapThrow(th, "getting account id", err)
 
 		err = os.MkdirAll(
-			config.Localstatedir+"/sandstorm/grains/"+grainID+"/sandbox",
+			config.Localstatedir+"/sandstorm/grains/"+string(grainID)+"/sandbox",
 			0770,
 		)
 		exn.WrapThrow(th, "creating grain sandbox directory", err)
@@ -185,7 +186,7 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		results, err := p.AllocResults()
 		th(err)
 
-		results.SetId(grainID)
+		results.SetId(string(grainID))
 		g, err := results.NewGrain()
 		th(err)
 		th(g.SetTitle(title))

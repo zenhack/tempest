@@ -16,6 +16,7 @@ import (
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
 	websession "zenhack.net/go/tempest/capnp/web-session"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/container"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/embed"
@@ -73,7 +74,7 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 		sessionStore: sessionStore,
 		state: mutex.New[serverState](serverState{
 			containers: ContainerSet{
-				containersByGrainId: make(map[string]container.Container),
+				containersByGrainId: make(map[types.GrainID]container.Container),
 			},
 			grainSessions: make(map[grainSessionKey]grainSession),
 		}),
@@ -82,7 +83,7 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 
 type grainSessionKey struct {
 	userSessionId string
-	grainId       string
+	grainId       types.GrainID
 
 	// Things that go in WebSession.Params.
 	basePath            string
@@ -286,7 +287,7 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 				return orerr.New(websession.WebSession{}, err)
 			}
 			defer tx.Rollback()
-			if err = tx.SetGrainViewInfo(sess.GrainId, viewInfo); err != nil {
+			if err = tx.SetGrainViewInfo(string(sess.GrainId), viewInfo); err != nil {
 				return orerr.New(websession.WebSession{}, err)
 			}
 			if err = tx.Commit(); err != nil {

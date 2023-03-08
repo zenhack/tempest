@@ -8,6 +8,7 @@ import (
 	"github.com/apex/log"
 	"zenhack.net/go/tempest/capnp/grain"
 	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/container"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/util"
@@ -33,10 +34,10 @@ type ContainerSet struct {
 	//   give us a clear way to ever shut down containers.
 	// - We need to think about detecting containers shutting down on
 	//   their own.
-	containersByGrainId map[string]container.Container
+	containersByGrainId map[types.GrainID]container.Container
 }
 
-func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainId string) (container.Container, error) {
+func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainId types.GrainID) (container.Container, error) {
 	c, ok := cset.containersByGrainId[grainId]
 	if ok {
 		return c, nil

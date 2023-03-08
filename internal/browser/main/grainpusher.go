@@ -28,7 +28,7 @@ func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) er
 		throw(err)
 
 		gp.sendMsg(UpsertGrain{
-			Id: types.ID[Grain](key.Text()),
+			Id: types.GrainID(key.Text()),
 			Grain: Grain{
 				Title:        title,
 				SessionToken: sessionToken,
@@ -43,7 +43,7 @@ func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) er
 		key, err := p.Args().Key()
 		throw(err)
 		gp.sendMsg(RemoveGrain{
-			Id: types.ID[Grain](key.Text()),
+			Id: types.GrainID(key.Text()),
 		})
 	})
 }

@@ -21,12 +21,12 @@ type NewError struct {
 }
 
 type UpsertGrain struct {
-	Id    types.ID[Grain]
+	Id    types.GrainID
 	Grain Grain
 }
 
 type RemoveGrain struct {
-	Id types.ID[Grain]
+	Id types.GrainID
 }
 
 type ClearGrains struct{}
@@ -47,7 +47,7 @@ type ChangeFocus struct {
 }
 
 type FocusGrain struct {
-	Id types.ID[Grain]
+	Id types.GrainID
 }
 
 type SpawnGrain struct {
@@ -76,7 +76,7 @@ func (msg RemoveGrain) Update(m Model) (Model, Cmd) {
 }
 
 func (ClearGrains) Update(m Model) (Model, Cmd) {
-	m.Grains = make(map[types.ID[Grain]]Grain)
+	m.Grains = make(map[types.GrainID]Grain)
 	return m, nil
 }
 
@@ -147,14 +147,14 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 			throw(err)
 
 			sendMsg(UpsertGrain{
-				Id: types.ID[Grain](id),
+				Id: types.GrainID(id),
 				Grain: Grain{
 					Title:        title,
 					SessionToken: sessionToken,
 					Handle:       grain.Handle().AddRef(),
 				},
 			})
-			sendMsg(FocusGrain{Id: types.ID[Grain](id)})
+			sendMsg(FocusGrain{Id: types.GrainID(id)})
 		})
 		if err != nil {
 			sendMsg(NewError{Err: err})

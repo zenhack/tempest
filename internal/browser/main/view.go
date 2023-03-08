@@ -26,7 +26,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 		switch m.CurrentFocus {
 		case FocusGrainList:
 			kvs := maps.Items(m.Grains)
-			slices.SortOn(kvs, func(kv maps.KV[types.ID[Grain], Grain]) string {
+			slices.SortOn(kvs, func(kv maps.KV[types.GrainID, Grain]) string {
 				return kv.Value.Title
 			})
 			var grainNodes []vdom.VNode
@@ -48,7 +48,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 		}
 	}
 	keys := maps.Keys(m.OpenGrains)
-	slices.SortOn(keys, func(k types.ID[Grain]) string {
+	slices.SortOn(keys, func(k types.GrainID) string {
 		return m.Grains[k].Title
 	})
 	var activeGrainNodes []vdom.VNode
@@ -171,7 +171,7 @@ func viewLoginForm() vdom.VNode {
 	)
 }
 
-func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.ID[Grain], grain Grain, isFocused bool) vdom.VNode {
+func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
 	onClick := msgEvent(FocusGrain{Id: id})
 	classes := "nav-link"
 	if isFocused {
@@ -186,12 +186,12 @@ func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.ID[Grain], gra
 	)
 }
 
-func viewGrain(msgEvent func(Msg) vdom.EventHandler, id types.ID[Grain], grain Grain) vdom.VNode {
+func viewGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain) vdom.VNode {
 	// XXX
 	return viewOpenGrain(msgEvent, id, grain, false)
 }
 
-func viewGrainIframe(m Model, id types.ID[Grain]) vdom.VNode {
+func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
 	grain := m.Grains[id]
 	open := m.OpenGrains[id]
 

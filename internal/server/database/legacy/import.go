@@ -265,7 +265,7 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 			for _, e := range elts {
 				switch e.Key() {
 				case "_id":
-					grain.GrainId = e.Value().StringValue()
+					grain.GrainId = types.GrainID(e.Value().StringValue())
 				case "packageId":
 					grain.PkgId = e.Value().StringValue()
 				case "title":

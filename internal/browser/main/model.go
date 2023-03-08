@@ -15,15 +15,15 @@ import (
 type Model struct {
 	ServerAddr   ServerAddr
 	CurrentFocus Focus
-	FocusedGrain types.ID[Grain] // ID for the currently focused grain
+	FocusedGrain types.GrainID // ID for the currently focused grain
 
 	// If non-nil, an error to display to the user. As the UI
 	// evolves, we will probably want a way to have more than one
 	// of these/maybe privde some extra metadata etc. but YAGNI.
 	Error error
 
-	Grains     map[types.ID[Grain]]Grain
-	OpenGrains map[types.ID[Grain]]OpenGrain
+	Grains     map[types.GrainID]Grain
+	OpenGrains map[types.GrainID]OpenGrain
 	Packages   map[types.ID[external.Package]]external.Package
 
 	// Keeps track of the order we need to display grain iframes in.
@@ -32,7 +32,7 @@ type Model struct {
 	// So we keep them in a stable order, rendering empty slots
 	// as dummyNode, and hiding everything but the active grain
 	// with CSS (display: none).
-	GrainDomOrder poolslice.PoolSlice[types.ID[Grain]]
+	GrainDomOrder poolslice.PoolSlice[types.GrainID]
 
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
@@ -74,8 +74,8 @@ func initModel() Model {
 			TLS:  loc.Get("protocol").String() == "https:",
 			Host: loc.Get("host").String(),
 		},
-		Grains:     make(map[types.ID[Grain]]Grain),
-		OpenGrains: make(map[types.ID[Grain]]OpenGrain),
+		Grains:     make(map[types.GrainID]Grain),
+		OpenGrains: make(map[types.GrainID]OpenGrain),
 		Packages:   make(map[types.ID[external.Package]]external.Package),
 	}
 }

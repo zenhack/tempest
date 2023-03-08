@@ -67,7 +67,7 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 }
 
 type NewGrain struct {
-	GrainId string
+	GrainId types.GrainID
 	PkgId   string
 	OwnerId string
 	Title   string
@@ -136,7 +136,7 @@ func (tx Tx) AddGrain(g NewGrain) error {
 }
 
 // Returns the package id for the specified grain
-func (tx Tx) GetGrainPackageId(grainId string) (string, error) {
+func (tx Tx) GetGrainPackageId(grainId types.GrainID) (string, error) {
 	row := tx.sqlTx.QueryRow("SELECT packageId FROM grains WHERE id = ?", grainId)
 	var result string
 	err := row.Scan(&result)
@@ -144,7 +144,7 @@ func (tx Tx) GetGrainPackageId(grainId string) (string, error) {
 }
 
 type GrainInfo struct {
-	Id    string
+	Id    types.GrainID
 	Title string
 	Owner string
 }
@@ -216,7 +216,7 @@ func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
 	return ret, rows.Err()
 }
 
-func (tx Tx) getGrainOwner(grainId string) (accountId string, err error) {
+func (tx Tx) getGrainOwner(grainId types.GrainID) (accountId string, err error) {
 	err = tx.sqlTx.QueryRow(
 		`SELECT ownerId FROM grains WHERE id = ?`,
 		grainId,
@@ -237,7 +237,7 @@ func genLostToken() [sha256.Size]byte {
 // createOwnerSturdyRef adds a uiViewSturdyRef for the grain's root
 // uiView, belonging to its owner. Should be called once when the grain
 // is created.
-func (tx Tx) createOwnerSturdyRef(grainId string) error {
+func (tx Tx) createOwnerSturdyRef(grainId types.GrainID) error {
 	hash := genLostToken()
 	ownerId, err := tx.getGrainOwner(grainId)
 	if err != nil {

@@ -15,6 +15,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"zenhack.net/go/tempest/capnp/grain"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/util"
@@ -49,7 +50,7 @@ type Command struct {
 	DB  database.DB
 
 	// GrainID is the ID of the grain to start
-	GrainID string
+	GrainID types.GrainID
 
 	// Api will be provided to the grain as our bootstrap interface.
 	Api grain.SandstormApi
@@ -113,7 +114,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 
 	args := append([]string{
 		cmd.PkgID,
-		cmd.GrainID,
+		string(cmd.GrainID),
 	}, cmd.Args...)
 	osCmd := exec.Command(
 		config.Libexecdir+"/tempest/tempest-sandbox-launcher",
