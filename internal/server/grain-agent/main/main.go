@@ -99,34 +99,45 @@ func Main() {
 
 	switch launchCmd.Which() {
 	case grainagent.LaunchCommand_Which_continueGrain:
-		spkCmd, err := manifest.ContinueCommand()
+		cmd, err := manifest.ContinueCommand()
 		util.Chkfatal(err)
-		cmd, err := parseCmd(spkCmd)
+		spawnSpkCmd(lg, appTitleText, cmd)
+	case grainagent.LaunchCommand_Which_initGrain:
+		index := launchCmd.InitGrain()
+		actions, err := manifest.Actions()
 		util.Chkfatal(err)
-
-		lg.WithFields(log.Fields{
-			"appTitle": appTitleText,
-			"command":  cmd.Args,
-		}).Info("Starting up app")
-
-		osCmd := cmd.ToOsCmd()
-
-		// TODO: make direct these in a more structured way?
-		osCmd.Stdout = os.Stdout
-		osCmd.Stderr = os.Stderr
-
-		apiSocket := os.NewFile(3, "supervisor socket")
-		osCmd.ExtraFiles = []*os.File{apiSocket}
-
-		util.Chkfatal(osCmd.Start())
-		defer os.Exit(1)
-		util.Chkfatal(osCmd.Wait())
-		lg.Info("App exited; shutting down grain.")
+		cmd, err := actions.At(int(index)).Command()
+		util.Chkfatal(err)
+		spawnSpkCmd(lg, appTitleText, cmd)
 	default:
 		lg.WithFields(log.Fields{
 			"launch command": launchCmd.Which(),
 		}).Error("BUG: Unrecognized launch command")
 	}
+}
+
+func spawnSpkCmd(lg log.Interface, appTitle string, spkCmd spk.Manifest_Command) {
+	cmd, err := parseCmd(spkCmd)
+	util.Chkfatal(err)
+
+	lg.WithFields(log.Fields{
+		"appTitle": appTitle,
+		"command":  cmd.Args,
+	}).Info("Starting up app")
+
+	osCmd := cmd.ToOsCmd()
+
+	// TODO: make direct these in a more structured way?
+	osCmd.Stdout = os.Stdout
+	osCmd.Stderr = os.Stderr
+
+	apiSocket := os.NewFile(3, "supervisor socket")
+	osCmd.ExtraFiles = []*os.File{apiSocket}
+
+	util.Chkfatal(osCmd.Start())
+	defer os.Exit(1)
+	util.Chkfatal(osCmd.Wait())
+	lg.Info("App exited; shutting down grain.")
 }
 
 func startCapnpApi(lg log.Interface) error {
