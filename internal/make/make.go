@@ -448,6 +448,7 @@ func run(args ...string) {
 		c := readConfig()
 		chkfatal(withMyOuts(
 			exec.Command("sudo",
+				"--preserve-env",
 				"-u", c.User,
 				"-g", c.Group,
 				c.Bindir+"/tempest"),
