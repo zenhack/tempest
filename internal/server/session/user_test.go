@@ -12,10 +12,10 @@ func TestUserSealUnseal(t *testing.T) {
 	cases := []UserSession{
 		{},
 		{
-			SessionId: []byte("1234"),
+			SessionID: []byte("1234"),
 			Credential: types.Credential{
 				Type:     "dev",
-				ScopedId: "Alice Dev Admin",
+				ScopedID: "Alice Dev Admin",
 			},
 		},
 	}

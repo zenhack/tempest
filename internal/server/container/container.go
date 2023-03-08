@@ -63,18 +63,18 @@ type Command struct {
 // Kill() is called.
 func (cmd Command) Start(ctx context.Context) (Container, error) {
 	cmd.Log.WithFields(log.Fields{
-		"grainId": cmd.GrainID,
+		"grainID": cmd.GrainID,
 	}).Info("Starting grain")
 	return exn.Try(func(throw func(error)) Container {
 		tx, err := cmd.DB.Begin()
 		throw(err)
 		defer tx.Rollback()
-		pkgId, err := tx.GetGrainPackageId(cmd.GrainID)
+		pkgID, err := tx.GetGrainPackageID(cmd.GrainID)
 		throw(err)
 		throw(tx.Commit())
 		ret, err := pkgCommand{
 			Command: cmd,
-			PkgID:   pkgId,
+			PkgID:   pkgID,
 		}.Start(ctx)
 		throw(err)
 		return ret
@@ -130,7 +130,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	pidW.Close() // Close this now, so when the child closes it we hit EOF.
 	if err != nil {
 		cmd.Log.WithFields(log.Fields{
-			"grainId": cmd.GrainID,
+			"grainID": cmd.GrainID,
 			"error":   err,
 		}).Error("Starting sandbox launcher failed")
 		cmd.Api.Release()
@@ -139,7 +139,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	}
 	cmd.Log.WithFields(log.Fields{
 		"launcher-pid": osCmd.Process.Pid,
-		"grainId":      cmd.GrainID,
+		"grainID":      cmd.GrainID,
 	}).Debug("Started launcher proccess")
 
 	pidBuf, err := io.ReadAll(pidR)
@@ -148,7 +148,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 		cmd.Log.WithFields(log.Fields{
 			"error":        err,
 			"read":         string(pidBuf),
-			"grainId":      cmd.GrainID,
+			"grainID":      cmd.GrainID,
 			"launcher-pid": launcherPid,
 		}).Error("Failed to read grain pid")
 		return Container{}, err
@@ -158,7 +158,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	if err != nil {
 		cmd.Log.WithFields(log.Fields{
 			"error":        err,
-			"grainId":      cmd.GrainID,
+			"grainID":      cmd.GrainID,
 			"launcher-pid": launcherPid,
 			"bad-pid":      strconv.Quote(string(pidBuf)),
 		}).Error("bug: sandbox-launcher returned invalid pid")
@@ -170,7 +170,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	grainProc, err := os.FindProcess(grainPid)
 	util.Chkfatal(err) // Can't fail on unix
 	cmd.Log.WithFields(log.Fields{
-		"grainId":      cmd.GrainID,
+		"grainID":      cmd.GrainID,
 		"packageId":    cmd.PkgID,
 		"launcher-pid": launcherPid,
 		"grain-pid":    grainPid,
@@ -189,7 +189,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 		if err := grainProc.Kill(); err != nil {
 			cmd.Log.WithFields(log.Fields{
 				"error":        err,
-				"grainId":      cmd.GrainID,
+				"grainID":      cmd.GrainID,
 				"launcher-pid": launcherPid,
 				"grain-pid":    grainPid,
 			}).Fatal("Failed to kill grain")
@@ -198,7 +198,7 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 		if _, err := osCmd.Process.Wait(); err != nil {
 			cmd.Log.WithFields(log.Fields{
 				"error":        err,
-				"grainId":      cmd.GrainID,
+				"grainID":      cmd.GrainID,
 				"launcher-pid": launcherPid,
 				"grain-pid":    grainPid,
 			}).Fatal("Failed to wait() on launcher")

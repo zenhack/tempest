@@ -69,15 +69,15 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		releaseFuncs := []capnp.ReleaseFunc{rel}
 		for _, uiViewInfo := range info {
 			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
-				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.Id))
+				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())
 				g, err := external.NewGrain(p.Segment())
 				throw(err)
 				g.SetTitle(uiViewInfo.Grain.Title)
 				sessionToken, err := session.GrainSession{
-					GrainId:   uiViewInfo.Grain.Id,
-					SessionId: s.userSession.SessionId,
+					GrainID:   uiViewInfo.Grain.ID,
+					SessionID: s.userSession.SessionID,
 				}.Seal(s.sessionStore)
 				throw(err)
 				g.SetSessionToken(sessionToken)
@@ -111,7 +111,7 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 		releaseFuncs := []capnp.ReleaseFunc{rel}
 		for _, dbPkg := range dbPkgs {
 			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
-				key, err := capnp.NewText(p.Segment(), dbPkg.Id)
+				key, err := capnp.NewText(p.Segment(), dbPkg.ID)
 				throw(err)
 				p.SetKey(key.ToPtr())
 				pkg, err := external.NewPackage(p.Segment())
@@ -176,10 +176,10 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		)
 		exn.WrapThrow(th, "creating grain sandbox directory", err)
 		err = tx.AddGrain(database.NewGrain{
-			GrainId: grainID,
-			PkgId:   pc.pkg.Id,
+			GrainID: grainID,
+			PkgID:   pc.pkg.ID,
 			Title:   title,
-			OwnerId: accountID,
+			OwnerID: accountID,
 		})
 		exn.WrapThrow(th, "creating grain in database", err)
 
@@ -193,8 +193,8 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		// FIXME: Start the grain with the right action; as is this will just get launched w/
 		// continue when it hits the UI. Will still work for many apps.
 		sessionToken, err := session.GrainSession{
-			GrainId:   grainID,
-			SessionId: pc.userSession.SessionId,
+			GrainID:   grainID,
+			SessionID: pc.userSession.SessionID,
 		}.Seal(pc.sessionStore)
 		exn.WrapThrow(th, "creating grain session token", err)
 		th(g.SetSessionToken(sessionToken))

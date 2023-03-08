@@ -74,7 +74,7 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 		sessionStore: sessionStore,
 		state: mutex.New[serverState](serverState{
 			containers: ContainerSet{
-				containersByGrainId: make(map[types.GrainID]container.Container),
+				containersByGrainID: make(map[types.GrainID]container.Container),
 			},
 			grainSessions: make(map[grainSessionKey]grainSession),
 		}),
@@ -82,8 +82,8 @@ func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore
 }
 
 type grainSessionKey struct {
-	userSessionId string
-	grainId       types.GrainID
+	userSessionID string
+	grainID       types.GrainID
 
 	// Things that go in WebSession.Params.
 	basePath            string
@@ -158,7 +158,7 @@ func (s *server) Handler() http.Handler {
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					s.log.WithFields(log.Fields{
-						"grainId": sess.GrainId,
+						"grainID": sess.GrainID,
 						"params":  wsp,
 						"error":   err,
 					}).Error("Could not get web session reference")
@@ -191,7 +191,7 @@ func (s *server) Handler() http.Handler {
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			sess.Credential.Type = "dev"
-			sess.Credential.ScopedId = req.FormValue("name")
+			sess.Credential.ScopedID = req.FormValue("name")
 			var buf [32]byte
 			_, err := rand.Read(buf[:])
 			if err != nil {
@@ -199,7 +199,7 @@ func (s *server) Handler() http.Handler {
 				s.log.WithField("error", err).Error("crypto/rand.Read() failed")
 				return
 			}
-			sess.SessionId = buf[:]
+			sess.SessionID = buf[:]
 			session.WriteCookie(s.sessionStore, req, w, sess)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)
@@ -253,8 +253,8 @@ func (s *server) Handler() http.Handler {
 func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess session.GrainSession) (websession.WebSession, error) {
 
 	key := grainSessionKey{
-		userSessionId: string(sess.SessionId),
-		grainId:       sess.GrainId,
+		userSessionID: string(sess.SessionID),
+		grainID:       sess.GrainID,
 
 		basePath:            wsp.BasePath,
 		userAgent:           wsp.UserAgent,
@@ -265,7 +265,7 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 		if ok {
 			return gs.webSession
 		}
-		c, err := state.containers.Get(context.Background(), s.log, s.db, sess.GrainId)
+		c, err := state.containers.Get(context.Background(), s.log, s.db, sess.GrainID)
 		if err != nil {
 			return thunk.Ready(orerr.New(websession.WebSession{}, err))
 		}
@@ -287,7 +287,7 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 				return orerr.New(websession.WebSession{}, err)
 			}
 			defer tx.Rollback()
-			if err = tx.SetGrainViewInfo(string(sess.GrainId), viewInfo); err != nil {
+			if err = tx.SetGrainViewInfo(string(sess.GrainID), viewInfo); err != nil {
 				return orerr.New(websession.WebSession{}, err)
 			}
 			if err = tx.Commit(); err != nil {

@@ -69,7 +69,7 @@ func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw)
 }
 
 type user struct {
-	Id      string
+	ID      string
 	Type    string
 	IsAdmin bool
 	Profile struct {
@@ -115,7 +115,7 @@ func decodeUser(raw bson.Raw) (user, error) {
 		for _, e := range elts {
 			switch e.Key() {
 			case "_id":
-				ret.Id = e.Value().StringValue()
+				ret.ID = e.Value().StringValue()
 			case "type":
 				ret.Type = e.Value().StringValue()
 			case "isAdmin":
@@ -164,7 +164,7 @@ func decodeUser(raw bson.Raw) (user, error) {
 }
 
 type credentialOwner struct {
-	accountId string
+	accountID string
 	login     bool
 }
 
@@ -182,20 +182,20 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 				return
 			}
 			throw(tx.AddAccount(database.NewAccount{
-				Id:      u.Id,
+				ID:      u.ID,
 				IsAdmin: u.IsAdmin,
 				Profile: u.Profile,
 			}))
 			// Store these for lookup during the second pass:
-			for _, credId := range u.LoginCredentials {
-				credentialOwners[credId] = credentialOwner{
-					accountId: u.Id,
+			for _, credID := range u.LoginCredentials {
+				credentialOwners[credID] = credentialOwner{
+					accountID: u.ID,
 					login:     true,
 				}
 			}
-			for _, credId := range u.NonloginCredentials {
-				credentialOwners[credId] = credentialOwner{
-					accountId: u.Id,
+			for _, credID := range u.NonloginCredentials {
+				credentialOwners[credID] = credentialOwner{
+					accountID: u.ID,
 					login:     false,
 				}
 			}
@@ -207,14 +207,14 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			if u.Type != "credential" {
 				return
 			}
-			owner := credentialOwners[u.Id]
+			owner := credentialOwners[u.ID]
 			var entry database.NewCredential
-			entry.AccountId = owner.accountId
+			entry.AccountID = owner.accountID
 			entry.Login = owner.login
 			if u.Services.Dev.Name != "" {
 				entry.Credential = types.Credential{
 					Type:     "dev",
-					ScopedId: u.Services.Dev.Name,
+					ScopedID: u.Services.Dev.Name,
 				}
 				throw(tx.AddCredential(entry))
 			} else {
@@ -244,7 +244,7 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 					manifest, err := spk.ReadRootManifest(msg)
 					throw(err)
 					throw(tx.AddPackage(database.Package{
-						Id:       id,
+						ID:       id,
 						Manifest: manifest,
 					}))
 					break
@@ -265,13 +265,13 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 			for _, e := range elts {
 				switch e.Key() {
 				case "_id":
-					grain.GrainId = types.GrainID(e.Value().StringValue())
+					grain.GrainID = types.GrainID(e.Value().StringValue())
 				case "packageId":
-					grain.PkgId = e.Value().StringValue()
+					grain.PkgID = e.Value().StringValue()
 				case "title":
 					grain.Title = e.Value().StringValue()
 				case "userId":
-					grain.OwnerId = e.Value().StringValue()
+					grain.OwnerID = e.Value().StringValue()
 				}
 			}
 

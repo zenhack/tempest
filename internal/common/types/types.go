@@ -18,10 +18,10 @@ type Credential struct {
 	// Type defines the type of credential this is.
 	Type CredentialType
 
-	// ScopedId is an identifier for this credential that is unique for
+	// ScopedID is an identifier for this credential that is unique for
 	// all credentials of the same type. For example, if the credential
 	// type is email addresses, then this could be the address itself.
-	ScopedId string
+	ScopedID string `capnp:"scopedId"`
 }
 
 // A Type of credential

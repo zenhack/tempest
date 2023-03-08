@@ -15,7 +15,7 @@ func TestGetCredentialAccount(t *testing.T) {
 
 		id, err := tx.GetCredentialAccount(types.Credential{
 			Type:     "dev",
-			ScopedId: "Alice Dev Admin",
+			ScopedID: "Alice Dev Admin",
 		})
 		assert.NoError(t, err)
 		assert.Equal(t, id, "id_alice")
@@ -35,13 +35,13 @@ func TestGetUiViews(t *testing.T) {
 
 		views, err := tx.GetCredentialUiViews(types.Credential{
 			Type:     "dev",
-			ScopedId: "Alice Dev Admin",
+			ScopedID: "Alice Dev Admin",
 		})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, len(views))
 		assert.Equal(t, GrainInfo{
-			Id:    "grain123",
+			ID:    "grain123",
 			Title: "Example Grain",
 			Owner: "id_alice",
 		}, views[0].Grain)
@@ -53,7 +53,7 @@ func TestGetUiViews(t *testing.T) {
 func addTestData(t *testing.T, tx Tx) {
 	accounts := []NewAccount{
 		{
-			Id:      "id_alice",
+			ID:      "id_alice",
 			IsAdmin: true,
 			Profile: Profile{
 				DisplayName:     "Alice",
@@ -61,7 +61,7 @@ func addTestData(t *testing.T, tx Tx) {
 			},
 		},
 		{
-			Id:      "id_bob",
+			ID:      "id_bob",
 			IsAdmin: false,
 			Profile: Profile{
 				DisplayName:     "Bob",
@@ -72,35 +72,35 @@ func addTestData(t *testing.T, tx Tx) {
 
 	credentials := []NewCredential{
 		{
-			AccountId: "id_alice",
+			AccountID: "id_alice",
 			Login:     true,
 			Credential: types.Credential{
 				Type:     "dev",
-				ScopedId: "Alice Dev Admin",
+				ScopedID: "Alice Dev Admin",
 			},
 		},
 		{
-			AccountId: "id_bob",
+			AccountID: "id_bob",
 			Login:     true,
 			Credential: types.Credential{
 				Type:     "dev",
-				ScopedId: "Bob Dev User",
+				ScopedID: "Bob Dev User",
 			},
 		},
 	}
 
 	packages := []Package{
 		{
-			Id: "abcdef",
+			ID: "abcdef",
 			// FIXME: Manifest
 		},
 	}
 
 	grains := []NewGrain{
 		{
-			GrainId: "grain123",
-			PkgId:   "abcdef",
-			OwnerId: "id_alice",
+			GrainID: "grain123",
+			PkgID:   "abcdef",
+			OwnerID: "id_alice",
 			Title:   "Example Grain",
 		},
 	}

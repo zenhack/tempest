@@ -34,20 +34,20 @@ func newCapnpAEAD(key [32]byte) capnpAEAD {
 	return capnpAEAD{aead: aead}
 }
 
-// typeIdToAD converts a numeric type ID to a byte array, suitable for passing in as
+// typeIDToAD converts a numeric type ID to a byte array, suitable for passing in as
 // additional data.
-func typeIdToAD(id uint64) [8]byte {
+func typeIDToAD(id uint64) [8]byte {
 	var ret [8]byte
 	binary.LittleEndian.PutUint64(ret[:], id)
 	return ret
 }
 
 // sealCapnp encrypts & authenticates a capnproto message, whose root object's
-// type is given as typeId.
-func (a capnpAEAD) sealCapnp(msg *capnp.Message, typeId uint64) []byte {
+// type is given as typeID.
+func (a capnpAEAD) sealCapnp(msg *capnp.Message, typeID uint64) []byte {
 	plaintext, err := msg.Marshal()
 	util.Chkfatal(err)
-	ad := typeIdToAD(typeId)
+	ad := typeIDToAD(typeID)
 	var nonce [nonceSize]byte
 	_, err = rand.Read(nonce[:])
 	util.Chkfatal(err)
@@ -58,12 +58,12 @@ func (a capnpAEAD) sealCapnp(msg *capnp.Message, typeId uint64) []byte {
 // unsealCapnp decryptes & verifies the payload as a capnproto's message, whose
 // root object must have the given type id; verification will fail if this is
 // different than what was passed in to sealCapnp.
-func (a capnpAEAD) unsealCapnp(payload []byte, typeId uint64) (*capnp.Message, error) {
+func (a capnpAEAD) unsealCapnp(payload []byte, typeID uint64) (*capnp.Message, error) {
 	if len(payload) < nonceSize {
 		return nil, ErrPayloadTooShort
 	}
 	nonce, ciphertext := payload[:nonceSize], payload[nonceSize:]
-	ad := typeIdToAD(typeId)
+	ad := typeIDToAD(typeID)
 	plaintext, err := a.aead.Open(nil, nonce, ciphertext, ad[:])
 	if err != nil {
 		return nil, err

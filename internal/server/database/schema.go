@@ -9,7 +9,7 @@ import (
 
 // A Package records information about a package in the database.
 type Package struct {
-	Id       string       // The package id.
+	ID       string       // The package id.
 	Manifest spk.Manifest // The manifest as encoded in the spk.
 }
 

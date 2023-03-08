@@ -21,23 +21,23 @@ type NewError struct {
 }
 
 type UpsertGrain struct {
-	Id    types.GrainID
+	ID    types.GrainID
 	Grain Grain
 }
 
 type RemoveGrain struct {
-	Id types.GrainID
+	ID types.GrainID
 }
 
 type ClearGrains struct{}
 
 type UpsertPackage struct {
-	Id  types.ID[external.Package]
+	ID  types.ID[external.Package]
 	Pkg external.Package
 }
 
 type RemovePackage struct {
-	Id types.ID[external.Package]
+	ID types.ID[external.Package]
 }
 
 type ClearPackages struct{}
@@ -47,7 +47,7 @@ type ChangeFocus struct {
 }
 
 type FocusGrain struct {
-	Id types.GrainID
+	ID types.GrainID
 }
 
 type SpawnGrain struct {
@@ -64,14 +64,14 @@ func (msg NewError) Update(m Model) (Model, Cmd) {
 }
 
 func (msg UpsertGrain) Update(m Model) (Model, Cmd) {
-	m.Grains[msg.Id].Handle.Release()
-	m.Grains[msg.Id] = msg.Grain
+	m.Grains[msg.ID].Handle.Release()
+	m.Grains[msg.ID] = msg.Grain
 	return m, nil
 }
 
 func (msg RemoveGrain) Update(m Model) (Model, Cmd) {
-	m.Grains[msg.Id].Handle.Release()
-	delete(m.Grains, msg.Id)
+	m.Grains[msg.ID].Handle.Release()
+	delete(m.Grains, msg.ID)
 	return m, nil
 }
 
@@ -81,15 +81,15 @@ func (ClearGrains) Update(m Model) (Model, Cmd) {
 }
 
 func (msg UpsertPackage) Update(m Model) (Model, Cmd) {
-	m.Packages[msg.Id].Controller().Release()
-	m.Packages[msg.Id] = msg.Pkg
+	m.Packages[msg.ID].Controller().Release()
+	m.Packages[msg.ID] = msg.Pkg
 	return m, nil
 }
 
 func (msg RemovePackage) Update(m Model) (Model, Cmd) {
 	// TODO(perf): release the whole message?
-	m.Packages[msg.Id].Controller().Release()
-	delete(m.Packages, msg.Id)
+	m.Packages[msg.ID].Controller().Release()
+	delete(m.Packages, msg.ID)
 	return m, nil
 }
 
@@ -105,11 +105,11 @@ func (msg ChangeFocus) Update(m Model) (Model, Cmd) {
 
 func (msg FocusGrain) Update(m Model) (Model, Cmd) {
 	m.CurrentFocus = FocusOpenGrain
-	m.FocusedGrain = msg.Id
-	_, ok := m.OpenGrains[msg.Id]
+	m.FocusedGrain = msg.ID
+	_, ok := m.OpenGrains[msg.ID]
 	if !ok {
-		index := m.GrainDomOrder.Add(msg.Id)
-		m.OpenGrains[msg.Id] = OpenGrain{
+		index := m.GrainDomOrder.Add(msg.ID)
+		m.OpenGrains[msg.ID] = OpenGrain{
 			DomainNonce: newDomainNonce(),
 			DomIndex:    index,
 		}
@@ -147,14 +147,14 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 			throw(err)
 
 			sendMsg(UpsertGrain{
-				Id: types.GrainID(id),
+				ID: types.GrainID(id),
 				Grain: Grain{
 					Title:        title,
 					SessionToken: sessionToken,
 					Handle:       grain.Handle().AddRef(),
 				},
 			})
-			sendMsg(FocusGrain{Id: types.GrainID(id)})
+			sendMsg(FocusGrain{ID: types.GrainID(id)})
 		})
 		if err != nil {
 			sendMsg(NewError{Err: err})

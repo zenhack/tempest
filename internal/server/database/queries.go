@@ -19,7 +19,7 @@ import (
 
 // AddPackage adds a package to the database. The caller must separately ensure
 // that the contents of the package have been extracted to
-// <localstatedir>/sandstorm/apps/<pkg.Id>
+// <localstatedir>/sandstorm/apps/<pkg.ID>
 func (tx Tx) AddPackage(pkg Package) error {
 	manifestBlob, err := encodeCapnp(pkg.Manifest)
 	if err != nil {
@@ -30,7 +30,7 @@ func (tx Tx) AddPackage(pkg Package) error {
 			packages(id, manifest)
 			VALUES (?, ?)
 		`,
-		pkg.Id,
+		pkg.ID,
 		manifestBlob,
 	)
 	return err
@@ -53,7 +53,7 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 			pkg           Package
 			manifestBytes []byte
 		)
-		err = rows.Scan(&pkg.Id, &manifestBytes)
+		err = rows.Scan(&pkg.ID, &manifestBytes)
 		if err != nil {
 			return nil, err
 		}
@@ -67,14 +67,14 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 }
 
 type NewGrain struct {
-	GrainId types.GrainID
-	PkgId   string
-	OwnerId string
+	GrainID types.GrainID
+	PkgID   string
+	OwnerID string
 	Title   string
 }
 
 type NewAccount struct {
-	Id      string
+	ID      string
 	IsAdmin bool
 	Profile Profile
 }
@@ -85,7 +85,7 @@ type Profile struct {
 }
 
 type NewCredential struct {
-	AccountId  string
+	AccountID  string
 	Login      bool
 	Credential types.Credential
 }
@@ -99,7 +99,7 @@ func (tx Tx) AddAccount(a NewAccount) error {
 			, profilePreferredHandle
 			)
 			VALUES (?, ?, ?, ?)`,
-		a.Id,
+		a.ID,
 		a.IsAdmin,
 		a.Profile.DisplayName,
 		a.Profile.PreferredHandle,
@@ -116,10 +116,10 @@ func (tx Tx) AddCredential(c NewCredential) error {
 			, scopedId
 			)
 			VALUES (?, ?, ?, ?)`,
-		c.AccountId,
+		c.AccountID,
 		c.Login,
 		c.Credential.Type,
-		c.Credential.ScopedId,
+		c.Credential.ScopedID,
 	)
 	return err
 }
@@ -127,24 +127,24 @@ func (tx Tx) AddCredential(c NewCredential) error {
 func (tx Tx) AddGrain(g NewGrain) error {
 	_, err := tx.sqlTx.Exec(
 		`INSERT INTO grains(id, packageId, title, ownerId) VALUES (?, ?, ?, ?)`,
-		g.GrainId, g.PkgId, g.Title, g.OwnerId,
+		g.GrainID, g.PkgID, g.Title, g.OwnerID,
 	)
 	if err != nil {
 		return err
 	}
-	return tx.createOwnerSturdyRef(g.GrainId)
+	return tx.createOwnerSturdyRef(g.GrainID)
 }
 
 // Returns the package id for the specified grain
-func (tx Tx) GetGrainPackageId(grainId types.GrainID) (string, error) {
-	row := tx.sqlTx.QueryRow("SELECT packageId FROM grains WHERE id = ?", grainId)
+func (tx Tx) GetGrainPackageID(grainID types.GrainID) (string, error) {
+	row := tx.sqlTx.QueryRow("SELECT packageId FROM grains WHERE id = ?", grainID)
 	var result string
 	err := row.Scan(&result)
 	return result, err
 }
 
 type GrainInfo struct {
-	Id    types.GrainID
+	ID    types.GrainID
 	Title string
 	Owner string
 }
@@ -155,23 +155,23 @@ type UiViewInfo struct {
 }
 
 func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
-	accountId, err := tx.GetCredentialAccount(cred)
+	accountID, err := tx.GetCredentialAccount(cred)
 	if err != nil {
 		return nil, err
 	}
-	return tx.AccountUiViews(accountId)
+	return tx.AccountUiViews(accountID)
 }
 
-func (tx Tx) GetCredentialAccount(cred types.Credential) (accountId string, err error) {
+func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID string, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
-		cred.Type, cred.ScopedId,
+		cred.Type, cred.ScopedID,
 	)
-	err = row.Scan(&accountId)
+	err = row.Scan(&accountID)
 	return
 }
 
-func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
+func (tx Tx) AccountUiViews(accountID string) ([]UiViewInfo, error) {
 	rows, err := tx.sqlTx.Query(
 		`SELECT
 			grains.id,
@@ -187,7 +187,7 @@ func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
 			AND sturdyRefs.expires > ?
 		`,
 
-		"userkeyring-"+accountId,
+		"userkeyring-"+accountID,
 		time.Now().Unix(),
 	)
 	if err != nil {
@@ -199,7 +199,7 @@ func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
 		var item UiViewInfo
 		var perm string
 		err := rows.Scan(
-			&item.Grain.Id,
+			&item.Grain.ID,
 			&item.Grain.Title,
 			&item.Grain.Owner,
 			&perm,
@@ -216,11 +216,11 @@ func (tx Tx) AccountUiViews(accountId string) ([]UiViewInfo, error) {
 	return ret, rows.Err()
 }
 
-func (tx Tx) getGrainOwner(grainId types.GrainID) (accountId string, err error) {
+func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID string, err error) {
 	err = tx.sqlTx.QueryRow(
 		`SELECT ownerId FROM grains WHERE id = ?`,
-		grainId,
-	).Scan(&accountId)
+		grainID,
+	).Scan(&accountID)
 	return
 }
 
@@ -237,9 +237,9 @@ func genLostToken() [sha256.Size]byte {
 // createOwnerSturdyRef adds a uiViewSturdyRef for the grain's root
 // uiView, belonging to its owner. Should be called once when the grain
 // is created.
-func (tx Tx) createOwnerSturdyRef(grainId types.GrainID) error {
+func (tx Tx) createOwnerSturdyRef(grainID types.GrainID) error {
 	hash := genLostToken()
-	ownerId, err := tx.getGrainOwner(grainId)
+	ownerID, err := tx.getGrainOwner(grainID)
 	if err != nil {
 		return err
 	}
@@ -252,9 +252,9 @@ func (tx Tx) createOwnerSturdyRef(grainId types.GrainID) error {
 			-- objectId is NULL
 		) VALUES (?, ?, ?, ?)`,
 		hash[:],
-		"userkeyring-"+ownerId,
+		"userkeyring-"+ownerID,
 		math.MaxInt64,
-		grainId,
+		grainID,
 	)
 	if err != nil {
 		return err
@@ -310,7 +310,7 @@ func decodeCapnp[T ~capnp.StructKind](buf []byte) (T, error) {
 	return T(ptr.Struct()), err
 }
 
-func (tx Tx) SetGrainViewInfo(grainId string, viewInfo grain.UiView_ViewInfo) error {
+func (tx Tx) SetGrainViewInfo(grainID string, viewInfo grain.UiView_ViewInfo) error {
 	buf, err := encodeCapnp(viewInfo)
 	if err != nil {
 		return err
@@ -320,7 +320,7 @@ func (tx Tx) SetGrainViewInfo(grainId string, viewInfo grain.UiView_ViewInfo) er
 		SET cachedViewInfo = ?
 		WHERE id = ?`,
 		buf,
-		grainId,
+		grainID,
 	)
 	return err
 }

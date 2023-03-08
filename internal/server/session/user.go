@@ -6,7 +6,7 @@ import (
 )
 
 type UserSession struct {
-	SessionId  []byte
+	SessionID  []byte `capnp:"sessionId"`
 	Credential types.Credential
 }
 

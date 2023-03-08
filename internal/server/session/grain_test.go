@@ -11,8 +11,8 @@ func TestGrainSealUnseal(t *testing.T) {
 	cases := []GrainSession{
 		{},
 		{
-			GrainId:   "RfLg3jgaJMXq4cqMpGonwL",
-			SessionId: []byte("1234"),
+			GrainID:   "RfLg3jgaJMXq4cqMpGonwL",
+			SessionID: []byte("1234"),
 		},
 	}
 	for i, c := range cases {

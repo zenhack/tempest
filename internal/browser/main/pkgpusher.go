@@ -31,7 +31,7 @@ func (pp pkgPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) erro
 		dstPkg.Message().ResetReadLimit(math.MaxUint64)
 
 		pp.sendMsg(UpsertPackage{
-			Id:  types.ID[external.Package](key.Text()),
+			ID:  types.ID[external.Package](key.Text()),
 			Pkg: dstPkg,
 		})
 	})
@@ -42,7 +42,7 @@ func (pp pkgPusher) Remove(ctx context.Context, p collection.Pusher_remove) erro
 		key, err := p.Args().Key()
 		throw(err)
 		pp.sendMsg(RemovePackage{
-			Id: types.ID[external.Package](key.Text()),
+			ID: types.ID[external.Package](key.Text()),
 		})
 	})
 }

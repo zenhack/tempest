@@ -6,8 +6,8 @@ import (
 )
 
 type GrainSession struct {
-	GrainId   types.GrainID
-	SessionId []byte
+	GrainID   types.GrainID `capnp:"grainId"`
+	SessionID []byte        `capnp:"sessionId"`
 }
 
 func (sess *GrainSession) Unseal(store Store, payload Payload) error {

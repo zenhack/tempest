@@ -34,11 +34,11 @@ type ContainerSet struct {
 	//   give us a clear way to ever shut down containers.
 	// - We need to think about detecting containers shutting down on
 	//   their own.
-	containersByGrainId map[types.GrainID]container.Container
+	containersByGrainID map[types.GrainID]container.Container
 }
 
-func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainId types.GrainID) (container.Container, error) {
-	c, ok := cset.containersByGrainId[grainId]
+func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainID types.GrainID) (container.Container, error) {
+	c, ok := cset.containersByGrainID[grainID]
 	if ok {
 		return c, nil
 	}
@@ -46,21 +46,21 @@ func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database
 	c, err := container.Command{
 		Log:     lg,
 		DB:      db,
-		GrainID: grainId,
+		GrainID: grainID,
 		Api:     api,
 		Args:    []string{continueArg},
 	}.Start(ctx)
 	if err == nil {
-		cset.containersByGrainId[grainId] = c
+		cset.containersByGrainID[grainID] = c
 	}
 	return c, err
 }
 
 func (cset *ContainerSet) Release() {
-	for _, c := range cset.containersByGrainId {
+	for _, c := range cset.containersByGrainID {
 		c.Kill()
 	}
-	for _, c := range cset.containersByGrainId {
+	for _, c := range cset.containersByGrainID {
 		c.Wait()
 	}
 }
