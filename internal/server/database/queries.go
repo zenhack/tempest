@@ -13,6 +13,7 @@ import (
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
+	"zenhack.net/go/tempest/internal/server/types"
 	"zenhack.net/go/util"
 )
 
@@ -37,7 +38,7 @@ func (tx Tx) AddPackage(pkg Package) error {
 
 // GetCredentialPackages returns a list of all packages installed for the user
 // associated with the credential.
-func (tx Tx) GetCredentialPackages(typ, scopedId string) ([]Package, error) {
+func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 	// Note: we don't yet handle app installation, so we behave as if all
 	// packages are installed for all users. When that changes, we will
 	// have to actually filter by account.
@@ -84,10 +85,9 @@ type Profile struct {
 }
 
 type NewCredential struct {
-	AccountId string
-	Login     bool
-	Type      string
-	ScopedId  string
+	AccountId  string
+	Login      bool
+	Credential types.Credential
 }
 
 func (tx Tx) AddAccount(a NewAccount) error {
@@ -118,8 +118,8 @@ func (tx Tx) AddCredential(c NewCredential) error {
 			VALUES (?, ?, ?, ?)`,
 		c.AccountId,
 		c.Login,
-		c.Type,
-		c.ScopedId,
+		c.Credential.Type,
+		c.Credential.ScopedId,
 	)
 	return err
 }
@@ -154,18 +154,18 @@ type UiViewInfo struct {
 	Permissions []bool
 }
 
-func (tx Tx) GetCredentialUiViews(typ, scopedId string) ([]UiViewInfo, error) {
-	accountId, err := tx.GetCredentialAccount(typ, scopedId)
+func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
+	accountId, err := tx.GetCredentialAccount(cred)
 	if err != nil {
 		return nil, err
 	}
 	return tx.AccountUiViews(accountId)
 }
 
-func (tx Tx) GetCredentialAccount(typ, scopedId string) (accountId string, err error) {
+func (tx Tx) GetCredentialAccount(cred types.Credential) (accountId string, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
-		typ, scopedId,
+		cred.Type, cred.ScopedId,
 	)
 	err = row.Scan(&accountId)
 	return

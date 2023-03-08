@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"zenhack.net/go/tempest/internal/server/types"
 )
 
 func TestUserSealUnseal(t *testing.T) {
@@ -12,7 +13,7 @@ func TestUserSealUnseal(t *testing.T) {
 		{},
 		{
 			SessionId: []byte("1234"),
-			Credential: UserSessionCredential{
+			Credential: types.Credential{
 				Type:     "dev",
 				ScopedId: "Alice Dev Admin",
 			},

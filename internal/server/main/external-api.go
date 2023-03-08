@@ -60,8 +60,7 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		tx, err := s.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		c := s.userSession.Credential
-		info, err := tx.GetCredentialUiViews(c.Type, c.ScopedId)
+		info, err := tx.GetCredentialUiViews(s.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -103,8 +102,7 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 		tx, err := s.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		c := s.userSession.Credential
-		dbPkgs, err := tx.GetCredentialPackages(c.Type, c.ScopedId)
+		dbPkgs, err := tx.GetCredentialPackages(s.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -168,10 +166,7 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		exn.WrapThrow(th, "creating database transaction", err)
 
 		defer tx.Rollback()
-		accountID, err := tx.GetCredentialAccount(
-			pc.userSession.Credential.Type,
-			pc.userSession.Credential.ScopedId,
-		)
+		accountID, err := tx.GetCredentialAccount(pc.userSession.Credential)
 		exn.WrapThrow(th, "getting account id", err)
 
 		err = os.MkdirAll(

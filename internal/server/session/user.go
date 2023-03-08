@@ -2,16 +2,12 @@ package session
 
 import (
 	"zenhack.net/go/tempest/internal/capnp/cookie"
+	"zenhack.net/go/tempest/internal/server/types"
 )
 
 type UserSession struct {
 	SessionId  []byte
-	Credential UserSessionCredential
-}
-
-type UserSessionCredential struct {
-	Type     string
-	ScopedId string
+	Credential types.Credential
 }
 
 func (sess *UserSession) Unseal(store Store, payload Payload) error {

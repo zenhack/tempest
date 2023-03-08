@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"zenhack.net/go/tempest/internal/server/types"
 )
 
 // Test the GetCredentialAccount method
@@ -12,11 +13,17 @@ func TestGetCredentialAccount(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		addTestData(t, tx)
 
-		id, err := tx.GetCredentialAccount("dev", "Alice Dev Admin")
+		id, err := tx.GetCredentialAccount(types.Credential{
+			Type:     "dev",
+			ScopedId: "Alice Dev Admin",
+		})
 		assert.NoError(t, err)
 		assert.Equal(t, id, "id_alice")
 
-		id, err = tx.GetCredentialAccount("dev", "Bob Dev User")
+		id, err = tx.GetCredentialAccount(types.Credential{
+			"dev",
+			"Bob Dev User",
+		})
 		assert.NoError(t, err)
 		assert.Equal(t, id, "id_bob")
 	})
@@ -26,7 +33,10 @@ func TestGetUiViews(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		addTestData(t, tx)
 
-		views, err := tx.GetCredentialUiViews("dev", "Alice Dev Admin")
+		views, err := tx.GetCredentialUiViews(types.Credential{
+			Type:     "dev",
+			ScopedId: "Alice Dev Admin",
+		})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, len(views))
@@ -64,14 +74,18 @@ func addTestData(t *testing.T, tx Tx) {
 		{
 			AccountId: "id_alice",
 			Login:     true,
-			Type:      "dev",
-			ScopedId:  "Alice Dev Admin",
+			Credential: types.Credential{
+				Type:     "dev",
+				ScopedId: "Alice Dev Admin",
+			},
 		},
 		{
 			AccountId: "id_bob",
 			Login:     true,
-			Type:      "dev",
-			ScopedId:  "Bob Dev User",
+			Credential: types.Credential{
+				Type:     "dev",
+				ScopedId: "Bob Dev User",
+			},
 		},
 	}
 

@@ -15,6 +15,7 @@ import (
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/database"
+	"zenhack.net/go/tempest/internal/server/types"
 	"zenhack.net/go/util/exn"
 )
 
@@ -211,8 +212,10 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			entry.AccountId = owner.accountId
 			entry.Login = owner.login
 			if u.Services.Dev.Name != "" {
-				entry.Type = "dev"
-				entry.ScopedId = u.Services.Dev.Name
+				entry.Credential = types.Credential{
+					Type:     "dev",
+					ScopedId: u.Services.Dev.Name,
+				}
 				throw(tx.AddCredential(entry))
 			} else {
 				fmt.Printf("TODO: add support for other credential types (skipping)")
