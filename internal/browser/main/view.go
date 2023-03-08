@@ -8,16 +8,26 @@ import (
 	"zenhack.net/go/util/maps"
 	"zenhack.net/go/util/slices"
 	"zenhack.net/go/vdom"
-	vb "zenhack.net/go/vdom/builder"
+	"zenhack.net/go/vdom/builder"
 )
 
-var dummyNode = vb.H("div", vb.A{"class": "dummy-node"}, nil)
+var (
+	h = builder.H
+	t = builder.T
+)
+
+type (
+	a = builder.A
+	e = builder.E
+)
+
+var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
 func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	content := dummyNode
 	session, loginReady := m.LoginSession.Get()
 	if !loginReady {
-		content = vb.T("Loading...")
+		content = t("Loading...")
 	} else if session.Err() != nil {
 		// TODO: deferrentiate between disconnects/failures. Or maybe just
 		// tweak the API to return all this info in-band?
@@ -36,12 +46,12 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 					viewGrain(msgEvent, kv.Key, kv.Value),
 				)
 			}
-			content = vb.H("ul", nil, nil, grainNodes...)
+			content = h("ul", nil, nil, grainNodes...)
 		case FocusApps:
 			content = m.viewApps(msgEvent)
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
-				content = vb.T("Placeholder; select a grain.")
+				content = t("Placeholder; select a grain.")
 			}
 		default:
 			panic("Unknown focus value")
@@ -71,51 +81,51 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	contentNodes := append([]vdom.VNode{content}, iframes...)
 
 	mainUiNodes := []vdom.VNode{
-		vb.H("div", vb.A{"class": "main-ui__main"}, nil,
-			vb.H("div", vb.A{"class": "main-ui__sidebar"}, nil,
-				vb.H("h1", nil, nil,
-					vb.H("a",
-						vb.A{"href": "#"},
-						vb.E{"click": msgEvent(ChangeFocus{InitialFocus})},
-						vb.T("Tempest"),
+		h("div", a{"class": "main-ui__main"}, nil,
+			h("div", a{"class": "main-ui__sidebar"}, nil,
+				h("h1", nil, nil,
+					h("a",
+						a{"href": "#"},
+						e{"click": msgEvent(ChangeFocus{InitialFocus})},
+						t("Tempest"),
 					),
 				),
-				vb.H("nav", nil, nil, vb.H("ul", vb.A{"class": "nav-links"}, nil,
-					vb.H("li", vb.A{"class": "nav-link"}, nil,
-						vb.H("a",
-							vb.A{"href": "#/apps"},
-							vb.E{"click": msgEvent(ChangeFocus{FocusApps})},
-							vb.T("Apps"),
+				h("nav", nil, nil, h("ul", a{"class": "nav-links"}, nil,
+					h("li", a{"class": "nav-link"}, nil,
+						h("a",
+							a{"href": "#/apps"},
+							e{"click": msgEvent(ChangeFocus{FocusApps})},
+							t("Apps"),
 						),
 					),
-					vb.H("li", vb.A{"class": "nav-link"}, nil,
-						vb.H("a",
-							vb.A{"href": "#/grains"},
-							vb.E{"click": msgEvent(
+					h("li", a{"class": "nav-link"}, nil,
+						h("a",
+							a{"href": "#/grains"},
+							e{"click": msgEvent(
 								ChangeFocus{FocusGrainList},
 							)},
-							vb.T("Grains"),
+							t("Grains"),
 						),
 					),
 				)),
-				vb.H("h2", nil, nil, vb.T("Grains")),
-				vb.H("nav", nil, nil,
-					vb.H("ul", vb.A{"class": "nav-links"}, nil, activeGrainNodes...),
+				h("h2", nil, nil, t("Grains")),
+				h("nav", nil, nil,
+					h("ul", a{"class": "nav-links"}, nil, activeGrainNodes...),
 				),
 			),
-			vb.H("div", vb.A{"class": "main-ui__content"}, nil, contentNodes...),
+			h("div", a{"class": "main-ui__content"}, nil, contentNodes...),
 		),
 	}
 
 	if m.Error != nil {
 		mainUiNodes = append(
 			mainUiNodes,
-			vb.H("div", vb.A{"class": "error-notice"}, nil, vb.T(m.Error.Error())),
+			h("div", a{"class": "error-notice"}, nil, t(m.Error.Error())),
 		)
 	}
 
-	return vb.H("body", nil, nil,
-		vb.H("div", vb.A{"class": "main-ui"}, nil, mainUiNodes...),
+	return h("body", nil, nil,
+		h("div", a{"class": "main-ui"}, nil, mainUiNodes...),
 	)
 }
 
@@ -137,19 +147,19 @@ func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 			println("defaultText: " + err.Error())
 			continue
 		}
-		link := vb.H("a",
-			vb.A{"href": "#/grain/new"},
-			vb.E{
+		link := h("a",
+			a{"href": "#/grain/new"},
+			e{
 				"click": msgEvent(SpawnGrain{PkgID: id}),
 			},
-			vb.T(title),
+			t(title),
 		)
 		items = append(
 			items,
-			vb.H("li", nil, nil, link),
+			h("li", nil, nil, link),
 		)
 	}
-	return vb.H("ul", nil, nil, items...)
+	return h("ul", nil, nil, items...)
 }
 
 func newDomainNonce() string {
@@ -159,15 +169,15 @@ func newDomainNonce() string {
 }
 
 func viewLoginForm() vdom.VNode {
-	return vb.H("form", vb.A{"action": "/login/dev", "method": "post"}, nil,
-		vb.H("label", vb.A{"for": "name"}, nil,
-			vb.T("Dev account login"),
+	return h("form", a{"action": "/login/dev", "method": "post"}, nil,
+		h("label", a{"for": "name"}, nil,
+			t("Dev account login"),
 		),
-		vb.H("input", vb.A{
+		h("input", a{
 			"name":        "name",
 			"placeholder": "e.g. Alice Dev Admin",
 		}, nil),
-		vb.H("button", vb.A{"type": "submit"}, nil, vb.T("Submit")),
+		h("button", a{"type": "submit"}, nil, t("Submit")),
 	)
 }
 
@@ -177,11 +187,11 @@ func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain
 	if isFocused {
 		classes += " nav-link--focused"
 	}
-	return vb.H("li", vb.A{"class": classes}, vb.E{"click": onClick},
-		vb.H("a",
-			vb.A{"href": "#/grain/" + string(id)},
-			vb.E{"click": onClick},
-			vb.T(grain.Title),
+	return h("li", a{"class": classes}, e{"click": onClick},
+		h("a",
+			a{"href": "#/grain/" + string(id)},
+			e{"click": onClick},
+			t(grain.Title),
 		),
 	)
 }
@@ -205,7 +215,7 @@ func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
 	if m.CurrentFocus != FocusOpenGrain || m.FocusedGrain != id {
 		class += " grain-iframe--inactive"
 	}
-	return vb.H("iframe", vb.A{
+	return h("iframe", a{
 		"src":   grainUrl.String(),
 		"class": class,
 	}, nil)
