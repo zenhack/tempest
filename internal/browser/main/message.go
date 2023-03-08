@@ -124,13 +124,30 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 
 	return m, func(ctx context.Context, sendMsg func(Msg)) {
 		err := exn.Try0(func(throw func(error)) {
+
 			defer ctrl.Release()
 			fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {
-				// TODO: pick something better, looking at the action/manifest:
-				p.SetTitle("Untitled Grain")
-				// TODO: provide a way to choose this:
-				p.SetActionIndex(0)
-				return nil
+				return exn.Try0(func(throw exn.Thrower) {
+					manifest, err := pkg.Manifest()
+					throw(err)
+					appTitle, err := manifest.AppTitle()
+					throw(err)
+					appTitleText, err := appTitle.DefaultText()
+					throw(err)
+
+					// TODO: provide a way to choose this:
+					index := 0
+
+					actions, err := manifest.Actions()
+					throw(err)
+					nounPhrase, err := actions.At(index).NounPhrase()
+					throw(err)
+					nounPhraseText, err := nounPhrase.DefaultText()
+					throw(err)
+
+					p.SetTitle("Untitled " + appTitleText + " " + nounPhraseText)
+					p.SetActionIndex(uint32(index))
+				})
 			})
 			defer rel()
 			res, err := fut.Struct()
