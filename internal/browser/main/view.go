@@ -11,17 +11,9 @@ import (
 	vb "zenhack.net/go/vdom/builder"
 )
 
-func msgEvent(msgs chan<- Msg, msg Msg) vdom.EventHandler {
-	ret := func(vdom.Event) any {
-		msgs <- msg
-		return nil
-	}
-	return &ret
-}
-
 var dummyNode = vb.H("div", vb.A{"class": "dummy-node"}, nil)
 
-func (m Model) View(msgs chan<- Msg) vdom.VNode {
+func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	content := dummyNode
 	session, loginReady := m.LoginSession.Get()
 	if !loginReady {
@@ -41,12 +33,12 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 			for _, kv := range kvs {
 				grainNodes = append(
 					grainNodes,
-					viewGrain(msgs, kv.Key, kv.Value),
+					viewGrain(msgEvent, kv.Key, kv.Value),
 				)
 			}
 			content = vb.H("ul", nil, nil, grainNodes...)
 		case FocusApps:
-			content = m.viewApps(msgs)
+			content = m.viewApps(msgEvent)
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
 				content = vb.T("Placeholder; select a grain.")
@@ -63,7 +55,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	for _, k := range keys {
 		activeGrainNodes = append(
 			activeGrainNodes,
-			viewOpenGrain(msgs, k, m.Grains[k], m.FocusedGrain == k),
+			viewOpenGrain(msgEvent, k, m.Grains[k], m.FocusedGrain == k),
 		)
 	}
 	var iframes []vdom.VNode
@@ -84,7 +76,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 				vb.H("h1", nil, nil,
 					vb.H("a",
 						vb.A{"href": "#"},
-						vb.E{"click": msgEvent(msgs, ChangeFocus{InitialFocus})},
+						vb.E{"click": msgEvent(ChangeFocus{InitialFocus})},
 						vb.T("Tempest"),
 					),
 				),
@@ -92,10 +84,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 					vb.H("li", vb.A{"class": "nav-link"}, nil,
 						vb.H("a",
 							vb.A{"href": "#/apps"},
-							vb.E{"click": msgEvent(
-								msgs,
-								ChangeFocus{FocusApps},
-							)},
+							vb.E{"click": msgEvent(ChangeFocus{FocusApps})},
 							vb.T("Apps"),
 						),
 					),
@@ -103,7 +92,6 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 						vb.H("a",
 							vb.A{"href": "#/grains"},
 							vb.E{"click": msgEvent(
-								msgs,
 								ChangeFocus{FocusGrainList},
 							)},
 							vb.T("Grains"),
@@ -131,7 +119,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 	)
 }
 
-func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
+func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	var items []vdom.VNode
 	for id, pkg := range m.Packages {
 		manifest, err := pkg.Manifest()
@@ -152,10 +140,7 @@ func (m Model) viewApps(msgs chan<- Msg) vdom.VNode {
 		link := vb.H("a",
 			vb.A{"href": "#/grain/new"},
 			vb.E{
-				"click": msgEvent(
-					msgs,
-					SpawnGrain{PkgID: id},
-				),
+				"click": msgEvent(SpawnGrain{PkgID: id}),
 			},
 			vb.T(title),
 		)
@@ -186,8 +171,8 @@ func viewLoginForm() vdom.VNode {
 	)
 }
 
-func viewOpenGrain(msgs chan<- Msg, id types.ID[Grain], grain Grain, isFocused bool) vdom.VNode {
-	onClick := msgEvent(msgs, FocusGrain{Id: id})
+func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.ID[Grain], grain Grain, isFocused bool) vdom.VNode {
+	onClick := msgEvent(FocusGrain{Id: id})
 	classes := "nav-link"
 	if isFocused {
 		classes += " nav-link--focused"
@@ -201,9 +186,9 @@ func viewOpenGrain(msgs chan<- Msg, id types.ID[Grain], grain Grain, isFocused b
 	)
 }
 
-func viewGrain(msgs chan<- Msg, id types.ID[Grain], grain Grain) vdom.VNode {
+func viewGrain(msgEvent func(Msg) vdom.EventHandler, id types.ID[Grain], grain Grain) vdom.VNode {
 	// XXX
-	return viewOpenGrain(msgs, id, grain, false)
+	return viewOpenGrain(msgEvent, id, grain, false)
 }
 
 func viewGrainIframe(m Model, id types.ID[Grain]) vdom.VNode {

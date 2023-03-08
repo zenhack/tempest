@@ -9,13 +9,12 @@ import (
 	"zenhack.net/go/util/exn"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
+	"zenhack.net/go/vdom/tea"
 )
 
-type Cmd = func(context.Context, chan<- Msg)
+type Cmd = func(context.Context, func(Msg))
 
-type Msg interface {
-	Update(Model) (Model, Cmd)
-}
+type Msg = tea.Message[Model]
 
 type NewError struct {
 	Err error
@@ -123,7 +122,7 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 
 	ctrl := pkg.Controller().AddRef()
 
-	return m, func(ctx context.Context, msgs chan<- Msg) {
+	return m, func(ctx context.Context, sendMsg func(Msg)) {
 		err := exn.Try0(func(throw func(error)) {
 			defer ctrl.Release()
 			fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {
@@ -147,18 +146,18 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 			sessionToken, err := grain.SessionToken()
 			throw(err)
 
-			msgs <- UpsertGrain{
+			sendMsg(UpsertGrain{
 				Id: types.ID[Grain](id),
 				Grain: Grain{
 					Title:        title,
 					SessionToken: sessionToken,
 					Handle:       grain.Handle().AddRef(),
 				},
-			}
-			msgs <- FocusGrain{Id: types.ID[Grain](id)}
+			})
+			sendMsg(FocusGrain{Id: types.ID[Grain](id)})
 		})
 		if err != nil {
-			msgs <- NewError{Err: err}
+			sendMsg(NewError{Err: err})
 		}
 	}
 }
@@ -169,9 +168,9 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 	if err != nil {
 		return m, nil
 	}
-	return m, func(ctx context.Context, uiMsgs chan<- Msg) {
+	return m, func(ctx context.Context, sendMsg func(Msg)) {
 		pusher := collection.Pusher_ServerToClient(pkgPusher{
-			uiMsgs: uiMsgs,
+			sendMsg: sendMsg,
 		})
 		ret, rel := sess.ListPackages(context.Background(), func(p external.LoginSession_listPackages_Params) error {
 			p.SetInto(pusher)

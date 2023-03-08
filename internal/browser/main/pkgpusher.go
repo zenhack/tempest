@@ -12,7 +12,7 @@ import (
 )
 
 type pkgPusher struct {
-	uiMsgs chan<- Msg
+	sendMsg func(Msg)
 }
 
 func (pp pkgPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {
@@ -30,10 +30,10 @@ func (pp pkgPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) erro
 		throw(capnp.Struct(dstPkg).CopyFrom(capnp.Struct(srcPkg)))
 		dstPkg.Message().ResetReadLimit(math.MaxUint64)
 
-		pp.uiMsgs <- UpsertPackage{
+		pp.sendMsg(UpsertPackage{
 			Id:  types.ID[external.Package](key.Text()),
 			Pkg: dstPkg,
-		}
+		})
 	})
 }
 
@@ -41,14 +41,14 @@ func (pp pkgPusher) Remove(ctx context.Context, p collection.Pusher_remove) erro
 	return exn.Try0(func(throw func(error)) {
 		key, err := p.Args().Key()
 		throw(err)
-		pp.uiMsgs <- RemovePackage{
+		pp.sendMsg(RemovePackage{
 			Id: types.ID[external.Package](key.Text()),
-		}
+		})
 	})
 }
 
 func (pp pkgPusher) Clear(context.Context, collection.Pusher_clear) error {
-	pp.uiMsgs <- ClearPackages{}
+	pp.sendMsg(ClearPackages{})
 	return nil
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 type grainPusher struct {
-	uiMsgs chan<- Msg
+	sendMsg func(Msg)
 }
 
 func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) error {
@@ -27,14 +27,14 @@ func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) er
 		sessionToken, err := grain.SessionToken()
 		throw(err)
 
-		gp.uiMsgs <- UpsertGrain{
+		gp.sendMsg(UpsertGrain{
 			Id: types.ID[Grain](key.Text()),
 			Grain: Grain{
 				Title:        title,
 				SessionToken: sessionToken,
 				Handle:       grain.Handle().AddRef(),
 			},
-		}
+		})
 	})
 }
 
@@ -42,14 +42,14 @@ func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) er
 	return exn.Try0(func(throw func(error)) {
 		key, err := p.Args().Key()
 		throw(err)
-		gp.uiMsgs <- RemoveGrain{
+		gp.sendMsg(RemoveGrain{
 			Id: types.ID[Grain](key.Text()),
-		}
+		})
 	})
 }
 
 func (gp grainPusher) Clear(context.Context, collection.Pusher_clear) error {
-	gp.uiMsgs <- ClearGrains{}
+	gp.sendMsg(ClearGrains{})
 	return nil
 }
 

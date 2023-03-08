@@ -10,6 +10,7 @@ import (
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/util/orerr"
 	"zenhack.net/go/vdom"
+	"zenhack.net/go/vdom/tea"
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
 
@@ -38,21 +39,8 @@ func Main() {
 			Call("getElementsByTagName", "body").
 			Index(0),
 	}
-	up := vdom.NewUpdater(body)
-	defer up.Close()
-	uiMsgs := make(chan Msg)
-	go func() {
-		m := initModel()
-		var cmd Cmd
-		for {
-			up.Update(m.View(uiMsgs))
-			msg := <-uiMsgs
-			m, cmd = msg.Update(m)
-			if cmd != nil {
-				go cmd(ctx, uiMsgs)
-			}
-		}
-	}()
+	app := tea.NewApp(initModel())
+	go app.Run(ctx, body)
 
 	conn, api := getCapnpApi(ctx)
 	defer conn.Close()
@@ -60,14 +48,14 @@ func Main() {
 	defer rel()
 	_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {
 		p.SetInto(collection.Pusher_ServerToClient(grainPusher{
-			uiMsgs: uiMsgs,
+			sendMsg: app.SendMessage,
 		}))
 		return nil
 	})
 	defer rel()
 	res, err := fut.Struct()
-	uiMsgs <- LoginSessionResult{
+	app.SendMessage(LoginSessionResult{
 		Result: orerr.New(res.Session().AddRef(), err),
-	}
+	})
 	<-ctx.Done()
 }
