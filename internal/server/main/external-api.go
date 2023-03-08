@@ -10,8 +10,11 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/capnp/grain"
+	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
+	"zenhack.net/go/tempest/internal/server/container"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
 	"zenhack.net/go/util"
@@ -183,6 +186,15 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		})
 		exn.WrapThrow(th, "creating grain in database", err)
 
+		startArg, err := exn.Try(func(throw exn.Thrower) string {
+			_, seg := capnp.NewSingleSegmentMessage(nil)
+			launchCmd, err := grainagent.NewRootLaunchCommand(seg)
+			throw(err)
+			launchCmd.SetInitGrain(actionIndex)
+			return base64.StdEncoding.EncodeToString(seg.Data())
+		})
+		exn.WrapThrow(th, "encoding LaunchCommand", err)
+
 		results, err := p.AllocResults()
 		th(err)
 
@@ -190,8 +202,6 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		g, err := results.NewGrain()
 		th(err)
 		th(g.SetTitle(title))
-		// FIXME: Start the grain with the right action; as is this will just get launched w/
-		// continue when it hits the UI. Will still work for many apps.
 		sessionToken, err := session.GrainSession{
 			GrainID:   grainID,
 			SessionID: pc.userSession.SessionID,
@@ -200,6 +210,20 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		th(g.SetSessionToken(sessionToken))
 		// TODO: set Handle.
 		exn.WrapThrow(th, "commiting database transaction", tx.Commit())
+
+		// TODO: maybe change container.Command so it can take tx instead of a DB?
+		// But probably we shouldn't do the actual spawning in a tx anyway.
+		c, err := container.Command{
+			Log:     pc.server.log,
+			DB:      pc.server.db,
+			GrainID: grainID,
+			Api:     grain.SandstormApi_ServerToClient(sandstormApiImpl{}),
+			Args:    []string{startArg},
+		}.Start(context.TODO())
+		exn.WrapThrow(th, "starting container", err)
+		pc.server.state.With(func(state *serverState) {
+			state.containers.containersByGrainID[grainID] = c
+		})
 	})
 
 }
