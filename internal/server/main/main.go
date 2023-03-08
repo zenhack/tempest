@@ -41,7 +41,10 @@ func Main() {
 	defer srv.Release()
 
 	http.Handle("/", srv.Handler())
-	lg.Infof("Listening on %v", listenAddr)
+	lg.WithFields(log.Fields{
+		"ROOT_DOMAIN": rootDomain,
+		"listen-addr": listenAddr,
+	}).Info("Listening")
 	httpSrv := &http.Server{Addr: listenAddr}
 	go monitorSignals(httpSrv)
 	panic(httpSrv.ListenAndServe())
