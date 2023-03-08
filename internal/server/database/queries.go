@@ -16,7 +16,9 @@ import (
 	"zenhack.net/go/util"
 )
 
-// AddPackage adds a package ot the database.
+// AddPackage adds a package to the database. The caller must separately ensure
+// that the contents of the package have been extracted to
+// <localstatedir>/sandstorm/apps/<pkg.Id>
 func (tx Tx) AddPackage(pkg Package) error {
 	manifestBlob, err := encodeCapnp(pkg.Manifest)
 	if err != nil {
@@ -86,11 +88,6 @@ type NewCredential struct {
 	Login     bool
 	Type      string
 	ScopedId  string
-}
-
-type Package struct {
-	Id       string
-	Manifest spk.Manifest
 }
 
 func (tx Tx) AddAccount(a NewAccount) error {

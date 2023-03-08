@@ -3,8 +3,15 @@ package database
 import (
 	"database/sql"
 
+	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util/exn"
 )
+
+// A Package records information about a package in the database.
+type Package struct {
+	Id       string       // The package id.
+	Manifest spk.Manifest // The manifest as encoded in the spk.
+}
 
 // Initializes the database schema if needed, and returns a DB object.
 func InitDB(sqlDB *sql.DB) (DB, error) {
