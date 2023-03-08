@@ -1,3 +1,9 @@
+// Package database manages Tempest's database.
+//
+// Tempest uses SQLite, but we encapsulate our queries here to avoid having
+// SQL strewn throughout the codebase. This package provides some wrapper
+// objects for the database & transactions, which have methods for the
+// queries we want to support.
 package database
 
 import (
@@ -30,15 +36,18 @@ type Tx struct {
 	sqlTx *sql.Tx
 }
 
+// Begin wraps sql.DB.Begin
 func (db DB) Begin() (Tx, error) {
 	tx, err := db.sqlDB.Begin()
 	return Tx{sqlTx: tx}, err
 }
 
+// Rollback wraps sql.Tx.Commit
 func (tx Tx) Commit() error {
 	return tx.sqlTx.Commit()
 }
 
+// Rollback wraps sql.Tx.Rollback
 func (tx Tx) Rollback() error {
 	return tx.sqlTx.Rollback()
 }

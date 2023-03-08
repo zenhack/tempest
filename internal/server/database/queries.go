@@ -1,5 +1,7 @@
 package database
 
+// This file contains wrappers for SQL queries
+
 import (
 	"crypto/rand"
 	"crypto/sha256"
@@ -14,6 +16,7 @@ import (
 	"zenhack.net/go/util"
 )
 
+// AddPackage adds a package ot the database.
 func (tx Tx) AddPackage(pkg Package) error {
 	manifestBlob, err := encodeCapnp(pkg.Manifest)
 	if err != nil {
@@ -30,7 +33,12 @@ func (tx Tx) AddPackage(pkg Package) error {
 	return err
 }
 
+// GetCredentialPackages returns a list of all packages installed for the user
+// associated with the credential.
 func (tx Tx) GetCredentialPackages(typ, scopedId string) ([]Package, error) {
+	// Note: we don't yet handle app installation, so we behave as if all
+	// packages are installed for all users. When that changes, we will
+	// have to actually filter by account.
 	rows, err := tx.sqlTx.Query("SELECT id, manifest FROM packages")
 	if err != nil {
 		return nil, err
