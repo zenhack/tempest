@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maps"
 	"zenhack.net/go/util/slices"
 	"zenhack.net/go/vdom"
@@ -33,7 +34,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		switch m.CurrentFocus {
 		case FocusGrainList:
 			kvs := maps.Items(m.Grains)
-			slices.SortOn(kvs, func(kv maps.KV[ID[Grain], Grain]) string {
+			slices.SortOn(kvs, func(kv maps.KV[types.ID[Grain], Grain]) string {
 				return kv.Value.Title
 			})
 			var grainNodes []vdom.VNode
@@ -55,7 +56,7 @@ func (m Model) View(msgs chan<- Msg) vdom.VNode {
 		}
 	}
 	keys := maps.Keys(m.OpenGrains)
-	slices.SortOn(keys, func(k ID[Grain]) string {
+	slices.SortOn(keys, func(k types.ID[Grain]) string {
 		return m.Grains[k].Title
 	})
 	var activeGrainNodes []vdom.VNode
@@ -185,7 +186,7 @@ func viewLoginForm() vdom.VNode {
 	)
 }
 
-func viewOpenGrain(msgs chan<- Msg, id ID[Grain], grain Grain, isFocused bool) vdom.VNode {
+func viewOpenGrain(msgs chan<- Msg, id types.ID[Grain], grain Grain, isFocused bool) vdom.VNode {
 	onClick := msgEvent(msgs, FocusGrain{Id: id})
 	classes := "nav-link"
 	if isFocused {
@@ -200,12 +201,12 @@ func viewOpenGrain(msgs chan<- Msg, id ID[Grain], grain Grain, isFocused bool) v
 	)
 }
 
-func viewGrain(msgs chan<- Msg, id ID[Grain], grain Grain) vdom.VNode {
+func viewGrain(msgs chan<- Msg, id types.ID[Grain], grain Grain) vdom.VNode {
 	// XXX
 	return viewOpenGrain(msgs, id, grain, false)
 }
 
-func viewGrainIframe(m Model, id ID[Grain]) vdom.VNode {
+func viewGrainIframe(m Model, id types.ID[Grain]) vdom.VNode {
 	grain := m.Grains[id]
 	open := m.OpenGrains[id]
 

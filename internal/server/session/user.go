@@ -2,7 +2,7 @@ package session
 
 import (
 	"zenhack.net/go/tempest/internal/capnp/cookie"
-	"zenhack.net/go/tempest/internal/server/types"
+	"zenhack.net/go/tempest/internal/common/types"
 )
 
 type UserSession struct {

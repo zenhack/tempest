@@ -6,6 +6,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/util"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
 	"zenhack.net/go/util/slices/poolslice"
@@ -14,16 +15,16 @@ import (
 type Model struct {
 	ServerAddr   ServerAddr
 	CurrentFocus Focus
-	FocusedGrain ID[Grain] // ID for the currently focused grain
+	FocusedGrain types.ID[Grain] // ID for the currently focused grain
 
 	// If non-nil, an error to display to the user. As the UI
 	// evolves, we will probably want a way to have more than one
 	// of these/maybe privde some extra metadata etc. but YAGNI.
 	Error error
 
-	Grains     map[ID[Grain]]Grain
-	OpenGrains map[ID[Grain]]OpenGrain
-	Packages   map[ID[external.Package]]external.Package
+	Grains     map[types.ID[Grain]]Grain
+	OpenGrains map[types.ID[Grain]]OpenGrain
+	Packages   map[types.ID[external.Package]]external.Package
 
 	// Keeps track of the order we need to display grain iframes in.
 	// Grain iframes must never change order or be detached from the
@@ -31,12 +32,10 @@ type Model struct {
 	// So we keep them in a stable order, rendering empty slots
 	// as dummyNode, and hiding everything but the active grain
 	// with CSS (display: none).
-	GrainDomOrder poolslice.PoolSlice[ID[Grain]]
+	GrainDomOrder poolslice.PoolSlice[types.ID[Grain]]
 
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 }
-
-type ID[T any] string
 
 type ServerAddr struct {
 	Host string
@@ -75,9 +74,9 @@ func initModel() Model {
 			TLS:  loc.Get("protocol").String() == "https:",
 			Host: loc.Get("host").String(),
 		},
-		Grains:     make(map[ID[Grain]]Grain),
-		OpenGrains: make(map[ID[Grain]]OpenGrain),
-		Packages:   make(map[ID[external.Package]]external.Package),
+		Grains:     make(map[types.ID[Grain]]Grain),
+		OpenGrains: make(map[types.ID[Grain]]OpenGrain),
+		Packages:   make(map[types.ID[external.Package]]external.Package),
 	}
 }
 

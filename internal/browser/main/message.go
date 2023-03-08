@@ -5,6 +5,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
@@ -21,23 +22,23 @@ type NewError struct {
 }
 
 type UpsertGrain struct {
-	Id    ID[Grain]
+	Id    types.ID[Grain]
 	Grain Grain
 }
 
 type RemoveGrain struct {
-	Id ID[Grain]
+	Id types.ID[Grain]
 }
 
 type ClearGrains struct{}
 
 type UpsertPackage struct {
-	Id  ID[external.Package]
+	Id  types.ID[external.Package]
 	Pkg external.Package
 }
 
 type RemovePackage struct {
-	Id ID[external.Package]
+	Id types.ID[external.Package]
 }
 
 type ClearPackages struct{}
@@ -47,11 +48,11 @@ type ChangeFocus struct {
 }
 
 type FocusGrain struct {
-	Id ID[Grain]
+	Id types.ID[Grain]
 }
 
 type SpawnGrain struct {
-	PkgID ID[external.Package]
+	PkgID types.ID[external.Package]
 }
 
 type LoginSessionResult struct {
@@ -76,7 +77,7 @@ func (msg RemoveGrain) Apply(m Model) (Model, Cmd) {
 }
 
 func (ClearGrains) Apply(m Model) (Model, Cmd) {
-	m.Grains = make(map[ID[Grain]]Grain)
+	m.Grains = make(map[types.ID[Grain]]Grain)
 	return m, nil
 }
 
@@ -94,7 +95,7 @@ func (msg RemovePackage) Apply(m Model) (Model, Cmd) {
 }
 
 func (ClearPackages) Apply(m Model) (Model, Cmd) {
-	m.Packages = make(map[ID[external.Package]]external.Package)
+	m.Packages = make(map[types.ID[external.Package]]external.Package)
 	return m, nil
 }
 
@@ -147,14 +148,14 @@ func (msg SpawnGrain) Apply(m Model) (Model, Cmd) {
 			throw(err)
 
 			msgs <- UpsertGrain{
-				Id: ID[Grain](id),
+				Id: types.ID[Grain](id),
 				Grain: Grain{
 					Title:        title,
 					SessionToken: sessionToken,
 					Handle:       grain.Handle().AddRef(),
 				},
 			}
-			msgs <- FocusGrain{Id: ID[Grain](id)}
+			msgs <- FocusGrain{Id: types.ID[Grain](id)}
 		})
 		if err != nil {
 			msgs <- NewError{Err: err}

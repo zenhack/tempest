@@ -13,7 +13,7 @@ import (
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
-	"zenhack.net/go/tempest/internal/server/types"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util"
 )
 

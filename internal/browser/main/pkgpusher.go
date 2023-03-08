@@ -7,6 +7,7 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 )
 
@@ -30,7 +31,7 @@ func (pp pkgPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) erro
 		dstPkg.Message().ResetReadLimit(math.MaxUint64)
 
 		pp.uiMsgs <- UpsertPackage{
-			Id:  ID[external.Package](key.Text()),
+			Id:  types.ID[external.Package](key.Text()),
 			Pkg: dstPkg,
 		}
 	})
@@ -41,7 +42,7 @@ func (pp pkgPusher) Remove(ctx context.Context, p collection.Pusher_remove) erro
 		key, err := p.Args().Key()
 		throw(err)
 		pp.uiMsgs <- RemovePackage{
-			Id: ID[external.Package](key.Text()),
+			Id: types.ID[external.Package](key.Text()),
 		}
 	})
 }

@@ -7,4 +7,5 @@
 cd "$(dirname $0)/.."
 go test $@ \
 	./internal/server/... \
+	./internal/common/... \
 	./pkg/...

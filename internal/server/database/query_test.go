@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"zenhack.net/go/tempest/internal/server/types"
+	"zenhack.net/go/tempest/internal/common/types"
 )
 
 // Test the GetCredentialAccount method

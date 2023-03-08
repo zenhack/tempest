@@ -5,6 +5,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 )
 
@@ -27,7 +28,7 @@ func (gp grainPusher) Upsert(ctx context.Context, p collection.Pusher_upsert) er
 		throw(err)
 
 		gp.uiMsgs <- UpsertGrain{
-			Id: ID[Grain](key.Text()),
+			Id: types.ID[Grain](key.Text()),
 			Grain: Grain{
 				Title:        title,
 				SessionToken: sessionToken,
@@ -42,7 +43,7 @@ func (gp grainPusher) Remove(ctx context.Context, p collection.Pusher_remove) er
 		key, err := p.Args().Key()
 		throw(err)
 		gp.uiMsgs <- RemoveGrain{
-			Id: ID[Grain](key.Text()),
+			Id: types.ID[Grain](key.Text()),
 		}
 	})
 }

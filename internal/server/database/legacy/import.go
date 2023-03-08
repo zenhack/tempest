@@ -13,9 +13,9 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	spk "zenhack.net/go/tempest/capnp/package"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/database"
-	"zenhack.net/go/tempest/internal/server/types"
 	"zenhack.net/go/util/exn"
 )
 
