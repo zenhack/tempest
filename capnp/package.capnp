@@ -154,7 +154,7 @@ struct Manifest {
     # (Obsolete) Title of this action, to display in the action selector.  This should no longer
     # be used for new apps.
 
-    nounPhrase @5 :Util.LocalizedText = (defaultText = "instance");
+    nounPhrase @5 :Util.LocalizedText = (defaultText = "grain");
     # When this action is run, what kind of thing is created? E.g. Etherpad creates a "document".
     # Displayed as "New <nounPhrase>" in the "create new grain" UI.
 
