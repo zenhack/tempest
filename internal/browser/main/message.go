@@ -51,6 +51,7 @@ type FocusGrain struct {
 }
 
 type SpawnGrain struct {
+	Index int
 	PkgID types.ID[external.Package]
 }
 
@@ -135,18 +136,15 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 					appTitleText, err := appTitle.DefaultText()
 					throw(err)
 
-					// TODO: provide a way to choose this:
-					index := 0
-
 					actions, err := manifest.Actions()
 					throw(err)
-					nounPhrase, err := actions.At(index).NounPhrase()
+					nounPhrase, err := actions.At(msg.Index).NounPhrase()
 					throw(err)
 					nounPhraseText, err := nounPhrase.DefaultText()
 					throw(err)
 
 					p.SetTitle("Untitled " + appTitleText + " " + nounPhraseText)
-					p.SetActionIndex(uint32(index))
+					p.SetActionIndex(uint32(msg.Index))
 				})
 			})
 			defer rel()

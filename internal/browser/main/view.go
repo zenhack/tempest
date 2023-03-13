@@ -130,7 +130,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 }
 
 func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
-	var items []vdom.VNode
+	var appItems []vdom.VNode
 	for id, pkg := range m.Packages {
 		manifest, err := pkg.Manifest()
 		if err != nil {
@@ -147,19 +147,48 @@ func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 			println("defaultText: " + err.Error())
 			continue
 		}
-		link := h("a",
-			a{"href": "#/grain/new"},
-			e{
-				"click": msgEvent(SpawnGrain{PkgID: id}),
-			},
-			t(title),
-		)
-		items = append(
-			items,
-			h("li", nil, nil, link),
+		actions, err := manifest.Actions()
+		if err != nil {
+			println("actions: " + err.Error())
+			continue
+		}
+		var links []vdom.VNode
+		for i := 0; i < actions.Len(); i++ {
+			action := actions.At(i)
+			nounPhrasel10n, err := action.NounPhrase()
+			if err != nil {
+				println("nounPhrase: " + err.Error())
+				continue
+			}
+			nounPhrase, err := nounPhrasel10n.DefaultText()
+			if err != nil {
+				println("nounPhrase.defaultText: " + err.Error())
+				continue
+			}
+
+			links = append(
+				links,
+				h("li", nil, nil, h("a",
+					a{"href": "#/grain/new"},
+					e{
+						"click": msgEvent(SpawnGrain{
+							Index: i,
+							PkgID: id,
+						}),
+					},
+					t(nounPhrase),
+				)),
+			)
+		}
+		appItems = append(
+			appItems,
+			h("li", nil, nil,
+				t(title),
+				h("ul", nil, nil, links...),
+			),
 		)
 	}
-	return h("ul", nil, nil, items...)
+	return h("ul", nil, nil, appItems...)
 }
 
 func newDomainNonce() string {
