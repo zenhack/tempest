@@ -58,10 +58,7 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 	for i, p := range clientProtos {
 		clientProtos[i] = strings.TrimSpace(p)
 	}
-	pw := newPromiseWriter()
-	clientW := websession.WebSocketStream_ServerToClient(
-		websocket.WriterStream{W: pw},
-	)
+	streamPromise, streamResolver := capnp.NewLocalPromise[websession.WebSocketStream]()
 	fut, rel := h.Session.OpenWebSocket(
 		req.Context(),
 		func(p websession.WebSession_openWebSocket_Params) error {
@@ -78,13 +75,13 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 			for i, v := range clientProtos {
 				argProtos.Set(i, v)
 			}
-			return p.SetClientStream(clientW)
+			return p.SetClientStream(streamPromise)
 		})
 	defer rel()
 	replyErr := func(err error) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
-		pw.fulfill(io.Discard)
+		streamResolver.Reject(err)
 	}
 	res, err := fut.Struct()
 	if err != nil {
@@ -123,37 +120,15 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 		replyErr(err)
 		return
 	}
-	pw.fulfill(conn)
+	stream := websession.WebSocketStream_ServerToClient(websocket.WriterStream{W: conn})
+	defer stream.Release()
+	streamResolver.Fulfill(stream)
 	srvW := websocket.StreamWriter{
 		Context: req.Context(),
 		Stream:  res.ServerStream(),
 	}
 	io.Copy(srvW, conn)
 	<-req.Context().Done()
-}
-
-// wraps a Writer and blocks until ready is closed, then shells out to w.
-// TODO: once go-capnp supports creating promise/fulfiller pairs, drop this
-// and use that instead.
-type promiseWriter struct {
-	ready chan struct{}
-	w     io.Writer
-}
-
-func newPromiseWriter() *promiseWriter {
-	return &promiseWriter{
-		ready: make(chan struct{}),
-	}
-}
-
-func (p *promiseWriter) fulfill(w io.Writer) {
-	p.w = w
-	close(p.ready)
-}
-
-func (p *promiseWriter) Write(data []byte) (n int, err error) {
-	<-p.ready
-	return p.w.Write(data)
 }
 
 // placePathContext fills in the path and context fields of p based on the other arguments.
