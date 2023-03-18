@@ -8,8 +8,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/apex/log"
 	"zenhack.net/go/tempest/internal/server/database"
+	"zenhack.net/go/tempest/internal/server/logging"
 	"zenhack.net/go/tempest/internal/server/session"
 	"zenhack.net/go/util"
 )
@@ -33,18 +33,17 @@ func Main() {
 	}
 	listenAddr := ":" + port
 
-	log.SetLevel(log.DebugLevel)
-	lg := log.Log
+	lg := logging.NewLogger()
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
 	srv := newServer(rootDomain, lg, db, sessionStore)
 	defer srv.Release()
 
 	http.Handle("/", srv.Handler())
-	lg.WithFields(log.Fields{
-		"ROOT_DOMAIN": rootDomain,
-		"listen-addr": listenAddr,
-	}).Info("Listening")
+	lg.Info("Listening",
+		"ROOT_DOMAIN", rootDomain,
+		"listen-addr", listenAddr,
+	)
 	httpSrv := &http.Server{Addr: listenAddr}
 	go monitorSignals(httpSrv)
 	panic(httpSrv.ListenAndServe())

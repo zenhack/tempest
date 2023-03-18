@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
-	"github.com/apex/log"
+	"golang.org/x/exp/slog"
 	httpcp "zenhack.net/go/tempest/capnp/http"
 	"zenhack.net/go/tempest/pkg/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
@@ -21,7 +21,7 @@ type httpBridge struct {
 	portNo       int
 	roundTripper http.RoundTripper
 	serverReady  bool
-	log          log.Interface
+	log          *slog.Logger
 }
 
 func (b *httpBridge) ensureServerReady() error {
@@ -88,7 +88,9 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 		results.SetRequestBody(w)
 		req.Body = r
 
-		b.log.WithField("request", req).Debug("request to app server")
+		b.log.Debug("request to app server",
+			"request", req,
+		)
 
 		// Ok, request is all set up. Fork off a goroutine to actually send it and
 		// copy the response back, so that the caller can start pushing data into
@@ -101,7 +103,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 				rel capnp.ReleaseFunc
 			)
 			if err != nil {
-				b.log.WithField("error", err).Error("error from app server")
+				b.log.Error("error from app server", err)
 				// Push an error response to the caller:
 				fut, rel = responder.Respond(context.TODO(),
 					func(p httpcp.Responder_respond_Params) error {
@@ -109,7 +111,9 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 						return nil
 					})
 			} else {
-				b.log.WithField("response", resp).Debug("response from app server")
+				b.log.Debug("response from app server",
+					"response", resp,
+				)
 				defer resp.Body.Close()
 
 				// Now push the response back to our caller:
@@ -147,10 +151,9 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 			} else {
 				n, err := io.Copy(responseBody, resp.Body)
 				if err != nil {
-					b.log.WithFields(log.Fields{
-						"bytes copied": n,
-						"error":        err,
-					}).Error("Error copying response body")
+					b.log.Error("Error copying response body", err,
+						"bytes copied", n,
+					)
 				}
 			}
 		}()
@@ -159,7 +162,7 @@ func (b *httpBridge) Request(ctx context.Context, p httpcp.Server_request) error
 
 // Try calling f at exponentially increasing intervals until either it returns a nil error,
 // or the length of the interval exceeds 30 seconds.
-func exponentialBackoff[T any](lg log.Interface, f func() (T, error)) (val T, err error) {
+func exponentialBackoff[T any](lg *slog.Logger, f func() (T, error)) (val T, err error) {
 	delay := time.Millisecond
 	limit := 30 * time.Second
 	for {
@@ -167,10 +170,10 @@ func exponentialBackoff[T any](lg log.Interface, f func() (T, error)) (val T, er
 		if err == nil || delay > limit {
 			return
 		}
-		lg.WithFields(log.Fields{
-			"error":    err,
-			"retry in": delay,
-		}).Info("App server not yet reachable")
+		lg.Info("App server not yet reachable",
+			"error", err,
+			"retry in", delay,
+		)
 		time.Sleep(delay)
 		delay *= 2
 	}

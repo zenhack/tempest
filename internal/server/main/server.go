@@ -10,9 +10,9 @@ import (
 	"capnproto.org/go/capnp/v3/pogs"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
-	"github.com/apex/log"
 	"github.com/gobwas/ws"
 	"github.com/gorilla/mux"
+	"golang.org/x/exp/slog"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
 	websession "zenhack.net/go/tempest/capnp/web-session"
@@ -53,7 +53,7 @@ func (p *webSessionParams) Insert(into websession.Params) error {
 // A server encapsulates the state of a running server.
 type server struct {
 	rootDomain   string // Main Tempest domain name
-	log          log.Interface
+	log          *slog.Logger
 	db           database.DB
 	sessionStore session.Store
 	state        mutex.Mutex[serverState]
@@ -66,7 +66,7 @@ type serverState struct {
 	containers    ContainerSet
 }
 
-func newServer(rootDomain string, lg log.Interface, db database.DB, sessionStore session.Store) *server {
+func newServer(rootDomain string, lg *slog.Logger, db database.DB, sessionStore session.Store) *server {
 	return &server{
 		rootDomain:   rootDomain,
 		log:          lg,
@@ -122,10 +122,10 @@ func (s *server) Handler() http.Handler {
 				})
 				if err != nil {
 					w.WriteHeader(http.StatusUnauthorized)
-					s.log.WithFields(log.Fields{
-						"error":  err,
-						"reason": "unsealing sandstorm-sid failed",
-					}).Debug("Access to grain UI denied.")
+					s.log.Debug("Access to grain UI denied.",
+						"error", err,
+						"reason", "unsealing sandstorm-sid failed",
+					)
 				}
 				session.WriteCookie(s.sessionStore, req, w, sess)
 				w.Header().Set("Location", query.Get("path"))
@@ -134,34 +134,34 @@ func (s *server) Handler() http.Handler {
 				// Use http/2 push to avoid a round trip.
 			case querySid:
 				w.WriteHeader(http.StatusUnauthorized)
-				s.log.WithFields(log.Fields{
-					"url path": req.URL.Path,
-					"reason": []string{
+				s.log.Debug("Access to grain UI denied",
+					"url path", req.URL.Path,
+					"reason", []string{
 						"sandstorm-sid query parameter is present",
 						"path is not /_sandstorm-init",
 					},
-				}).Debug("Access to grain UI denied")
+				)
 			case readCookieErr != nil:
 				w.WriteHeader(http.StatusUnauthorized)
-				s.log.WithFields(log.Fields{
-					"error": readCookieErr,
-					"url":   req.URL,
-					"reason": []string{
+				s.log.Debug("Access to grain UI denied",
+					"error", readCookieErr,
+					"url", req.URL,
+					"reason", []string{
 						"no grain session cookie",
 						"no sandstorm-sid query parameter",
 					},
-				}).Debug("Access to grain UI denied")
+				)
 			default:
 				var wsp webSessionParams
 				wsp.FromRequest(req)
 				session, err := s.getWebSession(req.Context(), wsp, sess)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					s.log.WithFields(log.Fields{
-						"grainID": sess.GrainID,
-						"params":  wsp,
-						"error":   err,
-					}).Error("Could not get web session reference")
+					s.log.Error(
+						"Could not get web session reference", err,
+						"grainID", sess.GrainID,
+						"params", wsp,
+					)
 					return
 				}
 				defer session.Release()
@@ -196,7 +196,7 @@ func (s *server) Handler() http.Handler {
 			_, err := rand.Read(buf[:])
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				s.log.WithField("error", err).Error("crypto/rand.Read() failed")
+				s.log.Error("crypto/rand.Read() failed", err)
 				return
 			}
 			sess.SessionID = buf[:]
@@ -215,8 +215,9 @@ func (s *server) Handler() http.Handler {
 			var sess session.UserSession
 			err := session.ReadCookie(s.sessionStore, req, &sess)
 			if err != nil {
-				s.log.WithField("error", err).
-					Debug("Failed to read session cookie; treating as anonymous")
+				s.log.Debug("Failed to read session cookie; treating as anonymous",
+					"error", err,
+				)
 				// Don't rely on ReadCookie leaving the zero value in place:
 				sess = session.UserSession{}
 			}
@@ -227,8 +228,7 @@ func (s *server) Handler() http.Handler {
 					},
 				}, req, w)
 			if err != nil {
-				s.log.WithField("error", err).
-					Error("Failed to upgrade http connection")
+				s.log.Error("Failed to upgrade http connection", err)
 				return
 			}
 			transport := transport.New(codec)
@@ -361,9 +361,9 @@ func (s *server) Release() {
 // Implementation of capnp.ErrorReporter on top of our logger. TODO(cleanup):
 // move this somewhere more appropriate.
 type logErrorReporter struct {
-	log log.Interface
+	log *slog.Logger
 }
 
 func (l logErrorReporter) ReportError(err error) {
-	l.log.WithField("error", err).Error("capnp-rpc error")
+	l.log.Error("capnp-rpc error", err)
 }

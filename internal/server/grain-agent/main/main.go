@@ -9,6 +9,7 @@ package grainagentmain
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -16,9 +17,10 @@ import (
 	"os/exec"
 
 	"capnproto.org/go/capnp/v3"
-	"github.com/apex/log"
+	"golang.org/x/exp/slog"
 	spk "zenhack.net/go/tempest/capnp/package"
 	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
+	"zenhack.net/go/tempest/internal/server/logging"
 	"zenhack.net/go/util"
 )
 
@@ -74,8 +76,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 }
 
 func Main() {
-	log.SetLevel(log.DebugLevel)
-	lg := log.Log
+	lg := logging.NewLogger()
 
 	data, err := ioutil.ReadFile("/sandstorm-manifest")
 	util.Chkfatal(err)
@@ -89,7 +90,7 @@ func Main() {
 	util.Chkfatal(err)
 
 	if len(os.Args) < 2 {
-		lg.Fatal("Too few arugments")
+		panic("Too few arugments")
 	}
 	buf, err := base64.StdEncoding.DecodeString(os.Args[1])
 	util.Chkfatal(err)
@@ -110,20 +111,22 @@ func Main() {
 		util.Chkfatal(err)
 		spawnSpkCmd(lg, appTitleText, cmd)
 	default:
-		lg.WithFields(log.Fields{
-			"launch command": launchCmd.Which(),
-		}).Error("BUG: Unrecognized launch command")
+		err := errors.New("Unrecognized launch command")
+		lg.Error("BUG", err,
+			"launch command", launchCmd.Which(),
+		)
+		panic(err)
 	}
 }
 
-func spawnSpkCmd(lg log.Interface, appTitle string, spkCmd spk.Manifest_Command) {
+func spawnSpkCmd(lg *slog.Logger, appTitle string, spkCmd spk.Manifest_Command) {
 	cmd, err := parseCmd(spkCmd)
 	util.Chkfatal(err)
 
-	lg.WithFields(log.Fields{
-		"appTitle": appTitle,
-		"command":  cmd.Args,
-	}).Info("Starting up app")
+	lg.Info("Starting up app",
+		"appTitle", appTitle,
+		"command", cmd.Args,
+	)
 
 	osCmd := cmd.ToOsCmd()
 
@@ -140,7 +143,7 @@ func spawnSpkCmd(lg log.Interface, appTitle string, spkCmd spk.Manifest_Command)
 	lg.Info("App exited; shutting down grain.")
 }
 
-func startCapnpApi(lg log.Interface) error {
+func startCapnpApi(lg *slog.Logger) error {
 	l, err := net.Listen("unix", "/tmp/sandstorm-api")
 	if err != nil {
 		return err

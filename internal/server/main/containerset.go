@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 
 	"capnproto.org/go/capnp/v3"
-	"github.com/apex/log"
+	"golang.org/x/exp/slog"
 	"zenhack.net/go/tempest/capnp/grain"
 	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
 	"zenhack.net/go/tempest/internal/common/types"
@@ -37,7 +37,7 @@ type ContainerSet struct {
 	containersByGrainID map[types.GrainID]container.Container
 }
 
-func (cset *ContainerSet) Get(ctx context.Context, lg log.Interface, db database.DB, grainID types.GrainID) (container.Container, error) {
+func (cset *ContainerSet) Get(ctx context.Context, lg *slog.Logger, db database.DB, grainID types.GrainID) (container.Container, error) {
 	c, ok := cset.containersByGrainID[grainID]
 	if ok {
 		return c, nil
