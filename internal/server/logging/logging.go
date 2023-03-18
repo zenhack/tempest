@@ -1,3 +1,4 @@
+// Package logging adds helpers for logging
 package logging
 
 import (
@@ -6,9 +7,16 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// Create a new logger with our preferred settings.
 func NewLogger() *slog.Logger {
 	opts := slog.HandlerOptions{
 		Level: slog.LevelDebug,
 	}
 	return slog.New(opts.NewTextHandler(os.Stdout))
+}
+
+// Log a message and then panic
+func Panic(l *slog.Logger, msg string, err error, args ...any) {
+	l.Error("FATAL: "+msg, err, args...)
+	panic(err)
 }

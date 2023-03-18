@@ -18,6 +18,7 @@ import (
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/database"
+	"zenhack.net/go/tempest/internal/server/logging"
 	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )
@@ -184,25 +185,21 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
 		if err := grainProc.Kill(); err != nil {
-			// TODO(cleanup): make an actual Fatal log level for us to use:
-			cmd.Log.Error("FATAL: Failed to kill grain", err,
+			logging.Panic(cmd.Log, "Failed to kill grain", err,
 				"grainID", cmd.GrainID,
 				"launcher-pid", launcherPid,
 				"grain-pid", grainPid,
 			)
-			panic(err)
 		}
 		cmd.Log.Debug("Killed grain",
 			"pid", grainPid,
 		)
 		if _, err := osCmd.Process.Wait(); err != nil {
-			// TODO(cleanup): make an actual Fatal log level for us to use:
-			cmd.Log.Error("FATAL: Failed to wait() on launcher", err,
+			logging.Panic(cmd.Log, "Failed to wait() on launcher", err,
 				"grainID", cmd.GrainID,
 				"launcher-pid", launcherPid,
 				"grain-pid", grainPid,
 			)
-			panic(err)
 		}
 		cmd.Log.Debug("Wait()ed for launcher",
 			"pid", launcherPid,
