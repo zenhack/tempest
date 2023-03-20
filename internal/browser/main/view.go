@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
+	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maps"
 	"zenhack.net/go/util/slices"
@@ -13,7 +14,6 @@ import (
 
 var (
 	h = builder.H
-	t = builder.T
 )
 
 type (
@@ -21,17 +21,21 @@ type (
 	e = builder.E
 )
 
+func t(l10n intl.L10N, f intl.L10NString, args ...string) vdom.VNode {
+	return builder.T(l10n.Fmt(f, args...))
+}
+
 var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
 func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	content := dummyNode
 	session, loginReady := m.LoginSession.Get()
 	if !loginReady {
-		content = t("Loading...")
+		content = t(m.L10N, "Loading...")
 	} else if session.Err() != nil {
 		// TODO: deferrentiate between disconnects/failures. Or maybe just
 		// tweak the API to return all this info in-band?
-		content = viewLoginForm()
+		content = viewLoginForm(m.L10N)
 	} else {
 		switch m.CurrentFocus {
 		case FocusGrainList:
@@ -51,7 +55,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 			content = m.viewApps(msgEvent)
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
-				content = t("Placeholder; select a grain.")
+				content = t(m.L10N, "Placeholder; select a grain.")
 			}
 		default:
 			panic("Unknown focus value")
@@ -87,7 +91,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 					h("a",
 						a{"href": "#"},
 						e{"click": msgEvent(ChangeFocus{InitialFocus})},
-						t("Tempest"),
+						t(m.L10N, "Tempest"),
 					),
 				),
 				h("nav", nil, nil, h("ul", a{"class": "nav-links"}, nil,
@@ -95,7 +99,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 						h("a",
 							a{"href": "#/apps"},
 							e{"click": msgEvent(ChangeFocus{FocusApps})},
-							t("Apps"),
+							t(m.L10N, "Apps"),
 						),
 					),
 					h("li", a{"class": "nav-link"}, nil,
@@ -104,11 +108,11 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 							e{"click": msgEvent(
 								ChangeFocus{FocusGrainList},
 							)},
-							t("Grains"),
+							t(m.L10N, "Grains"),
 						),
 					),
 				)),
-				h("h2", nil, nil, t("Grains")),
+				h("h2", nil, nil, t(m.L10N, "Grains")),
 				h("nav", nil, nil,
 					h("ul", a{"class": "nav-links"}, nil, activeGrainNodes...),
 				),
@@ -120,7 +124,8 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	if m.Error != nil {
 		mainUiNodes = append(
 			mainUiNodes,
-			h("div", a{"class": "error-notice"}, nil, t(m.Error.Error())),
+			// TODO: figure out how translating the error should work.
+			h("div", a{"class": "error-notice"}, nil, builder.T(m.Error.Error())),
 		)
 	}
 
@@ -176,14 +181,18 @@ func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 							PkgID: id,
 						}),
 					},
-					t(nounPhrase),
+					// TODO: figure out how translation
+					// should work for app-provided strings.
+					builder.T(nounPhrase),
 				)),
 			)
 		}
 		appItems = append(
 			appItems,
 			h("li", nil, nil,
-				t(title),
+				// TODO: figure out how translation
+				// should work for app-provided strings.
+				builder.T(title),
 				h("ul", nil, nil, links...),
 			),
 		)
@@ -197,16 +206,16 @@ func newDomainNonce() string {
 	return hex.EncodeToString(buf[:])
 }
 
-func viewLoginForm() vdom.VNode {
+func viewLoginForm(l10n intl.L10N) vdom.VNode {
 	return h("form", a{"action": "/login/dev", "method": "post"}, nil,
 		h("label", a{"for": "name"}, nil,
-			t("Dev account login"),
+			t(l10n, "Dev account login"),
 		),
 		h("input", a{
 			"name":        "name",
 			"placeholder": "e.g. Alice Dev Admin",
 		}, nil),
-		h("button", a{"type": "submit"}, nil, t("Submit")),
+		h("button", a{"type": "submit"}, nil, t(l10n, "Submit")),
 	)
 }
 
@@ -220,7 +229,7 @@ func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain
 		h("a",
 			a{"href": "#/grain/" + string(id)},
 			e{"click": onClick},
-			t(grain.Title),
+			builder.T(grain.Title),
 		),
 	)
 }

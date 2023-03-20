@@ -6,6 +6,7 @@ import (
 
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/util"
+	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
@@ -13,6 +14,8 @@ import (
 )
 
 type Model struct {
+	L10N intl.L10N
+
 	ServerAddr   ServerAddr
 	CurrentFocus Focus
 	FocusedGrain types.GrainID // ID for the currently focused grain
