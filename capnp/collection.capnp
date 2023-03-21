@@ -16,14 +16,14 @@ interface Pusher(K, V) {
   # batch to start acting on the changes, but it may be useful to know, esp.
   # for initially populating the collection.
 
-  upsert @0 (key :K, value :V);
+  upsert @0 (key :K, value :V) -> stream;
   # Insert a new key, value pair into the collection, or update the value if
   # the key is already present.
 
-  remove @1 (key :K);
+  remove @1 (key :K) -> stream;
   # remove a key from the collection.
 
-  clear @3 ();
+  clear @3 () -> stream;
   # Remove all keys from the collection.
 
   ready @2 ();

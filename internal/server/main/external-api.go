@@ -68,10 +68,9 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 		throw(err)
 		throw(tx.Commit())
 
-		_, rel := into.Clear(ctx, nil)
-		releaseFuncs := []capnp.ReleaseFunc{rel}
+		throw(into.Clear(ctx, nil))
 		for _, uiViewInfo := range info {
-			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
+			throw(into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
 				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())
@@ -87,14 +86,13 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 				// TODO: handle
 				p.SetValue(g.ToPtr())
 				return nil
-			})
-			releaseFuncs = append(releaseFuncs, rel)
+			}))
 		}
-		_, rel = into.Ready(ctx, nil)
-		releaseFuncs = append(releaseFuncs, rel)
-		for _, rel := range releaseFuncs {
-			rel()
-		}
+		fut, rel := into.Ready(ctx, nil)
+		defer rel()
+		throw(into.WaitStreaming())
+		_, err = fut.Struct()
+		throw(err)
 	})
 }
 
@@ -110,10 +108,9 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 		throw(err)
 		throw(tx.Commit())
 
-		_, rel := into.Clear(ctx, nil)
-		releaseFuncs := []capnp.ReleaseFunc{rel}
+		throw(into.Clear(ctx, nil))
 		for _, dbPkg := range dbPkgs {
-			_, rel = into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
+			throw(into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
 				key, err := capnp.NewText(p.Segment(), dbPkg.ID)
 				throw(err)
 				p.SetKey(key.ToPtr())
@@ -127,14 +124,13 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 				// TODO: controller
 				p.SetValue(pkg.ToPtr())
 				return nil
-			})
-			releaseFuncs = append(releaseFuncs, rel)
+			}))
 		}
-		_, rel = into.Ready(ctx, nil)
-		releaseFuncs = append(releaseFuncs, rel)
-		for _, rel := range releaseFuncs {
-			rel()
-		}
+		fut, rel := into.Ready(ctx, nil)
+		defer rel()
+		throw(into.WaitStreaming())
+		_, err = fut.Struct()
+		throw(err)
 	})
 }
 
