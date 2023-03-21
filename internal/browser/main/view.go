@@ -69,7 +69,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	for _, k := range keys {
 		activeGrainNodes = append(
 			activeGrainNodes,
-			viewOpenGrain(msgEvent, k, m.Grains[k], m.FocusedGrain == k),
+			viewOpenGrain(m.L10N, msgEvent, k, m.Grains[k], m.FocusedGrain == k),
 		)
 	}
 	var iframes []vdom.VNode
@@ -219,7 +219,7 @@ func viewLoginForm(l10n intl.L10N) vdom.VNode {
 	)
 }
 
-func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
+func viewOpenGrain(l10n intl.L10N, msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
 	focusGrain := msgEvent(FocusGrain{ID: id})
 	classes := "nav-link"
 	if isFocused {
@@ -232,10 +232,10 @@ func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain
 			builder.T(grain.Title),
 		),
 		builder.T(" "),
-		h("a",
-			a{"href": "#/grain/" + string(id)},
+		h("button",
+			a{"class": "close-button"},
 			e{"click": msgEvent(CloseGrain{ID: id})},
-			builder.T("X"), // TODO: icon or something.
+			t(l10n, "Close Grain"),
 		),
 	)
 }

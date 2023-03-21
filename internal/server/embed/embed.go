@@ -9,4 +9,5 @@ import (
 //go:embed *.html
 //go:embed *.css
 //go:embed _dev/*
+//go:embed icons/*
 var Content embed.FS
