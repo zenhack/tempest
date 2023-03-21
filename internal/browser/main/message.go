@@ -55,6 +55,10 @@ type SpawnGrain struct {
 	PkgID types.ID[external.Package]
 }
 
+type CloseGrain struct {
+	ID types.GrainID
+}
+
 type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
 }
@@ -114,6 +118,19 @@ func (msg FocusGrain) Update(m Model) (Model, Cmd) {
 			DomainNonce: newDomainNonce(),
 			DomIndex:    index,
 		}
+	}
+	return m, nil
+}
+
+func (msg CloseGrain) Update(m Model) (Model, Cmd) {
+	g, ok := m.OpenGrains[msg.ID]
+	if ok {
+		delete(m.OpenGrains, msg.ID)
+		if m.CurrentFocus == FocusOpenGrain && m.FocusedGrain == msg.ID {
+			m.CurrentFocus = FocusGrainList
+			m.FocusedGrain = ""
+		}
+		m.GrainDomOrder.Remove(g.DomIndex)
 	}
 	return m, nil
 }

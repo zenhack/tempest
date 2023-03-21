@@ -220,16 +220,22 @@ func viewLoginForm(l10n intl.L10N) vdom.VNode {
 }
 
 func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
-	onClick := msgEvent(FocusGrain{ID: id})
+	focusGrain := msgEvent(FocusGrain{ID: id})
 	classes := "nav-link"
 	if isFocused {
 		classes += " nav-link--focused"
 	}
-	return h("li", a{"class": classes}, e{"click": onClick},
+	return h("li", a{"class": classes}, nil,
 		h("a",
 			a{"href": "#/grain/" + string(id)},
-			e{"click": onClick},
+			e{"click": focusGrain},
 			builder.T(grain.Title),
+		),
+		builder.T(" "),
+		h("a",
+			a{"href": "#/grain/" + string(id)},
+			e{"click": msgEvent(CloseGrain{ID: id})},
+			builder.T("X"), // TODO: icon or something.
 		),
 	)
 }
