@@ -241,8 +241,13 @@ func viewOpenGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain
 }
 
 func viewGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain) vdom.VNode {
-	// XXX
-	return viewOpenGrain(msgEvent, id, grain, false)
+	return h("li", a{"class": "nav-link"}, nil,
+		h("a",
+			a{"href": "#/grain/" + string(id)},
+			e{"click": msgEvent(FocusGrain{ID: id})},
+			builder.T(grain.Title),
+		),
+	)
 }
 
 func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
