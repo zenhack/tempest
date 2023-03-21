@@ -44,10 +44,8 @@
 	--warning-bgcolor: var(--yellow-3);
 
 	--sidebar-bgcolor: var(--grey-9);
-	--sidebar-bgcolor-hover: var(--grey-3);
-	--sidebar-bgcolor-active: var(--grey-2);
+	--sidebar-bgcolor-active: var(--grey-7);
 	--sidebar-color: var(--grey-3);
-	--sidebar-color-hover: var(--grey-1);
 	--sidebar-color-active: var(--grey-9);
 	--sidebar-border-color: var(--grey-6);
 
@@ -62,11 +60,9 @@
 		--warning-bgcolor: var(--yellow-6);
 
 		--sidebar-bgcolor: var(--grey-1);
-		--sidebar-bgcolor-hover: var(--grey-6);
-		--sidebar-bgcolor-active: var(--grey-8);
+		--sidebar-bgcolor-active: var(--grey-2);
 		--sidebar-color: var(--grey-6);
-		--sidebar-color-hover: var(--grey-9);
-		--sidebar-color-active: var(--grey-1);
+		--sidebar-color-active: var(--grey-6);
 		--sidebar-border-color: var(--grey-3);
 
 		--default-content-bgcolor: var(--grey-2);
@@ -82,11 +78,6 @@ body {
 .nav-links {
 	list-style: none;
 	padding-left: 0px;
-}
-
-.nav-link:hover {
-	color: var(--sidebar-color-hover);
-	background-color: var(--sidebar-bgcolor-hover);
 }
 
 .nav-link--focused {
