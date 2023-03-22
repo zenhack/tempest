@@ -80,7 +80,7 @@ body {
 	padding-left: 0px;
 }
 
-.nav-link--focused {
+.open-grain-tab--focused {
 	color: var(--sidebar-color-active);
 	background-color: var(--sidebar-bgcolor-active);
 }

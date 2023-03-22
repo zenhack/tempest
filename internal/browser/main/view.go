@@ -221,9 +221,9 @@ func viewLoginForm(l10n intl.L10N) vdom.VNode {
 
 func viewOpenGrain(l10n intl.L10N, msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
 	focusGrain := msgEvent(FocusGrain{ID: id})
-	classes := "nav-link"
+	classes := "open-grain-tab"
 	if isFocused {
-		classes += " nav-link--focused"
+		classes += " open-grain-tab--focused"
 	}
 	return h("li", a{"class": classes}, nil,
 		h("a",
