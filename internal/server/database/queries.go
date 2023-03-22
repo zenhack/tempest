@@ -183,11 +183,12 @@ func (tx Tx) AccountUiViews(accountID string) ([]UiViewInfo, error) {
 		WHERE
 			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
 			AND sturdyRefs.grainId = grains.id
+			AND sturdyRefs.ownerType = 'userkeyring'
 			AND sturdyRefs.owner = ?
 			AND sturdyRefs.expires > ?
 		`,
 
-		"userkeyring-"+accountID,
+		accountID,
 		time.Now().Unix(),
 	)
 	if err != nil {
@@ -246,13 +247,14 @@ func (tx Tx) createOwnerSturdyRef(grainID types.GrainID) error {
 	_, err = tx.sqlTx.Exec(
 		`INSERT INTO sturdyRefs (
 			sha256,
+			ownerType,
 			owner,
 			expires,
 			grainId
 			-- objectId is NULL
-		) VALUES (?, ?, ?, ?)`,
+		) VALUES (?, 'userkeyring', ?, ?, ?)`,
 		hash[:],
-		"userkeyring-"+ownerID,
+		ownerID,
 		math.MaxInt64,
 		grainID,
 	)

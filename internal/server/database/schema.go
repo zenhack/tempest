@@ -84,16 +84,18 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			CREATE TABLE IF NOT EXISTS sturdyRefs (
 				-- raw sha256 hash of the token.
 				sha256 BLOB PRIMARY KEY NOT NULL,
-				-- The "owner" of this token; this determines who is allowed to
-				-- restore the sturdyRef, and from where. The meaning of scopes
-				-- are:
-				--
-				-- * grain-FOO must be restored via SandstormApi.restore(), from
-				--   the grain with grainId FOO
-				-- * userkeyring-FOO where FOO is in accounts.id: not restorable
+
+				-- "ownerType" and "owner" determine who is allowed to restore
+				-- the sturdyRef, and from where. The meaning of "owner" depends
+				-- on the value of "ownerType":
+				-- * 'grain': "owner" is a grain ID, and the sturdyRef must be
+				--   restored via SandstormApi.restore(), from the grain with
+				--   the specified ID. grainId FOO
+				-- * 'userkeyring': "owner" is in accounts.id: not restorable
 				--   directly; logically each user has a "keyring" of capabilities
 				--   reachable via APIs that require them to be logged in; some of
-				--   those APIs look for this scope.
+				--   those APIs look for this type.
+				ownerType VARCHAR NOT NULL,
 				owner VARCHAR NOT NULL,
 
 				-- Unix timestamp after which this entry is invalid.
