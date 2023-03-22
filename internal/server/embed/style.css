@@ -35,8 +35,42 @@
 	--yellow-3: hsl(60 100% 24%);
 	--yellow-6: hsl(60 100% 83.3%);
 
+	/*** Size Pallet ***/
+	/* These names aren't terribly descriptive, but we give them names
+	 * nonetheless (1) to document the values we want to use in our scale,
+	 * and (2) to make it hard to accidentally use an un-approved one.
+	 * We try to use symbolic constants as much as possible, defined in
+	 * terms of these. */
+
+	--sz-0: 0px;
+	--sz-1: 1px;
+	--sz-2: 2px;
+	--sz-4: 4px;
+	--sz-8: 8px;
+	--sz-12: 12px;
+	--sz-16: 16px;
+	--sz-24: 24px;
+	--sz-32: 32px;
+	--sz-48: 48px;
+	--sz-64: 64px;
+	--sz-96: 96px;
+	--sz-128: 128px;
+	--sz-150: 150px;
+	--sz-192: 192px;
+	--sz-256: 256px;
+	--sz-300: 300px;
+	--sz-384: 384px;
+	--sz-512: 512px;
+	--sz-640: 640px;
+	--sz-768: 768px;
 
 	/*** Symbolic Constants ***/
+
+	/**** Sizes ****/
+	--sz-app-icon-app-grid: var(--sz-128);
+	--sz-app-icon-grain: var(--sz-24);
+	--sz-app-icon-market: var(--sz-150);
+	--sz-app-icon-market-big: var(--sz-300);
 
 	/**** Light color profile: ****/
 	--error-bgcolor: var(--red-3);
@@ -134,14 +168,17 @@ body {
 	color: transparent;
 	background-color: transparent;
 	background-image: url(icons/close.svg);
-	height: 24px;
-	width: 24px;
-	border: 0px;
-	margin-left: 0.5em;
+
+	/* Should be the same size as the icon, which will go in on the same row: */
+	height: var(--sz-app-icon-grain);
+	width: var(--sz-app-icon-grain);
+
+	border: var(--sz-0);
+	margin-left: var(--sz-4);
 }
 .close-button:hover {
-	border: 1px solid var(--grey-9);
-	border-radius: 2px;
+	border: var(--sz-1) solid var(--grey-9);
+	border-radius: var(--sz-2);
 }
 
 /* vim: set ts=8 sw=8 noet : */
