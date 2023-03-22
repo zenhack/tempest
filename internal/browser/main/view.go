@@ -231,7 +231,6 @@ func viewOpenGrain(l10n intl.L10N, msgEvent func(Msg) vdom.EventHandler, id type
 			e{"click": focusGrain},
 			builder.T(grain.Title),
 		),
-		builder.T(" "),
 		h("button",
 			a{"class": "close-button"},
 			e{"click": msgEvent(CloseGrain{ID: id})},
