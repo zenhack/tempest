@@ -140,6 +140,8 @@ body {
 .main-ui__sidebar {
 	background-color: var(--sidebar-bgcolor);
 	color: var(--sidebar-color);
+
+	width: var(--sz-192);
 }
 
 .main-ui__content {
