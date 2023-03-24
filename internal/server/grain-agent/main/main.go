@@ -11,7 +11,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"net"
 	"os"
 	"os/exec"
 
@@ -140,23 +139,4 @@ func spawnSpkCmd(lg *slog.Logger, appTitle string, spkCmd spk.Manifest_Command) 
 	defer os.Exit(1)
 	util.Chkfatal(osCmd.Wait())
 	lg.Info("App exited; shutting down grain.")
-}
-
-func startCapnpApi(lg *slog.Logger) error {
-	l, err := net.Listen("unix", "/tmp/sandstorm-api")
-	if err != nil {
-		return err
-	}
-	go func() {
-		for {
-			conn, err := l.Accept()
-			if err != nil {
-				continue
-			}
-			// TODO: do something with the connection.
-			lg.Info("Got a connection to the api socket.")
-			conn.Close()
-		}
-	}()
-	return nil
 }
