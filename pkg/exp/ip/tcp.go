@@ -17,7 +17,7 @@ func ConnectTCP(ctx context.Context, port ip.TcpPort) io.ReadWriteCloser {
 		return nil
 	})
 	toThem := res.Upstream()
-	return tcpPort{
+	return &tcpPort{
 		toThem:   bytestream.ToWriteCloser(ctx, toThem),
 		fromThem: fromThem,
 		release:  release,
@@ -34,7 +34,7 @@ type tcpPort struct {
 func (port tcpPort) Read(p []byte) (n int, err error)  { return port.fromThem.Read(p) }
 func (port tcpPort) Write(p []byte) (n int, err error) { return port.toThem.Write(p) }
 
-func (port tcpPort) Close() error {
+func (port *tcpPort) Close() error {
 	if port.closed {
 		return nil
 	}
