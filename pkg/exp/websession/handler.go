@@ -48,6 +48,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		fallthrough
 	case "PATCH":
 		h.doNonStreamingPostLike(w, req)
+	case "DELETE":
+		h.doDelete(w, req)
 	default:
 		panic("TODO")
 	}
