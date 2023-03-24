@@ -134,7 +134,7 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 // placePathContext fills in the path and context fields of p based on the other arguments.
 func placePathContext(p hasPathContext, req *http.Request, responseStream util.ByteStream) error {
 	if !strings.HasPrefix(req.RequestURI, "/") {
-		return fmt.Errorf("Error: malformed RequestURI (no leading slash): %q", req.RequestURI)
+		return fmt.Errorf("error: malformed RequestURI (no leading slash): %q", req.RequestURI)
 	}
 	path := req.RequestURI[1:]
 	if err := p.SetPath(path); err != nil {
@@ -196,7 +196,7 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 	}
 	if length < 0 || length > maxNonStreamingBodySize {
 		replyErr(w, fmt.Errorf(
-			"Request body too big (%v bytes, max %v)",
+			"request body too big (%v bytes, max %v)",
 			length,
 			maxNonStreamingBodySize))
 		return
@@ -206,7 +206,7 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 	// arguemnt struct directly, to avoid an extra copy.
 	body := make([]byte, length)
 	if _, err := io.ReadFull(req.Body, body); err != nil {
-		replyErr(w, fmt.Errorf("Reading request body: %w", err))
+		replyErr(w, fmt.Errorf("reading request body: %w", err))
 		return
 	}
 	switch req.Method {
@@ -349,7 +349,7 @@ func responseStatus(req *http.Request, resp websession.Response) (int, error) {
 		if ok {
 			return status, nil
 		}
-		return 0, fmt.Errorf("Unknown success code enumerant: %v", successCode)
+		return 0, fmt.Errorf("unknown success code enumerant: %v", successCode)
 	case websession.Response_Which_noContent:
 		if resp.NoContent().ShouldResetForm() {
 			return http.StatusResetContent, nil
@@ -381,11 +381,11 @@ func responseStatus(req *http.Request, resp websession.Response) (int, error) {
 		if ok {
 			return status, nil
 		}
-		return 0, fmt.Errorf("Unknown error code enumerant: %v", errorCode)
+		return 0, fmt.Errorf("unknown error code enumerant: %v", errorCode)
 	case websession.Response_Which_serverError:
 		return http.StatusInternalServerError, nil
 	default:
-		return 0, fmt.Errorf("Unknown response variant: %v", resp.Which())
+		return 0, fmt.Errorf("unknown response variant: %v", resp.Which())
 	}
 }
 
@@ -399,9 +399,9 @@ func responseBodyBytes(resp websession.Response) ([]byte, error) {
 		case websession.Response_content_body_Which_bytes:
 			return body.Bytes()
 		case websession.Response_content_body_Which_stream:
-			return nil, fmt.Errorf("Can't get []byte for streaming body")
+			return nil, fmt.Errorf("can't get []byte for streaming body")
 		default:
-			return nil, fmt.Errorf("Unknown body variant: %v", body.Which())
+			return nil, fmt.Errorf("unknown body variant: %v", body.Which())
 		}
 	case websession.Response_Which_noContent:
 		return nil, nil
@@ -414,7 +414,7 @@ func responseBodyBytes(resp websession.Response) ([]byte, error) {
 	case websession.Response_Which_serverError:
 		return errorBodyBytes(resp.ServerError())
 	default:
-		return nil, fmt.Errorf("Unknown response variant: %v", resp.Which())
+		return nil, fmt.Errorf("unknown response variant: %v", resp.Which())
 	}
 }
 
@@ -546,7 +546,7 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 	case websession.Response_Which_serverError:
 		return populateErrorBodyHeaders(w.Header(), resp.ServerError())
 	default:
-		return fmt.Errorf("Unknown response variant: %v", resp.Which())
+		return fmt.Errorf("unknown response variant: %v", resp.Which())
 	}
 }
 
@@ -686,7 +686,7 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 		for i, t := range types {
 			mimeType, params, err := mime.ParseMediaType(t)
 			if err != nil {
-				return fmt.Errorf("Error parsing media type at index %v (%q): %w", i, t, err)
+				return fmt.Errorf("error parsing media type at index %v (%q): %w", i, t, err)
 			}
 			acceptedType := wsTypes.At(i)
 			acceptedType.SetMimeType(mimeType)
@@ -695,7 +695,7 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 				q, err := strconv.ParseFloat(qStr, 32)
 				if err != nil {
 					return fmt.Errorf(
-						"Error parsing qValue %q in media type %q: %w",
+						"error parsing qValue %q in media type %q: %w",
 						qStr, t, err)
 				}
 				acceptedType.SetQValue(float32(q))

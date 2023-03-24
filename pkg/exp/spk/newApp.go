@@ -32,7 +32,7 @@ func (p *PkgDefParams) Emit() error {
 	}
 	err := p.Key.AddToFile(keyring)
 	if err != nil {
-		return fmt.Errorf("Error saving key to keyring: %v", err)
+		return fmt.Errorf("error saving key to keyring: %v", err)
 	}
 
 	pkgDefPath := p.PkgDefPath

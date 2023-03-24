@@ -266,7 +266,7 @@ func findWasmExecJs(cfg Config) (string, error) {
 		// /usr/lib/tinygo and other similar directories.
 		tinygoExe, err := exec.LookPath("tinygo")
 		if err != nil {
-			return "", fmt.Errorf("Can't find tinygo executable: %w", err)
+			return "", fmt.Errorf("can't find tinygo executable: %w", err)
 		}
 		prefix := filepath.Dir(filepath.Dir(tinygoExe))
 		candidates := []string{"/lib", "/lib32", "/lib64", "/share"}
@@ -277,18 +277,18 @@ func findWasmExecJs(cfg Config) (string, error) {
 				return path, nil
 			}
 		}
-		return "", fmt.Errorf("Failed to find wasm_exec.js")
+		return "", fmt.Errorf("failed to find wasm_exec.js")
 	}
 	// Regular go toolchain
 	cmd := exec.Command("go", "env", "GOROOT")
 	cmd.Env = append(cmd.Env, os.Environ()...)
 	goroot, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("Could not determine GOROOT: %v", err)
+		return "", fmt.Errorf("could not determine GOROOT: %v", err)
 	}
 	path := strings.TrimSpace(string(goroot)) + "/misc/wasm/wasm_exec.js"
 	if _, err := os.Stat(path); err != nil {
-		return "", fmt.Errorf("Could not stat %q: %v", path, err)
+		return "", fmt.Errorf("could not stat %q: %v", path, err)
 	}
 	return path, nil
 }

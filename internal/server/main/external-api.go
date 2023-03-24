@@ -21,7 +21,7 @@ import (
 	"zenhack.net/go/util/exn"
 )
 
-var ErrNotLoggedIn = errors.New("You are not logged in.")
+var ErrNotLoggedIn = errors.New("you are not logged in")
 
 type externalApiImpl struct {
 	server       *server

@@ -282,7 +282,7 @@ func parsePermissions(s string) ([]bool, error) {
 			ret[i] = false
 		} else {
 			return nil, fmt.Errorf(
-				"Error: invalid permissions string in database: %q",
+				"error: invalid permissions string in database: %q",
 				s,
 			)
 		}

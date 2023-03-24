@@ -111,7 +111,7 @@ func Main() {
 		util.Chkfatal(err)
 		spawnSpkCmd(lg, appTitleText, cmd)
 	default:
-		err := errors.New("Unrecognized launch command")
+		err := errors.New("unrecognized launch command")
 		lg.Error("BUG", err,
 			"launch command", launchCmd.Which(),
 		)

@@ -10,7 +10,7 @@ var (
 	SandstormBase32Encoding = base32.NewEncoding("0123456789acdefghjkmnpqrstuvwxyz").
 				WithPadding(base32.NoPadding)
 
-	ErrBadKeyLength = errors.New("Invalid App Id: wrong length")
+	ErrBadKeyLength = errors.New("invalid app id: wrong length")
 )
 
 // An app id/public key
