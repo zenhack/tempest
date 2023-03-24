@@ -35,14 +35,6 @@ type Config struct {
 	Args []string
 }
 
-func getUid(name string) int {
-	u, err := user.Lookup(name)
-	chkfatal(err)
-	id, err := strconv.Atoi(u.Uid)
-	chkfatal(err)
-	return id
-}
-
 func getGid(name string) int {
 	g, err := user.LookupGroup(name)
 	chkfatal(err)
@@ -141,14 +133,6 @@ func chkfatal(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func spawnErr(fn func() error) <-chan error {
-	ret := make(chan error)
-	go func() {
-		ret <- fn()
-	}()
-	return ret
 }
 
 func withMyOuts(cmd *exec.Cmd) *exec.Cmd {
