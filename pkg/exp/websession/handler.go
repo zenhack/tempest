@@ -645,7 +645,7 @@ func replyErr(w http.ResponseWriter, err error) {
 	hdr := w.Header()
 
 	// Delete any headers we may have set when trying to build a normal response.
-	for k, _ := range hdr {
+	for k := range hdr {
 		delete(hdr, k)
 	}
 

@@ -11,7 +11,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -78,7 +77,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 func Main() {
 	lg := logging.NewLogger()
 
-	data, err := ioutil.ReadFile("/sandstorm-manifest")
+	data, err := os.ReadFile("/sandstorm-manifest")
 	util.Chkfatal(err)
 	msg, err := capnp.Unmarshal(data)
 	util.Chkfatal(err)

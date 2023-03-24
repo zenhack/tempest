@@ -3,7 +3,6 @@ package session
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -19,7 +18,7 @@ type Store struct {
 
 func GetKeys() (keys [][32]byte, err error) {
 	const path = config.Localstatedir + "/sandstorm/session-key"
-	data, err := ioutil.ReadFile(config.Localstatedir + "/sandstorm/session-key")
+	data, err := os.ReadFile(config.Localstatedir + "/sandstorm/session-key")
 	if os.IsNotExist(err) {
 		data = make([]byte, 64)
 		rand.Read(data)

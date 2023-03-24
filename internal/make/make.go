@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -205,7 +204,7 @@ func buildConfig(r *BuildRecord) {
 			},
 		}
 		for _, f := range files {
-			chkfatal(ioutil.WriteFile(f.path, []byte(f.content), 0600))
+			chkfatal(os.WriteFile(f.path, []byte(f.content), 0600))
 			r.RecordFile(f.path)
 		}
 	}
@@ -241,7 +240,7 @@ func buildCapnp(r *BuildRecord) {
 			oldSig, ok := r.Files[cgrPath]
 			if !ok || oldSig.Stamp.Size != int64(len(cgr)) {
 				hash := sha256.Sum256(cgr)
-				if bytes.Compare(hash[:], oldSig.Hash) != 0 {
+				if !bytes.Equal(hash[:], oldSig.Hash) {
 					log.Printf("Generating go code for %q", file)
 					chkfatal(os.WriteFile(cgrPath, cgr, 0644))
 					cmd := exec.Command("capnpc-go")
@@ -431,7 +430,7 @@ func run(args ...string) {
 		cfg.ParseFlags(args, "configure", flag.ExitOnError)
 		jsonData, err := json.MarshalIndent(cfg, "", "  ")
 		chkfatal(err)
-		chkfatal(ioutil.WriteFile(
+		chkfatal(os.WriteFile(
 			"./config.json",
 			jsonData,
 			0600))
@@ -461,7 +460,7 @@ func run(args ...string) {
 
 func readConfig() Config {
 	var c Config
-	data, err := ioutil.ReadFile("config.json")
+	data, err := os.ReadFile("config.json")
 	chkfatal(err)
 	chkfatal(json.Unmarshal(data, &c))
 	return c
@@ -520,7 +519,7 @@ func (r *BuildRecord) IsModified(path string) bool {
 	if err != nil {
 		return true
 	}
-	return bytes.Compare(hash, sig.Hash) != 0
+	return !bytes.Equal(hash, sig.Hash)
 }
 
 func (r *BuildRecord) RecordFile(path string) error {

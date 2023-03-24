@@ -86,7 +86,7 @@ func (k Keyring) GetKey(appId AppId) (Key, error) {
 			// something that wraps the underlying error.
 			return Key{}, ErrMalformedKey
 		}
-		if bytes.Compare(appId[:], pubKey) == 0 {
+		if bytes.Equal(appId[:], pubKey) {
 			return Key(keyFile), nil
 		}
 	}
