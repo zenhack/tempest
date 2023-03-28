@@ -429,13 +429,16 @@ func run(args ...string) {
 	case "dev":
 		run("install")
 		c := readConfig()
-		chkfatal(withMyOuts(
+		cmd := withMyOuts(
 			exec.Command("sudo",
 				"--preserve-env",
 				"-u", c.User,
 				"-g", c.Group,
-				c.Bindir+"/tempest"),
-		).Run())
+				c.Bindir+"/tempest",
+			),
+		)
+		cmd.Env = os.Environ()
+		chkfatal(cmd.Run())
 	default:
 		fmt.Fprintln(os.Stderr, "Unknown command:", args[0])
 		os.Exit(1)
