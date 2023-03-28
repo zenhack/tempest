@@ -45,10 +45,10 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	util.Chkfatal(err)
 	if cfg.listenPort == "" {
 		cfg.listenPort = "80"
-		cfg.smtpAddr = os.Getenv("SMTP_ADDR")
-		cfg.smtpAuth = smtpAuthFromEnv()
-		cfg.smtpFrom = os.Getenv("SMTP_FROM")
 	}
+	cfg.smtpAddr = os.Getenv("SMTP_ADDR")
+	cfg.smtpAuth = smtpAuthFromEnv()
+	cfg.smtpFrom = os.Getenv("SMTP_FROM")
 	return cfg
 }
 
