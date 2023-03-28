@@ -110,6 +110,11 @@ are influential:
 
 - `BASE_URL`: the main URL for the tempest web interface. Defaults to
   `http://local.sandstorm.io:8000`.
+- `SMTP_HOST`: When sending email, SMTP server to connect to.
+- `SMTP_PORT`: Port on `SMTP_HOST` to connect to.
+- `SMTP_USERNAME`: Email address to send mail from.
+- `SMTP_PASSWORD`: Password to use when authenticating with
+  the SMTP server.
 
 To log in with a developer account, visit the web interface (as defined
 by `BASE_URL`), click "Log in with dev account", and enter the dev
