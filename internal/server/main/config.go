@@ -23,9 +23,42 @@ type Config struct {
 	listenPort string
 	rootDomain string
 
-	smtpAddr string
-	smtpAuth smtp.Auth
-	smtpFrom string
+	smtp SMTPConfig
+}
+
+type SMTPConfig struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+}
+
+func (c SMTPConfig) getAuth() smtp.Auth {
+	return smtp.PlainAuth(
+		c.Username,
+		c.Username,
+		c.Password,
+		c.Host,
+	)
+}
+
+func (c SMTPConfig) SendMail(to []string, msg []byte) error {
+	return smtp.SendMail(
+		net.JoinHostPort(c.Host, c.Port),
+		c.getAuth(),
+		c.Username,
+		to,
+		msg,
+	)
+}
+
+func SMTPConfigFromEnv() SMTPConfig {
+	return SMTPConfig{
+		Host:     os.Getenv("SMTP_HOST"),
+		Port:     os.Getenv("SMTP_PORT"),
+		Username: os.Getenv("SMTP_USERNAME"),
+		Password: os.Getenv("SMTP_PASSWORD"),
+	}
 }
 
 func ConfigFromEnv(lg *slog.Logger) Config {
@@ -39,6 +72,7 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	}
 	cfg := Config{
 		rootDomain: baseURL.Host,
+		smtp:       SMTPConfigFromEnv(),
 	}
 	var err error
 	_, cfg.listenPort, err = net.SplitHostPort(cfg.rootDomain)
@@ -46,9 +80,6 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	if cfg.listenPort == "" {
 		cfg.listenPort = "80"
 	}
-	cfg.smtpAddr = os.Getenv("SMTP_ADDR")
-	cfg.smtpAuth = smtpAuthFromEnv()
-	cfg.smtpFrom = os.Getenv("SMTP_FROM")
 	return cfg
 }
 
