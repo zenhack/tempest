@@ -326,3 +326,83 @@ func (tx Tx) SetGrainViewInfo(grainID string, viewInfo grain.UiView_ViewInfo) er
 	)
 	return err
 }
+
+type SturdyRefValue struct {
+	Expires  time.Time
+	GrainID  types.GrainID
+	ObjectID capnp.Struct
+}
+
+type SturdyRefKey struct {
+	Token     []byte
+	OwnerType string
+	Owner     string
+}
+
+func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([]byte, error) {
+	hash := sha256.Sum256(k.Token)
+	var grainID *types.GrainID
+	if v.GrainID != "" {
+		grainID = &v.GrainID
+	}
+	var (
+		objectID []byte
+		err      error
+	)
+	if v.ObjectID.IsValid() {
+		objectID, err = encodeCapnp(v.ObjectID)
+	}
+	if err != nil {
+		return nil, err
+	}
+	_, err = tx.sqlTx.Exec(
+		`INSERT INTO sturdyRefs
+			( sha256
+			, ownerType
+			, owner
+			, expires
+			, grainId
+			, objectId
+			)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`,
+		hash[:],
+		k.OwnerType,
+		k.Owner,
+		v.Expires,
+		grainID,
+		objectID,
+	)
+	return hash[:], err
+}
+
+func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
+	hash := sha256.Sum256(k.Token)
+	row := tx.sqlTx.QueryRow(
+		`SELECT expires, grainId, objectId
+		FROM sturdyRefs
+		WHERE
+			ownerType = ?
+			AND owner = ?
+			AND sha256 = ?
+			AND expires < ?
+		`,
+		k.OwnerType,
+		k.Owner,
+		hash,
+		time.Now().Unix(),
+	)
+	var (
+		expires  int64
+		objectID []byte
+
+		ret SturdyRefValue
+	)
+	err := row.Scan(&expires, &ret.GrainID, &objectID)
+	if err != nil {
+		return ret, err
+	}
+	ret.Expires = time.Unix(expires, 0)
+	ret.ObjectID, err = decodeCapnp[capnp.Struct](objectID)
+	return ret, err
+}
