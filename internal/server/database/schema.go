@@ -107,13 +107,14 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				grainId VARCHAR(22) REFERENCES grains(id) ON DELETE CASCADE,
 
 				-- capnp struct describing the object this sturdyRef refers to.
+				--
 				-- If grainId is not null, then the root object of the message
 				-- is the ObjectId returned by AppPersistent.save() (see grain.capnp).
 				-- If this is null, then this sturdyRef refers to the root UiView
 				-- exported by the grain.
 				--
-				-- When we first define a sturdyRef type provided by the platform,
-				-- we will have to define a format for "system" object ids.
+				-- If grainId is null, then this the root object is a struct of type
+				-- SystemObjectId, from system.capnp.
 				objectId BLOB
 			)`)
 		throw(err)
