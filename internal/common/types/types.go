@@ -31,4 +31,7 @@ const (
 	// Special "dev" accounts; useful for testing but not suitable for
 	// real-world use.
 	DevCredential CredentialType = "dev"
+
+	// Email login.
+	EmailCredential CredentialType = "email"
 )
