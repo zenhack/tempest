@@ -14,7 +14,7 @@ necessary for the functioning of some existing apps.
 - [ ] Support passing WebDAV methods through to apps.
 - [ ] Pass all necessary information through to grains when spawning a
   session.
-  - [ ] Permissions
+  - [x] Permissions
   - [ ] audit the implementation to make sure there's nothing else.
 - [ ] Implement methods of `SandstormApi` and `SessionContext` from
   `grain.capnp`; right now all of these just throw "unimplemented"
