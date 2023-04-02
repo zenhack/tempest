@@ -6,12 +6,15 @@ import (
 	"encoding/base64"
 	"errors"
 	"os"
+	"strings"
+	"time"
 
 	"capnproto.org/go/capnp/v3"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
 	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
+	"zenhack.net/go/tempest/internal/capnp/system"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
 	"zenhack.net/go/tempest/internal/server/container"
@@ -45,6 +48,72 @@ func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.Exter
 
 func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_restore) error {
 	return capnp.Unimplemented("ExternalApi.restore() is unimplemented.")
+}
+
+func (api externalApiImpl) Authenticator(ctx context.Context, p external.ExternalApi_authenticator) error {
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	results.SetAuthenticator(external.Authenticator_ServerToClient(authenticatorImpl{
+		api: api,
+	}))
+	return nil
+}
+
+type authenticatorImpl struct {
+	api externalApiImpl
+}
+
+func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Authenticator_sendEmailAuthToken) error {
+	return exn.Try0(func(throw exn.Thrower) {
+		addr, err := p.Args().Address()
+		throw(err)
+		db := a.api.server.db
+		tx, err := db.Begin()
+		throw(err)
+		defer tx.Rollback()
+
+		// FIXME: sanitize addr?
+
+		_, seg := capnp.NewSingleSegmentMessage(nil)
+		oid, err := system.NewRootSystemObjectId(seg)
+		throw(err)
+		throw(oid.SetEmailLoginToken(addr))
+
+		token := database.GenToken()
+		_, err = tx.SaveSturdyRef(
+			database.SturdyRefKey{
+				Token:     token,
+				OwnerType: "external",
+				Owner:     "",
+			},
+			database.SturdyRefValue{
+				Expires:  time.Now().Add(10 * time.Minute),
+				ObjectID: capnp.Struct(oid),
+			},
+		)
+		throw(err)
+		throw(tx.Commit())
+
+		b64Token := base64.URLEncoding.EncodeToString(token)
+
+		cfg := a.api.server.cfg
+		throw(cfg.smtp.SendMail(
+			[]string{addr},
+			[]byte(strings.Join([]string{
+				"To: " + addr,
+				"From: " + cfg.smtp.Username,
+				"Subject: Email Login Token",
+				"",
+				"Login in as " + addr + " by visiting:",
+				"",
+				cfg.rootDomain + "/login/email/" + b64Token,
+				"",
+				"Or entering " + b64Token + "At the login prompt.",
+			}, "\r\n")),
+		))
+	})
 }
 
 type loginSessionImpl struct {

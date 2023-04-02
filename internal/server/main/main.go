@@ -18,7 +18,7 @@ func Main() {
 	listenAddr := ":" + cfg.listenPort
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
-	srv := newServer(cfg.rootDomain, lg, db, sessionStore)
+	srv := newServer(cfg, lg, db, sessionStore)
 	defer srv.Release()
 
 	http.Handle("/", srv.Handler())

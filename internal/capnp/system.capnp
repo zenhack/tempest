@@ -15,9 +15,10 @@ struct SystemObjectId {
   # self-authenticating.
   union {
     emailLoginToken @0 :Text;
-    # An email login token. For now, this isn't used at the capnp level,
-    # but is used to support email login. Perhaps conceptually the right
-    # thing is for this to restore to a LoginSession (from external.capnp)?
+    # An email login token. The value is the email address this is for.
+    # For now, this isn't used at the capnp level, but is used to support
+    # email login. Perhaps conceptually the right thing is for this to
+    # restore to a LoginSession (from external.capnp)?
 
     unknown @1 :Void;
     # placeholder so this can be a union.

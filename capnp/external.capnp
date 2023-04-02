@@ -30,6 +30,20 @@ interface ExternalApi {
 
   restore @1 (sturdyRef :Data) -> (cap :Capability);
   # Restore a sturdyRef as a live capability.
+
+  authenticator @2 () -> (authenticator :Authenticator);
+  # Return an authenticator that can be used to log in.
+}
+
+interface Authenticator {
+  # An authenticator provides functionality for authenticating a user with
+  # the Tempest server.
+
+  sendEmailAuthToken @0 (address :Text);
+  # Send an email authentication token to the specified email address.
+  # The token can be passed to ExternalApi.restore to get a LoginSession.
+  # Alternatively, making an http request to /login/email/<base64url-encoded token> will
+  # return a response that sets a login cookie.
 }
 
 interface LoginSession {

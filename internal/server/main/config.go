@@ -21,7 +21,7 @@ func defaultTo(val, def string) string {
 
 type Config struct {
 	listenPort string
-	rootDomain string
+	rootDomain string // Main Tempest domain name
 
 	smtp SMTPConfig
 }
