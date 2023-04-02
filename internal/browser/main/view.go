@@ -207,15 +207,27 @@ func newDomainNonce() string {
 }
 
 func viewLoginForm(l10n intl.L10N) vdom.VNode {
-	return h("form", a{"action": "/login/dev", "method": "post"}, nil,
-		h("label", a{"for": "name"}, nil,
-			t(l10n, "Dev account login"),
+	return h("div", nil, nil,
+		h("form", a{"action": "/login/dev", "method": "post"}, nil,
+			h("label", a{"for": "name"}, nil,
+				t(l10n, "Dev account login"),
+			),
+			h("input", a{
+				"name":        "name",
+				"placeholder": "e.g. Alice Dev Admin",
+			}, nil),
+			h("button", a{"type": "submit"}, nil, t(l10n, "Submit")),
 		),
-		h("input", a{
-			"name":        "name",
-			"placeholder": "e.g. Alice Dev Admin",
-		}, nil),
-		h("button", a{"type": "submit"}, nil, t(l10n, "Submit")),
+		h("div", nil, nil,
+			h("label", a{"for": "address"}, nil,
+				t(l10n, "Email address for login"),
+			),
+			h("input", a{
+				"name":        "address",
+				"placeholder": "e.g. alice@example.com",
+			}, nil),
+			h("button", nil, nil, t(l10n, "Submit")),
+		),
 	)
 }
 
