@@ -227,24 +227,20 @@ func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID string, err error) 
 // uiView, belonging to its owner. Should be called once when the grain
 // is created.
 func (tx Tx) createOwnerSturdyRef(grainID types.GrainID) error {
-	hash := genLostToken()
 	ownerID, err := tx.getGrainOwner(grainID)
 	if err != nil {
 		return err
 	}
-	_, err = tx.sqlTx.Exec(
-		`INSERT INTO sturdyRefs (
-			sha256,
-			ownerType,
-			owner,
-			expires,
-			grainId
-			-- objectId is NULL
-		) VALUES (?, 'userkeyring', ?, ?, ?)`,
-		hash[:],
-		ownerID,
-		math.MaxInt64,
-		grainID,
+	hash, err := tx.SaveSturdyRef(
+		SturdyRefKey{
+			Token:     GenToken(),
+			OwnerType: "userkeyring",
+			Owner:     ownerID,
+		},
+		SturdyRefValue{
+			Expires: time.Unix(math.MaxInt64, 0), // never
+			GrainID: grainID,
+		},
 	)
 	if err != nil {
 		return err
