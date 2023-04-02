@@ -327,19 +327,24 @@ func (tx Tx) SetGrainViewInfo(grainID string, viewInfo grain.UiView_ViewInfo) er
 	return err
 }
 
+// A SturdyRefKey is the data by which a sturdyRef may be fetched from the database (using
+// RestoreSturdyRef).
+type SturdyRefKey struct {
+	Token            []byte
+	OwnerType, Owner string
+}
+
+// A SturdyRefValue is a persistent value stored in the database, which may be fetched
+// via RestoreSturdyRef.
 type SturdyRefValue struct {
 	Expires  time.Time
 	GrainID  types.GrainID
 	ObjectID capnp.Struct
 }
 
-type SturdyRefKey struct {
-	Token     []byte
-	OwnerType string
-	Owner     string
-}
-
-func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([]byte, error) {
+// Save a SturdyRef in the database. k's token must not be nil. Returns the sha256
+// hash of the token, which serves as a key in the database.
+func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([sha256.Size]byte, error) {
 	hash := sha256.Sum256(k.Token)
 	var grainID *types.GrainID
 	if v.GrainID != "" {
@@ -353,7 +358,7 @@ func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([]byte, error) {
 		objectID, err = encodeCapnp(v.ObjectID)
 	}
 	if err != nil {
-		return nil, err
+		return hash, err
 	}
 	_, err = tx.sqlTx.Exec(
 		`INSERT INTO sturdyRefs
@@ -373,9 +378,10 @@ func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([]byte, error) {
 		grainID,
 		objectID,
 	)
-	return hash[:], err
+	return hash, err
 }
 
+// Restore a SturdyRef from the database.
 func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 	hash := sha256.Sum256(k.Token)
 	row := tx.sqlTx.QueryRow(
