@@ -3,7 +3,6 @@ package database
 // This file contains wrappers for SQL queries
 
 import (
-	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
 	"math"
@@ -14,7 +13,6 @@ import (
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/common/types"
-	"zenhack.net/go/util"
 )
 
 // AddPackage adds a package to the database. The caller must separately ensure
@@ -225,16 +223,6 @@ func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID string, err error) 
 	return
 }
 
-// Generate a random sturdyRef and return the hash of the token (losting the
-// original token). Useful for stuff that goes in user keyrings, and thus
-// doesn't need to have an actually-usable token.
-func genLostToken() [sha256.Size]byte {
-	var token [32]byte
-	_, err := rand.Read(token[:])
-	util.Chkfatal(err)
-	return sha256.Sum256(token[:])
-}
-
 // createOwnerSturdyRef adds a uiViewSturdyRef for the grain's root
 // uiView, belonging to its owner. Should be called once when the grain
 // is created.
@@ -345,6 +333,9 @@ type SturdyRefValue struct {
 // Save a SturdyRef in the database. k's token must not be nil. Returns the sha256
 // hash of the token, which serves as a key in the database.
 func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([sha256.Size]byte, error) {
+	if k.Token == nil {
+		panic("Called SaveSturdyRef with nil token")
+	}
 	hash := sha256.Sum256(k.Token)
 	var grainID *types.GrainID
 	if v.GrainID != "" {
@@ -374,7 +365,7 @@ func (tx Tx) SaveSturdyRef(k SturdyRefKey, v SturdyRefValue) ([sha256.Size]byte,
 		hash[:],
 		k.OwnerType,
 		k.Owner,
-		v.Expires,
+		v.Expires.Unix(),
 		grainID,
 		objectID,
 	)
@@ -391,11 +382,11 @@ func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 			ownerType = ?
 			AND owner = ?
 			AND sha256 = ?
-			AND expires < ?
+			AND expires > ?
 		`,
 		k.OwnerType,
 		k.Owner,
-		hash,
+		hash[:],
 		time.Now().Unix(),
 	)
 	var (
@@ -409,6 +400,8 @@ func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 		return ret, err
 	}
 	ret.Expires = time.Unix(expires, 0)
-	ret.ObjectID, err = decodeCapnp[capnp.Struct](objectID)
+	if len(objectID) > 0 {
+		ret.ObjectID, err = decodeCapnp[capnp.Struct](objectID)
+	}
 	return ret, err
 }
