@@ -185,7 +185,8 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 		// I(isd) don't see a sensible behavior if we fail to shut down the
 		// container, so panic I guess.
 		if err := grainProc.Kill(); err != nil {
-			logging.Panic(cmd.Log, "Failed to kill grain", err,
+			logging.Panic(cmd.Log, "Failed to kill grain",
+				"error", err,
 				"grainID", cmd.GrainID,
 				"launcher-pid", launcherPid,
 				"grain-pid", grainPid,
@@ -195,7 +196,8 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 			"pid", grainPid,
 		)
 		if _, err := osCmd.Process.Wait(); err != nil {
-			logging.Panic(cmd.Log, "Failed to wait() on launcher", err,
+			logging.Panic(cmd.Log, "Failed to wait() on launcher",
+				"error", err,
 				"grainID", cmd.GrainID,
 				"launcher-pid", launcherPid,
 				"grain-pid", grainPid,

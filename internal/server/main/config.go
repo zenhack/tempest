@@ -1,7 +1,6 @@
 package servermain
 
 import (
-	"errors"
 	"net"
 	"net/smtp"
 	"net/url"
@@ -65,10 +64,10 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	baseURLStr := defaultTo(os.Getenv("BASE_URL"), "http://local.sandstorm.io:8000")
 	baseURL := util.Must(url.Parse(baseURLStr))
 	if baseURL.Scheme != "http" {
-		logging.Panic(lg, "parsing BASE_URL", errors.New("must use http: scheme"))
+		logging.Panic(lg, "parsing BASE_URL: must use http scheme")
 	}
 	if baseURL.Path != "" {
-		logging.Panic(lg, "parsing BASE_URL", errors.New("must not have a path"))
+		logging.Panic(lg, "parsing BASE_URL: must not have a path")
 	}
 	cfg := Config{
 		rootDomain: baseURL.Host,

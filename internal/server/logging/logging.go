@@ -16,7 +16,8 @@ func NewLogger() *slog.Logger {
 }
 
 // Log a message and then panic
-func Panic(l *slog.Logger, msg string, err error, args ...any) {
-	l.Error("FATAL: "+msg, err, args...)
-	panic(err)
+func Panic(l *slog.Logger, msg string, args ...any) {
+	msg = "FATAL: " + msg
+	l.Error(msg, args...)
+	panic(msg)
 }
