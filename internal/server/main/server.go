@@ -3,7 +3,6 @@ package servermain
 import (
 	"context"
 	"crypto/rand"
-	"encoding/base64"
 	"net/http"
 	"strings"
 
@@ -213,14 +212,7 @@ func (s *server) Handler() http.Handler {
 
 	r.Host(s.cfg.rootDomain).Path("/login/email/{token}").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			b64Token := mux.Vars(req)["token"]
-			println("token = " + b64Token)
-			token, err := base64.URLEncoding.DecodeString(b64Token)
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(err.Error()))
-				return
-			}
+			token := mux.Vars(req)["token"]
 			tx, err := s.db.Begin()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -229,7 +221,7 @@ func (s *server) Handler() http.Handler {
 			}
 			defer tx.Rollback()
 			val, err := tx.RestoreSturdyRef(database.SturdyRefKey{
-				Token:     token,
+				Token:     []byte(token),
 				OwnerType: "external",
 				Owner:     "",
 			})

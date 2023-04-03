@@ -81,10 +81,11 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 		throw(err)
 		throw(oid.SetEmailLoginToken(addr))
 
-		token := database.GenToken()
+		token := base64.RawURLEncoding.EncodeToString(database.GenToken()[:16])
+
 		_, err = tx.SaveSturdyRef(
 			database.SturdyRefKey{
-				Token:     token,
+				Token:     []byte(token),
 				OwnerType: "external",
 				Owner:     "",
 			},
@@ -96,8 +97,6 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 		throw(err)
 		throw(tx.Commit())
 
-		b64Token := base64.URLEncoding.EncodeToString(token)
-
 		cfg := a.api.server.cfg
 		throw(cfg.smtp.SendMail(
 			[]string{addr},
@@ -108,9 +107,9 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 				"",
 				"Login in as " + addr + " by visiting:",
 				"",
-				cfg.rootDomain + "/login/email/" + b64Token,
+				cfg.rootDomain + "/login/email/" + token,
 				"",
-				"Or entering " + b64Token + " at the login prompt.",
+				"Or entering " + token + " at the login prompt.",
 			}, "\r\n")),
 		))
 	})
