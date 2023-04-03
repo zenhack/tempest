@@ -63,6 +63,9 @@ type EditEmailLogin struct {
 	NewValue string
 }
 
+type SubmitEmailLogin struct {
+}
+
 type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
 }
@@ -222,6 +225,26 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 }
 
 func (msg EditEmailLogin) Update(m Model) (Model, Cmd) {
-	// TODO
+	m.LoginForm.EmailInput = msg.NewValue
 	return m, nil
+}
+
+func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
+	// TODO:
+	// - Get the actual non-nil ExternalApi
+	// - Mark the submission as sent somehow
+	api := external.ExternalApi{}
+	address := m.LoginForm.EmailInput
+	m.LoginForm.EmailInput = ""
+	return m, func(ctx context.Context, sendMsg func(Msg)) {
+		authFut, rel := api.Authenticator(ctx, nil)
+		defer rel()
+		sendFut, rel := authFut.Authenticator().
+			SendEmailAuthToken(ctx, func(p external.Authenticator_sendEmailAuthToken_Params) error {
+				return p.SetAddress(address)
+			})
+		if _, err := sendFut.Struct(); err != nil {
+			sendMsg(NewError{Err: err})
+		}
+	}
 }

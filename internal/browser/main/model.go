@@ -38,6 +38,8 @@ type Model struct {
 	GrainDomOrder poolslice.PoolSlice[types.GrainID]
 
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
+
+	LoginForm LoginForm
 }
 
 type ServerAddr struct {

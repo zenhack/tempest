@@ -232,7 +232,10 @@ func viewLoginForm(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
 					ms.Send(EditEmailLogin{NewValue: value})
 				}),
 			}),
-			h("button", nil, nil, t(l10n, "Submit")),
+			h("button", nil,
+				e{"click": ms.Event(SubmitEmailLogin{})},
+				t(l10n, "Submit"),
+			),
 		),
 	)
 }
