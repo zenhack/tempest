@@ -8,18 +8,18 @@ go 1.19
 require go.mongodb.org/mongo-driver v1.10.0
 
 require (
-	capnproto.org/go/capnp/v3 v3.0.0-alpha.25
+	capnproto.org/go/capnp/v3 v3.0.0-alpha.26
 	github.com/gobwas/ws v1.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.2
 	github.com/tj/assert v0.0.3
 	github.com/ulikunitz/xz v0.5.10
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
-	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
+	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/sys v0.1.0
-	zenhack.net/go/util v0.0.0-20230305222753-27582c3a8381
-	zenhack.net/go/vdom v0.0.0-20230308044821-ed0aa7c9813a
+	zenhack.net/go/util v0.0.0-20230402020905-c5270b07d5f2
+	zenhack.net/go/vdom v0.0.0-20230403002732-075ae8862f69
 	zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b
 )
 
