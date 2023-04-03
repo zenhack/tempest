@@ -31,6 +31,28 @@ func TestSturdyRefSaveRestore(t *testing.T) {
 	})
 }
 
+// Save and restore a sturdyRef with an empty grain ID.
+func TestSturdyRefSaveRestoreNullGrainID(t *testing.T) {
+	testWithTx(t, func(tx Tx) {
+		key := SturdyRefKey{
+			Token:     GenToken(),
+			OwnerType: "grain",
+			Owner:     "grain123",
+		}
+		value := SturdyRefValue{
+			Expires: time.Unix(math.MaxInt64, 0), // Effectively never.
+			// TODO: fill something in for the struct.
+		}
+
+		_, err := tx.SaveSturdyRef(key, value)
+		require.NoError(t, err)
+
+		restored, err := tx.RestoreSturdyRef(key)
+		require.NoError(t, err)
+		require.Equal(t, value, restored)
+	})
+}
+
 // Try to restore an expired sturdyRef; it should fail.
 func TestSturdyRefRestoreExpired(t *testing.T) {
 	testWithTx(t, func(tx Tx) {

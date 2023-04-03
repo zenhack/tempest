@@ -388,16 +388,20 @@ func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 	var (
 		expires  int64
 		objectID []byte
+		grainID  *types.GrainID
 
 		ret SturdyRefValue
 	)
-	err := row.Scan(&expires, &ret.GrainID, &objectID)
+	err := row.Scan(&expires, &grainID, &objectID)
 	if err != nil {
 		return ret, err
 	}
 	ret.Expires = time.Unix(expires, 0)
 	if len(objectID) > 0 {
 		ret.ObjectID, err = decodeCapnp[capnp.Struct](objectID)
+	}
+	if grainID != nil {
+		ret.GrainID = *grainID
 	}
 	return ret, err
 }
