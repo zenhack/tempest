@@ -10,6 +10,8 @@ import (
 	"zenhack.net/go/util/slices"
 	"zenhack.net/go/vdom"
 	"zenhack.net/go/vdom/builder"
+	"zenhack.net/go/vdom/events"
+	"zenhack.net/go/vdom/tea"
 )
 
 var (
@@ -27,7 +29,7 @@ func t(l10n intl.L10N, f intl.L10NString, args ...string) vdom.VNode {
 
 var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
-func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
+func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 	content := dummyNode
 	session, loginReady := m.LoginSession.Get()
 	if !loginReady {
@@ -35,7 +37,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	} else if session.Err() != nil {
 		// TODO: deferrentiate between disconnects/failures. Or maybe just
 		// tweak the API to return all this info in-band?
-		content = viewLoginForm(m.L10N)
+		content = viewLoginForm(m.L10N, ms)
 	} else {
 		switch m.CurrentFocus {
 		case FocusGrainList:
@@ -47,12 +49,12 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 			for _, kv := range kvs {
 				grainNodes = append(
 					grainNodes,
-					viewGrain(msgEvent, kv.Key, kv.Value),
+					viewGrain(ms, kv.Key, kv.Value),
 				)
 			}
 			content = h("ul", nil, nil, grainNodes...)
 		case FocusApps:
-			content = m.viewApps(msgEvent)
+			content = m.viewApps(ms)
 		case FocusOpenGrain:
 			if m.FocusedGrain == "" {
 				content = t(m.L10N, "Placeholder; select a grain.")
@@ -69,7 +71,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	for _, k := range keys {
 		activeGrainNodes = append(
 			activeGrainNodes,
-			viewOpenGrain(m.L10N, msgEvent, k, m.Grains[k], m.FocusedGrain == k),
+			viewOpenGrain(m.L10N, ms, k, m.Grains[k], m.FocusedGrain == k),
 		)
 	}
 	var iframes []vdom.VNode
@@ -90,7 +92,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 				h("h1", nil, nil,
 					h("a",
 						a{"href": "#"},
-						e{"click": msgEvent(ChangeFocus{InitialFocus})},
+						e{"click": ms.Event(ChangeFocus{InitialFocus})},
 						t(m.L10N, "Tempest"),
 					),
 				),
@@ -98,14 +100,14 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 					h("li", a{"class": "nav-link"}, nil,
 						h("a",
 							a{"href": "#/apps"},
-							e{"click": msgEvent(ChangeFocus{FocusApps})},
+							e{"click": ms.Event(ChangeFocus{FocusApps})},
 							t(m.L10N, "Apps"),
 						),
 					),
 					h("li", a{"class": "nav-link"}, nil,
 						h("a",
 							a{"href": "#/grains"},
-							e{"click": msgEvent(
+							e{"click": ms.Event(
 								ChangeFocus{FocusGrainList},
 							)},
 							t(m.L10N, "Grains"),
@@ -134,7 +136,7 @@ func (m Model) View(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 	)
 }
 
-func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
+func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {
 	var appItems []vdom.VNode
 	for id, pkg := range m.Packages {
 		manifest, err := pkg.Manifest()
@@ -176,7 +178,7 @@ func (m Model) viewApps(msgEvent func(Msg) vdom.EventHandler) vdom.VNode {
 				h("li", nil, nil, h("a",
 					a{"href": "#/grain/new"},
 					e{
-						"click": msgEvent(SpawnGrain{
+						"click": ms.Event(SpawnGrain{
 							Index: i,
 							PkgID: id,
 						}),
@@ -206,7 +208,7 @@ func newDomainNonce() string {
 	return hex.EncodeToString(buf[:])
 }
 
-func viewLoginForm(l10n intl.L10N) vdom.VNode {
+func viewLoginForm(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
 	return h("div", nil, nil,
 		h("form", a{"action": "/login/dev", "method": "post"}, nil,
 			h("label", a{"for": "name"}, nil,
@@ -225,14 +227,18 @@ func viewLoginForm(l10n intl.L10N) vdom.VNode {
 			h("input", a{
 				"name":        "address",
 				"placeholder": "e.g. alice@example.com",
-			}, nil),
+			}, e{
+				"input": events.OnInput(func(value string) {
+					ms.Send(EditEmailLogin{NewValue: value})
+				}),
+			}),
 			h("button", nil, nil, t(l10n, "Submit")),
 		),
 	)
 }
 
-func viewOpenGrain(l10n intl.L10N, msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
-	focusGrain := msgEvent(FocusGrain{ID: id})
+func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
+	focusGrain := ms.Event(FocusGrain{ID: id})
 	classes := "open-grain-tab"
 	if isFocused {
 		classes += " open-grain-tab--focused"
@@ -245,17 +251,17 @@ func viewOpenGrain(l10n intl.L10N, msgEvent func(Msg) vdom.EventHandler, id type
 		),
 		h("button",
 			a{"class": "close-button"},
-			e{"click": msgEvent(CloseGrain{ID: id})},
+			e{"click": ms.Event(CloseGrain{ID: id})},
 			t(l10n, "Close Grain"),
 		),
 	)
 }
 
-func viewGrain(msgEvent func(Msg) vdom.EventHandler, id types.GrainID, grain Grain) vdom.VNode {
+func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
 	return h("li", a{"class": "nav-link"}, nil,
 		h("a",
 			a{"href": "#/grain/" + string(id)},
-			e{"click": msgEvent(FocusGrain{ID: id})},
+			e{"click": ms.Event(FocusGrain{ID: id})},
 			builder.T(grain.Title),
 		),
 	)

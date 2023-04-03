@@ -59,6 +59,10 @@ type CloseGrain struct {
 	ID types.GrainID
 }
 
+type EditEmailLogin struct {
+	NewValue string
+}
+
 type LoginSessionResult struct {
 	Result orerr.T[external.LoginSession]
 }
@@ -215,4 +219,9 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 			println("listPackages(): " + err.Error())
 		}
 	}
+}
+
+func (msg EditEmailLogin) Update(m Model) (Model, Cmd) {
+	// TODO
+	return m, nil
 }
