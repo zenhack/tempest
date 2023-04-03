@@ -3,6 +3,7 @@ package servermain
 import (
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 	"net/http"
 	"strings"
 
@@ -208,6 +209,45 @@ func (s *server) Handler() http.Handler {
 			//   an account.
 			//   - If so, check if it is usable for login
 			//   - If not, create one.
+		})
+
+	r.Host(s.cfg.rootDomain).Path("/login/email/{token}").
+		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			b64Token := mux.Vars(req)["token"]
+			println("token = " + b64Token)
+			token, err := base64.URLEncoding.DecodeString(b64Token)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+			tx, err := s.db.Begin()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				s.log.Error("failed to open database transaction", err)
+				return
+			}
+			defer tx.Rollback()
+			val, err := tx.RestoreSturdyRef(database.SturdyRefKey{
+				Token:     token,
+				OwnerType: "external",
+				Owner:     "",
+			})
+			_ = val // TODO
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("No such token (maybe expired?)"))
+				s.log.Debug("failed to restore token",
+					"error", err,
+				)
+				return
+			}
+			if err = tx.Commit(); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				s.log.Error("restoring email token: commit", err)
+				return
+			}
+			panic("TODO")
 		})
 
 	r.Host(s.cfg.rootDomain).Path("/_capnp-api").
