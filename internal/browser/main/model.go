@@ -37,6 +37,7 @@ type Model struct {
 	// with CSS (display: none).
 	GrainDomOrder poolslice.PoolSlice[types.GrainID]
 
+	API          external.ExternalApi
 	LoginSession maybe.T[orerr.T[external.LoginSession]]
 
 	LoginForm LoginForm
@@ -71,7 +72,7 @@ type OpenGrain struct {
 	DomIndex int
 }
 
-func initModel() Model {
+func initModel(api external.ExternalApi) Model {
 	loc := js.Global().Get("window").Get("location")
 	return Model{
 		CurrentFocus: InitialFocus,
@@ -82,6 +83,7 @@ func initModel() Model {
 		Grains:     make(map[types.GrainID]Grain),
 		OpenGrains: make(map[types.GrainID]OpenGrain),
 		Packages:   make(map[types.ID[external.Package]]external.Package),
+		API:        api,
 	}
 }
 

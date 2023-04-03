@@ -231,9 +231,8 @@ func (msg EditEmailLogin) Update(m Model) (Model, Cmd) {
 
 func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
 	// TODO:
-	// - Get the actual non-nil ExternalApi
 	// - Mark the submission as sent somehow
-	api := external.ExternalApi{}
+	api := m.API
 	address := m.LoginForm.EmailInput
 	m.LoginForm.EmailInput = ""
 	return m, func(ctx context.Context, sendMsg func(Msg)) {

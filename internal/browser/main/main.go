@@ -4,6 +4,7 @@ import (
 	"context"
 	"syscall/js"
 
+	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
 	"zenhack.net/go/tempest/capnp/collection"
@@ -40,11 +41,14 @@ func Main() {
 			Call("getElementsByTagName", "body").
 			Index(0),
 	}
-	app := tea.NewApp(initModel())
+	apiPromise, apiResolver := capnp.NewLocalPromise[external.ExternalApi]()
+	app := tea.NewApp(initModel(apiPromise))
 	go app.Run(ctx, body)
 
 	conn, api := getCapnpApi(ctx)
 	defer conn.Close()
+	apiResolver.Fulfill(api)
+
 	fut, rel := api.GetLoginSession(ctx, nil)
 	defer rel()
 	_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {

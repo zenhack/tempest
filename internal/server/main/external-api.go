@@ -110,7 +110,7 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 				"",
 				cfg.rootDomain + "/login/email/" + b64Token,
 				"",
-				"Or entering " + b64Token + "At the login prompt.",
+				"Or entering " + b64Token + " at the login prompt.",
 			}, "\r\n")),
 		))
 	})
