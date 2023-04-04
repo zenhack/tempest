@@ -84,6 +84,11 @@ func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, err
 
 		archiveMsg, err := capnp.Unmarshal(archiveBuf)
 		throw(err)
+
+		// A couple times the size of the message; the default of 64MiB
+		// is way too small:
+		archiveMsg.ResetReadLimit(uint64(archiveSize) * 4)
+
 		archive, err := spk.ReadRootArchive(archiveMsg)
 		throw(unpackArchive(path, archive))
 		pkgHash := ([sha256.Size]byte)(hr.Hash.Sum(nil))

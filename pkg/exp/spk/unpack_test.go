@@ -25,6 +25,16 @@ var marketPackages = []testPackage{
 		ID:    "d13f67230d0a4f9a63fc2c0bba87fc52",
 		Valid: true,
 	},
+	{
+		// Yet Another TODO 0.1.2
+		ID:    "346bff4bc867afd54320af244dc64e9c",
+		Valid: true,
+	},
+	{
+		// Davros 0.31.1
+		ID:    "c4c975c3adbeeb77fd928bb90202c049",
+		Valid: true,
+	},
 }
 
 func (p testPackage) FilePath() string {
