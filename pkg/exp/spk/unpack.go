@@ -2,6 +2,7 @@ package spk
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"crypto/sha512"
 	"errors"
 	"fmt"
@@ -24,23 +25,28 @@ var (
 	ErrNoMagicNumber   = errors.New("spk file does not start with magic number")
 )
 
+type PackageHash [sha256.Size]byte
+
 // UnpackSpk reads an spk file from r and unpacks its contents to a newly created
 // director at path, after verifying the package's signature. Returns the app's
 // ID.
 //
 // This creates a tempory file under tmpDir, which is deleted before the function
 // returns.
-//
-// TODO: also return the package ID.
-func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, error) {
-	return exn.Try(func(throw exn.Thrower) AppID {
+func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, error) {
+	return exn.Try2(func(throw exn.Thrower) (AppID, PackageHash) {
+		// For computing the package id:
+		hr := hashReader{
+			Hash:   sha256.New(),
+			Reader: r,
+		}
 		var magic [8]byte
-		_, err := io.ReadFull(r, magic[:])
+		_, err := io.ReadFull(hr, magic[:])
 		throw(err)
 		if !bytes.Equal(magic[:], spk.MagicNumber) {
 			throw(ErrNoMagicNumber)
 		}
-		xr, err := xz.NewReader(r)
+		xr, err := xz.NewReader(hr)
 		throw(err)
 		dec := capnp.NewDecoder(xr)
 		sigMsg, err := dec.Decode()
@@ -80,7 +86,8 @@ func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, error) {
 		throw(err)
 		archive, err := spk.ReadRootArchive(archiveMsg)
 		throw(unpackArchive(path, archive))
-		return appID
+		pkgHash := ([sha256.Size]byte)(hr.Hash.Sum(nil))
+		return appID, pkgHash
 	})
 }
 
