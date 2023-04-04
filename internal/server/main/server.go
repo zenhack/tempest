@@ -128,8 +128,7 @@ func (s *server) Handler() http.Handler {
 					)
 				}
 				session.WriteCookie(s.sessionStore, req, w, sess)
-				w.Header().Set("Location", query.Get("path"))
-				w.WriteHeader(http.StatusSeeOther)
+				http.Redirect(w, req, query.Get("path"), http.StatusSeeOther)
 				// TODO(perf): when doing the redirect,
 				// Use http/2 push to avoid a round trip.
 			case querySid:
@@ -194,8 +193,7 @@ func (s *server) Handler() http.Handler {
 			sess.Credential.ScopedID = req.FormValue("name")
 			sess.SessionID = session.GenSessionID()
 			session.WriteCookie(s.sessionStore, req, w, sess)
-			w.Header().Set("Location", "/")
-			w.WriteHeader(http.StatusSeeOther)
+			http.Redirect(w, req, "/", http.StatusSeeOther)
 			// TODO:
 			// - Check if the credential is already linked to
 			//   an account.
