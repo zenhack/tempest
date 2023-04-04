@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,18 +14,25 @@ import (
 
 	"capnproto.org/go/capnp/v3"
 	"github.com/ulikunitz/xz"
+	"golang.org/x/sys/unix"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util/exn"
 )
 
-var ErrNoMagicNumber = errors.New("spk file does not start with magic number")
+var (
+	ErrArchiveTooLarge = errors.New("spk archive is too large")
+	ErrNoMagicNumber   = errors.New("spk file does not start with magic number")
+)
 
 // UnpackSpk reads an spk file from r and unpacks its contents to a newly created
 // director at path, after verifying the package's signature. Returns the app's
 // ID.
 //
+// This creates a tempory file under tmpDir, which is deleted before the function
+// returns.
+//
 // TODO: also return the package ID.
-func UnpackSpk(path string, r io.Reader) (AppId, error) {
+func UnpackSpk(path string, tmpDir string, r io.Reader) (AppId, error) {
 	return exn.Try(func(throw exn.Thrower) AppId {
 		var magic [8]byte
 		_, err := io.ReadFull(r, magic[:])
@@ -45,12 +53,12 @@ func UnpackSpk(path string, r io.Reader) (AppId, error) {
 
 		h := sha512.New()
 
-		// FIXME: reading the whole package into a buffer is going to be inefficient and
-		// could open us up to DoS vulnerabilies. Instead, create a temporary file somewhere.
-		// and mmap it.
-		buf := &bytes.Buffer{}
+		tmpFile, err := os.CreateTemp(tmpDir, "spk-archive-*")
+		throw(err)
+		defer os.Remove(tmpFile.Name())
+		defer tmpFile.Close()
 
-		_, err = io.Copy(io.MultiWriter(h, buf), r)
+		archiveSize, err := io.Copy(io.MultiWriter(h, tmpFile), r)
 		throw(err)
 		dataDigest := h.Sum(nil)
 		if !bytes.Equal(signatureDigest, dataDigest) {
@@ -60,7 +68,15 @@ func UnpackSpk(path string, r io.Reader) (AppId, error) {
 				signatureDigest,
 			))
 		}
-		archiveMsg, err := capnp.Unmarshal(buf.Bytes())
+
+		if archiveSize > math.MaxInt {
+			throw(ErrArchiveTooLarge)
+		}
+		archiveBuf, err := unix.Mmap(int(tmpFile.Fd()), 0, int(archiveSize), unix.PROT_READ, unix.MAP_SHARED)
+		throw(err)
+		defer unix.Munmap(archiveBuf)
+
+		archiveMsg, err := capnp.Unmarshal(archiveBuf)
 		throw(err)
 		archive, err := spk.ReadRootArchive(archiveMsg)
 		throw(unpackArchive(path, archive))
