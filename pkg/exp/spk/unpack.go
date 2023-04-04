@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util/exn"
@@ -38,6 +39,8 @@ func unpackFile(path string, file spk.Archive_File) error {
 			throw(err)
 			throw(unpackDirectory(path, files))
 		}
+		lastMod := time.Unix(0, file.LastModificationTimeNs())
+		throw(os.Chtimes(path, lastMod, lastMod))
 	})
 }
 
