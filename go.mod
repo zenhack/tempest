@@ -1,6 +1,6 @@
 module zenhack.net/go/tempest
 
-go 1.19
+go 1.20
 
 // NOTE: this *must not* be updated to v1.11; that version drops support for
 // version 2 of the wire protocol, which is the most recent supported by the

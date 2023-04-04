@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	ErrKeyNotFound  = errors.New("Key not found in keyring")
-	ErrMalformedKey = errors.New("Key is malformed")
+	ErrKeyNotFound        = errors.New("Key not found in keyring")
+	ErrMalformedKey       = errors.New("Key is malformed")
+	ErrVerificationFailed = errors.New("signature verification failed")
 )
 
 // The contents of a sandstorm keyring, typically stored at ~/.sandstorm-keyring
@@ -175,4 +176,26 @@ func (key Key) signArchive(archive spk.Archive) (spk.Signature, error) {
 		return empty, err
 	}
 	return sig, nil
+}
+
+// VerifySignature checks the signature for validity, and returns the public key
+// and signed message.
+func VerifySignature(sig spk.Signature) (pk AppId, msg []byte, err error) {
+	pubKey, err := sig.PublicKey()
+	if err != nil {
+		return pk, nil, err
+	}
+	sigBytes, err := sig.Signature()
+	if err != nil {
+		return pk, nil, err
+	}
+	if len(pubKey) != 32 {
+		return pk, nil, ErrMalformedKey
+	}
+	pk = (AppId)(pubKey)
+	msg, ok := sign.Open(nil, sigBytes, (*[32]byte)(&pk))
+	if !ok {
+		return pk, nil, ErrVerificationFailed
+	}
+	return pk, msg, nil
 }

@@ -1,15 +1,72 @@
 package spk
 
 import (
+	"bytes"
+	"crypto/sha512"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"capnproto.org/go/capnp/v3"
+	"github.com/ulikunitz/xz"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/util/exn"
 )
+
+var ErrNoMagicNumber = errors.New("spk file does not start with magic number")
+
+// UnpackSpk reads an spk file from r and unpacks its contents to a newly created
+// director at path, after verifying the package's signature. Returns the app's
+// ID.
+//
+// TODO: also return the package ID.
+func UnpackSpk(path string, r io.Reader) (AppId, error) {
+	return exn.Try(func(throw exn.Thrower) AppId {
+		var magic [8]byte
+		_, err := io.ReadFull(r, magic[:])
+		throw(err)
+		if !bytes.Equal(magic[:], spk.MagicNumber) {
+			throw(ErrNoMagicNumber)
+		}
+		xr, err := xz.NewReader(r)
+		throw(err)
+		dec := capnp.NewDecoder(xr)
+		sigMsg, err := dec.Decode()
+		throw(err)
+		sig, err := spk.ReadRootSignature(sigMsg)
+		throw(err)
+
+		appID, signatureDigest, err := VerifySignature(sig)
+		throw(err)
+
+		h := sha512.New()
+
+		// FIXME: reading the whole package into a buffer is going to be inefficient and
+		// could open us up to DoS vulnerabilies. Instead, create a temporary file somewhere.
+		// and mmap it.
+		buf := &bytes.Buffer{}
+
+		_, err = io.Copy(io.MultiWriter(h, buf), r)
+		throw(err)
+		dataDigest := h.Sum(nil)
+		if !bytes.Equal(signatureDigest, dataDigest) {
+			throw(fmt.Errorf(
+				"package verification failed: archive hash is sha512-%x but signature is for sha512-%x",
+				dataDigest,
+				signatureDigest,
+			))
+		}
+		archiveMsg, err := capnp.Unmarshal(buf.Bytes())
+		throw(err)
+		archive, err := spk.ReadRootArchive(archiveMsg)
+		throw(unpackArchive(path, archive))
+		return appID
+	})
+}
 
 func unpackArchive(path string, archive spk.Archive) error {
 	files, err := archive.Files()
