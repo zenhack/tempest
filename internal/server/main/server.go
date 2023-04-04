@@ -15,6 +15,7 @@ import (
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
 	websession "zenhack.net/go/tempest/capnp/web-session"
+	"zenhack.net/go/tempest/internal/capnp/system"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/container"
 	"zenhack.net/go/tempest/internal/server/database"
@@ -212,12 +213,11 @@ func (s *server) Handler() http.Handler {
 				return
 			}
 			defer tx.Rollback()
-			val, err := tx.RestoreSturdyRef(database.SturdyRefKey{
+			ref, err := tx.RestoreSturdyRef(database.SturdyRefKey{
 				Token:     []byte(token),
 				OwnerType: "external",
 				Owner:     "",
 			})
-			_ = val // TODO
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte("No such token (maybe expired?)"))
@@ -226,12 +226,34 @@ func (s *server) Handler() http.Handler {
 				)
 				return
 			}
+			// FIXME: delete token
 			if err = tx.Commit(); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				s.log.Error("restoring email token: commit", err)
 				return
 			}
-			panic("TODO")
+			oid := system.SystemObjectId(ref.ObjectID)
+			if oid.Which() != system.SystemObjectId_Which_emailLoginToken {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("token has the wrong type"))
+				return
+			}
+			addr, err := oid.EmailLoginToken()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				s.log.Error("reading email address from token", err)
+				return
+			}
+
+			sess := session.UserSession{
+				SessionID: session.GenSessionID(),
+				Credential: types.Credential{
+					Type:     types.EmailCredential,
+					ScopedID: addr,
+				},
+			}
+			session.WriteCookie(s.sessionStore, req, w, sess)
+			http.Redirect(w, req, "/", http.StatusSeeOther)
 		})
 
 	r.Host(s.cfg.rootDomain).Path("/_capnp-api").
