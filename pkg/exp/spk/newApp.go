@@ -9,7 +9,7 @@ import (
 
 // Parameters for initializing an application's pkgdef.
 type PkgDefParams struct {
-	AppId AppId
+	AppID AppID
 	Key   Key
 
 	// The capnp schema id for the app's sandstorm-pkgdef.capnp
@@ -58,12 +58,12 @@ func NewApp() (*PkgDefParams, error) {
 	if err != nil {
 		return nil, err
 	}
-	appId, err := key.AppId()
+	appID, err := key.AppID()
 	if err != nil {
 		return nil, err
 	}
 	return &PkgDefParams{
-		AppId:    appId,
+		AppID:    appID,
 		Key:      key,
 		SchemaId: rand.Uint64() | (1 << 63),
 	}, nil

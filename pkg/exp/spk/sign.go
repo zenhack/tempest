@@ -29,8 +29,8 @@ type Keyring struct {
 // A package signing key
 type Key spk.KeyFile
 
-func (k Key) AppId() (AppId, error) {
-	var ret AppId
+func (k Key) AppID() (AppID, error) {
+	var ret AppID
 	pubKey, err := spk.KeyFile(k).PublicKey()
 	if err != nil {
 		return ret, err
@@ -78,7 +78,7 @@ func GenerateKey(r io.Reader) (Key, error) {
 }
 
 // Get the key for the given app id from the keyring.
-func (k Keyring) GetKey(appId AppId) (Key, error) {
+func (k Keyring) GetKey(appID AppID) (Key, error) {
 	// simple linear search.
 	for _, keyFile := range k.keys {
 		pubKey, err := keyFile.PublicKey()
@@ -87,7 +87,7 @@ func (k Keyring) GetKey(appId AppId) (Key, error) {
 			// something that wraps the underlying error.
 			return Key{}, ErrMalformedKey
 		}
-		if bytes.Equal(appId[:], pubKey) {
+		if bytes.Equal(appID[:], pubKey) {
 			return Key(keyFile), nil
 		}
 	}
@@ -180,7 +180,7 @@ func (key Key) signArchive(archive spk.Archive) (spk.Signature, error) {
 
 // VerifySignature checks the signature for validity, and returns the public key
 // and signed message.
-func VerifySignature(sig spk.Signature) (pk AppId, msg []byte, err error) {
+func VerifySignature(sig spk.Signature) (pk AppID, msg []byte, err error) {
 	pubKey, err := sig.PublicKey()
 	if err != nil {
 		return pk, nil, err
@@ -192,7 +192,7 @@ func VerifySignature(sig spk.Signature) (pk AppId, msg []byte, err error) {
 	if len(pubKey) != 32 {
 		return pk, nil, ErrMalformedKey
 	}
-	pk = (AppId)(pubKey)
+	pk = (AppID)(pubKey)
 	msg, ok := sign.Open(nil, sigBytes, (*[32]byte)(&pk))
 	if !ok {
 		return pk, nil, ErrVerificationFailed

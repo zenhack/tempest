@@ -32,8 +32,8 @@ var (
 // returns.
 //
 // TODO: also return the package ID.
-func UnpackSpk(path string, tmpDir string, r io.Reader) (AppId, error) {
-	return exn.Try(func(throw exn.Thrower) AppId {
+func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, error) {
+	return exn.Try(func(throw exn.Thrower) AppID {
 		var magic [8]byte
 		_, err := io.ReadFull(r, magic[:])
 		throw(err)

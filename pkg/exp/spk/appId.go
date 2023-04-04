@@ -14,13 +14,13 @@ var (
 )
 
 // An app id/public key
-type AppId [32]byte
+type AppID [32]byte
 
-func (id AppId) String() string {
+func (id AppID) String() string {
 	return SandstormBase32Encoding.EncodeToString(id[:])
 }
 
-func (id *AppId) UnmarshalText(text []byte) error {
+func (id *AppID) UnmarshalText(text []byte) error {
 	n, err := SandstormBase32Encoding.Decode(id[:], text)
 	if err != nil {
 		return err
@@ -31,11 +31,11 @@ func (id *AppId) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (id AppId) MarshalText() (text []byte, err error) {
+func (id AppID) MarshalText() (text []byte, err error) {
 	return []byte(id.String()), nil
 }
 
-func (id *AppId) UnmarshalBinary(data []byte) error {
+func (id *AppID) UnmarshalBinary(data []byte) error {
 	if len(data) != len(id[:]) {
 		return ErrBadKeyLength
 	}
@@ -43,6 +43,6 @@ func (id *AppId) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-func (id AppId) MarshalBinary() ([]byte, error) {
+func (id AppID) MarshalBinary() ([]byte, error) {
 	return id[:], nil
 }
