@@ -2,7 +2,6 @@ package servermain
 
 import (
 	"context"
-	"crypto/rand"
 	"net/http"
 	"strings"
 
@@ -192,14 +191,7 @@ func (s *server) Handler() http.Handler {
 			var sess session.UserSession
 			sess.Credential.Type = "dev"
 			sess.Credential.ScopedID = req.FormValue("name")
-			var buf [32]byte
-			_, err := rand.Read(buf[:])
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				s.log.Error("crypto/rand.Read() failed", err)
-				return
-			}
-			sess.SessionID = buf[:]
+			sess.SessionID = session.GenSessionID()
 			session.WriteCookie(s.sessionStore, req, w, sess)
 			w.Header().Set("Location", "/")
 			w.WriteHeader(http.StatusSeeOther)

@@ -3,11 +3,17 @@ package session
 import (
 	"zenhack.net/go/tempest/internal/capnp/cookie"
 	"zenhack.net/go/tempest/internal/common/types"
+	"zenhack.net/go/tempest/internal/server/database"
 )
 
 type UserSession struct {
 	SessionID  []byte `capnp:"sessionId"`
 	Credential types.Credential
+}
+
+func GenSessionID() []byte {
+	// TODO: move this somewhere more appropriate:
+	return database.GenToken()
 }
 
 func (sess *UserSession) Unseal(store Store, payload Payload) error {
