@@ -60,11 +60,10 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 		require.NoError(t, os.WriteFile(p.FilePath(), buf, 0600), "saving package")
 	}
 	tmpDir := t.TempDir()
-	outputDir := tmpDir + "/output-" + p.ID
+	outputPath := tmpDir + "/output-" + p.ID
 	scratchDir := tmpDir + "/scratch-" + p.ID
-	require.NoError(t, os.MkdirAll(outputDir, 755))
 	require.NoError(t, os.MkdirAll(scratchDir, 755))
-	_, _, err = UnpackSpk(outputDir, scratchDir, bytes.NewBuffer(buf))
+	_, _, err = UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
 	if p.Valid {
 		require.NoError(t, err)
 	} else {

@@ -64,7 +64,7 @@ func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, err
 		defer os.Remove(tmpFile.Name())
 		defer tmpFile.Close()
 
-		archiveSize, err := io.Copy(io.MultiWriter(h, tmpFile), r)
+		archiveSize, err := io.Copy(io.MultiWriter(h, tmpFile), xr)
 		throw(err)
 		dataDigest := h.Sum(nil)
 		if !bytes.Equal(signatureDigest, dataDigest) {
@@ -119,8 +119,10 @@ func unpackFile(path string, file spk.Archive_File) error {
 			throw(err)
 			throw(unpackDirectory(path, files))
 		}
-		lastMod := time.Unix(0, file.LastModificationTimeNs())
-		throw(os.Chtimes(path, lastMod, lastMod))
+		if file.Which() != spk.Archive_File_Which_symlink {
+			lastMod := time.Unix(0, file.LastModificationTimeNs())
+			throw(os.Chtimes(path, lastMod, lastMod))
+		}
 	})
 }
 
