@@ -211,11 +211,12 @@ func (s *server) Handler() http.Handler {
 				return
 			}
 			defer tx.Rollback()
-			ref, err := tx.RestoreSturdyRef(database.SturdyRefKey{
+			key := database.SturdyRefKey{
 				Token:     []byte(token),
 				OwnerType: "external",
 				Owner:     "",
-			})
+			}
+			ref, err := tx.RestoreSturdyRef(key)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte("No such token (maybe expired?)"))
@@ -224,7 +225,11 @@ func (s *server) Handler() http.Handler {
 				)
 				return
 			}
-			// FIXME: delete token
+			if err = tx.DeleteSturdyRef(key); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				s.log.Error("deleting sturdyref: ", err)
+				return
+			}
 			if err = tx.Commit(); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				s.log.Error("restoring email token: commit", err)

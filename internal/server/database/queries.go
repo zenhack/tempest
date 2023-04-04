@@ -405,3 +405,10 @@ func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 	}
 	return ret, err
 }
+
+// Delete a sturdyref from the database.
+func (tx Tx) DeleteSturdyRef(k SturdyRefKey) error {
+	hash := sha256.Sum256(k.Token)
+	_, err := tx.sqlTx.Exec(`DELETE FROM sturdyRefs WHERE sha256 = ?`, hash[:])
+	return err
+}
