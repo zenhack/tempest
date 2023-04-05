@@ -125,6 +125,10 @@ func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo
 	return capnp.Unimplemented("userInfo() not implemented")
 }
 
+func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSession_userSession) error {
+	return capnp.Unimplemented("userSession() not implemented")
+}
+
 func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSession_listGrains) error {
 	into := p.Args().Into()
 	p.Go()
