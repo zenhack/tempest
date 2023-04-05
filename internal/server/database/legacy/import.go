@@ -71,7 +71,7 @@ func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw)
 type user struct {
 	ID      string
 	Type    string
-	IsAdmin bool
+	Role    database.Role
 	Profile struct {
 		DisplayName     string
 		PreferredHandle string
@@ -112,6 +112,8 @@ func decodeUser(raw bson.Raw) (user, error) {
 		elts, err := raw.Elements()
 		throw(err)
 
+		ret.Role = database.RoleVisitor
+
 		for _, e := range elts {
 			switch e.Key() {
 			case "_id":
@@ -119,7 +121,13 @@ func decodeUser(raw bson.Raw) (user, error) {
 			case "type":
 				ret.Type = e.Value().StringValue()
 			case "isAdmin":
-				ret.IsAdmin = e.Value().Boolean()
+				ret.Role = database.RoleAdmin
+			case "signupKey":
+				// The presence of this key means the user is not a visitor.
+				// isAdmin takes precedence though.
+				if ret.Role == database.RoleVisitor {
+					ret.Role = database.RoleUser
+				}
 			case "profile":
 				pelts, err := e.Value().Document().Elements()
 				throw(err)
@@ -183,7 +191,7 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			}
 			throw(tx.AddAccount(database.NewAccount{
 				ID:      u.ID,
-				IsAdmin: u.IsAdmin,
+				Role:    u.Role,
 				Profile: u.Profile,
 			}))
 			// Store these for lookup during the second pass:

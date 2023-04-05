@@ -74,9 +74,17 @@ type NewGrain struct {
 
 type NewAccount struct {
 	ID      string
-	IsAdmin bool
+	Role    Role
 	Profile Profile
 }
+
+type Role string
+
+const (
+	RoleVisitor Role = "visitor"
+	RoleUser    Role = "user"
+	RoleAdmin   Role = "admin"
+)
 
 type Profile struct {
 	DisplayName     string
@@ -93,13 +101,13 @@ func (tx Tx) AddAccount(a NewAccount) error {
 	_, err := tx.sqlTx.Exec(
 		`INSERT INTO accounts
 			( id
-			, isAdmin
+			, role
 			, profileDisplayName
 			, profilePreferredHandle
 			)
 			VALUES (?, ?, ?, ?)`,
 		a.ID,
-		a.IsAdmin,
+		a.Role,
 		a.Profile.DisplayName,
 		a.Profile.PreferredHandle,
 	)

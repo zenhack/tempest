@@ -37,7 +37,8 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			`CREATE TABLE IF NOT EXISTS accounts (
 				id VARCHAR PRIMARY KEY,
 
-				isAdmin BOOLEAN NOT NULL,
+				-- Either "visitor", "user", or "admin"
+				role VARCHAR NOT NULL,
 
 				profileDisplayName VARCHAR NOT NULL,
 				profilePreferredHandle VARCHAR NOT NULL
