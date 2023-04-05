@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"testing"
@@ -16,6 +17,7 @@ import (
 const pkgUrlBase = "https://app-index.sandstorm.io/packages/"
 
 type testPackage struct {
+	Name  string // Name for the test
 	ID    string // Package ID
 	AppID string // Return value of AppID.String()
 	Valid bool   // Should the package validate?
@@ -23,19 +25,19 @@ type testPackage struct {
 
 var marketPackages = []testPackage{
 	{
-		// Filedrop 1.0.6
+		Name:  "Filedrop 1.0.6",
 		ID:    "d13f67230d0a4f9a63fc2c0bba87fc52",
 		AppID: "nn7axgy3y8kvd0m1mtk3cwca34t916p5d7m4j1j2e874nuz3t8y0",
 		Valid: true,
 	},
 	{
-		// Yet Another TODO 0.1.2
+		Name:  "Yet Another TODO 0.1.2",
 		ID:    "346bff4bc867afd54320af244dc64e9c",
 		AppID: "6ee9j59rp4mepat8pz2pt1sq97xmname4kvhzh4m3uzwrvf1hu10",
 		Valid: true,
 	},
 	{
-		// Davros 0.31.1
+		Name:  "Davros 0.31.1",
 		ID:    "c4c975c3adbeeb77fd928bb90202c049",
 		AppID: "8aspz4sfjnp8u89000mh2v1xrdyx97ytn8hq71mdzv4p4d8n0n3h",
 		Valid: true,
@@ -81,23 +83,28 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 	require.NoError(t, os.MkdirAll(scratchDir, 755))
 	appID, pkgHash, err := UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
 	if !p.Valid {
-		require.NotNil(t, err)
+		require.NotNil(t, err, "invalid package fails")
 		return
 	}
-	require.NoError(t, err)
-	require.Equal(t, p.AppID, appID.String())
+	require.NoError(t, err, "valid package succeeds")
+	require.Equal(t, p.AppID, appID.String(), "app id is as expected")
 	expectedPkgHash := sha256.Sum256(buf)
-	require.Equal(t, expectedPkgHash[:], pkgHash[:])
+	require.Equal(t, expectedPkgHash[:], pkgHash[:], "package hash is correct")
+
+	// "corrupt" the package, and make sure it fails:
+	buf[rand.Int()%len(buf)]++
+	_, _, err = UnpackSpk(outputPath+"_bad", scratchDir, bytes.NewBuffer(buf))
+	require.NotNil(t, err, "modifying the package causes failure")
 }
 
-func TestMarketPackages(t *testing.T) {
+func TestUnpackMarketPackages(t *testing.T) {
 	t.Parallel()
 
 	downloadIfNeeded := os.Getenv("NETWORK_TEST_OK") == "1"
 
 	for _, p := range marketPackages {
 		pkg := p // Avoid sharing a reference across tests.
-		t.Run("package "+pkg.ID, func(t *testing.T) {
+		t.Run(pkg.Name, func(t *testing.T) {
 			t.Parallel()
 			pkg.runTest(t, downloadIfNeeded)
 		})
