@@ -13,6 +13,7 @@ import (
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/common/types"
+	"zenhack.net/go/tempest/internal/server/tokenutil"
 )
 
 // AddPackage adds a package to the database. The caller must separately ensure
@@ -233,7 +234,7 @@ func (tx Tx) createOwnerSturdyRef(grainID types.GrainID) error {
 	}
 	hash, err := tx.SaveSturdyRef(
 		SturdyRefKey{
-			Token:     GenToken(),
+			Token:     tokenutil.GenToken(),
 			OwnerType: "userkeyring",
 			Owner:     ownerID,
 		},

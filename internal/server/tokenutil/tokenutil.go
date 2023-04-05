@@ -1,4 +1,4 @@
-package database
+package tokenutil
 
 import (
 	"crypto/rand"

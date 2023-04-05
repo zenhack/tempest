@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"zenhack.net/go/tempest/internal/server/tokenutil"
 )
 
 // Save and restore a sturdyRef, and verify that the value is the same.
 func TestSturdyRefSaveRestore(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		key := SturdyRefKey{
-			Token:     GenToken(),
+			Token:     tokenutil.GenToken(),
 			OwnerType: "grain",
 			Owner:     "grain123",
 		}
@@ -35,7 +36,7 @@ func TestSturdyRefSaveRestore(t *testing.T) {
 func TestSturdyRefSaveRestoreNullGrainID(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		key := SturdyRefKey{
-			Token:     GenToken(),
+			Token:     tokenutil.GenToken(),
 			OwnerType: "grain",
 			Owner:     "grain123",
 		}
@@ -57,7 +58,7 @@ func TestSturdyRefSaveRestoreNullGrainID(t *testing.T) {
 func TestSturdyRefRestoreExpired(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		key := SturdyRefKey{
-			Token:     GenToken(),
+			Token:     tokenutil.GenToken(),
 			OwnerType: "grain",
 			Owner:     "grain123",
 		}

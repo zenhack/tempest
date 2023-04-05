@@ -20,6 +20,7 @@ import (
 	"zenhack.net/go/tempest/internal/server/container"
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
+	"zenhack.net/go/tempest/internal/server/tokenutil"
 	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )
@@ -81,7 +82,7 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 		throw(err)
 		throw(oid.SetEmailLoginToken(addr))
 
-		token := base64.RawURLEncoding.EncodeToString(database.GenToken()[:16])
+		token := base64.RawURLEncoding.EncodeToString(tokenutil.GenToken()[:16])
 
 		_, err = tx.SaveSturdyRef(
 			database.SturdyRefKey{

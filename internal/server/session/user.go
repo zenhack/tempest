@@ -3,7 +3,7 @@ package session
 import (
 	"zenhack.net/go/tempest/internal/capnp/cookie"
 	"zenhack.net/go/tempest/internal/common/types"
-	"zenhack.net/go/tempest/internal/server/database"
+	"zenhack.net/go/tempest/internal/server/tokenutil"
 )
 
 type UserSession struct {
@@ -12,8 +12,7 @@ type UserSession struct {
 }
 
 func GenSessionID() []byte {
-	// TODO: move this somewhere more appropriate:
-	return database.GenToken()
+	return tokenutil.GenToken()
 }
 
 func (sess *UserSession) Unseal(store Store, payload Payload) error {
