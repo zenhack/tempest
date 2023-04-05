@@ -61,14 +61,11 @@ const (
 type Grain struct {
 	Title        string
 	SessionToken string
+	Subdomain    string
 	Handle       util.Handle
 }
 
 type OpenGrain struct {
-	// The random part of the subdomain for this grain, i.e. the grain is
-	// served at http(s)://ui-${DomainNonce}.sandstorm.example.org/
-	DomainNonce string
-
 	DomIndex int
 }
 

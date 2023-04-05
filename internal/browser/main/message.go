@@ -122,8 +122,7 @@ func (msg FocusGrain) Update(m Model) (Model, Cmd) {
 	if !ok {
 		index := m.GrainDomOrder.Add(msg.ID)
 		m.OpenGrains[msg.ID] = OpenGrain{
-			DomainNonce: newDomainNonce(),
-			DomIndex:    index,
+			DomIndex: index,
 		}
 	}
 	return m, nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"os"
 	"strings"
@@ -152,6 +153,7 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 				}.Seal(s.sessionStore)
 				throw(err)
 				g.SetSessionToken(sessionToken)
+				g.SetSubdomain(hex.EncodeToString(tokenutil.GenToken()[:16]))
 				// TODO: handle
 				p.SetValue(g.ToPtr())
 				return nil

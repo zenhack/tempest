@@ -17,12 +17,15 @@ func (gp grainPusher) Upsert(id types.GrainID, grain external.Grain) (Msg, error
 		throw(err)
 		sessionToken, err := grain.SessionToken()
 		throw(err)
+		subdomain, err := grain.Subdomain()
+		throw(err)
 
 		return UpsertGrain{
 			ID: id,
 			Grain: Grain{
 				Title:        title,
 				SessionToken: sessionToken,
+				Subdomain:    subdomain,
 				Handle:       grain.Handle().AddRef(),
 			},
 		}

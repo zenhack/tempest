@@ -1,9 +1,6 @@
 package browsermain
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-
 	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maps"
@@ -202,12 +199,6 @@ func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {
 	return h("ul", nil, nil, appItems...)
 }
 
-func newDomainNonce() string {
-	var buf [16]byte
-	rand.Read(buf[:])
-	return hex.EncodeToString(buf[:])
-}
-
 func viewLoginForm(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
 	return h("div", nil, nil,
 		h("form", a{"action": "/login/dev", "method": "post"}, nil,
@@ -272,9 +263,7 @@ func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.
 
 func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
 	grain := m.Grains[id]
-	open := m.OpenGrains[id]
-
-	grainUrl := m.ServerAddr.Subdomain("ui-" + open.DomainNonce)
+	grainUrl := m.ServerAddr.Subdomain("ui-" + grain.Subdomain)
 	qv := grainUrl.Query()
 	qv.Set("sandstorm-sid", grain.SessionToken)
 	qv.Set("path", "/")

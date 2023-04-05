@@ -94,12 +94,16 @@ struct Grain {
   # A session token which can be exchanged for a cookie on a ui-* subdomain. To
   # open a UI session in the browser, navigate to:
   #
-  #   http(s)://ui-${random}.sandstorm.example.net/_sandstorm-init?sandstorm-sid=${sessionToken}&path=${path}
+  #   http(s)://ui-${subdomain}.sandstorm.example.net/_sandstorm-init?sandstorm-sid=${sessionToken}&path=${path}
   #
   # This will set an authentication cookie using the Set-Cookie header, and
   # return a redirect to /${path}
   #
   # The token is valid until `handle` is dropped.
+
+  subdomain @3 :Text;
+  # The the subdomain, sans ui- prefix, that this grain session should be loaded
+  # from.
 
   handle @0 :Util.Handle;
   # When handle is dropped, sessionToken is invalidated.
