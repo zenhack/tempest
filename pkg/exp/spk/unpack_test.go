@@ -2,6 +2,7 @@ package spk
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"net/http"
@@ -73,12 +74,14 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 	outputPath := tmpDir + "/output-" + p.ID
 	scratchDir := tmpDir + "/scratch-" + p.ID
 	require.NoError(t, os.MkdirAll(scratchDir, 755))
-	_, _, err = UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
-	if p.Valid {
-		require.NoError(t, err)
-	} else {
+	_, pkgHash, err := UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
+	if !p.Valid {
 		require.NotNil(t, err)
+		return
 	}
+	require.NoError(t, err)
+	expectedPkgHash := sha256.Sum256(buf)
+	require.Equal(t, expectedPkgHash[:], pkgHash[:])
 }
 
 func TestMarketPackages(t *testing.T) {
