@@ -66,6 +66,7 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 		if !downloadIfNeeded {
 			t.Skip("Package ", p.ID, "not present; skipping")
 		}
+		t.Log("Fetching package ", p.ID, " from app market")
 		buf, err = p.fetchFromAppMarket()
 		require.NoError(t, err, "fetching package from app market")
 		require.NoError(t, os.WriteFile(p.FilePath(), buf, 0600), "saving package")
@@ -90,9 +91,10 @@ func TestMarketPackages(t *testing.T) {
 	downloadIfNeeded := os.Getenv("NETWORK_TEST_OK") == "1"
 
 	for _, p := range marketPackages {
-		t.Run("package "+p.ID, func(t *testing.T) {
+		pkg := p // Avoid sharing a reference across tests.
+		t.Run("package "+pkg.ID, func(t *testing.T) {
 			t.Parallel()
-			p.runTest(t, downloadIfNeeded)
+			pkg.runTest(t, downloadIfNeeded)
 		})
 	}
 }
