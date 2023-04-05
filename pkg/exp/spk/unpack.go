@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"crypto/sha512"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -26,6 +27,13 @@ var (
 )
 
 type PackageHash [sha256.Size]byte
+
+// ID returns the package ID based on the hash. This string is used in various places:
+// as a directory name, as part of the package's URL in the app market, and others.
+// The value is the first 128 bits, hex-encoded.
+func (ph PackageHash) ID() string {
+	return hex.EncodeToString(ph[:16])
+}
 
 // UnpackSpk reads an spk file from r and unpacks its contents to a newly created
 // director at path, after verifying the package's signature. Returns the app's

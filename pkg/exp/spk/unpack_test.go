@@ -90,6 +90,7 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 	require.Equal(t, p.AppID, appID.String(), "app id is as expected")
 	expectedPkgHash := sha256.Sum256(buf)
 	require.Equal(t, expectedPkgHash[:], pkgHash[:], "package hash is correct")
+	require.Equal(t, p.ID, pkgHash.ID(), "package id is correct")
 
 	// "corrupt" the package, and make sure it fails:
 	buf[rand.Int()%len(buf)]++
