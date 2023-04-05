@@ -16,24 +16,28 @@ import (
 const pkgUrlBase = "https://app-index.sandstorm.io/packages/"
 
 type testPackage struct {
-	ID    string
-	Valid bool
+	ID    string // Package ID
+	AppID string // Return value of AppID.String()
+	Valid bool   // Should the package validate?
 }
 
 var marketPackages = []testPackage{
 	{
 		// Filedrop 1.0.6
 		ID:    "d13f67230d0a4f9a63fc2c0bba87fc52",
+		AppID: "nn7axgy3y8kvd0m1mtk3cwca34t916p5d7m4j1j2e874nuz3t8y0",
 		Valid: true,
 	},
 	{
 		// Yet Another TODO 0.1.2
 		ID:    "346bff4bc867afd54320af244dc64e9c",
+		AppID: "6ee9j59rp4mepat8pz2pt1sq97xmname4kvhzh4m3uzwrvf1hu10",
 		Valid: true,
 	},
 	{
 		// Davros 0.31.1
 		ID:    "c4c975c3adbeeb77fd928bb90202c049",
+		AppID: "8aspz4sfjnp8u89000mh2v1xrdyx97ytn8hq71mdzv4p4d8n0n3h",
 		Valid: true,
 	},
 }
@@ -75,12 +79,13 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 	outputPath := tmpDir + "/output-" + p.ID
 	scratchDir := tmpDir + "/scratch-" + p.ID
 	require.NoError(t, os.MkdirAll(scratchDir, 755))
-	_, pkgHash, err := UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
+	appID, pkgHash, err := UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
 	if !p.Valid {
 		require.NotNil(t, err)
 		return
 	}
 	require.NoError(t, err)
+	require.Equal(t, p.AppID, appID.String())
 	expectedPkgHash := sha256.Sum256(buf)
 	require.Equal(t, expectedPkgHash[:], pkgHash[:])
 }
