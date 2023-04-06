@@ -53,16 +53,16 @@ func TestGetUiViews(t *testing.T) {
 func addTestData(t *testing.T, tx Tx) {
 	accounts := []NewAccount{
 		{
-			ID:      "id_alice",
-			IsAdmin: true,
+			ID:   "id_alice",
+			Role: RoleAdmin,
 			Profile: Profile{
 				DisplayName:     "Alice",
 				PreferredHandle: "alice",
 			},
 		},
 		{
-			ID:      "id_bob",
-			IsAdmin: false,
+			ID:   "id_bob",
+			Role: RoleUser,
 			Profile: Profile{
 				DisplayName:     "Bob",
 				PreferredHandle: "bob",
