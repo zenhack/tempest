@@ -203,7 +203,7 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 		throw(into.Clear(ctx, nil))
 		for _, dbPkg := range dbPkgs {
 			throw(into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
-				key, err := capnp.NewText(p.Segment(), dbPkg.ID)
+				key, err := capnp.NewText(p.Segment(), string(dbPkg.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())
 				pkg, err := external.NewPackage(p.Segment())

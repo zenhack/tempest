@@ -31,25 +31,42 @@ type PackageHash [sha256.Size]byte
 // ID returns the package ID based on the hash. This string is used in various places:
 // as a directory name, as part of the package's URL in the app market, and others.
 // The value is the first 128 bits, hex-encoded.
+//
+// TODO(cleanup): have this return a types.ID[something].
 func (ph PackageHash) ID() string {
 	return hex.EncodeToString(ph[:16])
 }
 
+// Results of unpacking an spk
+type ExtractedPackageMetadata struct {
+	Dir      string       // Path where the files were extracted
+	AppID    AppID        // App ID for the package
+	Hash     PackageHash  // Hash of the package
+	Manifest spk.Manifest // Manifest stored in the package.
+}
+
 // UnpackSpk reads an spk file from r and unpacks its contents to a newly created
-// director at path, after verifying the package's signature. Returns the app's
-// ID.
+// directory under tmpDir, after verifying the package's signature. Returns information
+// about the package.
 //
-// This creates a tempory file under tmpDir, which is deleted before the function
-// returns.
-func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, error) {
-	return exn.Try2(func(throw exn.Thrower) (AppID, PackageHash) {
+// This may create other temporary files under tmpDir, which are deleted before the
+// function returns.
+func UnpackSpk(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
+	return exn.Try(func(throw exn.Thrower) ExtractedPackageMetadata {
+		dir, err := os.MkdirTemp(tmpDir, "unpack-spk-*")
+		throw(err)
+		tmp := filepath.Join(dir, "tmp")
+		throw(os.Mkdir(tmp, 0700))
+		// TODO: defer delete tmp, on error dir as well.
+		dest := filepath.Join(dir, "dest")
+
 		// For computing the package id:
 		hr := hashReader{
 			Hash:   sha256.New(),
 			Reader: r,
 		}
 		var magic [8]byte
-		_, err := io.ReadFull(hr, magic[:])
+		_, err = io.ReadFull(hr, magic[:])
 		throw(err)
 		if !bytes.Equal(magic[:], spk.MagicNumber) {
 			throw(ErrNoMagicNumber)
@@ -67,7 +84,7 @@ func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, err
 
 		h := sha512.New()
 
-		tmpFile, err := os.CreateTemp(tmpDir, "spk-archive-*")
+		tmpFile, err := os.Create(filepath.Join(tmp, "archive-msg"))
 		throw(err)
 		defer os.Remove(tmpFile.Name())
 		defer tmpFile.Close()
@@ -98,9 +115,52 @@ func UnpackSpk(path string, tmpDir string, r io.Reader) (AppID, PackageHash, err
 		archiveMsg.ResetReadLimit(uint64(archiveSize) * 4)
 
 		archive, err := spk.ReadRootArchive(archiveMsg)
-		throw(unpackArchive(path, archive))
+		throw(unpackArchive(dest, archive))
 		pkgHash := ([sha256.Size]byte)(hr.Hash.Sum(nil))
-		return appID, pkgHash
+
+		// Get the manifest:
+		files, err := archive.Files()
+		throw(err)
+		for i := 0; i < files.Len(); i++ {
+			file := files.At(i)
+			name, err := file.Name()
+			throw(err)
+			if name != "spk-manfiest" {
+				continue
+			}
+			if file.Which() != spk.Archive_File_Which_regular {
+				throw(fmt.Errorf(
+					"could not extract manifest: spk-manifest was not a regular file (%v)",
+					file.Which(),
+				))
+			}
+			data, err := file.Regular()
+			throw(err)
+
+			maxBytes := spk.Manifest_sizeLimitInWords * 8
+			if len(data) > int(maxBytes) {
+				throw(fmt.Errorf(
+					"spk-manifest is too large (%v bytes, max allowed is %v)",
+					len(data),
+					maxBytes,
+				))
+			}
+
+			// Copy the data out so we can unmap the file safely:
+			msg, err := capnp.Unmarshal(bytes.Clone(data))
+			throw(err)
+			manifest, err := spk.ReadRootManifest(msg)
+			throw(err)
+
+			return ExtractedPackageMetadata{
+				Dir:      dest,
+				AppID:    appID,
+				Hash:     pkgHash,
+				Manifest: manifest,
+			}
+		}
+		throw(errors.New("package is missing manifest"))
+		panic("unreachable")
 	})
 }
 

@@ -294,7 +294,7 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 				case "_id":
 					grain.GrainID = types.GrainID(e.Value().StringValue())
 				case "packageId":
-					grain.PkgID = e.Value().StringValue()
+					grain.PkgID = types.ID[database.Package](e.Value().StringValue())
 				case "title":
 					grain.Title = e.Value().StringValue()
 				case "userId":

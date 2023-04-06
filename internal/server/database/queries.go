@@ -73,7 +73,7 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 
 type NewGrain struct {
 	GrainID types.GrainID
-	PkgID   string
+	PkgID   types.ID[Package]
 	OwnerID string
 	Title   string
 }
