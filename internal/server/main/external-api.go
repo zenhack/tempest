@@ -126,7 +126,24 @@ func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo
 }
 
 func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSession_userSession) error {
-	return capnp.Unimplemented("userSession() not implemented")
+	p.Go()
+	return exn.Try0(func(throw exn.Thrower) {
+		tx, err := s.server.db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		ok, err := tx.CredentialHasRole(s.userSession.Credential, database.RoleUser)
+		throw(err)
+		if !ok {
+			throw(errors.New("Permission denied; caller does not have the 'user' role."))
+		}
+		throw(tx.Commit())
+
+		results, err := p.AllocResults()
+		throw(err)
+		results.SetSession(external.UserSession_ServerToClient(userSessionImpl{
+			api: s.externalApiImpl,
+		}))
+	})
 }
 
 func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSession_listGrains) error {
@@ -297,4 +314,12 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		})
 	})
 
+}
+
+type userSessionImpl struct {
+	api externalApiImpl
+}
+
+func (s userSessionImpl) InstallPackage(ctx context.Context, p external.UserSession_installPackage) error {
+	return capnp.Unimplemented("TODO: implement InstallPackage()")
 }
