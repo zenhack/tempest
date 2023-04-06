@@ -16,9 +16,9 @@ import (
 	"zenhack.net/go/tempest/internal/server/tokenutil"
 )
 
-// AddPackage adds a package to the database. The caller must separately ensure
-// that the contents of the package have been extracted to
-// <localstatedir>/sandstorm/apps/<pkg.ID>
+// AddPackage adds a package to the database, initally marked as not ready.
+// The caller must then move the extracted package to the right location,
+// and then call ReadyPackage to complete installation.
 func (tx Tx) AddPackage(pkg Package) error {
 	manifestBlob, err := encodeCapnp(pkg.Manifest)
 	if err != nil {
@@ -26,12 +26,18 @@ func (tx Tx) AddPackage(pkg Package) error {
 	}
 	_, err = tx.sqlTx.Exec(
 		`INSERT INTO
-			packages(id, manifest)
-			VALUES (?, ?)
+			packages(id, manifest, ready)
+			VALUES (?, ?, ?)
 		`,
 		pkg.ID,
 		manifestBlob,
+		false,
 	)
+	return err
+}
+
+func (tx Tx) ReadyPackage(id types.ID[Package]) error {
+	_, err := tx.sqlTx.Exec(`UPDATE packages SET ready = true WHERE id = ?`, id)
 	return err
 }
 

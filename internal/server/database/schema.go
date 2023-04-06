@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	spk "zenhack.net/go/tempest/capnp/package"
+	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/exn"
 )
 
 // A Package records information about a package in the database.
 type Package struct {
-	ID       string       // The package id.
-	Manifest spk.Manifest // The manifest as encoded in the spk.
+	ID       types.ID[Package] // The package id.
+	Manifest spk.Manifest      // The manifest as encoded in the spk.
 }
 
 // Initializes the database schema if needed, and returns a DB object.
@@ -30,7 +31,15 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				id VARCHAR(32) PRIMARY KEY NOT NULL,
 
 				-- capnp-encoded package manifest
-				manifest BLOB NOT NULL
+				manifest BLOB NOT NULL,
+
+				-- Is the package ready to use? The process of installing a package
+				-- works like:
+				--
+				-- 1. Add an entry to this table for the package with ready = false
+				-- 2. Move the extracted package to the right location
+				-- 3. Set ready to true
+				ready BOOLEAN NOT NULL
 			)`)
 		throw(err)
 		_, err = tx.Exec(

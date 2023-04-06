@@ -113,6 +113,7 @@ func addTestData(t *testing.T, tx Tx) {
 	}
 	for _, p := range packages {
 		assert.NoError(t, tx.AddPackage(p), "Adding package: ", p)
+		assert.NoError(t, tx.ReadyPackage(p.ID), "Readying package: ", p)
 	}
 	for _, g := range grains {
 		assert.NoError(t, tx.AddGrain(g), "Adding grain: ", g)

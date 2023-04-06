@@ -258,10 +258,10 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 
 			for _, e := range elts {
 				if e.Key() == "_id" {
-					id := e.Value().StringValue()
+					id := types.ID[database.Package](e.Value().StringValue())
 					path := config.Localstatedir +
 						"/sandstorm/apps/" +
-						id +
+						string(id) +
 						"/sandstorm-manifest"
 					buf, err := os.ReadFile(path)
 					throw(err)
@@ -273,6 +273,7 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 						ID:       id,
 						Manifest: manifest,
 					}))
+					throw(tx.ReadyPackage(id))
 					break
 				}
 			}
