@@ -45,13 +45,13 @@ type ExtractedPackageMetadata struct {
 	Manifest spk.Manifest // Manifest stored in the package.
 }
 
-// UnpackSpk reads an spk file from r and unpacks its contents to a newly created
+// Unpack reads an spk file from r and unpacks its contents to a newly created
 // directory under tmpDir, after verifying the package's signature. Returns information
 // about the package.
 //
 // This may create other temporary files under tmpDir, which are deleted before the
 // function returns.
-func UnpackSpk(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
+func Unpack(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
 	return exn.Try(func(throw exn.Thrower) ExtractedPackageMetadata {
 		dir, err := os.MkdirTemp(tmpDir, "unpack-spk-*")
 		throw(err)
