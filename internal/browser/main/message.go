@@ -2,6 +2,8 @@ package browsermain
 
 import (
 	"context"
+	"strings"
+	"syscall/js"
 
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
@@ -63,7 +65,14 @@ type EditEmailLogin struct {
 	NewValue string
 }
 
+type EditEmailToken struct {
+	NewValue string
+}
+
 type SubmitEmailLogin struct {
+}
+
+type SubmitEmailToken struct {
 }
 
 type LoginSessionResult struct {
@@ -228,11 +237,15 @@ func (msg EditEmailLogin) Update(m Model) (Model, Cmd) {
 	return m, nil
 }
 
+func (msg EditEmailToken) Update(m Model) (Model, Cmd) {
+	m.LoginForm.TokenInput = msg.NewValue
+	return m, nil
+}
+
 func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
-	// TODO:
-	// - Mark the submission as sent somehow
 	api := m.API
 	address := m.LoginForm.EmailInput
+	m.LoginForm.TokenSent = true
 	m.LoginForm.EmailInput = ""
 	return m, func(ctx context.Context, sendMsg func(Msg)) {
 		authFut, rel := api.Authenticator(ctx, nil)
@@ -244,5 +257,11 @@ func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
 		if _, err := sendFut.Struct(); err != nil {
 			sendMsg(NewError{Err: err})
 		}
+	}
+}
+
+func (msg SubmitEmailToken) Update(m Model) (Model, Cmd) {
+	return m, func(context.Context, func(Msg)) {
+		js.Global().Get("location").Set("href", "/login/email/"+strings.TrimSpace(m.LoginForm.TokenInput))
 	}
 }

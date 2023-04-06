@@ -1,6 +1,8 @@
 package browsermain
 
 import (
+	"strings"
+
 	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maps"
@@ -34,7 +36,7 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 	} else if session.Err() != nil {
 		// TODO: deferrentiate between disconnects/failures. Or maybe just
 		// tweak the API to return all this info in-band?
-		content = viewLoginForm(m.L10N, ms)
+		content = viewLoginForm(m.L10N, m.LoginForm, ms)
 	} else {
 		switch m.CurrentFocus {
 		case FocusGrainList:
@@ -199,7 +201,58 @@ func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {
 	return h("ul", nil, nil, appItems...)
 }
 
-func viewLoginForm(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
+func (lf LoginForm) View(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
+	submitAttrs := a{"type": "submit"}
+	if lf.TokenSent {
+		if lf.TokenInput == "" {
+			submitAttrs["disabled"] = "disabled"
+		}
+
+		return h("div", nil, nil,
+			h("label", a{"for": "token"}, nil,
+				t(l10n, "Login token"),
+			),
+			h("input",
+				a{"name": "token", "value": lf.TokenInput},
+				e{
+					"input": events.OnInput(func(value string) {
+						ms.Send(EditEmailToken{NewValue: value})
+					}),
+				}),
+			h("button",
+				submitAttrs,
+				e{"click": ms.Event(SubmitEmailToken{})},
+				t(l10n, "Log In"),
+			),
+		)
+	} else {
+		if !strings.Contains(lf.EmailInput, "@") {
+			// TODO: maybe check for a TLD too?
+			submitAttrs["disabled"] = "disabled"
+		}
+		return h("div", nil, nil,
+			h("label", a{"for": "address"}, nil,
+				t(l10n, "Email address for login"),
+			),
+			h("input", a{
+				"name":        "address",
+				"placeholder": l10n.Fmt("e.g. alice@example.com"),
+				"value":       lf.EmailInput,
+			}, e{
+				"input": events.OnInput(func(value string) {
+					ms.Send(EditEmailLogin{NewValue: value})
+				}),
+			}),
+			h("button",
+				submitAttrs,
+				e{"click": ms.Event(SubmitEmailLogin{})},
+				t(l10n, "Send token"),
+			),
+		)
+	}
+}
+
+func viewLoginForm(l10n intl.L10N, lf LoginForm, ms tea.MessageSender[Model]) vdom.VNode {
 	return h("div", nil, nil,
 		h("form", a{"action": "/login/dev", "method": "post"}, nil,
 			h("label", a{"for": "name"}, nil,
@@ -211,23 +264,7 @@ func viewLoginForm(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
 			}, nil),
 			h("button", a{"type": "submit"}, nil, t(l10n, "Submit")),
 		),
-		h("div", nil, nil,
-			h("label", a{"for": "address"}, nil,
-				t(l10n, "Email address for login"),
-			),
-			h("input", a{
-				"name":        "address",
-				"placeholder": "e.g. alice@example.com",
-			}, e{
-				"input": events.OnInput(func(value string) {
-					ms.Send(EditEmailLogin{NewValue: value})
-				}),
-			}),
-			h("button", nil,
-				e{"click": ms.Event(SubmitEmailLogin{})},
-				t(l10n, "Submit"),
-			),
-		),
+		lf.View(l10n, ms),
 	)
 }
 
