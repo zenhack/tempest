@@ -82,6 +82,9 @@ type user struct {
 			Name    string
 			IsAdmin bool
 		}
+		Email struct {
+			Email string
+		}
 	}
 
 	LoginCredentials    []string
@@ -161,8 +164,17 @@ func decodeUser(raw bson.Raw) (user, error) {
 								ret.Services.Dev.IsAdmin = de.Value().Boolean()
 							}
 						}
+					case "email":
+						eelts, err := se.Value().Document().Elements()
+						throw(err)
+						for _, ee := range eelts {
+							switch ee.Key() {
+							case "email":
+								ret.Services.Email.Email = ee.Value().StringValue()
+							}
+						}
 					default:
-						// TODO: handle github, google, email, etc.
+						// TODO: handle github, google, etc.
 					}
 				}
 			}
@@ -221,13 +233,19 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			entry.Login = owner.login
 			if u.Services.Dev.Name != "" {
 				entry.Credential = types.Credential{
-					Type:     "dev",
+					Type:     types.DevCredential,
 					ScopedID: u.Services.Dev.Name,
 				}
-				throw(tx.AddCredential(entry))
+			} else if u.Services.Email.Email != "" {
+				entry.Credential = types.Credential{
+					Type:     types.EmailCredential,
+					ScopedID: u.Services.Email.Email,
+				}
 			} else {
-				fmt.Printf("TODO: add support for other credential types (skipping)")
+				fmt.Println("TODO: add support for other credential types (skipping)")
+				return
 			}
+			throw(tx.AddCredential(entry))
 		}))
 	})
 }
