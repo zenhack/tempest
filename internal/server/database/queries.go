@@ -86,6 +86,22 @@ const (
 	RoleAdmin   Role = "admin"
 )
 
+func (r Role) Encompasses(other Role) bool {
+	if r == other {
+		return true
+	}
+	switch r {
+	case RoleVisitor:
+		return false
+	case RoleAdmin:
+		return true
+	case RoleUser:
+		return other == RoleVisitor
+	default:
+		panic("Invalid role value: " + r)
+	}
+}
+
 type Profile struct {
 	DisplayName     string
 	PreferredHandle string
@@ -420,4 +436,22 @@ func (tx Tx) DeleteSturdyRef(k SturdyRefKey) error {
 	hash := sha256.Sum256(k.Token)
 	_, err := tx.sqlTx.Exec(`DELETE FROM sturdyRefs WHERE sha256 = ?`, hash[:])
 	return err
+}
+
+func (tx Tx) CredentialHasRole(cred types.Credential, role Role) (bool, error) {
+	row := tx.sqlTx.QueryRow(`
+		SELECT role
+		FROM accounts, credentials
+		WHERE
+			accounts.id = credentials.accountId
+			AND credentials.type = ?
+			AND credentials.scopedId = ?`,
+		cred.Type,
+		cred.ScopedID)
+	var actualRole Role
+	err := row.Scan(&actualRole)
+	if err != nil {
+		return false, err
+	}
+	return actualRole.Encompasses(role), nil
 }
