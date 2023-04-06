@@ -18,11 +18,11 @@ import (
 )
 
 type installStream struct {
-	db database.DB
 	util.ByteStream_Server
-	cancel context.CancelFunc
-	ready  chan struct{}
-	pkg    external.Package
+	cancel      context.CancelFunc
+	userSession userSessionImpl
+	ready       chan struct{}
+	pkg         external.Package
 }
 
 func (s *installStream) Shutdown() {
@@ -32,13 +32,13 @@ func (s *installStream) Shutdown() {
 	}
 }
 
-func newInstallStream(db database.DB) *installStream {
+func newInstallStream(userSession userSessionImpl) *installStream {
 	r, w := bytestream.PipeServer()
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &installStream{
-		db:                db,
 		ByteStream_Server: w,
 		cancel:            cancel,
+		userSession:       userSession,
 		ready:             make(chan struct{}),
 	}
 	go s.install(ctx, r)
@@ -47,26 +47,53 @@ func newInstallStream(db database.DB) *installStream {
 
 func (s *installStream) install(ctx context.Context, r *io.PipeReader) {
 	err := exn.Try0(func(throw exn.Thrower) {
+		db := s.userSession.login.server.db
 		meta, err := spk.Unpack(config.TempDir, r)
 		throw(err)
-		tx, err := s.db.Begin()
+		tx, err := db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		pkg := database.Package{
+		dbPkg := database.Package{
 			ID:       types.ID[database.Package](meta.Hash.ID()),
 			Manifest: meta.Manifest,
 		}
-		throw(tx.AddPackage(pkg))
+		throw(tx.AddPackage(dbPkg))
 		throw(tx.Commit())
-		throw(os.Rename(meta.Dir, filepath.Join(config.PackagesDir, string(pkg.ID))))
-		tx, err = s.db.Begin()
+		throw(os.Rename(meta.Dir, filepath.Join(config.PackagesDir, string(dbPkg.ID))))
+		tx, err = db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		throw(tx.ReadyPackage(pkg.ID))
+		throw(tx.ReadyPackage(dbPkg.ID))
 		throw(tx.Commit())
+
+		pkg, err := external.NewPackage(meta.Manifest.Segment())
+		throw(err)
+		throw(pkg.SetManifest(meta.Manifest))
+
+		pkg.SetController(external.Package_Controller_ServerToClient(pkgController{
+			loginSessionImpl: s.userSession.login,
+			pkg:              dbPkg,
+		}))
+		s.pkg = pkg
+		close(s.ready)
 	})
 	if err != nil {
 		r.CloseWithError(err)
 		// TODO: delete temporary files & package directory.
+		return
+	}
+}
+
+func (s *installStream) GetPackage(ctx context.Context, p external.Package_InstallStream_getPackage) error {
+	p.Go()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-s.ready:
+		return exn.Try0(func(throw exn.Thrower) {
+			results, err := p.AllocResults()
+			throw(err)
+			throw(results.SetPackage(s.pkg))
+		})
 	}
 }

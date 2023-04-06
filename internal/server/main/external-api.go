@@ -141,7 +141,7 @@ func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSessi
 		results, err := p.AllocResults()
 		throw(err)
 		results.SetSession(external.UserSession_ServerToClient(userSessionImpl{
-			api: s.externalApiImpl,
+			login: s,
 		}))
 	})
 }
@@ -317,9 +317,14 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 }
 
 type userSessionImpl struct {
-	api externalApiImpl
+	login loginSessionImpl
 }
 
 func (s userSessionImpl) InstallPackage(ctx context.Context, p external.UserSession_installPackage) error {
-	return capnp.Unimplemented("TODO: implement InstallPackage()")
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	results.SetStream(external.Package_InstallStream_ServerToClient(newInstallStream(s)))
+	return nil
 }
