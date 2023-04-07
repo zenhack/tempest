@@ -38,7 +38,7 @@ type Model struct {
 	GrainDomOrder poolslice.PoolSlice[types.GrainID]
 
 	API          external.ExternalApi
-	LoginSession maybe.T[orerr.T[external.LoginSession]]
+	LoginSession maybe.Maybe[orerr.OrErr[external.LoginSession]]
 
 	LoginForm LoginForm
 }

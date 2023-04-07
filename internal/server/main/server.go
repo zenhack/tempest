@@ -92,7 +92,7 @@ type grainSessionKey struct {
 }
 
 type grainSession struct {
-	webSession *thunk.T[orerr.T[websession.WebSession]]
+	webSession *thunk.Thunk[orerr.OrErr[websession.WebSession]]
 }
 
 func (s grainSession) Release() {
@@ -309,7 +309,7 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 		userAgent:           wsp.UserAgent,
 		acceptableLanguages: strings.Join(wsp.AcceptableLanguages, ","),
 	}
-	webSessionThunk := mutex.With1(&s.state, func(state *serverState) *thunk.T[orerr.T[websession.WebSession]] {
+	webSessionThunk := mutex.With1(&s.state, func(state *serverState) *thunk.Thunk[orerr.OrErr[websession.WebSession]] {
 		gs, ok := state.grainSessions[key]
 		if ok {
 			return gs.webSession
@@ -318,7 +318,7 @@ func (s *server) getWebSession(ctx context.Context, wsp webSessionParams, sess s
 		if err != nil {
 			return thunk.Ready(orerr.New(websession.WebSession{}, err))
 		}
-		webSessionThunk := thunk.Go(func() orerr.T[websession.WebSession] {
+		webSessionThunk := thunk.Go(func() orerr.OrErr[websession.WebSession] {
 			mainView := grain.MainView(c.Bootstrap.AddRef())
 			defer mainView.Release()
 			sessionCtx := grain.SessionContext_ServerToClient(sessionCtxImpl{})

@@ -76,7 +76,7 @@ type SubmitEmailToken struct {
 }
 
 type LoginSessionResult struct {
-	Result orerr.T[external.LoginSession]
+	Result orerr.OrErr[external.LoginSession]
 }
 
 func (msg NewError) Update(m Model) (Model, Cmd) {

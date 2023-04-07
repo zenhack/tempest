@@ -69,8 +69,6 @@ golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210423082822-04245dca01da/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.1.0 h1:kunALQeHf1/185U1i0GOB/fy1IPRDDpuoOOqRReG57U=
-golang.org/x/sys v0.1.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.7.0 h1:3jlCCIQZPdOYu1h8BkNvLz8Kgwtae2cagcG/VamtZRU=
 golang.org/x/sys v0.7.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
@@ -87,10 +85,8 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
-zenhack.net/go/util v0.0.0-20230402020905-c5270b07d5f2 h1:DMtmi9HNbMV8XEKmTJzd6VxLBx0VNF4BG9kz2+DJoYM=
-zenhack.net/go/util v0.0.0-20230402020905-c5270b07d5f2/go.mod h1:1LtNdPAs8WH+BTcQiZAOo2MIKD/5jyK/u7sZ9ZPe5SE=
-zenhack.net/go/util v0.0.0-20230404201425-d8a9a0a90f44 h1:E9CckS99OrzBf8M0QGZSQ7MQbojr6lUlJcl0QLaG5ls=
-zenhack.net/go/util v0.0.0-20230404201425-d8a9a0a90f44/go.mod h1:1LtNdPAs8WH+BTcQiZAOo2MIKD/5jyK/u7sZ9ZPe5SE=
+zenhack.net/go/util v0.0.0-20230407221818-ef608d25cf61 h1:yFruEx97FKOfapC6xduBhaL2KlMn8IUD7IP56g1vNxo=
+zenhack.net/go/util v0.0.0-20230407221818-ef608d25cf61/go.mod h1:1LtNdPAs8WH+BTcQiZAOo2MIKD/5jyK/u7sZ9ZPe5SE=
 zenhack.net/go/vdom v0.0.0-20230403002732-075ae8862f69 h1:FmOiM+5QFXeIxXPJZ4x+bBg4sJFcuOYAWkwPjKaxQNI=
 zenhack.net/go/vdom v0.0.0-20230403002732-075ae8862f69/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b h1:NWJuexcpIZoHK/dLJEe7OSZM1Yht6qlriOJI1bR1Nqw=
