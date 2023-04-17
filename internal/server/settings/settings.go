@@ -1,3 +1,5 @@
+// Package settings provides support for working with the data in settings.capnp;
+// see the comments in that file for an overview.
 package settings
 
 import (
@@ -24,12 +26,15 @@ func init() {
 	}
 }
 
+// Read the environment variable specified in s.envVar
 func getFromEnv(s settings.Setting) string {
 	varName, err := s.EnvVar()
 	util.Chkfatal(err)
 	return os.Getenv(varName)
 }
 
+// Get the setting struct for the named setting, panicking if it does not have the
+// specified type.
 func getSettingInfo(name string, expectedType schema.Type_Which) settings.Setting {
 	setting, ok := settingsInfo[name]
 	if !ok {
@@ -43,6 +48,7 @@ func getSettingInfo(name string, expectedType schema.Type_Which) settings.Settin
 	return setting
 }
 
+// Get the value of a setting by name, which must have type string (panics otherwise).
 func GetString(name string) string {
 	s := getSettingInfo(name, schema.Type_Which_text)
 	val := getFromEnv(s)
@@ -55,6 +61,7 @@ func GetString(name string) string {
 	return val
 }
 
+// Get the value of a setting by name, which must have type uint16 (panics otherwise).
 func GetUint16(name string) uint16 {
 	s := getSettingInfo(name, schema.Type_Which_uint16)
 	str := getFromEnv(s)
