@@ -414,5 +414,7 @@ type logErrorReporter struct {
 }
 
 func (l logErrorReporter) ReportError(err error) {
-	l.log.Error("capnp-rpc error", err)
+	l.log.Error("capnp-rpc error",
+		"error", err,
+	)
 }
