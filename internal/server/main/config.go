@@ -12,13 +12,6 @@ import (
 	"zenhack.net/go/util"
 )
 
-func defaultTo(val, def string) string {
-	if val == "" {
-		return def
-	}
-	return val
-}
-
 type Config struct {
 	listenPort string
 	rootDomain string // Main Tempest domain name
