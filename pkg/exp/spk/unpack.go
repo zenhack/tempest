@@ -126,12 +126,12 @@ func Unpack(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
 			file := files.At(i)
 			name, err := file.Name()
 			throw(err)
-			if name != "spk-manfiest" {
+			if name != "sandstorm-manifest" {
 				continue
 			}
 			if file.Which() != spk.Archive_File_Which_regular {
 				throw(fmt.Errorf(
-					"could not extract manifest: spk-manifest was not a regular file (%v)",
+					"could not extract manifest: sandstorm-manifest was not a regular file (%v)",
 					file.Which(),
 				))
 			}
@@ -141,7 +141,7 @@ func Unpack(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
 			maxBytes := spk.Manifest_sizeLimitInWords * 8
 			if len(data) > int(maxBytes) {
 				throw(fmt.Errorf(
-					"spk-manifest is too large (%v bytes, max allowed is %v)",
+					"sandstorm-manifest is too large (%v bytes, max allowed is %v)",
 					len(data),
 					maxBytes,
 				))

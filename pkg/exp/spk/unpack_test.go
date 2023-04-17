@@ -78,23 +78,22 @@ func (p testPackage) runTest(t *testing.T, downloadIfNeeded bool) {
 		require.NoError(t, os.WriteFile(p.FilePath(), buf, 0600), "saving package")
 	}
 	tmpDir := t.TempDir()
-	outputPath := tmpDir + "/output-" + p.ID
 	scratchDir := tmpDir + "/scratch-" + p.ID
-	require.NoError(t, os.MkdirAll(scratchDir, 755))
-	appID, pkgHash, err := UnpackSpk(outputPath, scratchDir, bytes.NewBuffer(buf))
+	require.NoError(t, os.MkdirAll(scratchDir, 0755))
+	meta, err := Unpack(scratchDir, bytes.NewBuffer(buf))
 	if !p.Valid {
 		require.NotNil(t, err, "invalid package fails")
 		return
 	}
 	require.NoError(t, err, "valid package succeeds")
-	require.Equal(t, p.AppID, appID.String(), "app id is as expected")
+	require.Equal(t, p.AppID, meta.AppID.String(), "app id is as expected")
 	expectedPkgHash := sha256.Sum256(buf)
-	require.Equal(t, expectedPkgHash[:], pkgHash[:], "package hash is correct")
-	require.Equal(t, p.ID, pkgHash.ID(), "package id is correct")
+	require.Equal(t, expectedPkgHash[:], meta.Hash[:], "package hash is correct")
+	require.Equal(t, p.ID, meta.Hash.ID(), "package id is correct")
 
 	// "corrupt" the package, and make sure it fails:
 	buf[rand.Int()%len(buf)]++
-	_, _, err = UnpackSpk(outputPath+"_bad", scratchDir, bytes.NewBuffer(buf))
+	_, err = Unpack(scratchDir, bytes.NewBuffer(buf))
 	require.NotNil(t, err, "modifying the package causes failure")
 }
 
