@@ -14,7 +14,7 @@ import (
 
 func Main() {
 	lg := logging.NewLogger()
-	cfg := ConfigFromEnv(lg)
+	cfg := ConfigFromSettings(lg)
 	listenAddr := ":" + cfg.listenPort
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))

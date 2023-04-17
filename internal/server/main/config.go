@@ -4,10 +4,11 @@ import (
 	"net"
 	"net/smtp"
 	"net/url"
-	"os"
+	"strconv"
 
 	"golang.org/x/exp/slog"
 	"zenhack.net/go/tempest/internal/server/logging"
+	"zenhack.net/go/tempest/internal/server/settings"
 	"zenhack.net/go/util"
 )
 
@@ -51,17 +52,17 @@ func (c SMTPConfig) SendMail(to []string, msg []byte) error {
 	)
 }
 
-func SMTPConfigFromEnv() SMTPConfig {
+func SMTPConfigFromSettings() SMTPConfig {
 	return SMTPConfig{
-		Host:     os.Getenv("SMTP_HOST"),
-		Port:     os.Getenv("SMTP_PORT"),
-		Username: os.Getenv("SMTP_USERNAME"),
-		Password: os.Getenv("SMTP_PASSWORD"),
+		Host:     settings.GetString("smtp.host"),
+		Port:     strconv.Itoa(int(settings.GetUint16("smtp.port"))),
+		Username: settings.GetString("smtp.username"),
+		Password: settings.GetString("smtp.password"),
 	}
 }
 
-func ConfigFromEnv(lg *slog.Logger) Config {
-	baseURLStr := defaultTo(os.Getenv("BASE_URL"), "http://local.sandstorm.io:8000")
+func ConfigFromSettings(lg *slog.Logger) Config {
+	baseURLStr := settings.GetString("base_url")
 	baseURL := util.Must(url.Parse(baseURLStr))
 	if baseURL.Scheme != "http" {
 		logging.Panic(lg, "parsing BASE_URL: must use http scheme")
@@ -71,7 +72,7 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	}
 	cfg := Config{
 		rootDomain: baseURL.Host,
-		smtp:       SMTPConfigFromEnv(),
+		smtp:       SMTPConfigFromSettings(),
 	}
 	var err error
 	_, cfg.listenPort, err = net.SplitHostPort(cfg.rootDomain)
