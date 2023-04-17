@@ -81,12 +81,3 @@ func ConfigFromEnv(lg *slog.Logger) Config {
 	}
 	return cfg
 }
-
-func smtpAuthFromEnv() smtp.Auth {
-	return smtp.PlainAuth(
-		os.Getenv("SMTP_AUTH_IDENTITY"),
-		os.Getenv("SMTP_AUTH_USERNAME"),
-		os.Getenv("SMTP_AUTH_PASSWORD"),
-		os.Getenv("SMTP_AUTH_HOST"),
-	)
-}

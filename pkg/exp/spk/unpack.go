@@ -115,6 +115,7 @@ func Unpack(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
 		archiveMsg.ResetReadLimit(uint64(archiveSize) * 4)
 
 		archive, err := spk.ReadRootArchive(archiveMsg)
+		throw(err)
 		throw(unpackArchive(dest, archive))
 		pkgHash := ([sha256.Size]byte)(hr.Hash.Sum(nil))
 
@@ -215,7 +216,7 @@ func unpackDirectory(path string, files spk.Archive_File_List) error {
 			}
 			if _, ok := seen[name]; ok {
 				throw(fmt.Errorf(
-					"name %q appears more than once in the same directory.",
+					"name %q appears more than once in the same directory",
 					name,
 				))
 			}

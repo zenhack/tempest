@@ -134,7 +134,7 @@ func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSessi
 		ok, err := tx.CredentialHasRole(s.userSession.Credential, database.RoleUser)
 		throw(err)
 		if !ok {
-			throw(errors.New("Permission denied; caller does not have the 'user' role."))
+			throw(errors.New("permission denied; caller does not have the 'user' role"))
 		}
 		throw(tx.Commit())
 
