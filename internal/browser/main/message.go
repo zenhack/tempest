@@ -5,6 +5,7 @@ import (
 	"strings"
 	"syscall/js"
 
+	"zenhack.net/go/jsapi/streams"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/common/types"
@@ -77,6 +78,13 @@ type SubmitEmailToken struct {
 
 type LoginSessionResult struct {
 	Result orerr.OrErr[external.LoginSession]
+}
+
+// The user has selected an spk file to upload & install
+type NewAppPkgFile struct {
+	Name   string
+	Size   int
+	Reader streams.ReadableStreamDefaultReader
 }
 
 func (msg NewError) Update(m Model) (Model, Cmd) {
@@ -263,5 +271,12 @@ func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
 func (msg SubmitEmailToken) Update(m Model) (Model, Cmd) {
 	return m, func(context.Context, func(Msg)) {
 		js.Global().Get("location").Set("href", "/login/email/"+strings.TrimSpace(m.LoginForm.TokenInput))
+	}
+}
+
+func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
+	return m, func(context.Context, func(Msg)) {
+		c := js.Global().Get("console")
+		c.Call("log", msg.Name, msg.Size, msg.Reader.Value)
 	}
 }

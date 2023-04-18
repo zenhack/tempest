@@ -2,7 +2,9 @@ package browsermain
 
 import (
 	"strings"
+	"syscall/js"
 
+	"zenhack.net/go/jsapi/streams"
 	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maps"
@@ -198,7 +200,34 @@ func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {
 			),
 		)
 	}
-	return h("ul", nil, nil, appItems...)
+	onPkgChange := func(e vdom.Event) any {
+		// TODO: give the input an id or class or something, to
+		// make this robust if we ever add another file input somewhere:
+		file := js.Global().Get("document").
+			Call("querySelector", "input[type=file]").Get("files").Index(0)
+		name := file.Get("name").String()
+		size := file.Get("size").Int()
+		reader := streams.ReadableStreamDefaultReader{
+			Value: file.Call("stream").Call("getReader"),
+		}
+		ms.Send(NewAppPkgFile{
+			Name:   name,
+			Size:   size,
+			Reader: reader,
+		})
+		return nil
+	}
+	return h("div", nil, nil,
+		h("label",
+			a{"for": "package"},
+			nil,
+			t(m.L10N, "upload new app")),
+		h("input",
+			a{"type": "file", "name": "package"},
+			e{"change": &onPkgChange},
+		),
+		h("ul", nil, nil, appItems...),
+	)
 }
 
 func (lf LoginForm) View(l10n intl.L10N, ms tea.MessageSender[Model]) vdom.VNode {
