@@ -2,13 +2,16 @@ package browsermain
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"syscall/js"
 
 	"zenhack.net/go/jsapi/streams"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
+	"zenhack.net/go/tempest/capnp/util"
 	"zenhack.net/go/tempest/internal/common/types"
+	"zenhack.net/go/tempest/pkg/exp/util/bytestream"
 	"zenhack.net/go/util/exn"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
@@ -275,8 +278,47 @@ func (msg SubmitEmailToken) Update(m Model) (Model, Cmd) {
 }
 
 func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
-	return m, func(context.Context, func(Msg)) {
+	var (
+		login external.LoginSession
+		err   error
+	)
+	res, ok := m.LoginSession.Get()
+	if ok {
+		login, err = res.Get()
+		if err == nil {
+			login = login.AddRef()
+		}
+	}
+	return m, func(ctx context.Context, sendMsg func(Msg)) {
+		if !ok {
+			sendMsg(NewError{
+				Err: errors.New("No login session yet; can't install app"),
+			})
+			return
+		}
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		defer login.Release()
 		c := js.Global().Get("console")
 		c.Call("log", msg.Name, msg.Size, msg.Reader.Value)
+		usFut, rel := login.UserSession(ctx, nil)
+		defer rel()
+		ipFut, rel := usFut.Session().InstallPackage(ctx, nil)
+		defer rel()
+		stream := ipFut.Stream()
+		pkgFut, rel := stream.GetPackage(ctx, nil)
+		defer rel()
+		wc := bytestream.ToWriteCloser(ctx, util.ByteStream(stream))
+		_, err := msg.Reader.WriteTo(wc)
+		if err != nil {
+			sendMsg(NewError{Err: err})
+		}
+		_, err = pkgFut.Struct()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+		}
+		println("OK!")
 	}
 }
