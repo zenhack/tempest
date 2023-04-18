@@ -85,6 +85,8 @@ gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C
 gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9 h1:K3hG8AbKx4N2PscsyB0T1c5tGsltPocL8BrXDq9ZWEQ=
+zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9/go.mod h1:p8nXUNUW3cH5xT/IiU24+yLdIaT/6qBBb0w5sOR2S7I=
 zenhack.net/go/util v0.0.0-20230407221818-ef608d25cf61 h1:yFruEx97FKOfapC6xduBhaL2KlMn8IUD7IP56g1vNxo=
 zenhack.net/go/util v0.0.0-20230407221818-ef608d25cf61/go.mod h1:1LtNdPAs8WH+BTcQiZAOo2MIKD/5jyK/u7sZ9ZPe5SE=
 zenhack.net/go/vdom v0.0.0-20230403002732-075ae8862f69 h1:FmOiM+5QFXeIxXPJZ4x+bBg4sJFcuOYAWkwPjKaxQNI=
