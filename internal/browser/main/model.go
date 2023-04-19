@@ -20,10 +20,9 @@ type Model struct {
 	CurrentFocus Focus
 	FocusedGrain types.GrainID // ID for the currently focused grain
 
-	// If non-nil, an error to display to the user. As the UI
-	// evolves, we will probably want a way to have more than one
-	// of these/maybe privde some extra metadata etc. but YAGNI.
-	Error error
+	// Errors to display to the user. As the UI evolves, we will
+	// probably want more out of this, but YAGNI.
+	Errors []error
 
 	Grains     map[types.GrainID]Grain
 	OpenGrains map[types.GrainID]OpenGrain

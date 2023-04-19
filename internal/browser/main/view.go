@@ -124,11 +124,11 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 		),
 	}
 
-	if m.Error != nil {
+	for _, e := range m.Errors {
 		mainUiNodes = append(
 			mainUiNodes,
 			// TODO: figure out how translating the error should work.
-			h("div", a{"class": "error-notice"}, nil, builder.T(m.Error.Error())),
+			h("div", a{"class": "error-notice"}, nil, builder.T(e.Error())),
 		)
 	}
 

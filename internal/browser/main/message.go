@@ -91,7 +91,7 @@ type NewAppPkgFile struct {
 }
 
 func (msg NewError) Update(m Model) (Model, Cmd) {
-	m.Error = msg.Err
+	m.Errors = append(m.Errors, msg.Err)
 	return m, nil
 }
 
