@@ -348,6 +348,7 @@ func buildGo(r *BuildRecord) error {
 	}{
 		{"sandstorm-import-tool", false},
 		{"tempest", false},
+		{"tempest-make-user", false},
 		{"tempest-grain-agent", true},
 		{"test-app", true},
 	}
