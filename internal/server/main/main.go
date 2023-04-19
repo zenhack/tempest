@@ -13,6 +13,7 @@ import (
 )
 
 func Main() {
+	initStorage()
 	lg := logging.NewLogger()
 	cfg := ConfigFromSettings(lg)
 	listenAddr := ":" + cfg.listenPort
