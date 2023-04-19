@@ -74,7 +74,7 @@ struct Package {
     # be written; when done() is called, the package will be installed
     # and become available to the user.
 
-    getPackage @0 () -> (package :Package);
+    getPackage @0 () -> (id :Text, package :Package);
     # getPackage returns the package once it is installed. Generally,
     # users will want to call this immediately, and then write the
     # spk using write. This will not return until after done() is called.

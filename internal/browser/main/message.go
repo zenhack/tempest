@@ -317,15 +317,36 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 		_, err := msg.Reader.WriteTo(wc)
 		if err != nil {
 			sendMsg(NewError{Err: err})
+			return
 		}
 		err = wc.Close()
 		if err != nil {
 			sendMsg(NewError{Err: err})
+			return
 		}
-		_, err = pkgFut.Struct()
+		pkgRes, err := pkgFut.Struct()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		pkgId, err := pkgRes.Id()
 		if err != nil {
 			sendMsg(NewError{Err: err})
 		}
-		println("OK!")
+		pkg, err := pkgRes.Package()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		pkg, err = cloneStruct(pkg)
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		sendMsg(UpsertPackage{
+			ID:  types.ID[external.Package](pkgId),
+			Pkg: pkg,
+		})
+
 	}
 }

@@ -21,8 +21,10 @@ type installStream struct {
 	util.ByteStream_Server
 	cancel      context.CancelFunc
 	userSession userSessionImpl
-	ready       chan struct{}
-	pkg         external.Package
+
+	ready chan struct{}
+	pkgID types.ID[external.Package]
+	pkg   external.Package
 }
 
 func (s *installStream) Shutdown() {
@@ -75,6 +77,7 @@ func (s *installStream) install(ctx context.Context, r *io.PipeReader) {
 			pkg:              dbPkg,
 		}))
 		s.pkg = pkg
+		s.pkgID = types.ID[external.Package](meta.Hash.ID())
 		close(s.ready)
 	})
 	if err != nil {
@@ -93,6 +96,7 @@ func (s *installStream) GetPackage(ctx context.Context, p external.Package_Insta
 		return exn.Try0(func(throw exn.Thrower) {
 			results, err := p.AllocResults()
 			throw(err)
+			throw(results.SetId(string(s.pkgID)))
 			throw(results.SetPackage(s.pkg))
 		})
 	}
