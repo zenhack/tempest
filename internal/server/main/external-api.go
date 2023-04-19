@@ -133,7 +133,7 @@ func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSessi
 		defer tx.Rollback()
 		role, err := tx.CredentialRole(s.userSession.Credential)
 		throw(err)
-		if !role.Encompasses(database.RoleUser) {
+		if !role.Encompasses(types.RoleUser) {
 			throw(errors.New("permission denied; caller does not have the 'user' role"))
 		}
 		throw(tx.Commit())

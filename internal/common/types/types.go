@@ -35,3 +35,27 @@ const (
 	// Email login.
 	EmailCredential CredentialType = "email"
 )
+
+type Role string
+
+const (
+	RoleVisitor Role = "visitor"
+	RoleUser    Role = "user"
+	RoleAdmin   Role = "admin"
+)
+
+func (r Role) Encompasses(other Role) bool {
+	if r == other {
+		return true
+	}
+	switch r {
+	case RoleVisitor:
+		return false
+	case RoleAdmin:
+		return true
+	case RoleUser:
+		return other == RoleVisitor
+	default:
+		panic("Invalid role value: " + r)
+	}
+}

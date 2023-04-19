@@ -82,32 +82,8 @@ type NewGrain struct {
 
 type NewAccount struct {
 	ID      string
-	Role    Role
+	Role    types.Role
 	Profile Profile
-}
-
-type Role string
-
-const (
-	RoleVisitor Role = "visitor"
-	RoleUser    Role = "user"
-	RoleAdmin   Role = "admin"
-)
-
-func (r Role) Encompasses(other Role) bool {
-	if r == other {
-		return true
-	}
-	switch r {
-	case RoleVisitor:
-		return false
-	case RoleAdmin:
-		return true
-	case RoleUser:
-		return other == RoleVisitor
-	default:
-		panic("Invalid role value: " + r)
-	}
 }
 
 type Profile struct {
@@ -450,7 +426,7 @@ func (tx Tx) DeleteSturdyRef(k SturdyRefKey) error {
 
 // Get the role corresponding to the credential. Returns RoleVisitor for unknown
 // credentials.
-func (tx Tx) CredentialRole(cred types.Credential) (role Role, err error) {
+func (tx Tx) CredentialRole(cred types.Credential) (role types.Role, err error) {
 	row := tx.sqlTx.QueryRow(`
 		SELECT role
 		FROM accounts, credentials
@@ -462,7 +438,7 @@ func (tx Tx) CredentialRole(cred types.Credential) (role Role, err error) {
 		cred.ScopedID)
 	err = row.Scan(&role)
 	if err == sql.ErrNoRows {
-		return RoleVisitor, nil
+		return types.RoleVisitor, nil
 	}
 	return role, exc.WrapError("CredentialRole", err)
 }
