@@ -315,6 +315,10 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 		if err != nil {
 			sendMsg(NewError{Err: err})
 		}
+		err = wc.Close()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+		}
 		_, err = pkgFut.Struct()
 		if err != nil {
 			sendMsg(NewError{Err: err})
