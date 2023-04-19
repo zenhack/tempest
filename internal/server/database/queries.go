@@ -4,6 +4,7 @@ package database
 
 import (
 	"crypto/sha256"
+	"database/sql"
 	"fmt"
 	"math"
 	"time"
@@ -447,7 +448,9 @@ func (tx Tx) DeleteSturdyRef(k SturdyRefKey) error {
 	return err
 }
 
-func (tx Tx) CredentialHasRole(cred types.Credential, role Role) (bool, error) {
+// Get the role corresponding to the credential. Returns RoleVisitor for unknown
+// credentials.
+func (tx Tx) CredentialRole(cred types.Credential) (role Role, err error) {
 	row := tx.sqlTx.QueryRow(`
 		SELECT role
 		FROM accounts, credentials
@@ -457,11 +460,9 @@ func (tx Tx) CredentialHasRole(cred types.Credential, role Role) (bool, error) {
 			AND credentials.scopedId = ?`,
 		cred.Type,
 		cred.ScopedID)
-	var actualRole Role
-	err := row.Scan(&actualRole)
-	err = exc.WrapError("CredentialHasRole", err)
-	if err != nil {
-		return false, err
+	err = row.Scan(&role)
+	if err == sql.ErrNoRows {
+		return RoleVisitor, nil
 	}
-	return actualRole.Encompasses(role), nil
+	return role, exc.WrapError("CredentialRole", err)
 }
