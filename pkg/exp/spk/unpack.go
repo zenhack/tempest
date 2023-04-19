@@ -84,9 +84,10 @@ func Unpack(tmpDir string, r io.Reader) (ExtractedPackageMetadata, error) {
 
 		h := sha512.New()
 
-		tmpFile, err := os.Create(filepath.Join(tmp, "archive-msg"))
+		archivePath := filepath.Join(tmp, "archive-msg")
+		tmpFile, err := os.Create(archivePath)
 		throw(err)
-		defer os.Remove(tmpFile.Name())
+		defer os.Remove(archivePath)
 		defer tmpFile.Close()
 
 		archiveSize, err := io.Copy(io.MultiWriter(h, tmpFile), xr)
