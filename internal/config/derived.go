@@ -4,5 +4,6 @@ package config
 
 const (
 	TempDir     = Localstatedir + "/tmp/tempest"
-	PackagesDir = Localstatedir + "/sandstorm/grains"
+	PackagesDir = Localstatedir + "/sandstorm/apps"
+	GrainsDir   = Localstatedir + "/sandstorm/grains"
 )
