@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/exc"
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
@@ -33,12 +34,12 @@ func (tx Tx) AddPackage(pkg Package) error {
 		manifestBlob,
 		false,
 	)
-	return err
+	return exc.WrapError("AddPackage", err)
 }
 
 func (tx Tx) ReadyPackage(id types.ID[Package]) error {
 	_, err := tx.sqlTx.Exec(`UPDATE packages SET ready = true WHERE id = ?`, id)
-	return err
+	return exc.WrapError("ReadyPackage", err)
 }
 
 // GetCredentialPackages returns a list of all packages installed for the user
@@ -49,7 +50,7 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 	// have to actually filter by account.
 	rows, err := tx.sqlTx.Query("SELECT id, manifest FROM packages")
 	if err != nil {
-		return nil, err
+		return nil, exc.WrapError("GetCredentialPackages", err)
 	}
 	defer rows.Close()
 	var ret []Package
@@ -169,7 +170,7 @@ func (tx Tx) GetGrainPackageID(grainID types.GrainID) (string, error) {
 	row := tx.sqlTx.QueryRow("SELECT packageId FROM grains WHERE id = ?", grainID)
 	var result string
 	err := row.Scan(&result)
-	return result, err
+	return result, exc.WrapError("GetGrainPackageID", err)
 }
 
 type GrainInfo struct {
@@ -196,7 +197,7 @@ func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID string, err 
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
 		cred.Type, cred.ScopedID,
 	)
-	err = row.Scan(&accountID)
+	err = exc.WrapError("GetCredentialAccount", row.Scan(&accountID))
 	return
 }
 
@@ -221,7 +222,7 @@ func (tx Tx) AccountUiViews(accountID string) ([]UiViewInfo, error) {
 		time.Now().Unix(),
 	)
 	if err != nil {
-		return nil, err
+		return nil, exc.WrapError("AccountUIViews", err)
 	}
 	defer rows.Close()
 	var ret []UiViewInfo
@@ -251,6 +252,7 @@ func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID string, err error) 
 		`SELECT ownerId FROM grains WHERE id = ?`,
 		grainID,
 	).Scan(&accountID)
+	err = exc.WrapError("getGrainOwner", err)
 	return
 }
 
@@ -424,6 +426,7 @@ func (tx Tx) RestoreSturdyRef(k SturdyRefKey) (SturdyRefValue, error) {
 		ret SturdyRefValue
 	)
 	err := row.Scan(&expires, &grainID, &objectID)
+	err = exc.WrapError("RestoreSturdyRef", err)
 	if err != nil {
 		return ret, err
 	}
@@ -456,6 +459,7 @@ func (tx Tx) CredentialHasRole(cred types.Credential, role Role) (bool, error) {
 		cred.ScopedID)
 	var actualRole Role
 	err := row.Scan(&actualRole)
+	err = exc.WrapError("CredentialHasRole", err)
 	if err != nil {
 		return false, err
 	}
