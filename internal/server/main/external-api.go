@@ -188,15 +188,15 @@ func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSessio
 	})
 }
 
-func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSession_listPackages) error {
+func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSession_listPackages) error {
 	// TODO: too much boilerplate in common with ListGrains; factor some of this out.
 	p.Go()
 	into := p.Args().Into()
 	return exn.Try0(func(throw func(error)) {
-		tx, err := s.server.db.Begin()
+		tx, err := s.login.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		dbPkgs, err := tx.GetCredentialPackages(s.userSession.Credential)
+		dbPkgs, err := tx.GetCredentialPackages(s.login.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -210,7 +210,7 @@ func (s loginSessionImpl) ListPackages(ctx context.Context, p external.LoginSess
 				throw(err)
 				throw(pkg.SetManifest(dbPkg.Manifest))
 				pkg.SetController(external.Package_Controller_ServerToClient(pkgController{
-					loginSessionImpl: s,
+					loginSessionImpl: s.login,
 					pkg:              dbPkg,
 				}))
 				// TODO: controller

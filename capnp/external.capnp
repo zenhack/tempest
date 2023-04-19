@@ -50,15 +50,12 @@ interface LoginSession {
   userInfo @0 () -> (info :UserInfo);
   # Return info about the user.
 
-  userSession @3 () -> (session :UserSession);
+  userSession @2 () -> (session :UserSession);
   # Return a UserSession, for operations that require the user role.
   # will fail if userInfo().info.role is visitor.
 
   listGrains @1 (into :Collection.Pusher(Text, Grain));
   # List the grains that the caller has access to.
-
-  listPackages @2 (into :Collection.Pusher(Text, Package));
-  # List the packages that the caller has installed.
 }
 
 struct Package {
@@ -109,6 +106,9 @@ interface UserSession {
   installPackage @0 () -> (stream :Package.InstallStream);
   # Install a package. If the stream is dropped before calling done(), installation
   # is cancelled.
+
+  listPackages @1 (into :Collection.Pusher(Text, Package));
+  # List the packages that the caller has installed.
 }
 
 struct Grain {

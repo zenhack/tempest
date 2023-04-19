@@ -227,11 +227,14 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 		return m, nil
 	}
 	return m, func(ctx context.Context, sendMsg func(Msg)) {
+		// TODO: there's no actual reason to wait for the result before doing all this:
 		pusher := collection.Pusher_ServerToClient(pusher[types.ID[external.Package], external.Package]{
 			sendMsg: sendMsg,
 			hooks:   pkgPusher{},
 		})
-		ret, rel := sess.ListPackages(context.Background(), func(p external.LoginSession_listPackages_Params) error {
+		uFut, rel := sess.UserSession(ctx, nil)
+		defer rel()
+		ret, rel := uFut.Session().ListPackages(context.Background(), func(p external.UserSession_listPackages_Params) error {
 			p.SetInto(pusher)
 			return nil
 		})
