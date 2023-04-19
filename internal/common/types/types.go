@@ -44,7 +44,21 @@ const (
 	RoleAdmin   Role = "admin"
 )
 
+func (r Role) IsValid() bool {
+	return r == RoleVisitor ||
+		r == RoleUser ||
+		r == RoleAdmin
+}
+
+func (r Role) assertValid() {
+	if !r.IsValid() {
+		panic("invalid role: " + r)
+	}
+}
+
 func (r Role) Encompasses(other Role) bool {
+	r.assertValid()
+	other.assertValid()
 	if r == other {
 		return true
 	}
@@ -56,6 +70,6 @@ func (r Role) Encompasses(other Role) bool {
 	case RoleUser:
 		return other == RoleVisitor
 	default:
-		panic("Invalid role value: " + r)
+		panic("impossible")
 	}
 }
