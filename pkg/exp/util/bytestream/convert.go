@@ -46,7 +46,8 @@ func (*wcByteStream) ExpectSize(context.Context, util.ByteStream_expectSize) err
 //
 // Note that the resulting object's Write method does not wait for the call to
 // resolve, and thus cannot determine whether the write was successful. It will
-// only report an error if the context is canceled.
+// report an error if the context is canceled, and may report one if a previous
+// call has resolved to an error.
 func ToWriteCloser(ctx context.Context, stream util.ByteStream) io.WriteCloser {
 	return &byteStreamWC{
 		ctx:    ctx,
