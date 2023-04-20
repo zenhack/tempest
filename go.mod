@@ -8,7 +8,7 @@ go 1.20
 require go.mongodb.org/mongo-driver v1.10.0
 
 require (
-	capnproto.org/go/capnp/v3 v3.0.0-alpha.26
+	capnproto.org/go/capnp/v3 v3.0.0-alpha.27
 	github.com/gobwas/ws v1.1.0
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.16
@@ -18,7 +18,8 @@ require (
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/sys v0.7.0
-	zenhack.net/go/util v0.0.0-20230407221818-ef608d25cf61
+	zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9
+	zenhack.net/go/util v0.0.0-20230414211804-99ae9bf14f02
 	zenhack.net/go/vdom v0.0.0-20230403002732-075ae8862f69
 	zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b
 )
@@ -41,5 +42,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9 // indirect
 )
