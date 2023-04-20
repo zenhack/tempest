@@ -28,9 +28,14 @@ cd -
 ```
 
 Then, run the configure script and then `make`. The configure script
-accepts
-most of the same options as typical gnu packages. Additionally you will
-need to supply the paths to the repository checked out above:
+accepts most of the same options as typical gnu packages. Additionally
+you will need to supply the paths to the repository checked out above
+via the `--with-go-capnp` flag.
+
+Finally, it is possible to share grain & app storage with an existing
+Sandstorm installation if you want to do this, you will need to specify
+the correct value for `--localstatedir`, and then see the next section
+on importing data from Sandstorm:
 
 ```
 ./configure \
@@ -39,15 +44,16 @@ need to supply the paths to the repository checked out above:
 make
 ```
 
-Note: this will also configure tempest to share a grain/app storage
-directory with a sandstorm system.  In addition to
-the files used by sandstorm, `tempest` will create a couple extra things
-underneath that path, namely:
+Then run `make install` to install tempest system wide.
+
+If you do not want to share storage with Sandstorm, you can omit the
+`--localstatedir` flag.
+
+In addition to the files used by sandstorm, `tempest` will create a
+couple extra things underneath that path, namely:
 
 - an extra directory at `sandstorm/mnt`
 - a sqlite3 database at `sandstorm/sandstorm.sqlite3`
-
-Then run `make install` to install tempest system wide.
 
 # Importing data from sandstorm
 
@@ -92,15 +98,7 @@ the `--user` and `--group` flags to `./configure` (by default both
 sudo -u sandstorm -g sandstorm ./_build/tempest
 ```
 
-For development purposes, the Makefile includes a `dev` target that will
-rebuild, reinstall, and then spawn tempest; simply run:
-
-```
-sudo make dev
-```
-
-The `tempest` will start tempest. The following environment variables
-are influential:
+The following environment variables are influential:
 
 - `BASE_URL`: the main URL for the tempest web interface. Defaults to
   `http://local.sandstorm.io:8000`.
@@ -110,16 +108,64 @@ are influential:
 - `SMTP_PASSWORD`: Password to use when authenticating with
   the SMTP server.
 
-To log in with a developer account, visit the web interface (as defined
-by `BASE_URL`), click "Log in with dev account", and enter the dev
-account's name, e.g. "Alice Dev Admin."
+Note that for these to be picked up by tempest when run with sudo, you
+will have to pass the `--preserve-env`/`-E` flag to sudo:
 
-Once you have logged in, a list of grains the user owns will be
-displayed; click the links to open the grains.
+```
+sudo --preserve-env -u sandstorm -g sandstorm ./_build/tempest
+```
+
+For development purposes, the Makefile includes a `dev` target that will
+rebuild, reinstall, and then spawn tempest; simply run:
+
+```
+sudo --preserve-env make dev
+```
+
+# Creating users
+
+Out of the box, it is possible to login in via both email (if the
+`SMTP_*` enviornment variables are set) and "developer accounts," which
+are useful for testing. However, by default none of these accounts will
+have any rights on the server. To create a user with the authority to do
+interesting things, you can either:
+
+- Import data from Sandstorm, per above. Users will have the same
+  permissions they had in Sandstorm.
+- Use the `tempest-make-user` command.
+
+For the latter, run:
+
+```
+# for email users:
+./_build/tempest-make-user --type email --id alice@example.com --role user
+# for dev accounts:
+./_build/tempest-make-user --type dev --id 'Alice Dev Admin' --role admin
+```
+
+Where `role` can be any of `visitor`, `user`, or `admin`, with the same
+meanings as in Sandstorm:
+
+- `visitor`s have the ability to list and interact with grains that have
+  been shared with them, but otherwise have no authority on the server.
+- `user`s can additionally install apps and create grains.
+- `admin`s have full access to the server.
+
+# Using
+
+Visit the web interface (as defined by `BASE_URL`), and log in either
+with a developer account or email.
+
+Once you have logged in, the Grains link will display grains the user
+has access to. Click the links to open the grains.
 
 This will display the grain's UI within an iframe. Things like
 offer iframes and anything that uses sandstorm specific APIs will not
 work currently.
+
+If your account has at least the `user` role, the Apps link will
+allow you upload spk files to install apps, or create grains from
+apps which are already installed.
 
 [1]: https://sandstorm.io
 [2]: https://zenhack.net/2023/01/06/introducing-tempest.html
