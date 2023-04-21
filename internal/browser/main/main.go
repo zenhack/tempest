@@ -49,9 +49,9 @@ func Main() {
 	defer conn.Close()
 	apiResolver.Fulfill(api)
 
-	fut, rel := api.GetLoginSession(ctx, nil)
+	fut, rel := api.GetSessions(ctx, nil)
 	defer rel()
-	_, rel = fut.Session().ListGrains(ctx, func(p external.LoginSession_listGrains_Params) error {
+	_, rel = fut.Visitor().ListGrains(ctx, func(p external.VisitorSession_listGrains_Params) error {
 		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.Grain]{
 			sendMsg: app.SendMessage,
 			hooks:   grainPusher{},
@@ -60,8 +60,15 @@ func Main() {
 	})
 	defer rel()
 	res, err := fut.Struct()
-	app.SendMessage(LoginSessionResult{
-		Result: orerr.New(res.Session().AddRef(), err),
-	})
+	if err != nil {
+		app.SendMessage(LoginSessionResult{Result: orerr.New(Sessions{}, err)})
+	} else {
+		app.SendMessage(LoginSessionResult{
+			Result: orerr.New(Sessions{
+				Visitor: res.Visitor().AddRef(),
+				User:    res.User().AddRef(),
+			}, nil),
+		})
+	}
 	<-ctx.Done()
 }

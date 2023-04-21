@@ -34,17 +34,33 @@ type externalApiImpl struct {
 	sessionStore session.Store
 }
 
-func (api externalApiImpl) GetLoginSession(ctx context.Context, p external.ExternalApi_getLoginSession) error {
+func (api externalApiImpl) GetSessions(ctx context.Context, p external.ExternalApi_getSessions) error {
 	if api.userSession.Credential.Type == "" {
 		return ErrNotLoggedIn
 	}
-	results, err := p.AllocResults()
-	if err != nil {
-		return err
-	}
-	results.SetSession(external.LoginSession_ServerToClient(loginSessionImpl{
-		externalApiImpl: api,
-	}))
+	return exn.Try0(func(throw exn.Thrower) {
+		results, err := p.AllocResults()
+		throw(err)
+		p.Go()
+
+		tx, err := api.server.db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		role, err := tx.CredentialRole(api.userSession.Credential)
+		throw(err)
+
+		visitor := visitorSessionImpl{
+			externalApiImpl: api,
+		}
+		results.SetVisitor(external.VisitorSession_ServerToClient(visitor))
+
+		if role.Encompasses(types.RoleUser) {
+			user := userSessionImpl{visitor: visitor}
+			results.SetUser(external.UserSession_ServerToClient(user))
+		}
+
+		// TODO: admin
+	})
 	return nil
 }
 
@@ -117,36 +133,11 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 	})
 }
 
-type loginSessionImpl struct {
+type visitorSessionImpl struct {
 	externalApiImpl
 }
 
-func (loginSessionImpl) UserInfo(context.Context, external.LoginSession_userInfo) error {
-	return capnp.Unimplemented("userInfo() not implemented")
-}
-
-func (s loginSessionImpl) UserSession(ctx context.Context, p external.LoginSession_userSession) error {
-	p.Go()
-	return exn.Try0(func(throw exn.Thrower) {
-		tx, err := s.server.db.Begin()
-		throw(err)
-		defer tx.Rollback()
-		role, err := tx.CredentialRole(s.userSession.Credential)
-		throw(err)
-		if !role.Encompasses(types.RoleUser) {
-			throw(errors.New("permission denied; caller does not have the 'user' role"))
-		}
-		throw(tx.Commit())
-
-		results, err := p.AllocResults()
-		throw(err)
-		results.SetSession(external.UserSession_ServerToClient(userSessionImpl{
-			login: s,
-		}))
-	})
-}
-
-func (s loginSessionImpl) ListGrains(ctx context.Context, p external.LoginSession_listGrains) error {
+func (s visitorSessionImpl) ListGrains(ctx context.Context, p external.VisitorSession_listGrains) error {
 	into := p.Args().Into()
 	p.Go()
 	return exn.Try0(func(throw func(error)) {
@@ -193,10 +184,10 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 	p.Go()
 	into := p.Args().Into()
 	return exn.Try0(func(throw func(error)) {
-		tx, err := s.login.server.db.Begin()
+		tx, err := s.visitor.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		dbPkgs, err := tx.GetCredentialPackages(s.login.userSession.Credential)
+		dbPkgs, err := tx.GetCredentialPackages(s.visitor.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -210,8 +201,8 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 				throw(err)
 				throw(pkg.SetManifest(dbPkg.Manifest))
 				pkg.SetController(external.Package_Controller_ServerToClient(pkgController{
-					loginSessionImpl: s.login,
-					pkg:              dbPkg,
+					visitorSessionImpl: s.visitor,
+					pkg:                dbPkg,
 				}))
 				// TODO: controller
 				p.SetValue(pkg.ToPtr())
@@ -227,7 +218,7 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 }
 
 type pkgController struct {
-	loginSessionImpl
+	visitorSessionImpl
 	pkg database.Package
 }
 
@@ -317,7 +308,7 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 }
 
 type userSessionImpl struct {
-	login loginSessionImpl
+	visitor visitorSessionImpl
 }
 
 func (s userSessionImpl) InstallPackage(ctx context.Context, p external.UserSession_installPackage) error {

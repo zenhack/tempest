@@ -32,7 +32,7 @@ var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
 func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 	content := dummyNode
-	session, loginReady := m.LoginSession.Get()
+	session, loginReady := m.LoginSessions.Get()
 	if !loginReady {
 		content = t(m.L10N, "Loading...")
 	} else if session.Err() != nil {

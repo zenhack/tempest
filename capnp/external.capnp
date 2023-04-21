@@ -21,12 +21,13 @@ interface ExternalApi {
   # The bootstrap interface when connecting to the externally facing
   # websocket
 
-  getLoginSession @0 () -> (session :LoginSession);
-  # Return a handle to a LoginSession object for the current user. If
-  # the user is not logged in, this will fail. logged-in status is
-  # determined by the HTTP headers used in the websocket connection
-  # request (A session cookie for the web UI. TODO: we may want to
-  # support bearer tokens or something for programmatic access?
+  getSessions @0 () -> Sessions;
+  # Return handles to sessions for the current user. Fields representing
+  # roles the user does not have will be left null. If the user is not logged
+  # in, this will throw an exception. logged-in status is determined by
+  # the HTTP headers used in the websocket connection request (A session
+  # cookie for the web UI. TODO: we may want to support bearer tokens
+  # or something for programmatic access?
 
   restore @1 (sturdyRef :Data) -> (cap :Capability);
   # Restore a sturdyRef as a live capability.
@@ -35,26 +36,25 @@ interface ExternalApi {
   # Return an authenticator that can be used to log in.
 }
 
+struct Sessions {
+  visitor @0 :VisitorSession;
+  user @1 :UserSession;
+}
+
 interface Authenticator {
   # An authenticator provides functionality for authenticating a user with
   # the Tempest server.
 
   sendEmailAuthToken @0 (address :Text);
   # Send an email authentication token to the specified email address.
-  # The token can be passed to ExternalApi.restore to get a LoginSession.
-  # Alternatively, making an http request to /login/email/<base64url-encoded token> will
-  # return a response that sets a login cookie.
+  # Making an http request to /login/email/<base64url-encoded token> will
+  # return a response that sets a login cookie. In the future, it will
+  # be possible to also redeem the token via ExternalApi.restore(), returning
+  # some appropriate capability.
 }
 
-interface LoginSession {
-  userInfo @0 () -> (info :UserInfo);
-  # Return info about the user.
-
-  userSession @2 () -> (session :UserSession);
-  # Return a UserSession, for operations that require the user role.
-  # will fail if userInfo().info.role is visitor.
-
-  listGrains @1 (into :Collection.Pusher(Text, Grain));
+interface VisitorSession {
+  listGrains @0 (into :Collection.Pusher(Text, Grain));
   # List the grains that the caller has access to.
 }
 
@@ -78,25 +78,6 @@ struct Package {
     # getPackage returns the package once it is installed. Generally,
     # users will want to call this immediately, and then write the
     # spk using write. This will not return until after done() is called.
-  }
-}
-
-struct UserInfo {
-  # Information about a user.
-
-  role :union {
-    # What level of permissions does the user have on this server?
-
-    visitor @0 :Void;
-    # A visitor has no privileges; they can log in and set display name etc,
-    # but can't create grains or install apps.
-
-    user @1 :Void;
-    # A user can create grains & install apps.
-
-    admin @2 :Void;
-    # An admin is an administrator for the server, and has full access to
-    # everything.
   }
 }
 

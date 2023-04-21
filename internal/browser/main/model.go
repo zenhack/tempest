@@ -36,10 +36,15 @@ type Model struct {
 	// with CSS (display: none).
 	GrainDomOrder poolslice.PoolSlice[types.GrainID]
 
-	API          external.ExternalApi
-	LoginSession maybe.Maybe[orerr.OrErr[external.LoginSession]]
+	API           external.ExternalApi
+	LoginSessions maybe.Maybe[orerr.OrErr[Sessions]]
 
 	LoginForm LoginForm
+}
+
+type Sessions struct {
+	Visitor external.VisitorSession
+	User    external.UserSession
 }
 
 type ServerAddr struct {

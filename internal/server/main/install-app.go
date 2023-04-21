@@ -49,7 +49,7 @@ func newInstallStream(userSession userSessionImpl) *installStream {
 
 func (s *installStream) install(ctx context.Context, r *io.PipeReader) {
 	err := exn.Try0(func(throw exn.Thrower) {
-		db := s.userSession.login.server.db
+		db := s.userSession.visitor.server.db
 		meta, err := spk.Unpack(config.TempDir, r)
 		throw(err)
 		tx, err := db.Begin()
@@ -73,8 +73,8 @@ func (s *installStream) install(ctx context.Context, r *io.PipeReader) {
 		throw(pkg.SetManifest(meta.Manifest))
 
 		pkg.SetController(external.Package_Controller_ServerToClient(pkgController{
-			loginSessionImpl: s.userSession.login,
-			pkg:              dbPkg,
+			visitorSessionImpl: s.userSession.visitor,
+			pkg:                dbPkg,
 		}))
 		s.pkg = pkg
 		s.pkgID = types.ID[external.Package](meta.Hash.ID())

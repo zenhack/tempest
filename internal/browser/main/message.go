@@ -80,7 +80,7 @@ type SubmitEmailToken struct {
 }
 
 type LoginSessionResult struct {
-	Result orerr.OrErr[external.LoginSession]
+	Result orerr.OrErr[Sessions]
 }
 
 // The user has selected an spk file to upload & install
@@ -221,7 +221,7 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 }
 
 func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
-	m.LoginSession = maybe.New(msg.Result)
+	m.LoginSessions = maybe.New(msg.Result)
 	sess, err := msg.Result.Get()
 	if err != nil {
 		return m, nil
@@ -232,9 +232,7 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 			sendMsg: sendMsg,
 			hooks:   pkgPusher{},
 		})
-		uFut, rel := sess.UserSession(ctx, nil)
-		defer rel()
-		ret, rel := uFut.Session().ListPackages(context.Background(), func(p external.UserSession_listPackages_Params) error {
+		ret, rel := sess.User.ListPackages(context.Background(), func(p external.UserSession_listPackages_Params) error {
 			p.SetInto(pusher)
 			return nil
 		})
@@ -282,14 +280,14 @@ func (msg SubmitEmailToken) Update(m Model) (Model, Cmd) {
 
 func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 	var (
-		login external.LoginSession
-		err   error
+		userSess external.UserSession
+		err      error
 	)
-	res, ok := m.LoginSession.Get()
+	res, ok := m.LoginSessions.Get()
 	if ok {
-		login, err = res.Get()
+		login, err := res.Get()
 		if err == nil {
-			login = login.AddRef()
+			userSess = login.User.AddRef()
 		}
 	}
 	return m, func(ctx context.Context, sendMsg func(Msg)) {
@@ -303,12 +301,10 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 			sendMsg(NewError{Err: err})
 			return
 		}
-		defer login.Release()
+		defer userSess.Release()
 		c := js.Global().Get("console")
 		c.Call("log", msg.Name, msg.Size, msg.Reader.Value)
-		usFut, rel := login.UserSession(ctx, nil)
-		defer rel()
-		ipFut, rel := usFut.Session().InstallPackage(ctx, nil)
+		ipFut, rel := userSess.InstallPackage(ctx, nil)
 		defer rel()
 		stream := ipFut.Stream()
 		pkgFut, rel := stream.GetPackage(ctx, nil)
