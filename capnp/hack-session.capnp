@@ -52,28 +52,17 @@ interface HackSessionContext @0xe14c1f5321159b8f
   #   special. Do not create these directories unless you intend for them to serve their respective
   #   purposes.
 
-  obsoleteHttpGet @1 (url: Text) -> (mimeType :Text, content :Data);
-  obsoleteGetUiViewForEndpoint @8 (url :Text) -> (view :Grain.UiView);
-  # OBSOLETE. Apps that need to make HTTP connections should use the powerbox.
-
   getUserAddress @2 () -> Email.EmailAddress;
   # Returns the address of the owner of the grain.
 
-  obsoleteGenerateApiToken @3 (petname :Text, userInfo :Identity.UserInfo, expires :UInt64 = 0)
-      -> (token :Text, endpointUrl :Text, tokenId :Text);
-  obsoleteListApiTokens @4 () -> (tokens :List(TokenInfo));
-  obsoleteRevokeApiToken @5 (tokenId :Text);
-  # OBSOLETE. Apps that need to present API tokens to users should use offer templates.
-
-  struct TokenInfo {
-    tokenId @0 :Text;
-    petname @1 :Text;
-    userInfo @2 :Identity.UserInfo;
-  }
-
-  obsoleteGetIpNetwork @6 () -> (network: Ip.IpNetwork);
-  obsoleteGetIpInterface @7 () -> (interface: Ip.IpInterface);
-  # OBSOLETE. Apps that need IpNetwork or IpInterface should use the powerbox.
+  # The below are obsolete and have been removed:
+  obsoleteHttpGet @1 ();
+  obsoleteGetUiViewForEndpoint @8 ();
+  obsoleteGenerateApiToken @3 ();
+  obsoleteListApiTokens @4 ();
+  obsoleteRevokeApiToken @5 ();
+  obsoleteGetIpNetwork @6 ();
+  obsoleteGetIpInterface @7 ();
 }
 
 interface HackEmailSession @0xc3b5ced7344b04a6 extends(Grain.UiSession, Email.EmailSendPort) {
