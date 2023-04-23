@@ -377,7 +377,7 @@ func buildTestSpk() error {
 	return runInDir("cmd/test-app",
 		"spk", "pack",
 		"--keyring", "./sandstorm-keyring",
-		"../../../_build/test-app.spk",
+		"../../_build/test-app.spk",
 	)
 
 }

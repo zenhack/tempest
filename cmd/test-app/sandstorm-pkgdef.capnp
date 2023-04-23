@@ -141,7 +141,7 @@ const pkgdef :Spk.PackageDefinition = (
     # here are only to tell it where to find files that the app wants.
     searchPath = [
       ( sourcePath = "." ),  # Search this directory first.
-      ( sourcePath = "../../../_build" ),  # Then the build output directory.
+      ( sourcePath = "../../_build" ),  # Then the build output directory.
       ( sourcePath = "/",    # Then search the system root directory.
         hidePaths = [ "home", "proc", "sys",
                       "etc/passwd", "etc/hosts", "etc/host.conf",
