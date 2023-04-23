@@ -26,9 +26,9 @@ func init() {
 	}
 }
 
-// Read the environment variable specified in s.envVar
+// Read the environment variable specified in s.name
 func getFromEnv(s settings.Setting) string {
-	varName, err := s.EnvVar()
+	varName, err := s.Name()
 	util.Chkfatal(err)
 	return os.Getenv(varName)
 }

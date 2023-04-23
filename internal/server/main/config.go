@@ -47,15 +47,15 @@ func (c SMTPConfig) SendMail(to []string, msg []byte) error {
 
 func SMTPConfigFromSettings() SMTPConfig {
 	return SMTPConfig{
-		Host:     settings.GetString("smtp.host"),
-		Port:     strconv.Itoa(int(settings.GetUint16("smtp.port"))),
-		Username: settings.GetString("smtp.username"),
-		Password: settings.GetString("smtp.password"),
+		Host:     settings.GetString("SMTP_HOST"),
+		Port:     strconv.Itoa(int(settings.GetUint16("SMTP_PORT"))),
+		Username: settings.GetString("SMTP_USERNAME"),
+		Password: settings.GetString("SMTP_PASSWORD"),
 	}
 }
 
 func ConfigFromSettings(lg *slog.Logger) Config {
-	baseURLStr := settings.GetString("base_url")
+	baseURLStr := settings.GetString("BASE_URL")
 	baseURL := util.Must(url.Parse(baseURLStr))
 	if baseURL.Scheme != "http" {
 		logging.Panic(lg, "parsing BASE_URL: must use http scheme")
