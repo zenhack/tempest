@@ -22,6 +22,7 @@ type HTTPConfig struct {
 	Port              string
 	TLSPort           string
 	CertFile, KeyFile string
+	DefaultTLS        bool
 }
 
 type SMTPConfig struct {
@@ -62,21 +63,20 @@ func SMTPConfigFromSettings() SMTPConfig {
 func HTTPConfigFromSettings(lg *slog.Logger) HTTPConfig {
 	baseURLStr := settings.GetString("BASE_URL")
 	baseURL := util.Must(url.Parse(baseURLStr))
-	if baseURL.Scheme != "http" {
-		logging.Panic(lg, "parsing BASE_URL: must use http scheme")
+	if baseURL.Scheme != "http" && baseURL.Scheme != "https" {
+		logging.Panic(lg, "parsing BASE_URL: must use http(s) scheme")
 	}
 	if baseURL.Path != "" {
 		logging.Panic(lg, "parsing BASE_URL: must not have a path")
 	}
 	cfg := HTTPConfig{
+		DefaultTLS: baseURL.Scheme == "https",
 		RootDomain: baseURL.Host,
+		Port:       settings.GetString("HTTP_PORT"),
+		TLSPort:    settings.GetString("HTTPS_PORT"),
+		CertFile:   settings.GetString("HTTPS_CERT_FILE"),
+		KeyFile:    settings.GetString("HTTPS_KEY_FILE"),
 	}
-	_, port, err := net.SplitHostPort(cfg.RootDomain)
-	util.Chkfatal(err)
-	if port == "" {
-		port = "80"
-	}
-	cfg.Port = port
 	return cfg
 }
 

@@ -32,13 +32,33 @@ const adminSettings: List(Setting) = [
   ( # the main URL for the Tempest web interface
     name = "BASE_URL",
     type = (text = void),
-    default = (text = "http://local.sandstorm.io:8000"),
+    default = (text = "http://local.sandstorm.io"),
+  ),
+  ( # Port to listen on for (non-encrypted) HTTP
+    name = "HTTP_PORT",
+    type = (text = void),
+    default = (text = "80"),
+  ),
+  ( # Port to listen on for HTTPS
+    name = "HTTPS_PORT",
+    type = (text = void),
+    default = (text = "443"),
+  ),
+  ( # Path to HTTPS cert file
+    name = "HTTPS_CERT_FILE",
+    type = (text = void),
+  ),
+  ( # Path to HTTPS key file
+    name = "HTTPS_KEY_FILE",
+    type = (text = void),
   ),
   ( # when sending email, SMTP server to connect to
     name = "SMTP_HOST",
     type = (text = void),
   ),
   ( # port on `smtp.host` to connect to
+    # XXX: should this maybe just be a string, like HTTP(S)_PORT? named ports
+    # can be valid.
     name = "SMTP_PORT",
     type = (uint16 = void),
   ),

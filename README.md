@@ -101,7 +101,20 @@ sudo -u sandstorm -g sandstorm ./_build/tempest
 The following environment variables are influential:
 
 - `BASE_URL`: the main URL for the tempest web interface. Defaults to
-  `http://local.sandstorm.io:8000`.
+  `http://local.sandstorm.io`. If the URL scheme is https, all plain
+  http requests will be redirected to the https URL.
+- `HTTP_PORT`, the port to listen on for regular (non-encrypted) HTTP,
+  Note this these *does not* need to agree with `BASE_URL`, which can be
+  useful if you're putting Tempest behind a reverse proxy. Defaults to
+  `80`.
+- `HTTPS_PORT`, the port to listen on for HTTPS. Defaults to `443`. The
+  same comments above regarding `BASE_URL` apply.
+- `HTTP_CERT_FILE`, path to a file containing the HTTPS certificate.
+  If this is omitted, Tempest will not listen for HTTPS connections.
+- `HTTP_KEY_FILE`, path to a file containing the HTTPS private key.
+  If this is omitted, Tempest will not listen for HTTPS connections.
+  This file must be readable only by its owner, or Tempest will refuse
+  to start.
 - `SMTP_HOST`: When sending email, SMTP server to connect to.
 - `SMTP_PORT`: Port on `SMTP_HOST` to connect to.
 - `SMTP_USERNAME`: Email address to send mail from.

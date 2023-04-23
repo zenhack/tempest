@@ -105,6 +105,15 @@ func (s grainSession) Release() {
 func (s *server) Handler() http.Handler {
 	r := mux.NewRouter()
 
+	if s.cfg.HTTP.DefaultTLS {
+		r.Schemes("https").
+			HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+				url := *req.URL
+				url.Scheme = "http"
+				http.Redirect(w, req, url.String(), http.StatusMovedPermanently)
+			})
+	}
+
 	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + s.cfg.HTTP.RootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.GrainSession
