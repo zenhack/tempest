@@ -105,7 +105,7 @@ func (s grainSession) Release() {
 func (s *server) Handler() http.Handler {
 	r := mux.NewRouter()
 
-	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + s.cfg.rootDomain).
+	r.Host("ui-{subdomain:[a-zA-Z0-9]+}." + s.cfg.HTTP.RootDomain).
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.GrainSession
 
@@ -164,11 +164,11 @@ func (s *server) Handler() http.Handler {
 					return
 				}
 				defer session.Release()
-				ServeApp(session, w, req, s.cfg.rootDomain)
+				ServeApp(session, w, req, s.cfg.HTTP.RootDomain)
 			}
 		})
 
-	r.Host(s.cfg.rootDomain).Path("/login/dev").Methods("GET").
+	r.Host(s.cfg.HTTP.RootDomain).Path("/login/dev").Methods("GET").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte(`<!doctype html>
 			<html>
@@ -186,7 +186,7 @@ func (s *server) Handler() http.Handler {
 			`))
 		})
 
-	r.Host(s.cfg.rootDomain).Path("/login/dev").Methods("POST").
+	r.Host(s.cfg.HTTP.RootDomain).Path("/login/dev").Methods("POST").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			sess.Credential.Type = "dev"
@@ -201,7 +201,7 @@ func (s *server) Handler() http.Handler {
 			//   - If not, create one.
 		})
 
-	r.Host(s.cfg.rootDomain).Path("/login/email/{token}").
+	r.Host(s.cfg.HTTP.RootDomain).Path("/login/email/{token}").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			token := mux.Vars(req)["token"]
 			tx, err := s.db.Begin()
@@ -259,7 +259,7 @@ func (s *server) Handler() http.Handler {
 			http.Redirect(w, req, "/", http.StatusSeeOther)
 		})
 
-	r.Host(s.cfg.rootDomain).Path("/_capnp-api").
+	r.Host(s.cfg.HTTP.RootDomain).Path("/_capnp-api").
 		HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			var sess session.UserSession
 			err := session.ReadCookie(s.sessionStore, req, &sess)
@@ -294,7 +294,7 @@ func (s *server) Handler() http.Handler {
 			<-rpcConn.Done()
 		})
 
-	r.Host(s.cfg.rootDomain).Handler(http.FileServer(http.FS(embed.Content)))
+	r.Host(s.cfg.HTTP.RootDomain).Handler(http.FileServer(http.FS(embed.Content)))
 
 	return r
 }

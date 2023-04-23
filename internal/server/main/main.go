@@ -16,7 +16,7 @@ func Main() {
 	initStorage()
 	lg := logging.NewLogger()
 	cfg := ConfigFromSettings(lg)
-	listenAddr := ":" + cfg.listenPort
+	listenAddr := ":" + cfg.HTTP.Port
 	db := util.Must(database.Open())
 	sessionStore := session.NewStore(util.Must(session.GetKeys()))
 	srv := newServer(cfg, lg, db, sessionStore)
@@ -24,7 +24,7 @@ func Main() {
 
 	http.Handle("/", srv.Handler())
 	lg.Info("Listening",
-		"root-domain", cfg.rootDomain,
+		"root-domain", cfg.HTTP.RootDomain,
 		"listen-addr", listenAddr,
 	)
 	httpSrv := &http.Server{Addr: listenAddr}

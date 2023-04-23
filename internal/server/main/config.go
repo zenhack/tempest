@@ -13,10 +13,15 @@ import (
 )
 
 type Config struct {
-	listenPort string
-	rootDomain string // Main Tempest domain name
+	HTTP HTTPConfig
+	SMTP SMTPConfig
+}
 
-	smtp SMTPConfig
+type HTTPConfig struct {
+	RootDomain        string // Main Tempest domain name
+	Port              string
+	TLSPort           string
+	CertFile, KeyFile string
 }
 
 type SMTPConfig struct {
@@ -54,7 +59,7 @@ func SMTPConfigFromSettings() SMTPConfig {
 	}
 }
 
-func ConfigFromSettings(lg *slog.Logger) Config {
+func HTTPConfigFromSettings(lg *slog.Logger) HTTPConfig {
 	baseURLStr := settings.GetString("BASE_URL")
 	baseURL := util.Must(url.Parse(baseURLStr))
 	if baseURL.Scheme != "http" {
@@ -63,15 +68,21 @@ func ConfigFromSettings(lg *slog.Logger) Config {
 	if baseURL.Path != "" {
 		logging.Panic(lg, "parsing BASE_URL: must not have a path")
 	}
-	cfg := Config{
-		rootDomain: baseURL.Host,
-		smtp:       SMTPConfigFromSettings(),
+	cfg := HTTPConfig{
+		RootDomain: baseURL.Host,
 	}
-	var err error
-	_, cfg.listenPort, err = net.SplitHostPort(cfg.rootDomain)
+	_, port, err := net.SplitHostPort(cfg.RootDomain)
 	util.Chkfatal(err)
-	if cfg.listenPort == "" {
-		cfg.listenPort = "80"
+	if port == "" {
+		port = "80"
 	}
+	cfg.Port = port
 	return cfg
+}
+
+func ConfigFromSettings(lg *slog.Logger) Config {
+	return Config{
+		HTTP: HTTPConfigFromSettings(lg),
+		SMTP: SMTPConfigFromSettings(),
+	}
 }

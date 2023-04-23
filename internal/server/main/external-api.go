@@ -116,16 +116,16 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 		throw(tx.Commit())
 
 		cfg := a.api.server.cfg
-		throw(cfg.smtp.SendMail(
+		throw(cfg.SMTP.SendMail(
 			[]string{addr},
 			[]byte(strings.Join([]string{
 				"To: " + addr,
-				"From: " + cfg.smtp.Username,
+				"From: " + cfg.SMTP.Username,
 				"Subject: Email Login Token",
 				"",
 				"Login in as " + addr + " by visiting:",
 				"",
-				cfg.rootDomain + "/login/email/" + token,
+				cfg.HTTP.RootDomain + "/login/email/" + token,
 				"",
 				"Or entering " + token + " at the login prompt.",
 			}, "\r\n")),
