@@ -16,3 +16,5 @@ mongo-snapshot
 
 # Coverage profiles and the like
 *.out
+
+env.sh
