@@ -14,19 +14,22 @@ var (
 	ErrNoProvider = errors.New("no dns01 challenge provider set")
 )
 
-func ConfigFromSettings() (Config, error) {
+func ConfigFromSettings(src settings.Source) (Config, error) {
 	return exn.Try(func(throw exn.Thrower) Config {
-		providerName := settings.GetString("ACME_DNS_PROVIDER")
+		providerName := src.GetString("ACME_DNS_PROVIDER")
 		if providerName == "" {
 			throw(ErrNoProvider)
 		}
+		// XXX: this will always pull provider-specific options from the
+		// environment, even if src is not settings.Environ. Maybe we should
+		// pull this function out into a parameter we can dependency-inject:
 		provider, err := dns.NewDNSChallengeProviderByName(providerName)
 		throw(err)
 		return Config{
 			User: User{
-				Email: settings.GetString("ACME_EMAIL"),
+				Email: src.GetString("ACME_EMAIL"),
 			},
-			Directory: settings.GetString("ACME_DIRECTORY_URL"),
+			Directory: src.GetString("ACME_DIRECTORY_URL"),
 			Provider:  provider,
 		}
 	})

@@ -51,17 +51,17 @@ func (c SMTPConfig) SendMail(to []string, msg []byte) error {
 	)
 }
 
-func SMTPConfigFromSettings() SMTPConfig {
+func SMTPConfigFromSettings(src settings.Source) SMTPConfig {
 	return SMTPConfig{
-		Host:     settings.GetString("SMTP_HOST"),
-		Port:     strconv.Itoa(int(settings.GetUint16("SMTP_PORT"))),
-		Username: settings.GetString("SMTP_USERNAME"),
-		Password: settings.GetString("SMTP_PASSWORD"),
+		Host:     src.GetString("SMTP_HOST"),
+		Port:     strconv.Itoa(int(src.GetUint16("SMTP_PORT"))),
+		Username: src.GetString("SMTP_USERNAME"),
+		Password: src.GetString("SMTP_PASSWORD"),
 	}
 }
 
-func HTTPConfigFromSettings(lg *slog.Logger) HTTPConfig {
-	baseURLStr := settings.GetString("BASE_URL")
+func HTTPConfigFromSettings(lg *slog.Logger, src settings.Source) HTTPConfig {
+	baseURLStr := src.GetString("BASE_URL")
 	baseURL := util.Must(url.Parse(baseURLStr))
 	if baseURL.Scheme != "http" && baseURL.Scheme != "https" {
 		logging.Panic(lg, "parsing BASE_URL: must use http(s) scheme")
@@ -72,17 +72,17 @@ func HTTPConfigFromSettings(lg *slog.Logger) HTTPConfig {
 	cfg := HTTPConfig{
 		DefaultTLS: baseURL.Scheme == "https",
 		RootDomain: baseURL.Host,
-		Port:       settings.GetString("HTTP_PORT"),
-		TLSPort:    settings.GetString("HTTPS_PORT"),
-		CertFile:   settings.GetString("HTTPS_CERT_FILE"),
-		KeyFile:    settings.GetString("HTTPS_KEY_FILE"),
+		Port:       src.GetString("HTTP_PORT"),
+		TLSPort:    src.GetString("HTTPS_PORT"),
+		CertFile:   src.GetString("HTTPS_CERT_FILE"),
+		KeyFile:    src.GetString("HTTPS_KEY_FILE"),
 	}
 	return cfg
 }
 
-func ConfigFromSettings(lg *slog.Logger) Config {
+func ConfigFromSettings(lg *slog.Logger, src settings.Source) Config {
 	return Config{
-		HTTP: HTTPConfigFromSettings(lg),
-		SMTP: SMTPConfigFromSettings(),
+		HTTP: HTTPConfigFromSettings(lg, src),
+		SMTP: SMTPConfigFromSettings(src),
 	}
 }

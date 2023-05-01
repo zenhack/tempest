@@ -26,6 +26,46 @@ func init() {
 	}
 }
 
+// A Source can be queried for settings.
+type Source interface {
+	// Get the value of a setting by name, which must have type string (panics otherwise).
+	GetString(name string) string
+
+	// Get the value of a setting by name, which must have type uint16 (panics otherwise).
+	GetUint16(name string) uint16
+}
+
+// Environ is a Source that pulls settings from environment variables
+var Environ Source = envSource{}
+
+type envSource struct{}
+
+func (envSource) GetString(name string) string {
+	s := getSettingInfo(name, schema.Type_Which_text)
+	val := getFromEnv(s)
+	if val == "" && s.HasDefault() {
+		def, err := s.Default()
+		util.Chkfatal(err)
+		val, err = def.Text()
+		util.Chkfatal(err)
+	}
+	return val
+}
+
+func (envSource) GetUint16(name string) uint16 {
+	s := getSettingInfo(name, schema.Type_Which_uint16)
+	str := getFromEnv(s)
+	if str == "" && s.HasDefault() {
+		var err error
+		val, err := s.Default()
+		util.Chkfatal(err)
+		return val.Uint16()
+	}
+	u64, err := strconv.ParseUint(str, 10, 16)
+	util.Chkfatal(err)
+	return uint16(u64)
+}
+
 // Read the environment variable specified in s.name
 func getFromEnv(s settings.Setting) string {
 	varName, err := s.Name()
@@ -46,32 +86,4 @@ func getSettingInfo(name string, expectedType schema.Type_Which) settings.Settin
 		panic("setting " + name + " is not of type " + expectedType.String())
 	}
 	return setting
-}
-
-// Get the value of a setting by name, which must have type string (panics otherwise).
-func GetString(name string) string {
-	s := getSettingInfo(name, schema.Type_Which_text)
-	val := getFromEnv(s)
-	if val == "" && s.HasDefault() {
-		def, err := s.Default()
-		util.Chkfatal(err)
-		val, err = def.Text()
-		util.Chkfatal(err)
-	}
-	return val
-}
-
-// Get the value of a setting by name, which must have type uint16 (panics otherwise).
-func GetUint16(name string) uint16 {
-	s := getSettingInfo(name, schema.Type_Which_uint16)
-	str := getFromEnv(s)
-	if str == "" && s.HasDefault() {
-		var err error
-		val, err := s.Default()
-		util.Chkfatal(err)
-		return val.Uint16()
-	}
-	u64, err := strconv.ParseUint(str, 10, 16)
-	util.Chkfatal(err)
-	return uint16(u64)
 }

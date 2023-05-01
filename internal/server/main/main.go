@@ -11,13 +11,14 @@ import (
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/logging"
 	"zenhack.net/go/tempest/internal/server/session"
+	"zenhack.net/go/tempest/internal/server/settings"
 	"zenhack.net/go/util"
 )
 
 func Main() {
 	initStorage()
 	lg := logging.NewLogger()
-	cfg := ConfigFromSettings(lg)
+	cfg := ConfigFromSettings(lg, settings.Environ)
 	httpAddr := ":" + cfg.HTTP.Port
 	httpsAddr := ":" + cfg.HTTP.TLSPort
 	db := util.Must(database.Open())
