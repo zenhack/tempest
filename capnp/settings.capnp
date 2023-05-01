@@ -29,6 +29,21 @@ struct Setting {
 const adminSettings: List(Setting) = [
   # system wide settings, which require admin access to read or modify
 
+  ( # URL for the acme directory to use to obtain TLS certs.
+    # TODO: default to using Let's Encrypt.
+    name = "ACME_DIRECTORY_URL",
+    type = (text = void),
+  ),
+  ( # DNS provider to use for acme; see https://go-acme.github.io/lego/dns/
+    # for a list of valid providers.
+    name = "ACME_DNS_PROIVDER",
+    type = (text = void),
+  ),
+  ( # Email address to use for acme protocol.
+    name = "ACME_EMAIL",
+    type = (text = void),
+  ),
+
   ( # the main URL for the Tempest web interface
     name = "BASE_URL",
     type = (text = void),
