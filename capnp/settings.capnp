@@ -71,7 +71,7 @@ const adminSettings: List(Setting) = [
     name = "SMTP_HOST",
     type = (text = void),
   ),
-  ( # port on `smtp.host` to connect to
+  ( # port on `SMTP_HOST` to connect to
     # XXX: should this maybe just be a string, like HTTP(S)_PORT? named ports
     # can be valid.
     name = "SMTP_PORT",
