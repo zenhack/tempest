@@ -80,6 +80,13 @@ Vagrant.configure("2") do |config|
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
 
+    # Install the BPF assembler:
+    curl https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.1.tar.xz
+    tar -xvf linux-*.tar.xz
+    cd linux-*/tools/bpf
+    make
+    install -Dm755 -t /usr/local/bin/ bpf_asm
+
     # Install sandstorm:
     curl https://install.sandstorm.io/ 2>&1 > ~/install-sandstorm.sh
     bash ~/install-sandstorm.sh -d -e -p 6090
