@@ -46,7 +46,7 @@ you will need to supply the paths to the repository checked out above
 via the `--with-go-capnp` flag.
 
 Finally, it is possible to share grain & app storage with an existing
-Sandstorm installation if you want to do this, you will need to specify
+Sandstorm installation. If you want to do this, you will need to specify
 the correct value for `--localstatedir`, and then see the next section
 on importing data from Sandstorm:
 
