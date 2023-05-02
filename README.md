@@ -9,7 +9,7 @@ from the outside, though many http features are not yet implemented.
 
 To build tempest, you will need:
 
-- Go 1.19 or later
+- Go 1.20 or later
 - [tinygo](https://tinygo.org/)
   - If the build complains about missing `wasm-opt`, you may also need
     to install the `binaryen` package.
