@@ -70,21 +70,23 @@ Vagrant.configure("2") do |config|
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    set -euo pipefail
+    set -exuo pipefail
 
     dnf install -y \
       go \
       tinygo \
       binaryen \
-      capnproto
+      capnproto \
+      flex \
+      bison
 
     go install capnproto.org/go/capnp/v3/capnpc-go@latest
 
     # Install the BPF assembler:
-    curl https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.1.tar.xz
-    tar -xvf linux-*.tar.xz
+    curl https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.1.tar.xz > linux.tar.xz
+    tar -xvf linux.tar.xz
     cd linux-*/tools/bpf
-    make
+    make bpf_asm
     install -Dm755 -t /usr/local/bin/ bpf_asm
 
     # Install sandstorm:

@@ -18,6 +18,19 @@ To build tempest, you will need:
 - capnp (command line tool) version 0.8 or later.
 - capnpc-go code generator plugin
 
+`bpf_asm` is not packaged in all distributions; if your distro does
+not have a package for it, you can install it from source. You will
+additionally need `bison` and `flex` installed, and then you can
+run:
+
+```
+curl https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.3.1.tar.xz > linux.tar.xz
+tar -xvf linux.tar.xz
+cd linux-*/tools/bpf
+make bpf_asm
+install -Dm755 -t /usr/local/bin/ bpf_asm
+```
+
 You will also need to separately check out the source for go-capnp:
 
 ```
