@@ -106,11 +106,11 @@ func (s *server) Handler() http.Handler {
 	r := mux.NewRouter()
 
 	if s.cfg.HTTP.DefaultTLS {
-		r.Schemes("https").
+		r.Schemes("http").
 			HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-				url := *req.URL
-				url.Scheme = "http"
-				http.Redirect(w, req, url.String(), http.StatusMovedPermanently)
+				http.Redirect(w, req,
+					"https://"+s.cfg.HTTP.RootDomain+req.URL.RequestURI(),
+					http.StatusMovedPermanently)
 			})
 	}
 
