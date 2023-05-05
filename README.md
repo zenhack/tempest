@@ -122,9 +122,9 @@ The following environment variables are influential:
   `80`.
 - `HTTPS_PORT`, the port to listen on for HTTPS. Defaults to `443`. The
   same comments above regarding `BASE_URL` apply.
-- `HTTP_CERT_FILE`, path to a file containing the HTTPS certificate.
+- `HTTPS_CERT_FILE`, path to a file containing the HTTPS certificate.
   If this is omitted, Tempest will not listen for HTTPS connections.
-- `HTTP_KEY_FILE`, path to a file containing the HTTPS private key.
+- `HTTPS_KEY_FILE`, path to a file containing the HTTPS private key.
   If this is omitted, Tempest will not listen for HTTPS connections.
   This file must be readable only by its owner, or Tempest will refuse
   to start.
