@@ -109,7 +109,7 @@ func (s *server) Handler() http.Handler {
 		r.Schemes("http").
 			HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 				http.Redirect(w, req,
-					"https://"+s.cfg.HTTP.RootDomain+req.URL.RequestURI(),
+					"https://"+req.Host+req.URL.RequestURI(),
 					http.StatusMovedPermanently)
 			})
 	}
