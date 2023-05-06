@@ -19,8 +19,9 @@ import (
 	"zenhack.net/go/tempest/pkg/exp/websession/websocket"
 )
 
-// A Handler implements http.Handler on top of a WebSession. NOTE: this is work in progress
-// and does not handle all requests gracefully (sometime codepaths simply panic("TODO")).
+// A Handler implements http.Handler on top of a WebSession. NOTE: this is work in progress;
+// some of the methods documented in web-session.capnp are not implemented and will return
+// HTTP 405 "Method Not Allowed" responses.
 type Handler struct {
 	Session websession.WebSession
 }
@@ -55,7 +56,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	case "PROPFIND":
 		h.doPropfind(w, req)
 	default:
-		panic("TODO")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintf(w, "WebSession does not support HTTP method %q", req.Method)
 	}
 }
 
