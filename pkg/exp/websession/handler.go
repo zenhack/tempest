@@ -50,6 +50,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.doNonStreamingPostLike(w, req)
 	case "DELETE":
 		h.doDelete(w, req)
+	case "PROPFIND":
+		h.doPropfind(w, req)
 	default:
 		panic("TODO")
 	}
@@ -131,6 +133,45 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 	}
 	io.Copy(srvW, conn)
 	<-req.Context().Done()
+}
+
+func (h Handler) doPropfind(w http.ResponseWriter, req *http.Request) {
+	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+
+	// TODO(perf): Once safe,  just allocate the buffer from the arguemnt struct directly.
+	body := make([]byte, length)
+	if _, err := io.ReadFull(req.Body, body); err != nil {
+		replyErr(w, fmt.Errorf("reading request body: %w", err))
+		return
+	}
+
+	srv, client := makeResponseStream(w)
+	fut, rel := h.Session.Propfind(req.Context(), func(p websession.WebSession_propfind_Params) error {
+		if err := placePathContext(p, req, client); err != nil {
+			return err
+		}
+		// TODO: perf: avoid copy from string cast somehow
+		if err := p.SetXmlContent(string(body)); err != nil {
+			return err
+		}
+		switch req.Header.Get("Depth") {
+		case "0":
+			p.SetDepth(websession.PropfindDepth_zero)
+		case "1":
+			p.SetDepth(websession.PropfindDepth_one)
+		case "infinity":
+			p.SetDepth(websession.PropfindDepth_infinity)
+		default:
+			// Don't set.
+		}
+		return nil
+	})
+	defer rel()
+	relayResponse(w, req, fut, srv)
 }
 
 // placePathContext fills in the path and context fields of p based on the other arguments.
