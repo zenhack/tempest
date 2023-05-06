@@ -55,6 +55,14 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.doDelete(w, req)
 	case "PROPFIND":
 		h.doPropfind(w, req)
+	// TODO:
+	// - proppatch
+	// - copy
+	// - move
+	// - lock
+	// - unlock
+	// - acl
+	// - options
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprintf(w, "WebSession does not support HTTP method %q", req.Method)
