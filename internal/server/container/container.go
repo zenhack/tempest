@@ -130,7 +130,8 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	err = osCmd.Start()
 	pidW.Close() // Close this now, so when the child closes it we hit EOF.
 	if err != nil {
-		cmd.Log.Error("Starting sandbox launcher failed", err,
+		cmd.Log.Error("Starting sandbox launcher failed",
+			"error", err,
 			"grainID", cmd.GrainID,
 		)
 		cmd.Api.Release()
@@ -145,7 +146,8 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 	pidBuf, err := io.ReadAll(pidR)
 	launcherPid := osCmd.Process.Pid
 	if err != nil {
-		cmd.Log.Error("Failed to read grain pid", err,
+		cmd.Log.Error("Failed to read grain pid",
+			"error", err,
 			"read", string(pidBuf),
 			"grainID", cmd.GrainID,
 			"launcher-pid", launcherPid,
@@ -155,7 +157,8 @@ func (cmd pkgCommand) Start(ctx context.Context) (Container, error) {
 
 	grainPid, err := strconv.Atoi(string(pidBuf))
 	if err != nil {
-		cmd.Log.Error("bug: sandbox-launcher returned invalid pid", err,
+		cmd.Log.Error("bug: sandbox-launcher returned invalid pid",
+			"error", err,
 			"grainID", cmd.GrainID,
 			"launcher-pid", launcherPid,
 			"bad-pid", strconv.Quote(string(pidBuf)),

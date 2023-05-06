@@ -110,7 +110,8 @@ func Main() {
 		spawnSpkCmd(lg, appTitleText, cmd)
 	default:
 		err := errors.New("unrecognized launch command")
-		lg.Error("BUG", err,
+		lg.Error("BUG",
+			"error", err,
 			"launch command", launchCmd.Which(),
 		)
 		panic(err)

@@ -166,7 +166,8 @@ func (s *server) Handler() http.Handler {
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					s.log.Error(
-						"Could not get web session reference", err,
+						"Could not get web session reference",
+						"error", err,
 						"grainID", sess.GrainID,
 						"params", wsp,
 					)
@@ -216,7 +217,8 @@ func (s *server) Handler() http.Handler {
 			tx, err := s.db.Begin()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				s.log.Error("failed to open database transaction", err)
+				s.log.Error("failed to open database transaction",
+					"error", err)
 				return
 			}
 			defer tx.Rollback()
@@ -236,12 +238,14 @@ func (s *server) Handler() http.Handler {
 			}
 			if err = tx.DeleteSturdyRef(key); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				s.log.Error("deleting sturdyref: ", err)
+				s.log.Error("deleting sturdyref",
+					"error", err)
 				return
 			}
 			if err = tx.Commit(); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				s.log.Error("restoring email token: commit", err)
+				s.log.Error("restoring email token: commit",
+					"error", err)
 				return
 			}
 			oid := system.SystemObjectId(ref.ObjectID)
@@ -253,7 +257,8 @@ func (s *server) Handler() http.Handler {
 			addr, err := oid.EmailLoginToken()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				s.log.Error("reading email address from token", err)
+				s.log.Error("reading email address from token",
+					"error", err)
 				return
 			}
 
@@ -286,7 +291,8 @@ func (s *server) Handler() http.Handler {
 					},
 				}, req, w)
 			if err != nil {
-				s.log.Error("Failed to upgrade http connection", err)
+				s.log.Error("Failed to upgrade http connection",
+					"error", err)
 				return
 			}
 			transport := transport.New(codec)
