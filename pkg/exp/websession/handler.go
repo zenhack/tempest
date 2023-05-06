@@ -11,9 +11,11 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
+	"capnproto.org/go/capnp/v3/flowcontrol"
 	"github.com/gobwas/ws"
 	"zenhack.net/go/tempest/capnp/util"
 	websession "zenhack.net/go/tempest/capnp/web-session"
+	"zenhack.net/go/tempest/pkg/exp/util/bytestream"
 	"zenhack.net/go/tempest/pkg/exp/websession/websocket"
 )
 
@@ -226,8 +228,13 @@ func (h Handler) doDelete(w http.ResponseWriter, req *http.Request) {
 }
 
 // Handle a streaming post or put request.
-func (Handler) doStreamingPostLike(w http.ResponseWriter, req *http.Request) {
-	panic("TODO")
+func (h Handler) doStreamingPostLike(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "POST":
+		callStreamingPostLike(h.Session.PostStreaming, w, req)
+	case "PUT":
+		callStreamingPostLike(h.Session.PutStreaming, w, req)
+	}
 }
 
 // Handle a non-streaming post, put, or patch request.
@@ -262,6 +269,35 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 	}
 }
 
+func callStreamingPostLike[Params streamingPostLikeParams, Results_Future streamingPostLikeResults_Future](
+	call func(context.Context, func(Params) error) (Results_Future, capnp.ReleaseFunc),
+	w http.ResponseWriter,
+	req *http.Request,
+) {
+	ctx, cancel := context.WithCancel(req.Context())
+	defer cancel()
+	srv, client := makeResponseStream(w)
+	streamingFut, rel := call(ctx, func(p Params) error {
+		if err := placeEncodingType(p, req); err != nil {
+			return err
+		}
+		return placePathContext(p, req, client)
+	})
+	defer rel()
+	reqStream := streamingFut.Stream()
+	respFut, rel := reqStream.GetResponse(ctx, nil)
+	reqStream.SetFlowLimiter(flowcontrol.NewFixedLimiter(64 * 1024)) // arbitrary
+	reqWriter := bytestream.ToWriteCloser(ctx, util.ByteStream(reqStream))
+	go func() {
+		defer reqWriter.Close()
+		if _, err := io.Copy(reqWriter, req.Body); err != nil {
+			cancel()
+		}
+	}()
+	defer rel()
+	relayResponse(w, req, respFut, srv)
+}
+
 // Invoke a non-streaming post-like method with arguments based on req and body, and marshal
 // the response into w. call should be a method on a WebSession with a suitable argument
 // & return type.
@@ -292,6 +328,36 @@ type nonStreamingPostLikeParams interface {
 	NewContent() (websession.RequestContent, error)
 }
 
+type streamingPostLikeParams interface {
+	hasEncodingType
+	hasPathContext
+}
+
+type streamingPostLikeResults_Future interface {
+	Stream() websession.RequestStream
+}
+
+type hasEncodingType interface {
+	SetEncoding(string) error
+	SetMimeType(string) error
+}
+
+func placeEncodingType(dest hasEncodingType, req *http.Request) error {
+	encoding := req.Header.Get("Content-Encoding")
+	if encoding != "" {
+		if err := dest.SetEncoding(encoding); err != nil {
+			return err
+		}
+	}
+	contentType := req.Header.Get("Content-Type")
+	if contentType != "" {
+		if err := dest.SetMimeType(contentType); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // placeRequestContent populates content based on the request, where body
 // has already been read from the request.
 func placeRequestContent(
@@ -299,17 +365,8 @@ func placeRequestContent(
 	req *http.Request,
 	body []byte,
 ) error {
-	encoding := req.Header.Get("Content-Encoding")
-	if encoding != "" {
-		if err := content.SetEncoding(encoding); err != nil {
-			return err
-		}
-	}
-	contentType := req.Header.Get("Content-Type")
-	if contentType != "" {
-		if err := content.SetMimeType(contentType); err != nil {
-			return err
-		}
+	if err := placeEncodingType(content, req); err != nil {
+		return err
 	}
 	return content.SetContent(body)
 }
