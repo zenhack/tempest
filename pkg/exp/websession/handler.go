@@ -49,7 +49,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		fallthrough
-	case "PATCH", "MKCOL":
+	case "PATCH", "MKCOL", "REPORT":
 		h.doNonStreamingPostLike(w, req)
 	case "DELETE":
 		h.doDelete(w, req)
@@ -255,6 +255,8 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 		callNonStreamingPostLike(h.Session.Patch, w, req, body)
 	case "MKCOL":
 		callNonStreamingPostLike(h.Session.Mkcol, w, req, body)
+	case "REPORT":
+		callNonStreamingPostLike(h.Session.Report, w, req, body)
 	}
 }
 
