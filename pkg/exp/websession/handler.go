@@ -48,7 +48,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		fallthrough
-	case "PATCH":
+	case "PATCH", "MKCOL":
 		h.doNonStreamingPostLike(w, req)
 	case "DELETE":
 		h.doDelete(w, req)
@@ -239,23 +239,8 @@ func (h Handler) doStreamingPostLike(w http.ResponseWriter, req *http.Request) {
 
 // Handle a non-streaming post, put, or patch request.
 func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request) {
-	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	body, err := readNonStreamingBody(w, req)
 	if err != nil {
-		replyErr(w, err)
-		return
-	}
-	if length < 0 || length > maxNonStreamingBodySize {
-		replyErr(w, fmt.Errorf(
-			"request body too big (%v bytes, max %v)",
-			length,
-			maxNonStreamingBodySize))
-		return
-	}
-	// TODO(perf): Right now, it isn't safe to block inside a go-capnp placeArgs
-	// function. Once that's fixed, we should just allocate the buffer from the
-	// arguemnt struct directly, to avoid an extra copy.
-	body := make([]byte, length)
-	if _, err := io.ReadFull(req.Body, body); err != nil {
 		replyErr(w, fmt.Errorf("reading request body: %w", err))
 		return
 	}
@@ -266,6 +251,35 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 		callNonStreamingPostLike(h.Session.Put, w, req, body)
 	case "PATCH":
 		callNonStreamingPostLike(h.Session.Patch, w, req, body)
+	case "MKCOL":
+		callNonStreamingPostLike(h.Session.Mkcol, w, req, body)
+	}
+}
+
+func readNonStreamingBody(w http.ResponseWriter, req *http.Request) ([]byte, error) {
+	contentLength := req.Header.Get("Content-Length")
+	if contentLength == "" {
+		/// FIXME: detect early EOF
+		return io.ReadAll(io.LimitReader(req.Body, maxNonStreamingBodySize))
+	} else {
+		length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+		if err != nil {
+			return nil, err
+		}
+		if length < 0 || length > maxNonStreamingBodySize {
+			return nil, fmt.Errorf(
+				"request body too big (%v bytes, max %v)",
+				length,
+				maxNonStreamingBodySize)
+		}
+		// TODO(perf): Right now, it isn't safe to block inside a go-capnp placeArgs
+		// function. Once that's fixed, we should just allocate the buffer from the
+		// arguemnt struct directly, to avoid an extra copy.
+		body := make([]byte, length)
+		if _, err := io.ReadFull(req.Body, body); err != nil {
+			return nil, fmt.Errorf("reading request body: %w", err)
+		}
+		return body, nil
 	}
 }
 
