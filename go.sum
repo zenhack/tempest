@@ -887,9 +887,9 @@ honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
 zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9 h1:K3hG8AbKx4N2PscsyB0T1c5tGsltPocL8BrXDq9ZWEQ=
 zenhack.net/go/jsapi v0.0.0-20230418065259-200f45ece3f9/go.mod h1:p8nXUNUW3cH5xT/IiU24+yLdIaT/6qBBb0w5sOR2S7I=
+zenhack.net/go/tea v0.0.0-20230507200602-f7a6a89ff425 h1:yaTRR+s74yjWHJ9CumwVEuRePfRdXrno44TlMyIPscA=
+zenhack.net/go/tea v0.0.0-20230507200602-f7a6a89ff425/go.mod h1:13m+xT1CHx9o7qGuqY2fya7AHxeiQ0dL6TMZsaDO1l8=
 zenhack.net/go/util v0.0.0-20230414211804-99ae9bf14f02 h1:0iYx7hqltFcLvxDeCdg84gEJp8BJ6SgGti431U2ztIU=
 zenhack.net/go/util v0.0.0-20230414211804-99ae9bf14f02/go.mod h1:1LtNdPAs8WH+BTcQiZAOo2MIKD/5jyK/u7sZ9ZPe5SE=
-zenhack.net/go/vdom v0.0.0-20230507041907-8e34e76a6591 h1:icIKudskq7Z2AckZdHtqj60gH0yTEh4HK0qtPVUyB3Y=
-zenhack.net/go/vdom v0.0.0-20230507041907-8e34e76a6591/go.mod h1:6WIfdsOxSlWalwz8i+nMyKDjinQKQFVLDhEJGvI1dWU=
 zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b h1:NWJuexcpIZoHK/dLJEe7OSZM1Yht6qlriOJI1bR1Nqw=
 zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b/go.mod h1:oQXDo3G6MvXhoTmQ/qm6izzRcg26Hi7OI+wfto0KEbw=
