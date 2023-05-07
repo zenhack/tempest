@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -55,10 +56,12 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.doDelete(w, req)
 	case "PROPFIND":
 		h.doPropfind(w, req)
+	case "MOVE":
+		h.doMove(w, req)
+	case "COPY":
+		h.doCopy(w, req)
 	// TODO:
 	// - proppatch
-	// - copy
-	// - move
 	// - lock
 	// - unlock
 	// - acl
@@ -180,6 +183,72 @@ func (h Handler) doPropfind(w http.ResponseWriter, req *http.Request) {
 		default:
 			// Don't set.
 		}
+		return nil
+	})
+	defer rel()
+	relayResponse(w, req, fut, srv)
+}
+
+func davDestination(req *http.Request) (string, error) {
+	dest := req.Header.Get("Destination")
+	if !strings.HasPrefix(dest, "/") {
+		// Make sure the host is the same, then remove it:
+		u, err := url.Parse(dest)
+		if err != nil {
+			return "", err
+		}
+		destHost := u.Host
+		srcHost := req.Host
+		if destHost != srcHost {
+			return "", fmt.Errorf(
+				"destination host (%q) does not match source (%q)",
+				destHost,
+				srcHost,
+			)
+		}
+		dest = u.RequestURI()
+	}
+	dest = dest[1:] // chop off leading '/'
+	return dest, nil
+}
+
+func (h Handler) doMove(w http.ResponseWriter, req *http.Request) {
+	dest, err := davDestination(req)
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+	srv, client := makeResponseStream(w)
+	fut, rel := h.Session.Move(req.Context(), func(p websession.WebSession_move_Params) error {
+		if err := placePathContext(p, req, client); err != nil {
+			return err
+		}
+		if err := p.SetDestination(dest); err != nil {
+			return err
+		}
+		p.SetNoOverwrite(req.Header.Get("Overwrite") == "F")
+		return nil
+	})
+	defer rel()
+	relayResponse(w, req, fut, srv)
+}
+
+func (h Handler) doCopy(w http.ResponseWriter, req *http.Request) {
+	dest, err := davDestination(req)
+	if err != nil {
+		replyErr(w, err)
+		return
+	}
+	srv, client := makeResponseStream(w)
+	fut, rel := h.Session.Copy(req.Context(), func(p websession.WebSession_copy_Params) error {
+		if err := placePathContext(p, req, client); err != nil {
+			return err
+		}
+		if err := p.SetDestination(dest); err != nil {
+			return err
+		}
+		p.SetNoOverwrite(req.Header.Get("Overwrite") == "F")
+		p.SetShallow(req.Header.Get("Depth") == "0")
 		return nil
 	})
 	defer rel()
