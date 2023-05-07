@@ -151,15 +151,8 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h Handler) doPropfind(w http.ResponseWriter, req *http.Request) {
-	length, err := strconv.Atoi(req.Header.Get("Content-Length"))
+	body, err := readNonStreamingBody(w, req)
 	if err != nil {
-		replyErr(w, err)
-		return
-	}
-
-	// TODO(perf): Once safe,  just allocate the buffer from the arguemnt struct directly.
-	body := make([]byte, length)
-	if _, err := io.ReadFull(req.Body, body); err != nil {
 		replyErr(w, fmt.Errorf("reading request body: %w", err))
 		return
 	}
