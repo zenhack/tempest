@@ -340,7 +340,7 @@ func (h Handler) doNonStreamingPostLike(w http.ResponseWriter, req *http.Request
 func readNonStreamingBody(w http.ResponseWriter, req *http.Request) ([]byte, error) {
 	contentLength := req.Header.Get("Content-Length")
 	if contentLength == "" {
-		/// FIXME: detect early EOF
+		// FIXME: detect early EOF
 		return io.ReadAll(io.LimitReader(req.Body, maxNonStreamingBodySize))
 	} else {
 		length, err := strconv.Atoi(req.Header.Get("Content-Length"))
