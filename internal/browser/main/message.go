@@ -7,6 +7,7 @@ import (
 	"syscall/js"
 
 	"zenhack.net/go/jsapi/streams"
+	"zenhack.net/go/tea"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/util"
@@ -15,7 +16,6 @@ import (
 	"zenhack.net/go/util/exn"
 	"zenhack.net/go/util/maybe"
 	"zenhack.net/go/util/orerr"
-	"zenhack.net/go/vdom/tea"
 )
 
 type Cmd = func(context.Context, func(Msg))

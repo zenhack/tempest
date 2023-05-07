@@ -7,12 +7,12 @@ import (
 	"capnproto.org/go/capnp/v3"
 	"capnproto.org/go/capnp/v3/rpc"
 	"capnproto.org/go/capnp/v3/rpc/transport"
+	"zenhack.net/go/tea"
+	"zenhack.net/go/tea/vdom"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/orerr"
-	"zenhack.net/go/vdom"
-	"zenhack.net/go/vdom/tea"
 	wscapnpjs "zenhack.net/go/websocket-capnp/js"
 )
 
