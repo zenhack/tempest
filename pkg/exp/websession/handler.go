@@ -911,7 +911,49 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 	}
 
 	// TODO: acceptEncoding
-	// TODO: eTagPrecondition
+
+	eTagPrecondition := wsCtx.ETagPrecondition()
+	ifMatch := req.Header.Get("If-Match")
+	switch ifMatch {
+	case "":
+	case "*":
+		eTagPrecondition.SetExists()
+	default:
+		tags, err := parseETagList(ifMatch)
+		if err != nil {
+			return fmt.Errorf("parsing etag list: %w", err)
+		}
+		capnpTags, err := eTagPrecondition.NewMatchesOneOf(int32(len(tags)))
+		if err != nil {
+			return err
+		}
+		for i, v := range tags {
+			tag := capnpTags.At(i)
+			tag.SetWeak(v.Weak)
+			tag.SetValue(v.Value)
+		}
+	}
+	ifNoneMatch := req.Header.Get("If-None-Match")
+	switch ifNoneMatch {
+	case "":
+	case "*":
+		eTagPrecondition.SetDoesntExist()
+	default:
+		// TODO: cleanup: a lot of copypasta with the above.
+		tags, err := parseETagList(ifNoneMatch)
+		if err != nil {
+			return fmt.Errorf("parsing etag list: %w", err)
+		}
+		capnpTags, err := eTagPrecondition.NewMatchesNoneOf(int32(len(tags)))
+		if err != nil {
+			return err
+		}
+		for i, v := range tags {
+			tag := capnpTags.At(i)
+			tag.SetWeak(v.Weak)
+			tag.SetValue(v.Value)
+		}
+	}
 
 	additionalHeaders := make(http.Header)
 	ContextHeaderFilter.Copy(additionalHeaders, req.Header)
@@ -938,6 +980,5 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 		}
 	}
 
-	//panic("TODO")
 	return nil
 }
