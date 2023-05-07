@@ -56,12 +56,13 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		h.doDelete(w, req)
 	case "PROPFIND":
 		h.doPropfind(w, req)
+	case "PROPPATCH":
+		h.doProppatch(w, req)
 	case "MOVE":
 		h.doMove(w, req)
 	case "COPY":
 		h.doCopy(w, req)
 	// TODO:
-	// - proppatch
 	// - lock
 	// - unlock
 	// - acl
@@ -177,6 +178,24 @@ func (h Handler) doPropfind(w http.ResponseWriter, req *http.Request) {
 			// Don't set.
 		}
 		return nil
+	})
+	defer rel()
+	relayResponse(w, req, fut, srv)
+}
+
+func (h Handler) doProppatch(w http.ResponseWriter, req *http.Request) {
+	body, err := readNonStreamingBody(w, req)
+	if err != nil {
+		replyErr(w, fmt.Errorf("reading request body: %w", err))
+		return
+	}
+	srv, client := makeResponseStream(w)
+	fut, rel := h.Session.Proppatch(req.Context(), func(p websession.WebSession_proppatch_Params) error {
+		if err := placePathContext(p, req, client); err != nil {
+			return err
+		}
+		// TODO: perf: avoid copy from string cast somehow
+		return p.SetXmlContent(string(body))
 	})
 	defer rel()
 	relayResponse(w, req, fut, srv)
