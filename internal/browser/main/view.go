@@ -30,7 +30,27 @@ func t(l10n intl.L10N, f intl.L10NString, args ...string) vdom.VNode {
 
 var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
+func (m Model) pageTitle() string {
+	switch m.CurrentFocus {
+	case FocusOpenGrain:
+		return "Tempest - " + m.Grains[m.FocusedGrain].Title
+	case FocusGrainList:
+		return "Tempest - Grains"
+	case FocusApps:
+		return "Tempest - Apps"
+	default:
+		return "Tempest"
+	}
+}
+
 func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
+	// Hack: a bit gross to be setting the title imperatively in View;
+	// maybe integrate something more declarative into go-tea. This
+	// is the best place to do it for now though, since we know
+	// the state is up to date wrt. what's going to end up on the page
+	// too.
+	js.Global().Get("document").Set("title", m.pageTitle())
+
 	content := dummyNode
 	session, loginReady := m.LoginSessions.Get()
 	if !loginReady {
