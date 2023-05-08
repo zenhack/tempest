@@ -58,7 +58,7 @@ this looks like requires a bit of research.
 
 Things users should be able to do, other than just interact with apps
 
-- [ ] Install apps
+- [x] Install apps
 - [x] Create grains
 - [ ] Delete grains
 - [ ] Sharing stuff
