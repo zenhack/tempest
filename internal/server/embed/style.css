@@ -77,10 +77,11 @@
 	--success-bgcolor: var(--green-3);
 	--warning-bgcolor: var(--yellow-3);
 
-	--sidebar-bgcolor: var(--grey-9);
-	--sidebar-bgcolor-active: var(--grey-7);
-	--sidebar-color: var(--grey-3);
-	--sidebar-color-active: var(--grey-9);
+	--sidebar-bgcolor: var(--grey-8);
+	--sidebar-bgcolor-active-tab: var(--grey-9);
+	--sidebar-bgcolor-inactive-tab: var(--grey-7);
+	--sidebar-color: var(--grey-1);
+	--sidebar-color-active: var(--grey-1);
 	--sidebar-border-color: var(--grey-6);
 
 	--default-content-bgcolor: var(--grey-8);
@@ -93,10 +94,11 @@
 		--success-bgcolor: var(--green-6);
 		--warning-bgcolor: var(--yellow-6);
 
-		--sidebar-bgcolor: var(--grey-1);
-		--sidebar-bgcolor-active: var(--grey-2);
-		--sidebar-color: var(--grey-6);
-		--sidebar-color-active: var(--grey-6);
+		--sidebar-bgcolor: var(--grey-2);
+		--sidebar-bgcolor-active-tab: var(--grey-1);
+		--sidebar-bgcolor-inactive-tab: var(--grey-3);
+		--sidebar-color: var(--grey-9);
+		--sidebar-color-active: var(--grey-9);
 		--sidebar-border-color: var(--grey-3);
 
 		--default-content-bgcolor: var(--grey-2);
@@ -114,14 +116,40 @@ body {
 	padding-left: 0px;
 }
 
+:root {
+	--sz-open-grain-tab-radius: var(--sz-8);
+	--sz-open-grain-tab-padding: var(--sz-4);
+	--sz-open-grain-tab-margin: var(--sz-1);
+}
+
 .open-grain-tab {
 	display: flex;
 	justify-content: space-between;
+	border-top-left-radius: var(--sz-open-grain-tab-radius);
+	border-bottom-left-radius: var(--sz-open-grain-tab-radius);
+	padding: var(--sz-open-grain-tab-padding);
+	margin-top: var(--sz-open-grain-tab-margin);
+}
+
+.open-grain-tab a {
+	color: var(--sidebar-color);
+	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.open-grain-tab--focused a {
+	color: var(--sidebar-color-active);
+}
+
+.open-grain-tab--unfocused {
+	background-color: var(--sidebar-bgcolor-inactive-tab);
 }
 
 .open-grain-tab--focused {
 	color: var(--sidebar-color-active);
-	background-color: var(--sidebar-bgcolor-active);
+	background-color: var(--sidebar-bgcolor-active-tab);
 }
 
 .main-ui {

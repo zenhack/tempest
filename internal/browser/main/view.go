@@ -302,6 +302,8 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 	classes := "open-grain-tab"
 	if isFocused {
 		classes += " open-grain-tab--focused"
+	} else {
+		classes += " open-grain-tab--unfocused"
 	}
 	return h("li", a{"class": classes}, nil,
 		h("a",
