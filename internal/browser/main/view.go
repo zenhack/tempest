@@ -345,7 +345,7 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 
 func viewNavLinks(links ...vdom.VNode) vdom.VNode {
 	for i := range links {
-		links[i] = h("li", a{"class": "nav-link"}, nil, links[i])
+		links[i] = h("li", nil, nil, links[i])
 	}
 	return h("nav", nil, nil, h("ul", a{"class": "nav-links"}, nil, links...))
 }
