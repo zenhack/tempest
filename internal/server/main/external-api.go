@@ -287,7 +287,11 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		}.Seal(pc.sessionStore)
 		exn.WrapThrow(th, "creating grain session token", err)
 		th(v.SetSessionToken(sessionToken))
-		// TODO: set ViewInfo & Controller.
+		th(v.SetController(external.UiView_Controller_ServerToClient(uiViewControllerImpl{
+			GrainID: grainID,
+			Session: pc.userSession,
+			DB:      pc.server.db,
+		})))
 		exn.WrapThrow(th, "commiting database transaction", tx.Commit())
 
 		// TODO: maybe change container.Command so it can take tx instead of a DB?

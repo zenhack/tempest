@@ -161,6 +161,40 @@ type UiViewInfo struct {
 	Permissions []bool
 }
 
+func (tx Tx) CredentialGrainPermissions(cred types.Credential, grainID types.GrainID) (permissions []bool, err error) {
+	accountID, err := tx.GetCredentialAccount(cred)
+	if err != nil {
+		return nil, err
+	}
+	return tx.AccountGrainPermissions(accountID, grainID)
+}
+
+func (tx Tx) AccountGrainPermissions(accountID string, grainID types.GrainID) (permissions []bool, err error) {
+	row := tx.sqlTx.QueryRow(
+		`SELECT
+			uiViewSturdyRefs.appPermissions
+		FROM
+			sturdyRefs, uiViewSturdyRefs
+		WHERE
+			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
+			AND sturdyRefs.grainId = ?
+			AND sturdyRefs.objectId = null
+			AND sturdyRefs.ownerType = 'userkeyring'
+			AND sturdyRefs.owner = ?
+			AND sturdyRefs.expires > ?
+		`,
+		grainID,
+		accountID,
+		time.Now().Unix(),
+	)
+	var perm string
+	err = row.Scan(&perm)
+	if err != nil {
+		return nil, err
+	}
+	return parsePermissions(perm)
+}
+
 func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
 	accountID, err := tx.GetCredentialAccount(cred)
 	if err != nil {
