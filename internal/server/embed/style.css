@@ -179,12 +179,14 @@ body {
 	--sz-open-grain-tab-margin: var(--sz-1);
 }
 .open-grain-tab {
-	display: flex;
-	justify-content: space-between;
 	border-top-left-radius: var(--sz-open-grain-tab-radius);
 	border-bottom-left-radius: var(--sz-open-grain-tab-radius);
 	padding: var(--sz-open-grain-tab-padding);
 	margin-top: var(--sz-open-grain-tab-margin);
+}
+.open-grain-tab__title-row {
+	display: flex;
+	justify-content: space-between;
 }
 .open-grain-tab__title {
 	color: var(--sidebar-color);

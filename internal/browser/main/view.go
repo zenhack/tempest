@@ -325,7 +325,7 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 	} else {
 		classes += " open-grain-tab--unfocused"
 	}
-	return h("li", a{"class": classes}, nil,
+	titleRow := h("div", a{"class": "open-grain-tab__title-row"}, nil,
 		h("a",
 			a{
 				"href":  "#/grain/" + string(id),
@@ -340,6 +340,7 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 			t(l10n, "Close Grain"),
 		),
 	)
+	return h("li", a{"class": classes}, nil, titleRow)
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
