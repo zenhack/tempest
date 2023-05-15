@@ -327,7 +327,10 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 	}
 	return h("li", a{"class": classes}, nil,
 		h("a",
-			a{"href": "#/grain/" + string(id)},
+			a{
+				"href":  "#/grain/" + string(id),
+				"class": "open-grain-tab__title",
+			},
 			e{"click": focusGrain},
 			builder.T(grain.Title),
 		),

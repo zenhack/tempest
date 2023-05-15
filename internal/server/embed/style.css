@@ -186,14 +186,14 @@ body {
 	padding: var(--sz-open-grain-tab-padding);
 	margin-top: var(--sz-open-grain-tab-margin);
 }
-.open-grain-tab a {
+.open-grain-tab__title {
 	color: var(--sidebar-color);
 	text-decoration: none;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.open-grain-tab--focused a {
+.open-grain-tab--focused .open-grain-tab__title {
 	color: var(--sidebar-color-active);
 }
 .open-grain-tab--unfocused {
