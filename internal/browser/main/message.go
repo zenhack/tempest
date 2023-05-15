@@ -96,13 +96,13 @@ func (msg NewError) Update(m Model) (Model, Cmd) {
 }
 
 func (msg UpsertGrain) Update(m Model) (Model, Cmd) {
-	m.Grains[msg.ID].Handle.Release()
+	m.Grains[msg.ID].Controller.Release()
 	m.Grains[msg.ID] = msg.Grain
 	return m, nil
 }
 
 func (msg RemoveGrain) Update(m Model) (Model, Cmd) {
-	m.Grains[msg.ID].Handle.Release()
+	m.Grains[msg.ID].Controller.Release()
 	delete(m.Grains, msg.ID)
 	return m, nil
 }
@@ -196,12 +196,11 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 
 			id, err := res.Id()
 			throw(err)
-			grain, err := res.Grain()
-			throw(err)
+			view, err := res.View()
 
-			title, err := grain.Title()
+			title, err := view.Title()
 			throw(err)
-			sessionToken, err := grain.SessionToken()
+			sessionToken, err := view.SessionToken()
 			throw(err)
 
 			sendMsg(UpsertGrain{
@@ -209,7 +208,7 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 				Grain: Grain{
 					Title:        title,
 					SessionToken: sessionToken,
-					Handle:       grain.Handle().AddRef(),
+					Controller:   view.Controller().AddRef(),
 				},
 			})
 			sendMsg(FocusGrain{ID: types.GrainID(id)})

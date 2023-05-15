@@ -6,18 +6,18 @@ import (
 	"zenhack.net/go/util/exn"
 )
 
-var _ pusherHooks[types.GrainID, external.Grain] = grainPusher{}
+var _ pusherHooks[types.GrainID, external.UiView] = grainPusher{}
 
 type grainPusher struct {
 }
 
-func (gp grainPusher) Upsert(id types.GrainID, grain external.Grain) (Msg, error) {
+func (gp grainPusher) Upsert(id types.GrainID, view external.UiView) (Msg, error) {
 	return exn.Try(func(throw func(error)) Msg {
-		title, err := grain.Title()
+		title, err := view.Title()
 		throw(err)
-		sessionToken, err := grain.SessionToken()
+		sessionToken, err := view.SessionToken()
 		throw(err)
-		subdomain, err := grain.Subdomain()
+		subdomain, err := view.Subdomain()
 		throw(err)
 
 		return UpsertGrain{
@@ -26,7 +26,7 @@ func (gp grainPusher) Upsert(id types.GrainID, grain external.Grain) (Msg, error
 				Title:        title,
 				SessionToken: sessionToken,
 				Subdomain:    subdomain,
-				Handle:       grain.Handle().AddRef(),
+				Controller:   view.Controller().AddRef(),
 			},
 		}
 	})

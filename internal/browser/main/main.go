@@ -51,8 +51,8 @@ func Main() {
 
 	fut, rel := api.GetSessions(ctx, nil)
 	defer rel()
-	_, rel = fut.Visitor().ListGrains(ctx, func(p external.VisitorSession_listGrains_Params) error {
-		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.Grain]{
+	_, rel = fut.Visitor().ListViews(ctx, func(p external.VisitorSession_listViews_Params) error {
+		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.UiView]{
 			sendMsg: app.SendMessage,
 			hooks:   grainPusher{},
 		}))

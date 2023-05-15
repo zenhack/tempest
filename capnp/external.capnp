@@ -16,6 +16,7 @@ $Go.import("zenhack.net/go/tempest/capnp/external");
 using Util = import "util.capnp";
 using Collection = import "collection.capnp";
 using Spk = import "package.capnp";
+using Grain = import "grain.capnp";
 
 interface ExternalApi {
   # The bootstrap interface when connecting to the externally facing
@@ -54,8 +55,10 @@ interface Authenticator {
 }
 
 interface VisitorSession {
-  listGrains @0 (into :Collection.Pusher(Text, Grain));
-  # List the grains that the caller has access to.
+  # A VisitorSession provides operations that only require the 'visitor' role.
+
+  listViews @0 (into :Collection.Pusher(Text, UiView));
+  # List the ui views into grains that the caller has access to.
 }
 
 struct Package {
@@ -63,10 +66,11 @@ struct Package {
   controller @1 :Controller;
 
   interface Controller {
-    create @0 (title :Text, actionIndex :UInt32) -> (id :Text, grain :Grain);
+    create @0 (title :Text, actionIndex :UInt32) -> (id :Text, view :UiView);
     # Create a new grain using this package, with the given title
     # and using the action at the specified index in manifest.Actions
     # to spawn. Right now the action must have input == none.
+    # Returns the id of the new grain and it's primary UiView.
   }
 
   interface InstallStream extends (Util.ByteStream) {
@@ -92,9 +96,13 @@ interface UserSession {
   # List the packages that the caller has installed.
 }
 
-struct Grain {
+struct UiView {
+  # A UiView includes information and access to a UiView. For now, this maps 1-to-1
+  # onto grains, but in the future Tempest will support exporting multiple Ui views
+  # from the same grain.
+
   title @1 :Text;
-  # The title of the grain
+  # The title of the view
 
   sessionToken @2 :Text;
   # A session token which can be exchanged for a cookie on a ui-* subdomain. To
@@ -108,9 +116,25 @@ struct Grain {
   # The token is valid until `handle` is dropped.
 
   subdomain @3 :Text;
-  # The the subdomain, sans ui- prefix, that this grain session should be loaded
-  # from.
+  # The the subdomain, sans ui- prefix, that a session for this grain view
+  # should be loaded from.
 
-  handle @0 :Util.Handle;
-  # When handle is dropped, sessionToken is invalidated.
+  viewInfo @4 :Grain.UiView.ViewInfo;
+  # View info for the grain's main UiView.
+
+  controller @0 :Controller;
+  # Controller for manipulating the grain. When controller is dropped, sessionToken
+  # is invalidated.
+
+  interface Controller {
+    makeSharingToken @0 (permissions :List(Bool), note :Text) -> (token :Text);
+    # Make a sharing token, which can be used to construct sharing URLs. The url should be:
+    # http(s)://sandstorm.example.net/#/shared/${token}
+    #
+    # The permissions argument specifies which permissions should be shared. Each index
+    # corresponds to a permission from the permissions field of the ViewInfo.
+    #
+    # Note is a human-readable note regaring the token; this may be displayed in various
+    # places in the UI.
+  }
 }

@@ -137,7 +137,7 @@ type visitorSessionImpl struct {
 	externalApiImpl
 }
 
-func (s visitorSessionImpl) ListGrains(ctx context.Context, p external.VisitorSession_listGrains) error {
+func (s visitorSessionImpl) ListViews(ctx context.Context, p external.VisitorSession_listViews) error {
 	into := p.Args().Into()
 	p.Go()
 	return exn.Try0(func(throw func(error)) {
@@ -156,7 +156,7 @@ func (s visitorSessionImpl) ListGrains(ctx context.Context, p external.VisitorSe
 				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())
-				g, err := external.NewGrain(p.Segment())
+				g, err := external.NewUiView(p.Segment())
 				throw(err)
 				g.SetTitle(uiViewInfo.Grain.Title)
 				sessionToken, err := session.GrainSession{
@@ -278,16 +278,16 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		th(err)
 
 		results.SetId(string(grainID))
-		g, err := results.NewGrain()
+		v, err := results.NewView()
 		th(err)
-		th(g.SetTitle(title))
+		th(v.SetTitle(title))
 		sessionToken, err := session.GrainSession{
 			GrainID:   grainID,
 			SessionID: pc.userSession.SessionID,
 		}.Seal(pc.sessionStore)
 		exn.WrapThrow(th, "creating grain session token", err)
-		th(g.SetSessionToken(sessionToken))
-		// TODO: set Handle.
+		th(v.SetSessionToken(sessionToken))
+		// TODO: set ViewInfo & Controller.
 		exn.WrapThrow(th, "commiting database transaction", tx.Commit())
 
 		// TODO: maybe change container.Command so it can take tx instead of a DB?

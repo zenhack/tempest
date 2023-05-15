@@ -5,7 +5,6 @@ import (
 	"syscall/js"
 
 	"zenhack.net/go/tempest/capnp/external"
-	"zenhack.net/go/tempest/capnp/util"
 	"zenhack.net/go/tempest/internal/browser/intl"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/util/maybe"
@@ -66,7 +65,7 @@ type Grain struct {
 	Title        string
 	SessionToken string
 	Subdomain    string
-	Handle       util.Handle
+	Controller   external.UiView_Controller
 }
 
 type OpenGrain struct {
