@@ -340,7 +340,15 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 			t(l10n, "Close Grain"),
 		),
 	)
-	return h("li", a{"class": classes}, nil, titleRow)
+	kids := []vdom.VNode{titleRow}
+	if isFocused {
+		kids = append(kids, viewOpenGrainMenuItem(l10n, "Share access"))
+	}
+	return h("li", a{"class": classes}, nil, kids...)
+}
+
+func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString) vdom.VNode {
+	return t(l10n, title)
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
