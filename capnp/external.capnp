@@ -17,6 +17,7 @@ using Util = import "util.capnp";
 using Collection = import "collection.capnp";
 using Spk = import "package.capnp";
 using Grain = import "grain.capnp";
+using Identity = import "identity.capnp";
 
 interface ExternalApi {
   # The bootstrap interface when connecting to the externally facing
@@ -127,7 +128,7 @@ struct UiView {
   # is invalidated.
 
   interface Controller {
-    makeSharingToken @0 (permissions :List(Bool), note :Text) -> (token :Text);
+    makeSharingToken @0 (permissions :Identity.PermissionSet, note :Text) -> (token :Text);
     # Make a sharing token, which can be used to construct sharing URLs. The url should be:
     # http(s)://sandstorm.example.net/#/shared/${token}
     #
