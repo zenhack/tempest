@@ -65,6 +65,10 @@ type CloseGrain struct {
 	ID types.GrainID
 }
 
+type ShareGrain struct {
+	ID types.GrainID
+}
+
 type EditEmailLogin struct {
 	NewValue string
 }
@@ -343,5 +347,34 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 			Pkg: pkg,
 		})
 
+	}
+}
+
+func (msg ShareGrain) Update(m Model) (Model, Cmd) {
+	// TODO: present a UI of some kind; right now we just fetch the token
+	// and then log it.
+	ctrl := m.Grains[msg.ID].Controller.AddRef()
+	return m, func(ctx context.Context, sendMsg func(Msg)) {
+		defer ctrl.Release()
+		fut, rel := ctrl.MakeSharingToken(
+			ctx,
+			func(p external.UiView_Controller_makeSharingToken_Params) error {
+				// TODO: fill in permissions and note.
+				return nil
+
+			},
+		)
+		defer rel()
+		res, err := fut.Struct()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		token, err := res.Token()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+		js.Global().Get("console").Call("log", "token: "+token)
 	}
 }

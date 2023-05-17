@@ -338,7 +338,7 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 	)
 	kids := []vdom.VNode{titleRow}
 	if isFocused {
-		kids = append(kids, viewOpenGrainMenu(l10n, id))
+		kids = append(kids, viewOpenGrainMenu(l10n, ms, id))
 	}
 	return h("li", a{"class": classes}, nil, kids...)
 }
@@ -350,18 +350,19 @@ func viewNavLinks(links ...vdom.VNode) vdom.VNode {
 	return h("nav", nil, nil, h("ul", a{"class": "nav-links"}, nil, links...))
 }
 
-func viewOpenGrainMenu(l10n intl.L10N, id types.GrainID) vdom.VNode {
+func viewOpenGrainMenu(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID) vdom.VNode {
 	return viewNavLinks(
 		viewOpenGrainMenuItem(
 			l10n,
 			"Share access",
 			"#/share-grain/"+string(id),
+			ms.Event(ShareGrain{ID: id}),
 		),
 	)
 }
 
-func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string) vdom.VNode {
-	return h("a", a{"href": href}, nil, t(l10n, title))
+func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string, onClick vdom.EventHandler) vdom.VNode {
+	return h("a", a{"href": href}, e{"click": onClick}, t(l10n, title))
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
