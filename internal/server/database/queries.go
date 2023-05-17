@@ -208,7 +208,7 @@ func (tx Tx) NewSharingToken(
 		},
 	)
 	if err != nil {
-		return "", err
+		return "", exc.WrapError("saving sturdyRef", err)
 	}
 	_, err = tx.sqlTx.Exec(`
 		INSERT INTO
@@ -217,7 +217,7 @@ func (tx Tx) NewSharingToken(
 		hash, permString,
 	)
 	if err != nil {
-		return "", err
+		return "", exc.WrapError("saving permissions", err)
 	}
 	return token, err
 }

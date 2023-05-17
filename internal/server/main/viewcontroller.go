@@ -3,6 +3,7 @@ package servermain
 import (
 	"context"
 
+	"capnproto.org/go/capnp/v3/exc"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/database"
@@ -38,11 +39,11 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 	defer tx.Rollback()
 	accountID, err := tx.GetCredentialAccount(c.Session.Credential)
 	if err != nil {
-		return err
+		return exc.WrapError("no account for credential", err)
 	}
 	perms, err := tx.AccountGrainPermissions(accountID, c.GrainID)
 	if err != nil {
-		return err
+		return exc.WrapError("failed to fetch permissions", err)
 	}
 	if len(perms) < wantPerms.Len() {
 		perms = perms[:wantPerms.Len()]
