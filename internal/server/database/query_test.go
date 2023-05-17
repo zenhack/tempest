@@ -54,7 +54,7 @@ func addTestData(t *testing.T, tx Tx) {
 	accounts := []NewAccount{
 		{
 			ID:   "id_alice",
-			Role: RoleAdmin,
+			Role: types.RoleAdmin,
 			Profile: Profile{
 				DisplayName:     "Alice",
 				PreferredHandle: "alice",
@@ -62,7 +62,7 @@ func addTestData(t *testing.T, tx Tx) {
 		},
 		{
 			ID:   "id_bob",
-			Role: RoleUser,
+			Role: types.RoleUser,
 			Profile: Profile{
 				DisplayName:     "Bob",
 				PreferredHandle: "bob",
