@@ -5,6 +5,7 @@ package database
 import (
 	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 	"math"
 	"time"
@@ -161,14 +162,6 @@ type UiViewInfo struct {
 	Permissions []bool
 }
 
-func (tx Tx) CredentialGrainPermissions(cred types.Credential, grainID types.GrainID) (permissions []bool, err error) {
-	accountID, err := tx.GetCredentialAccount(cred)
-	if err != nil {
-		return nil, err
-	}
-	return tx.AccountGrainPermissions(accountID, grainID)
-}
-
 func (tx Tx) AccountGrainPermissions(accountID string, grainID types.GrainID) (permissions []bool, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT
@@ -193,6 +186,40 @@ func (tx Tx) AccountGrainPermissions(accountID string, grainID types.GrainID) (p
 		return nil, err
 	}
 	return parsePermissions(perm)
+}
+
+func (tx Tx) NewSharingToken(
+	grainID types.GrainID,
+	ownerID string,
+	perms []bool,
+	note string,
+) (string, error) {
+	permString := fmtPermissions(perms)
+	token := base64.RawURLEncoding.EncodeToString(tokenutil.GenToken())
+	hash, err := tx.SaveSturdyRef(
+		SturdyRefKey{
+			Token:     []byte(token),
+			OwnerType: "userkeyring",
+			Owner:     ownerID,
+		},
+		SturdyRefValue{
+			Expires: time.Unix(math.MaxInt64, 0), // never
+			GrainID: grainID,
+		},
+	)
+	if err != nil {
+		return "", err
+	}
+	_, err = tx.sqlTx.Exec(`
+		INSERT INTO
+			uiViewSturdyRefs (sha256, appPermissions)
+		VALUES (?, ?)`,
+		hash, permString,
+	)
+	if err != nil {
+		return "", err
+	}
+	return token, err
 }
 
 func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
@@ -316,6 +343,19 @@ func parsePermissions(s string) ([]bool, error) {
 		}
 	}
 	return ret, nil
+}
+
+// Inverse of parse permissions
+func fmtPermissions(perm []bool) string {
+	buf := make([]byte, len(perm))
+	for i := range perm {
+		if perm[i] {
+			buf[i] = 't'
+		} else {
+			buf[i] = 'f'
+		}
+	}
+	return string(buf)
 }
 
 // encodeCapnp encodes a capnp struct in the format we store in the database,

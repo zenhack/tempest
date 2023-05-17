@@ -21,12 +21,26 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 		return err
 	}
 
+	note, err := p.Args().Note()
+	if err != nil {
+		return err
+	}
+
+	results, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+
 	tx, err := c.DB.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
-	perms, err := tx.CredentialGrainPermissions(c.Session.Credential, c.GrainID)
+	accountID, err := tx.GetCredentialAccount(c.Session.Credential)
+	if err != nil {
+		return err
+	}
+	perms, err := tx.AccountGrainPermissions(accountID, c.GrainID)
 	if err != nil {
 		return err
 	}
@@ -36,5 +50,9 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 	for i := range perms {
 		perms[i] = perms[i] && wantPerms.At(i)
 	}
-	panic("TODO: finish")
+	token, err := tx.NewSharingToken(c.GrainID, accountID, perms, note)
+	if err != nil {
+		return err
+	}
+	return results.SetToken(token)
 }
