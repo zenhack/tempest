@@ -166,7 +166,11 @@ func (s visitorSessionImpl) ListViews(ctx context.Context, p external.VisitorSes
 				throw(err)
 				g.SetSessionToken(sessionToken)
 				g.SetSubdomain(hex.EncodeToString(tokenutil.GenToken()[:16]))
-				// TODO: handle
+				g.SetController(external.UiView_Controller_ServerToClient(uiViewControllerImpl{
+					GrainID: uiViewInfo.Grain.ID,
+					Session: s.userSession,
+					DB:      s.server.db,
+				}))
 				p.SetValue(g.ToPtr())
 				return nil
 			}))
