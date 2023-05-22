@@ -171,7 +171,7 @@ func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.Gr
 		WHERE
 			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
 			AND sturdyRefs.grainId = ?
-			AND sturdyRefs.objectId = null
+			AND sturdyRefs.objectId is null
 			AND sturdyRefs.ownerType = 'userkeyring'
 			AND sturdyRefs.owner = ?
 			AND sturdyRefs.expires > ?
