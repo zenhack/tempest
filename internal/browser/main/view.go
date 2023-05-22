@@ -112,23 +112,15 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 		h("div", a{"class": "main-ui__main"}, nil,
 			h("div", a{"class": "main-ui__sidebar"}, nil,
 				h("h1", nil, nil,
-					h("a",
-						a{"href": "#"},
-						e{"click": ms.Event(ChangeFocus{InitialFocus})},
+					h("a", a{"href": "#"}, nil,
 						t(m.L10N, "Tempest"),
 					),
 				),
 				viewNavLinks(
-					h("a",
-						a{"href": "#/apps"},
-						e{"click": ms.Event(ChangeFocus{FocusApps})},
+					h("a", a{"href": "#/apps"}, nil,
 						t(m.L10N, "Apps"),
 					),
-					h("a",
-						a{"href": "#/grains"},
-						e{"click": ms.Event(
-							ChangeFocus{FocusGrainList},
-						)},
+					h("a", a{"href": "#/grains"}, nil,
 						t(m.L10N, "Grains"),
 					),
 				),
@@ -315,7 +307,6 @@ func viewLoginForm(l10n intl.L10N, lf LoginForm, ms tea.MessageSender[Model]) vd
 }
 
 func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID, grain Grain, isFocused bool) vdom.VNode {
-	focusGrain := ms.Event(FocusGrain{ID: id})
 	classes := "open-grain-tab"
 	if isFocused {
 		classes += " open-grain-tab--focused"
@@ -328,7 +319,7 @@ func viewOpenGrain(l10n intl.L10N, ms tea.MessageSender[Model], id types.GrainID
 				"href":  "#/grain/" + string(id),
 				"class": "open-grain-tab__title",
 			},
-			e{"click": focusGrain},
+			nil,
 			builder.T(grain.Title),
 		),
 		h("button",
@@ -367,9 +358,7 @@ func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string, o
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
-	return h("a",
-		a{"href": "#/grain/" + string(id)},
-		e{"click": ms.Event(FocusGrain{ID: id})},
+	return h("a", a{"href": "#/grain/" + string(id)}, nil,
 		builder.T(grain.Title),
 	)
 }

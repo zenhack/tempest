@@ -48,14 +48,6 @@ type RemovePackage struct {
 
 type ClearPackages struct{}
 
-type ChangeFocus struct {
-	NewFocus Focus
-}
-
-type FocusGrain struct {
-	ID types.GrainID
-}
-
 type SpawnGrain struct {
 	Index int
 	PkgID types.ID[external.Package]
@@ -98,7 +90,8 @@ type NewAppPkgFile struct {
 // we set up an event listener for the "hashchange" event in our main function.
 // All of our URLs start with #, so this covers everything.
 type Navigate struct {
-	NewLocation string // Path & fragment parts of the new URL
+	// Path & fragment parts of the new URL:
+	Path, Fragment string
 }
 
 func (msg NewError) Update(m Model) (Model, Cmd) {
@@ -138,24 +131,6 @@ func (msg RemovePackage) Update(m Model) (Model, Cmd) {
 
 func (ClearPackages) Update(m Model) (Model, Cmd) {
 	m.Packages = make(map[types.ID[external.Package]]external.Package)
-	return m, nil
-}
-
-func (msg ChangeFocus) Update(m Model) (Model, Cmd) {
-	m.CurrentFocus = msg.NewFocus
-	return m, nil
-}
-
-func (msg FocusGrain) Update(m Model) (Model, Cmd) {
-	m.CurrentFocus = FocusOpenGrain
-	m.FocusedGrain = msg.ID
-	_, ok := m.OpenGrains[msg.ID]
-	if !ok {
-		index := m.GrainDomOrder.Add(msg.ID)
-		m.OpenGrains[msg.ID] = OpenGrain{
-			DomIndex: index,
-		}
-	}
 	return m, nil
 }
 
@@ -222,7 +197,7 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 					Controller:   view.Controller().AddRef(),
 				},
 			})
-			sendMsg(FocusGrain{ID: types.GrainID(id)})
+			navigate("#/grain/" + id)
 		})
 		if err != nil {
 			sendMsg(NewError{Err: err})
@@ -387,7 +362,34 @@ func (msg ShareGrain) Update(m Model) (Model, Cmd) {
 }
 
 func (msg Navigate) Update(m Model) (Model, Cmd) {
-	// TODO
-	println("new URL: " + msg.NewLocation)
+	loc := strings.TrimLeft(msg.Fragment, "/#")
+	loc = strings.TrimRight(loc, "/")
+	if loc == "" {
+		m.CurrentFocus = InitialFocus
+	} else if loc == "apps" {
+		m.CurrentFocus = FocusApps
+	} else if loc == "grains" {
+		m.CurrentFocus = FocusGrainList
+	} else if loc, ok := eatPrefix(loc, "grain/"); ok {
+		parts := strings.Split(loc, "/")
+		grainID := types.GrainID(parts[0])
+		m.CurrentFocus = FocusOpenGrain
+		m.FocusedGrain = grainID
+		_, ok := m.OpenGrains[grainID]
+		if !ok {
+			index := m.GrainDomOrder.Add(grainID)
+			m.OpenGrains[grainID] = OpenGrain{
+				DomIndex: index,
+			}
+		}
+	}
+	// TODO: catchall?
 	return m, nil
+}
+
+func eatPrefix(s, prefix string) (rest string, ok bool) {
+	if !strings.HasPrefix(s, prefix) {
+		return "", false
+	}
+	return s[len(prefix):], true
 }

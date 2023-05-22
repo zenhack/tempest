@@ -35,7 +35,8 @@ func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 func navigateMessage() Navigate {
 	loc := js.Global().Get("location")
 	return Navigate{
-		NewLocation: loc.Get("pathname").String() + loc.Get("hash").String(),
+		Path:     loc.Get("pathname").String(),
+		Fragment: loc.Get("hash").String(),
 	}
 }
 
@@ -49,6 +50,8 @@ func Main() {
 			Index(0),
 	}
 	apiPromise, apiResolver := capnp.NewLocalPromise[external.ExternalApi]()
+	model := initModel(apiPromise)
+	model, _ = navigateMessage().Update(model)
 	app := tea.NewApp(initModel(apiPromise))
 	js.Global().Call("addEventListener", "hashchange",
 		js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -56,7 +59,6 @@ func Main() {
 			return nil
 		}))
 	go app.Run(ctx, body)
-	app.SendMessage(navigateMessage())
 
 	conn, api := getCapnpApi(ctx)
 	defer conn.Close()
