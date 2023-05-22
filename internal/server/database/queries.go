@@ -211,8 +211,7 @@ func (tx Tx) NewSharingToken(
 		return "", exc.WrapError("saving sturdyRef", err)
 	}
 	_, err = tx.sqlTx.Exec(`
-		INSERT INTO
-			uiViewSturdyRefs (sha256, appPermissions)
+		INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
 		VALUES (?, ?)`,
 		hash[:], permString,
 	)
