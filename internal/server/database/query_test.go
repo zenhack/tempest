@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -150,7 +151,14 @@ func mustCommit(t *testing.T, tx Tx) {
 }
 
 func openTestDB(t *testing.T) DB {
-	sqlDB, err := sql.Open("sqlite3", ":memory:")
+	// By default we just use an in-memory database, but it can be handy to
+	// use an on-disk one so we can inspect it after a test failure to debug:
+	dbPath := os.Getenv("TEST_DB_PATH")
+	if dbPath == "" {
+		dbPath = ":memory:"
+	}
+
+	sqlDB, err := sql.Open("sqlite3", dbPath)
 	assert.NoError(t, err)
 	db, err := InitDB(sqlDB)
 	assert.NoError(t, err)
