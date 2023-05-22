@@ -189,8 +189,8 @@ func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.Gr
 }
 
 func (tx Tx) NewSharingToken(
-	grainID types.GrainID,
 	ownerID types.AccountID,
+	grainID types.GrainID,
 	perms []bool,
 	note string,
 ) (string, error) {

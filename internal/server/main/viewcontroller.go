@@ -51,7 +51,7 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 	for i := range perms {
 		perms[i] = perms[i] && wantPerms.At(i)
 	}
-	token, err := tx.NewSharingToken(c.GrainID, accountID, perms, note)
+	token, err := tx.NewSharingToken(accountID, c.GrainID, perms, note)
 	if err != nil {
 		return err
 	}
