@@ -52,6 +52,7 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 	js.Global().Get("document").Set("title", m.pageTitle())
 
 	content := dummyNode
+	modal := dummyNode
 	session, loginReady := m.LoginSessions.Get()
 	if !loginReady {
 		content = t(m.L10N, "Loading...")
@@ -105,7 +106,7 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 		}
 		iframes = append(iframes, vnode)
 	}
-	contentNodes := append([]vdom.VNode{content}, iframes...)
+	contentNodes := append([]vdom.VNode{content, modal}, iframes...)
 
 	mainUiNodes := []vdom.VNode{
 		h("div", a{"class": "main-ui__main"}, nil,
