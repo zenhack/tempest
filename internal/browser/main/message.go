@@ -370,26 +370,33 @@ func (msg Navigate) Update(m Model) (Model, Cmd) {
 		m.CurrentFocus = FocusApps
 	} else if loc == "grains" {
 		m.CurrentFocus = FocusGrainList
-	} else if loc, ok := eatPrefix(loc, "grain/"); ok {
-		parts := strings.Split(loc, "/")
-		grainID := types.GrainID(parts[0])
-		m.CurrentFocus = FocusOpenGrain
-		m.FocusedGrain = grainID
-		_, ok := m.OpenGrains[grainID]
-		if !ok {
-			index := m.GrainDomOrder.Add(grainID)
-			m.OpenGrains[grainID] = OpenGrain{
-				DomIndex: index,
-			}
-		}
+	} else if eatPrefix(&loc, "grain/") {
+		m.FocusGrain(types.GrainID(strings.Split(loc, "/")[0]))
+	} else if eatPrefix(&loc, "share-grain/") {
+		grainID := types.GrainID(strings.Split(loc, "/")[0])
+		m.FocusGrain(grainID)
+		m.CurrentFocus = FocusShareGrain
 	}
 	// TODO: catchall?
 	return m, nil
 }
 
-func eatPrefix(s, prefix string) (rest string, ok bool) {
-	if !strings.HasPrefix(s, prefix) {
-		return "", false
+func (m *Model) FocusGrain(grainID types.GrainID) {
+	m.CurrentFocus = FocusOpenGrain
+	m.FocusedGrain = grainID
+	_, ok := m.OpenGrains[grainID]
+	if !ok {
+		index := m.GrainDomOrder.Add(grainID)
+		m.OpenGrains[grainID] = OpenGrain{
+			DomIndex: index,
+		}
 	}
-	return s[len(prefix):], true
+}
+
+func eatPrefix(s *string, prefix string) (ok bool) {
+	if !strings.HasPrefix(*s, prefix) {
+		return false
+	}
+	*s = (*s)[len(prefix):]
+	return true
 }

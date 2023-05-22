@@ -81,6 +81,8 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 			if m.FocusedGrain == "" {
 				content = t(m.L10N, "Placeholder; select a grain.")
 			}
+		case FocusShareGrain:
+			content = m.viewShareGrainDialog(ms)
 		default:
 			panic("Unknown focus value")
 		}
@@ -144,6 +146,18 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 	return h("body", nil, nil,
 		h("div", a{"class": "main-ui"}, nil, mainUiNodes...),
 	)
+}
+
+func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
+	return viewModal(h("button", nil,
+		e{"click": ms.Event(ShareGrain{ID: m.FocusedGrain})},
+		t(m.L10N, "Share Grain"),
+	))
+}
+
+func viewModal(dialog vdom.VNode) vdom.VNode {
+	// TODO
+	return h("div", nil, nil, dialog)
 }
 
 func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {
@@ -348,19 +362,28 @@ func viewOpenGrainMenu(l10n intl.L10N, ms tea.MessageSender[Model], id types.Gra
 			l10n,
 			"Share access",
 			"#/share-grain/"+string(id),
-			ms.Event(ShareGrain{ID: id}),
 		),
 	)
 }
 
-func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string, onClick vdom.EventHandler) vdom.VNode {
-	return h("a", a{"href": href}, e{"click": onClick}, t(l10n, title))
+func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string) vdom.VNode {
+	return h("a", a{"href": href}, nil, t(l10n, title))
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
 	return h("a", a{"href": "#/grain/" + string(id)}, nil,
 		builder.T(grain.Title),
 	)
+}
+
+// HasGrain returns whether or not the focus should display the current grain's iframe.
+func (f Focus) HasGrain() bool {
+	switch f {
+	case FocusOpenGrain, FocusShareGrain:
+		return true
+	default:
+		return false
+	}
 }
 
 func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
@@ -372,7 +395,7 @@ func viewGrainIframe(m Model, id types.GrainID) vdom.VNode {
 	grainUrl.Path = "/_sandstorm-init"
 	grainUrl.RawQuery = qv.Encode()
 	class := "grain-iframe"
-	if m.CurrentFocus != FocusOpenGrain || m.FocusedGrain != id {
+	if !m.CurrentFocus.HasGrain() || m.FocusedGrain != id {
 		class += " grain-iframe--inactive"
 	}
 	return h("iframe", a{

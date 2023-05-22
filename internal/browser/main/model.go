@@ -57,6 +57,7 @@ const (
 	FocusGrainList Focus = iota
 	FocusApps
 	FocusOpenGrain
+	FocusShareGrain
 
 	InitialFocus = FocusGrainList
 )
