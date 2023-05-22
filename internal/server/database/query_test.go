@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"zenhack.net/go/tempest/internal/common/types"
 )
 
@@ -46,6 +47,19 @@ func TestGetUiViews(t *testing.T) {
 			Owner: "id_alice",
 		}, views[0].Grain)
 		assert.Equal(t, 0, len(views[0].Permissions))
+	})
+}
+
+func TestAccountGrainPermissions(t *testing.T) {
+	testWithTx(t, func(tx Tx) {
+		addTestData(t, tx)
+
+		expectedPerm := []bool{true, false, true}
+		_, err := tx.NewSharingToken("id_bob", "grain123", expectedPerm, "Test share")
+		require.NoError(t, err)
+		actualPerm, err := tx.AccountGrainPermissions("id_bob", "grain123")
+		require.NoError(t, err)
+		require.Equal(t, expectedPerm, actualPerm)
 	})
 }
 
