@@ -20,4 +20,8 @@ mongo-snapshot
 # Used by the lego (go let's encrypt) cli tool:
 .lego
 
+# temporary databases:
+*.db
+*.sqlite3
+
 env.sh
