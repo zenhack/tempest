@@ -160,7 +160,7 @@ func installExe(cfg Config, exe, dir, caps string) {
 	defer dst.Close()
 	_, err = io.Copy(dst, src)
 	chkfatal(err)
-	chkfatal(os.Chown(dstPath, 0, getGid("sandstorm")))
+	chkfatal(os.Chown(dstPath, 0, getGid(cfg.Group)))
 	if caps != "" {
 		chkfatal(withMyOuts(exec.Command("setcap", caps, dstPath)).Run())
 	}
