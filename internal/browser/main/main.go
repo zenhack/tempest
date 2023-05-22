@@ -43,6 +43,15 @@ func Main() {
 	}
 	apiPromise, apiResolver := capnp.NewLocalPromise[external.ExternalApi]()
 	app := tea.NewApp(initModel(apiPromise))
+	js.Global().Call("addEventListener", "hashchange",
+		js.FuncOf(func(this js.Value, args []js.Value) any {
+			event := args[0]
+			app.SendMessage(Navigate{
+				OldURL: event.Get("oldURL").String(),
+				NewURL: event.Get("newURL").String(),
+			})
+			return nil
+		}))
 	go app.Run(ctx, body)
 
 	conn, api := getCapnpApi(ctx)

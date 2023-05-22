@@ -94,6 +94,13 @@ type NewAppPkgFile struct {
 	Reader streams.ReadableStreamDefaultReader
 }
 
+// The URL has changed. We never send this one explicitly from UI code; instead
+// we set up an event listener for the "hashchange" event in our main function.
+// All of our URLs start with #, so this covers everything.
+type Navigate struct {
+	OldURL, NewURL string
+}
+
 func (msg NewError) Update(m Model) (Model, Cmd) {
 	m.Errors = append(m.Errors, msg.Err)
 	return m, nil
@@ -377,4 +384,11 @@ func (msg ShareGrain) Update(m Model) (Model, Cmd) {
 		}
 		js.Global().Get("console").Call("log", "token: "+token)
 	}
+}
+
+func (msg Navigate) Update(m Model) (Model, Cmd) {
+	// TODO
+	println("old URL: " + msg.OldURL)
+	println("new URL: " + msg.NewURL)
+	return m, nil
 }
