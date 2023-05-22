@@ -214,7 +214,7 @@ func (tx Tx) NewSharingToken(
 		INSERT INTO
 			uiViewSturdyRefs (sha256, appPermissions)
 		VALUES (?, ?)`,
-		hash, permString,
+		hash[:], permString,
 	)
 	if err != nil {
 		return "", exc.WrapError("saving permissions", err)
