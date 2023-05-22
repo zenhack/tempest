@@ -298,7 +298,7 @@ func importGrains(snapshotDir string, tx database.Tx) error {
 				case "title":
 					grain.Title = e.Value().StringValue()
 				case "userId":
-					grain.OwnerID = e.Value().StringValue()
+					grain.OwnerID = types.AccountID(e.Value().StringValue())
 				}
 			}
 

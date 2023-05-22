@@ -12,6 +12,14 @@ type Grain struct{}
 // GrainID is an alias for ID[Grain].
 type GrainID = ID[Grain]
 
+// An account identifies a user account. Right now this is just a phantom
+// type for use with ID.
+type Account struct {
+}
+
+// AcccountID is an alias for ID[Account]
+type AccountID = ID[Account]
+
 // A Credential is something that Tempest can authenticate a user as. Examples
 // (not necessarily all implemented) owner of an email address, SSO account.
 type Credential struct {

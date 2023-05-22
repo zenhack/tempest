@@ -19,14 +19,14 @@ func TestGetCredentialAccount(t *testing.T) {
 			ScopedID: "Alice Dev Admin",
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, id, "id_alice")
+		assert.Equal(t, id, types.AccountID("id_alice"))
 
 		id, err = tx.GetCredentialAccount(types.Credential{
 			"dev",
 			"Bob Dev User",
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, id, "id_bob")
+		assert.Equal(t, id, types.AccountID("id_bob"))
 	})
 }
 

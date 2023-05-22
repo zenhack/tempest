@@ -77,7 +77,7 @@ func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
 type NewGrain struct {
 	GrainID types.GrainID
 	PkgID   types.ID[Package]
-	OwnerID string
+	OwnerID types.AccountID
 	Title   string
 }
 
@@ -162,7 +162,7 @@ type UiViewInfo struct {
 	Permissions []bool
 }
 
-func (tx Tx) AccountGrainPermissions(accountID string, grainID types.GrainID) (permissions []bool, err error) {
+func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.GrainID) (permissions []bool, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT
 			uiViewSturdyRefs.appPermissions
@@ -190,7 +190,7 @@ func (tx Tx) AccountGrainPermissions(accountID string, grainID types.GrainID) (p
 
 func (tx Tx) NewSharingToken(
 	grainID types.GrainID,
-	ownerID string,
+	ownerID types.AccountID,
 	perms []bool,
 	note string,
 ) (string, error) {
@@ -230,7 +230,7 @@ func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
 	return tx.AccountUiViews(accountID)
 }
 
-func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID string, err error) {
+func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID types.AccountID, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
 		cred.Type, cred.ScopedID,
@@ -239,7 +239,7 @@ func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID string, err 
 	return
 }
 
-func (tx Tx) AccountUiViews(accountID string) ([]UiViewInfo, error) {
+func (tx Tx) AccountUiViews(accountID types.AccountID) ([]UiViewInfo, error) {
 	rows, err := tx.sqlTx.Query(
 		`SELECT
 			grains.id,
@@ -285,7 +285,7 @@ func (tx Tx) AccountUiViews(accountID string) ([]UiViewInfo, error) {
 	return ret, rows.Err()
 }
 
-func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID string, err error) {
+func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID types.AccountID, err error) {
 	err = tx.sqlTx.QueryRow(
 		`SELECT ownerId FROM grains WHERE id = ?`,
 		grainID,
@@ -398,8 +398,9 @@ func (tx Tx) SetGrainViewInfo(grainID string, viewInfo grain.UiView_ViewInfo) er
 // A SturdyRefKey is the data by which a sturdyRef may be fetched from the database (using
 // RestoreSturdyRef).
 type SturdyRefKey struct {
-	Token            []byte
-	OwnerType, Owner string
+	Token     []byte
+	OwnerType string
+	Owner     types.AccountID
 }
 
 // A SturdyRefValue is a persistent value stored in the database, which may be fetched
