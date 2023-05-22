@@ -32,6 +32,13 @@ func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 	return conn, bs
 }
 
+func navigateMessage() Navigate {
+	loc := js.Global().Get("location")
+	return Navigate{
+		NewLocation: loc.Get("pathname").String() + loc.Get("hash").String(),
+	}
+}
+
 func Main() {
 	ctx := context.Background()
 
@@ -45,14 +52,11 @@ func Main() {
 	app := tea.NewApp(initModel(apiPromise))
 	js.Global().Call("addEventListener", "hashchange",
 		js.FuncOf(func(this js.Value, args []js.Value) any {
-			event := args[0]
-			app.SendMessage(Navigate{
-				OldURL: event.Get("oldURL").String(),
-				NewURL: event.Get("newURL").String(),
-			})
+			app.SendMessage(navigateMessage())
 			return nil
 		}))
 	go app.Run(ctx, body)
+	app.SendMessage(navigateMessage())
 
 	conn, api := getCapnpApi(ctx)
 	defer conn.Close()

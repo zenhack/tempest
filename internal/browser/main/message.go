@@ -98,7 +98,7 @@ type NewAppPkgFile struct {
 // we set up an event listener for the "hashchange" event in our main function.
 // All of our URLs start with #, so this covers everything.
 type Navigate struct {
-	OldURL, NewURL string
+	NewLocation string // Path & fragment parts of the new URL
 }
 
 func (msg NewError) Update(m Model) (Model, Cmd) {
@@ -388,7 +388,6 @@ func (msg ShareGrain) Update(m Model) (Model, Cmd) {
 
 func (msg Navigate) Update(m Model) (Model, Cmd) {
 	// TODO
-	println("old URL: " + msg.OldURL)
-	println("new URL: " + msg.NewURL)
+	println("new URL: " + msg.NewLocation)
 	return m, nil
 }
