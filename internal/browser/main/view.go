@@ -157,7 +157,9 @@ func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
 
 func viewModal(dialog vdom.VNode) vdom.VNode {
 	// TODO
-	return h("div", nil, nil, dialog)
+	return h("div", a{"class": "modal-dialog"}, nil,
+		h("div", a{"class": "modal-dialog__content"}, nil, dialog),
+	)
 }
 
 func (m Model) viewApps(ms tea.MessageSender[Model]) vdom.VNode {

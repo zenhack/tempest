@@ -14,14 +14,16 @@
 	--sandstorm-purple: #762f87;
 	--sandstorm-darkpurple: #65468e;
 
-	/** Greys (1-9) **/
+	/** Greys (1-9). The -a variants add an alpha of 75%. **/
 	--grey-1: hsl(0 0% 10%);
 	--grey-2: hsl(0 0% 20%);
+	--grey-2-a: hsla(0 0% 20% / 75%);
 	--grey-3: hsl(0 0% 30%);
 	--grey-4: hsl(0 0% 40%);
 	--grey-5: hsl(0 0% 50%);
 	--grey-6: hsl(0 0% 60%);
 	--grey-7: hsl(0 0% 70%);
+	--grey-7-a: hsl(0 0% 70% / 75%);
 	--grey-8: hsl(0 0% 80%);
 	--grey-9: hsl(0 0% 90%);
 
@@ -86,6 +88,8 @@
 
 	--default-content-bgcolor: var(--grey-8);
 	--default-content-color: var(--grey-1);
+
+	--modal-bgcolor: var(--grey-2-a);
 }
 
 @media(prefers-color-scheme: dark) {
@@ -103,6 +107,8 @@
 
 		--default-content-bgcolor: var(--grey-2);
 		--default-content-color: var(--grey-9);
+
+		--modal-bgcolor: var(--grey-7-a);
 	}
 }
 
@@ -167,6 +173,17 @@ body {
 	color: var(--sidebar-color);
 	width: var(--sz-192);
 }
+
+.modal-dialog{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: var(--modal-bgcolor);
+}
+
 
 .nav-links {
 	list-style: none;
