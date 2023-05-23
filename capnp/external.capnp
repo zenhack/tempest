@@ -121,7 +121,7 @@ struct UiView {
   # should be loaded from.
 
   viewInfo @4 :Grain.UiView.ViewInfo;
-  # View info for the grain's main UiView.
+  # View info for the UiView.
 
   controller @0 :Controller;
   # Controller for manipulating the grain. When controller is dropped, sessionToken
