@@ -150,10 +150,20 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 // viewShareGrainDialog renders the dialog for generating a sharing link.
 // Right now this is a simple button, which is just a placeholder.
 func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
-	return viewModal(h("button", nil,
-		e{"click": ms.Event(ShareGrain{ID: m.FocusedGrain})},
-		t(m.L10N, "Share Grain"),
-	))
+	id := m.FocusedGrain
+	onClose := func(e vdom.Event) any {
+		navigate("#grain/" + string(id))
+		return nil
+	}
+	return viewModal(h("div", nil, nil,
+		h("button", nil,
+			e{"click": ms.Event(ShareGrain{ID: id})},
+			t(m.L10N, "Share Grain")),
+		h("button",
+			a{"class": "close-button"},
+			e{"click": &onClose},
+			t(m.L10N, "cancel sharing"),
+		)))
 }
 
 // viewModal renders a modal dialog; the argument is centered over a semi-transparent
