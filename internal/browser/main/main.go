@@ -53,7 +53,7 @@ func Main() {
 	}
 	apiPromise, apiResolver := capnp.NewLocalPromise[external.ExternalApi]()
 	model := initModel(apiPromise)
-	model, _ = navigateMessage().Update(model)
+	navigateMessage().Update(&model)
 	app := tea.NewApp(initModel(apiPromise))
 	js.Global().Call("addEventListener", "hashchange",
 		js.FuncOf(func(this js.Value, args []js.Value) any {

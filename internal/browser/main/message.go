@@ -94,47 +94,47 @@ type Navigate struct {
 	Path, Fragment string
 }
 
-func (msg NewError) Update(m Model) (Model, Cmd) {
+func (msg NewError) Update(m *Model) Cmd {
 	m.Errors = append(m.Errors, msg.Err)
-	return m, nil
+	return nil
 }
 
-func (msg UpsertGrain) Update(m Model) (Model, Cmd) {
+func (msg UpsertGrain) Update(m *Model) Cmd {
 	m.Grains[msg.ID].Controller.Release()
 	m.Grains[msg.ID] = msg.Grain
-	return m, nil
+	return nil
 }
 
-func (msg RemoveGrain) Update(m Model) (Model, Cmd) {
+func (msg RemoveGrain) Update(m *Model) Cmd {
 	m.Grains[msg.ID].Controller.Release()
 	delete(m.Grains, msg.ID)
-	return m, nil
+	return nil
 }
 
-func (ClearGrains) Update(m Model) (Model, Cmd) {
+func (ClearGrains) Update(m *Model) Cmd {
 	m.Grains = make(map[types.GrainID]Grain)
-	return m, nil
+	return nil
 }
 
-func (msg UpsertPackage) Update(m Model) (Model, Cmd) {
+func (msg UpsertPackage) Update(m *Model) Cmd {
 	m.Packages[msg.ID].Controller().Release()
 	m.Packages[msg.ID] = msg.Pkg
-	return m, nil
+	return nil
 }
 
-func (msg RemovePackage) Update(m Model) (Model, Cmd) {
+func (msg RemovePackage) Update(m *Model) Cmd {
 	// TODO(perf): release the whole message?
 	m.Packages[msg.ID].Controller().Release()
 	delete(m.Packages, msg.ID)
-	return m, nil
+	return nil
 }
 
-func (ClearPackages) Update(m Model) (Model, Cmd) {
+func (ClearPackages) Update(m *Model) Cmd {
 	m.Packages = make(map[types.ID[external.Package]]external.Package)
-	return m, nil
+	return nil
 }
 
-func (msg CloseGrain) Update(m Model) (Model, Cmd) {
+func (msg CloseGrain) Update(m *Model) Cmd {
 	g, ok := m.OpenGrains[msg.ID]
 	if ok {
 		delete(m.OpenGrains, msg.ID)
@@ -144,15 +144,13 @@ func (msg CloseGrain) Update(m Model) (Model, Cmd) {
 		}
 		m.GrainDomOrder.Remove(g.DomIndex)
 	}
-	return m, nil
+	return nil
 }
 
-func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
+func (msg SpawnGrain) Update(m *Model) Cmd {
 	pkg := m.Packages[msg.PkgID]
-
 	ctrl := pkg.Controller().AddRef()
-
-	return m, func(ctx context.Context, sendMsg func(Msg)) {
+	return func(ctx context.Context, sendMsg func(Msg)) {
 		err := exn.Try0(func(throw func(error)) {
 
 			defer ctrl.Release()
@@ -205,13 +203,13 @@ func (msg SpawnGrain) Update(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
+func (msg LoginSessionResult) Update(m *Model) Cmd {
 	m.LoginSessions = maybe.New(msg.Result)
 	sess, err := msg.Result.Get()
 	if err != nil {
-		return m, nil
+		return nil
 	}
-	return m, func(ctx context.Context, sendMsg func(Msg)) {
+	return func(ctx context.Context, sendMsg func(Msg)) {
 		// TODO: there's no actual reason to wait for the result before doing all this:
 		pusher := collection.Pusher_ServerToClient(pusher[types.ID[external.Package], external.Package]{
 			sendMsg: sendMsg,
@@ -229,22 +227,22 @@ func (msg LoginSessionResult) Update(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg EditEmailLogin) Update(m Model) (Model, Cmd) {
+func (msg EditEmailLogin) Update(m *Model) Cmd {
 	m.LoginForm.EmailInput = msg.NewValue
-	return m, nil
+	return nil
 }
 
-func (msg EditEmailToken) Update(m Model) (Model, Cmd) {
+func (msg EditEmailToken) Update(m *Model) Cmd {
 	m.LoginForm.TokenInput = msg.NewValue
-	return m, nil
+	return nil
 }
 
-func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
+func (msg SubmitEmailLogin) Update(m *Model) Cmd {
 	api := m.API
 	address := m.LoginForm.EmailInput
 	m.LoginForm.TokenSent = true
 	m.LoginForm.EmailInput = ""
-	return m, func(ctx context.Context, sendMsg func(Msg)) {
+	return func(ctx context.Context, sendMsg func(Msg)) {
 		authFut, rel := api.Authenticator(ctx, nil)
 		defer rel()
 		sendFut, rel := authFut.Authenticator().
@@ -257,13 +255,13 @@ func (msg SubmitEmailLogin) Update(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg SubmitEmailToken) Update(m Model) (Model, Cmd) {
-	return m, func(context.Context, func(Msg)) {
+func (msg SubmitEmailToken) Update(m *Model) Cmd {
+	return func(context.Context, func(Msg)) {
 		js.Global().Get("location").Set("href", "/login/email/"+strings.TrimSpace(m.LoginForm.TokenInput))
 	}
 }
 
-func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
+func (msg NewAppPkgFile) Update(m *Model) Cmd {
 	var (
 		userSess external.UserSession
 		err      error
@@ -275,7 +273,7 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 			userSess = login.User.AddRef()
 		}
 	}
-	return m, func(ctx context.Context, sendMsg func(Msg)) {
+	return func(ctx context.Context, sendMsg func(Msg)) {
 		if !ok {
 			sendMsg(NewError{
 				Err: errors.New("No login session yet; can't install app"),
@@ -332,11 +330,11 @@ func (msg NewAppPkgFile) Update(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg ShareGrain) Update(m Model) (Model, Cmd) {
+func (msg ShareGrain) Update(m *Model) Cmd {
 	// TODO: present a UI of some kind; right now we just fetch the token
 	// and then log it.
 	ctrl := m.Grains[msg.ID].Controller.AddRef()
-	return m, func(ctx context.Context, sendMsg func(Msg)) {
+	return func(ctx context.Context, sendMsg func(Msg)) {
 		defer ctrl.Release()
 		fut, rel := ctrl.MakeSharingToken(
 			ctx,
@@ -361,7 +359,7 @@ func (msg ShareGrain) Update(m Model) (Model, Cmd) {
 	}
 }
 
-func (msg Navigate) Update(m Model) (Model, Cmd) {
+func (msg Navigate) Update(m *Model) Cmd {
 	loc := strings.TrimLeft(msg.Fragment, "/#")
 	loc = strings.TrimRight(loc, "/")
 	if loc == "" {
@@ -378,7 +376,7 @@ func (msg Navigate) Update(m Model) (Model, Cmd) {
 		m.CurrentFocus = FocusShareGrain
 	}
 	// TODO: catchall?
-	return m, nil
+	return nil
 }
 
 func (m *Model) FocusGrain(grainID types.GrainID) {
