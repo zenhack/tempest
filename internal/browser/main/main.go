@@ -32,6 +32,8 @@ func getCapnpApi(ctx context.Context) (*rpc.Conn, external.ExternalApi) {
 	return conn, bs
 }
 
+// navigateMessage returns a Navigate that communicates a navigation event to the current
+// value of window.location.
 func navigateMessage() Navigate {
 	loc := js.Global().Get("location")
 	return Navigate{
