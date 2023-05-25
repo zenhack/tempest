@@ -137,16 +137,34 @@ type visitorSessionImpl struct {
 	externalApiImpl
 }
 
-func (s visitorSessionImpl) ListViews(ctx context.Context, p external.VisitorSession_listViews) error {
+func (s visitorSessionImpl) Views(ctx context.Context, p external.VisitorSession_views) error {
+	res, err := p.AllocResults()
+	if err != nil {
+		return err
+	}
+	return res.SetViews(collection.Puller_ServerToClient(viewsPuller{
+		externalApiImpl: s.externalApiImpl,
+	}))
+}
+
+type viewsPuller struct {
+	externalApiImpl
+}
+
+func (viewsPuller) Key(ctx context.Context, p collection.Puller_key) error {
+	return capnp.Unimplemented("not implemented")
+}
+
+func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error {
 	into := p.Args().Into()
 	p.Go()
 	return exn.Try0(func(throw func(error)) {
 		// TODO(cleanup): update our wrapper to support one-off queries without having to
 		// create a whole transaction; this is too much boilerplate.
-		tx, err := s.server.db.Begin()
+		tx, err := vp.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		info, err := tx.GetCredentialUiViews(s.userSession.Credential)
+		info, err := tx.GetCredentialUiViews(vp.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -161,15 +179,15 @@ func (s visitorSessionImpl) ListViews(ctx context.Context, p external.VisitorSes
 				g.SetTitle(uiViewInfo.Grain.Title)
 				sessionToken, err := session.GrainSession{
 					GrainID:   uiViewInfo.Grain.ID,
-					SessionID: s.userSession.SessionID,
-				}.Seal(s.sessionStore)
+					SessionID: vp.userSession.SessionID,
+				}.Seal(vp.sessionStore)
 				throw(err)
 				g.SetSessionToken(sessionToken)
 				g.SetSubdomain(hex.EncodeToString(tokenutil.GenToken()[:16]))
 				g.SetController(external.UiView_Controller_ServerToClient(uiViewControllerImpl{
 					GrainID: uiViewInfo.Grain.ID,
-					Session: s.userSession,
-					DB:      s.server.db,
+					Session: vp.userSession,
+					DB:      vp.server.db,
 				}))
 				p.SetValue(g.ToPtr())
 				return nil

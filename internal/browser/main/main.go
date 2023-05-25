@@ -66,9 +66,11 @@ func Main() {
 	defer conn.Close()
 	apiResolver.Fulfill(api)
 
-	fut, rel := api.GetSessions(ctx, nil)
+	sessionsFut, rel := api.GetSessions(ctx, nil)
 	defer rel()
-	_, rel = fut.Visitor().ListViews(ctx, func(p external.VisitorSession_listViews_Params) error {
+	viewsFut, rel := sessionsFut.Visitor().Views(ctx, nil)
+	defer rel()
+	syncFut, rel := viewsFut.Views().Sync(ctx, func(p collection.Puller_sync_Params) error {
 		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.UiView]{
 			sendMsg: app.SendMessage,
 			hooks:   grainPusher{},
@@ -76,7 +78,7 @@ func Main() {
 		return nil
 	})
 	defer rel()
-	res, err := fut.Struct()
+	res, err := sessionsFut.Struct()
 	if err != nil {
 		app.SendMessage(LoginSessionResult{Result: orerr.New(Sessions{}, err)})
 	} else {
@@ -86,6 +88,9 @@ func Main() {
 				User:    res.User().AddRef(),
 			}, nil),
 		})
+	}
+	if _, err := syncFut.Struct(); err != nil {
+		app.SendMessage(NewError{Err: err})
 	}
 	<-ctx.Done()
 }

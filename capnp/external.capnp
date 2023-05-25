@@ -58,8 +58,11 @@ interface Authenticator {
 interface VisitorSession {
   # A VisitorSession provides operations that only require the 'visitor' role.
 
-  listViews @0 (into :Collection.Pusher(Text, UiView));
-  # List the ui views into grains that the caller has access to.
+  views @0 () -> (views :Collection.Puller(Text, UiView));
+  # Get the ui views into grains that the caller has access to.
+  # XXX: this currently keys on grain IDs, but we eventually want to
+  # be able to have more than one view per grain. This interface will
+  # need to be reworked.
 }
 
 struct Package {
