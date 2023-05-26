@@ -69,8 +69,18 @@ func Main() {
 	sessionsFut, rel := api.GetSessions(ctx, nil)
 	defer rel()
 	viewsFut, rel := sessionsFut.Visitor().Views(ctx, nil)
+
+	// FIXME: we're blocking on viewsFut for now due to what
+	// seems like a go-capnp bug. Figure out what's going on
+	// there and then drop this for improved latency.
+	viewsRes, err := viewsFut.Struct()
+	if err != nil {
+		app.SendMessage(NewError{Err: err})
+		return
+	}
+
 	defer rel()
-	syncFut, rel := viewsFut.Views().Sync(ctx, func(p collection.Puller_sync_Params) error {
+	syncFut, rel := viewsRes.Views().Sync(ctx, func(p collection.Puller_sync_Params) error {
 		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.UiView]{
 			sendMsg: app.SendMessage,
 			hooks:   grainPusher{},
