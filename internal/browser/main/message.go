@@ -289,11 +289,21 @@ func (msg NewAppPkgFile) Update(m *Model) Cmd {
 		c.Call("log", msg.Name, msg.Size, msg.Reader.Value)
 		ipFut, rel := userSess.InstallPackage(ctx, nil)
 		defer rel()
-		stream := ipFut.Stream()
+
+		// FIXME: See issue #11; probably a capnp bug but
+		// blocking here gets rid of a spurrious unimplemented
+		// exception.
+		ipRes, err := ipFut.Struct()
+		if err != nil {
+			sendMsg(NewError{Err: err})
+			return
+		}
+
+		stream := ipRes.Stream()
 		pkgFut, rel := stream.GetPackage(ctx, nil)
 		defer rel()
 		wc := bytestream.ToWriteCloser(ctx, util.ByteStream(stream))
-		_, err := msg.Reader.WriteTo(wc)
+		_, err = msg.Reader.WriteTo(wc)
 		if err != nil {
 			sendMsg(NewError{Err: err})
 			return
