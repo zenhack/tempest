@@ -140,5 +140,8 @@ struct UiView {
     #
     # Note is a human-readable note regaring the token; this may be displayed in various
     # places in the UI.
+    #
+    # In addition to accessing the UiView from the UI, you can also pass it to
+    # ExternalApi.restore, which will return a Util.Getter(UiView).
   }
 }
