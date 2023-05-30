@@ -25,9 +25,13 @@ require (
 	zenhack.net/go/websocket-capnp v0.0.0-20230212023810-f179b8b2c72b
 )
 
+// NOTE: We don't use this package directly; it is pulled in by lego, but lego
+// asks for version 0.2.0, which causes a build error that is fixed
+// by updating to 0.2.1; see https://github.com/googleapis/google-cloud-go/issues/6956
+require cloud.google.com/go/compute/metadata v0.2.1
+
 require (
 	cloud.google.com/go/compute v1.15.1 // indirect
-	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	github.com/Azure/azure-sdk-for-go v32.4.0+incompatible // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest v0.11.24 // indirect
