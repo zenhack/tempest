@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -65,7 +66,30 @@ func (api externalApiImpl) GetSessions(ctx context.Context, p external.ExternalA
 }
 
 func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_restore) error {
-	return capnp.Unimplemented("ExternalApi.restore() is unimplemented.")
+	p.Go()
+	return exn.Try0(func(throw exn.Thrower) {
+		token, err := p.Args().SturdyRef()
+		throw(err)
+		tx, err := api.server.db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		v, err := tx.RestoreSturdyRef(database.SturdyRefKey{
+			Token:     token,
+			OwnerType: "external-api",
+		})
+		throw(err)
+		if v.GrainID == "" {
+			oid := system.SystemObjectId(v.ObjectID)
+			switch oid.Which() {
+			case system.SystemObjectId_Which_sharingToken:
+				s := oid.SharingToken()
+			default:
+				return fmt.Errorf("Restore not supported on system objects of type %v", oid.Which())
+			}
+		} else {
+			return errors.New("TODO: implement ExternalApi.restore() for non-system objects")
+		}
+	})
 }
 
 func (api externalApiImpl) Authenticator(ctx context.Context, p external.ExternalApi_authenticator) error {

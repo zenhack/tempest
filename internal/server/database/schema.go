@@ -105,6 +105,8 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				--   directly; logically each user has a "keyring" of capabilities
 				--   reachable via APIs that require them to be logged in; some of
 				--   those APIs look for this type.
+				-- * 'external-api': "owner" is the empty string, and the sturdyRef
+				--   must be restored via ExternalApi.restore().
 				ownerType VARCHAR NOT NULL,
 				owner VARCHAR NOT NULL,
 

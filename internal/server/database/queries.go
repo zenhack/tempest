@@ -189,7 +189,6 @@ func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.Gr
 }
 
 func (tx Tx) NewSharingToken(
-	ownerID types.AccountID,
 	grainID types.GrainID,
 	perms []bool,
 	note string,
@@ -199,8 +198,7 @@ func (tx Tx) NewSharingToken(
 	hash, err := tx.SaveSturdyRef(
 		SturdyRefKey{
 			Token:     []byte(token),
-			OwnerType: "userkeyring",
-			Owner:     ownerID,
+			OwnerType: "external-api",
 		},
 		SturdyRefValue{
 			Expires: time.Unix(math.MaxInt64, 0), // never

@@ -8,6 +8,8 @@ using Go = import "/go.capnp";
 $Go.package("system");
 $Go.import("zenhack.net/go/tempest/internal/capnp/system");
 
+using Idenity = import "identity.capnp";
+
 struct SystemObjectId {
   # A SystemObjectId describes a capability that is implemented by the
   # platform; this contains information necessary to restored it to a
@@ -18,9 +20,15 @@ struct SystemObjectId {
     # An email login token. The value is the email address this is for.
     # For now, this isn't used at the capnp level, but is used to support
     # email login. Perhaps conceptually the right thing is for this to
-    # restore to a LoginSession (from external.capnp)?
+    # restore to a Util.Getter(Sessions) (from external.capnp)?
 
-    unknown @1 :Void;
-    # placeholder so this can be a union.
+    sharingToken :group {
+    # A sharing token, as described by UiView.Controller.makeSharingToken
+    # in external.capnp.
+
+      # Arguments passed to makeSharingToken():
+      permissions @1 :Identity.PermissionSet;
+      note @2 :Text;
+    }
   }
 }
