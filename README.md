@@ -3,7 +3,7 @@ See the [blog post][2].
 
 Currently, most of the sandbox setup code is built, and tempest
 is capable of spawning sandstorm apps and plumbing http traffic to them
-from the outside, though many http features are not yet implemented.
+from the outside, though some http features are not yet implemented.
 
 # Building
 
