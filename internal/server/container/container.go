@@ -30,9 +30,9 @@ type Container struct {
 	exited    <-chan struct{}    // closed when the container has exited.
 }
 
-// Kill forcably shutds down the container. (Note: we do not provide a way
-// to ask nicely via SIGTERM or such); apps are expected to be crash-only
-// software.
+// Kill forcably shuts down the container. (Note: we do not provide a way
+// to ask nicely via SIGTERM or such; apps are expected to be crash-only
+// software).
 //
 // Does not wait for shutdown to complete; see Wait().
 func (c Container) Kill() {
