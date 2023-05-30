@@ -138,7 +138,7 @@ struct UiView {
     # The permissions argument specifies which permissions should be shared. Each index
     # corresponds to a permission from the permissions field of the ViewInfo.
     #
-    # Note is a human-readable note regaring the token; this may be displayed in various
+    # Note is a human-readable note regarding the token; this may be displayed in various
     # places in the UI.
     #
     # In addition to accessing the UiView from the UI, you can also pass it to
