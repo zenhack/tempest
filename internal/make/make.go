@@ -215,6 +215,7 @@ func buildCapnp(r *BuildRecord) {
 				"-o-",
 				"--src-prefix="+d+"/",
 				"-I", c.WithGoCapnp+"/std",
+				"-I", "capnp",
 				file,
 			)
 			cmd.Stderr = os.Stderr

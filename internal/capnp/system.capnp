@@ -8,7 +8,7 @@ using Go = import "/go.capnp";
 $Go.package("system");
 $Go.import("zenhack.net/go/tempest/internal/capnp/system");
 
-using Idenity = import "identity.capnp";
+using Identity = import "/identity.capnp";
 
 struct SystemObjectId {
   # A SystemObjectId describes a capability that is implemented by the
