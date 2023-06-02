@@ -28,7 +28,7 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 		tx, err := c.DB.Begin()
 		throw(err)
 		defer tx.Rollback()
-		accountID, err := tx.GetCredentialAccount(c.Session.Credential)
+		accountID, err := tx.CredentialAccount(c.Session.Credential)
 		throw(exc.WrapError("no account for credential", err))
 		perms, err := tx.AccountGrainPermissions(accountID, c.GrainID)
 		throw(exc.WrapError("failed to fetch permissions", err))

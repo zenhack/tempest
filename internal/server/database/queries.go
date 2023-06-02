@@ -44,15 +44,15 @@ func (tx Tx) ReadyPackage(id types.ID[Package]) error {
 	return exc.WrapError("ReadyPackage", err)
 }
 
-// GetCredentialPackages returns a list of all packages installed for the user
+// CredentialPackages returns a list of all packages installed for the user
 // associated with the credential.
-func (tx Tx) GetCredentialPackages(cred types.Credential) ([]Package, error) {
+func (tx Tx) CredentialPackages(cred types.Credential) ([]Package, error) {
 	// Note: we don't yet handle app installation, so we behave as if all
 	// packages are installed for all users. When that changes, we will
 	// have to actually filter by account.
 	rows, err := tx.sqlTx.Query("SELECT id, manifest FROM packages")
 	if err != nil {
-		return nil, exc.WrapError("GetCredentialPackages", err)
+		return nil, exc.WrapError("CredentialPackages", err)
 	}
 	defer rows.Close()
 	var ret []Package
@@ -143,20 +143,20 @@ func (tx Tx) AddGrain(g NewGrain) error {
 	return tx.createOwnerSturdyRef(g.GrainID)
 }
 
-// Returns the package id for the specified grain
-func (tx Tx) GetGrainPackageID(grainID types.GrainID) (string, error) {
+// GrainPackageID returns the package id for the specified grain
+func (tx Tx) GrainPackageID(grainID types.GrainID) (string, error) {
 	row := tx.sqlTx.QueryRow("SELECT packageId FROM grains WHERE id = ?", grainID)
 	var result string
 	err := row.Scan(&result)
-	return result, exc.WrapError("GetGrainPackageID", err)
+	return result, exc.WrapError("GrainPackageID", err)
 }
 
-func (tx Tx) GetGrainInfo(grainID types.GrainID) (GrainInfo, error) {
+func (tx Tx) GrainInfo(grainID types.GrainID) (GrainInfo, error) {
 	var result GrainInfo
 	result.ID = grainID
 	row := tx.sqlTx.QueryRow("SELECT title, ownerId FROM grains WHERE id = ?", grainID)
 	err := row.Scan(&result.Title, &result.Owner)
-	return result, exc.WrapError("GetGrainInfo", err)
+	return result, exc.WrapError("GrainInfo", err)
 }
 
 type GrainInfo struct {
@@ -227,20 +227,20 @@ func (tx Tx) NewSharingToken(
 	return token, err
 }
 
-func (tx Tx) GetCredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
-	accountID, err := tx.GetCredentialAccount(cred)
+func (tx Tx) CredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
+	accountID, err := tx.CredentialAccount(cred)
 	if err != nil {
 		return nil, err
 	}
 	return tx.AccountUiViews(accountID)
 }
 
-func (tx Tx) GetCredentialAccount(cred types.Credential) (accountID types.AccountID, err error) {
+func (tx Tx) CredentialAccount(cred types.Credential) (accountID types.AccountID, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
 		cred.Type, cred.ScopedID,
 	)
-	err = exc.WrapError("GetCredentialAccount", row.Scan(&accountID))
+	err = exc.WrapError("CredentialAccount", row.Scan(&accountID))
 	return
 }
 
@@ -504,7 +504,7 @@ func (tx Tx) DeleteSturdyRef(k SturdyRefKey) error {
 	return err
 }
 
-// Get the role corresponding to the credential. Returns RoleVisitor for unknown
+// CredentialRole gets the role corresponding to the credential. Returns RoleVisitor for unknown
 // credentials.
 func (tx Tx) CredentialRole(cred types.Credential) (role types.Role, err error) {
 	row := tx.sqlTx.QueryRow(`

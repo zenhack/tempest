@@ -91,7 +91,7 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 				_, seg := capnp.NewMultiSegmentMessage(nil)
 				view, err := external.NewUiView(seg)
 				throw(err)
-				info, err := tx.GetGrainInfo(types.GrainID(id))
+				info, err := tx.GrainInfo(types.GrainID(id))
 				throw(err)
 				throw(view.SetTitle(info.Title))
 				sessionToken, err := session.GrainSession{
@@ -212,7 +212,7 @@ func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error 
 		tx, err := vp.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		info, err := tx.GetCredentialUiViews(vp.userSession.Credential)
+		info, err := tx.CredentialUiViews(vp.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -257,7 +257,7 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 		tx, err := s.visitor.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
-		dbPkgs, err := tx.GetCredentialPackages(s.visitor.userSession.Credential)
+		dbPkgs, err := tx.CredentialPackages(s.visitor.userSession.Credential)
 		throw(err)
 		throw(tx.Commit())
 
@@ -319,7 +319,7 @@ func (pc pkgController) Create(ctx context.Context, p external.Package_Controlle
 		exn.WrapThrow(th, "creating database transaction", err)
 
 		defer tx.Rollback()
-		accountID, err := tx.GetCredentialAccount(pc.userSession.Credential)
+		accountID, err := tx.CredentialAccount(pc.userSession.Credential)
 		exn.WrapThrow(th, "getting account id", err)
 
 		err = os.MkdirAll(

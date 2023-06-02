@@ -70,7 +70,7 @@ func (cmd Command) Start(ctx context.Context) (Container, error) {
 		tx, err := cmd.DB.Begin()
 		throw(err)
 		defer tx.Rollback()
-		pkgID, err := tx.GetGrainPackageID(cmd.GrainID)
+		pkgID, err := tx.GrainPackageID(cmd.GrainID)
 		throw(err)
 		throw(tx.Commit())
 		ret, err := pkgCommand{
