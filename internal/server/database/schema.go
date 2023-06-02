@@ -103,8 +103,10 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				--   the specified ID. grainId FOO
 				-- * 'userkeyring': "owner" is in accounts.id: not restorable
 				--   directly; logically each user has a "keyring" of capabilities
-				--   reachable via APIs that require them to be logged in; some of
-				--   those APIs look for this type.
+				--   reachable via APIs that require them to be logged in, the
+				--   entries of which are stored in keyringEntries. Code that
+				--   uses the keyring generally just does a join with this table
+				--   rather than keeping track of the token.
 				-- * 'external-api': "owner" is the empty string, and the sturdyRef
 				--   must be restored via ExternalApi.restore().
 				ownerType VARCHAR NOT NULL,
@@ -144,6 +146,24 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				-- NOTE: if the user is the owner of a grain, then they have all
 				-- possible permissions, regardless of the value of this field.
 				appPermissions VARCHAR NOT NULL
+			)`)
+		throw(err)
+		_, err = tx.Exec(
+			`-- Entries in users' keyrings -- these hold references to a user's
+			 -- capabilities and give them names that can be used in URLs and such.
+			 CREATE TABLE keyringEntries (
+				-- base64 url-encoded. If this is a grain's root UiView, we arrange
+				-- for this to match. Otherwise we pick something at random.
+				id VARCHAR (22) PRIMARY KEY NOT NULL,
+
+				-- The account that owns this capability
+				accountId VARCHAR NOT NULL REFERENCES accounts(id),
+
+				-- An entry in uiViewSturdyRefs that contains more info about this
+				-- entry.
+				sturdyRefSha256 BLOB UNIQUE NOT NULL REFERENCES uiViewSturdyRefs(sha256),
+
+				UNIQUE (id, accountId)
 			)`)
 		throw(err)
 		throw(tx.Commit())
