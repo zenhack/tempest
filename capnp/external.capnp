@@ -59,10 +59,13 @@ interface VisitorSession {
   # A VisitorSession provides operations that only require the 'visitor' role.
 
   views @0 () -> (views :Collection.Puller(Text, UiView));
-  # Get the ui views into grains that the caller has access to.
-  # XXX: this currently keys on grain IDs, but we eventually want to
-  # be able to have more than one view per grain. This interface will
-  # need to be reworked.
+  # Get the ui views into grains that the caller has access to. The keys are
+  # opaque base64-url encoded identifiers. These are stable for a given user,
+  # but references to the same view held by different users may not have the
+  # same key.
+  #
+  # In the case where the view is the root UiView of a grain, the key is the
+  # same as the grain id.
 }
 
 struct Package {
@@ -101,9 +104,10 @@ interface UserSession {
 }
 
 struct UiView {
-  # A UiView includes information and access to a UiView. For now, this maps 1-to-1
-  # onto grains, but in the future Tempest will support exporting multiple Ui views
-  # from the same grain.
+  # A UiView includes information about and access to a Grain.UiView. For now,
+  # this maps 1-to-1 onto grains, but in the future Tempest will support
+  # interfacing with any implementation of the UiView interface, which will
+  # enable for example exporting multiple UiViews from the same grain.
 
   title @1 :Text;
   # The title of the view
