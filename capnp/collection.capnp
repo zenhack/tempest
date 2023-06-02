@@ -9,7 +9,7 @@ $Go.import("zenhack.net/go/tempest/capnp/collection");
 using Util = import "util.capnp";
 
 interface Pusher(K, V) {
-  # A pusher is a write-only refers to a collection with keys of type K and
+  # A pusher is a write-only reference to a collection with keys of type K and
   # values of type V. Callers make a series of calls to modify the colleciton,
   # followed a call to ready to mark the end of a batch of updates. The
   # collection on the other side does not need to wait until the end of a
