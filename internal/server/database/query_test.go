@@ -34,10 +34,7 @@ func TestUiViews(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		addTestData(t, tx)
 
-		views, err := tx.CredentialUiViews(types.Credential{
-			Type:     "dev",
-			ScopedID: "Alice Dev Admin",
-		})
+		views, err := tx.AccountKeyring("id_alice").UiViews()
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, len(views))

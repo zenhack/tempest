@@ -170,6 +170,19 @@ type UiViewInfo struct {
 	Permissions []bool
 }
 
+// Represent's an account's keyring.
+type Keyring struct {
+	tx Tx
+	id types.AccountID
+}
+
+func (tx Tx) AccountKeyring(id types.AccountID) Keyring {
+	return Keyring{
+		tx: tx,
+		id: id,
+	}
+}
+
 func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.GrainID) (permissions []bool, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT
@@ -227,14 +240,6 @@ func (tx Tx) NewSharingToken(
 	return token, err
 }
 
-func (tx Tx) CredentialUiViews(cred types.Credential) ([]UiViewInfo, error) {
-	accountID, err := tx.CredentialAccount(cred)
-	if err != nil {
-		return nil, err
-	}
-	return tx.AccountUiViews(accountID)
-}
-
 func (tx Tx) CredentialAccount(cred types.Credential) (accountID types.AccountID, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
@@ -244,8 +249,9 @@ func (tx Tx) CredentialAccount(cred types.Credential) (accountID types.AccountID
 	return
 }
 
-func (tx Tx) AccountUiViews(accountID types.AccountID) ([]UiViewInfo, error) {
-	rows, err := tx.sqlTx.Query(
+// UiViews returns all the UiViews in the keyring.
+func (kr Keyring) UiViews() ([]UiViewInfo, error) {
+	rows, err := kr.tx.sqlTx.Query(
 		`SELECT
 			grains.id,
 			grains.title,
@@ -261,7 +267,7 @@ func (tx Tx) AccountUiViews(accountID types.AccountID) ([]UiViewInfo, error) {
 			AND sturdyRefs.expires > ?
 		`,
 
-		accountID,
+		kr.id,
 		time.Now().Unix(),
 	)
 	if err != nil {
