@@ -64,7 +64,7 @@ func parseCmd(cmd spk.Manifest_Command) (Command, error) {
 		if err != nil {
 			return Command{}, err
 		}
-		env = append(env, k+"="+v)
+		env = append(env, k.Text()+"="+v.Text())
 	}
 	return Command{
 		Args: args,

@@ -15,6 +15,7 @@ import (
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
+	utilcp "zenhack.net/go/tempest/capnp/util"
 	grainagent "zenhack.net/go/tempest/internal/capnp/grain-agent"
 	"zenhack.net/go/tempest/internal/capnp/system"
 	"zenhack.net/go/tempest/internal/common/types"
@@ -220,7 +221,7 @@ func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error 
 
 		throw(into.Clear(ctx, nil))
 		for _, uiViewInfo := range info {
-			throw(into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
+			throw(into.Upsert(ctx, func(p utilcp.KeyValue) error {
 				key, err := capnp.NewText(p.Segment(), string(uiViewInfo.Grain.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())
@@ -265,7 +266,7 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 
 		throw(into.Clear(ctx, nil))
 		for _, dbPkg := range dbPkgs {
-			throw(into.Upsert(ctx, func(p collection.Pusher_upsert_Params) error {
+			throw(into.Upsert(ctx, func(p utilcp.KeyValue) error {
 				key, err := capnp.NewText(p.Segment(), string(dbPkg.ID))
 				throw(err)
 				p.SetKey(key.ToPtr())

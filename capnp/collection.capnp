@@ -16,7 +16,7 @@ interface Pusher(K, V) {
   # batch to start acting on the changes, but it may be useful to know, esp.
   # for initially populating the collection.
 
-  upsert @0 (key :K, value :V) -> stream;
+  upsert @0 Util.KeyValue(K, V) -> stream;
   # Insert a new key, value pair into the collection, or update the value if
   # the key is already present.
 

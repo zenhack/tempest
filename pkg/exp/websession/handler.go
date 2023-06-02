@@ -712,9 +712,9 @@ func populateResponseHeaders(w http.ResponseWriter, req *http.Request, resp webs
 		if err != nil {
 			return err
 		}
-		k := http.CanonicalHeaderKey(name)
+		k := http.CanonicalHeaderKey(name.Text())
 		if ResponseHeaderFilter.Allows(k) {
-			wHeaders[k] = append(wHeaders[k], v)
+			wHeaders[k] = append(wHeaders[k], v.Text())
 		}
 	}
 
@@ -876,8 +876,16 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 	}
 	for i, c := range reqCookies {
 		wsC := wsCookies.At(i)
-		wsC.SetKey(c.Name)
-		wsC.SetValue(c.Value)
+		k, err := capnp.NewText(wsC.Segment(), c.Name)
+		if err != nil {
+			return err
+		}
+		wsC.SetKey(k.ToPtr())
+		v, err := capnp.NewText(wsC.Segment(), c.Value)
+		if err != nil {
+			return err
+		}
+		wsC.SetValue(v.ToPtr())
 	}
 
 	// Rig up the response body
@@ -970,10 +978,18 @@ func placeContext(wsCtx websession.Context, req *http.Request, responseStream ut
 	for k, vs := range additionalHeaders {
 		for _, v := range vs {
 			h := dstAdditionalHeaders.At(i)
-			if err := h.SetKey(k); err != nil {
+			kp, err := capnp.NewText(h.Segment(), k)
+			if err != nil {
 				return err
 			}
-			if err := h.SetValue(v); err != nil {
+			if err := h.SetKey(kp.ToPtr()); err != nil {
+				return err
+			}
+			vp, err := capnp.NewText(h.Segment(), v)
+			if err != nil {
+				return err
+			}
+			if err := h.SetValue(vp.ToPtr()); err != nil {
 				return err
 			}
 			i++

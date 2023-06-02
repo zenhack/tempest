@@ -24,9 +24,9 @@ $Go.import("zenhack.net/go/tempest/capnp/util");
 using DateInNs = Int64;
 using DurationInNs = UInt64;
 
-struct KeyValue {
-  key @0 :Text;
-  value @1 :Text;
+struct KeyValue(K, V) {
+  key @0 :K;
+  value @1 :V;
 }
 
 struct LocalizedText {

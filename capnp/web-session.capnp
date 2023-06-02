@@ -25,6 +25,9 @@ $Go.import("zenhack.net/go/tempest/capnp/web-session");
 using Grain = import "grain.capnp";
 using Util = import "util.capnp";
 
+
+using Header = Util.KeyValue(Text, Text);
+
 struct HttpStatusDescriptor {
   id @0 :UInt16;
   title @1 :Text;
@@ -204,7 +207,7 @@ struct Params @0xd7051b9757f6b096 {
 struct Context @0xf5cae52becabc767 {
   # Additional per-request context.
 
-  cookies @0 :List(Util.KeyValue);
+  cookies @0 :List(Util.KeyValue(Text, Text));
 
   responseStream @1 :Util.ByteStream;
   # Stream to which the app can optionally write the response body. This is only actually
@@ -232,7 +235,7 @@ struct Context @0xf5cae52becabc767 {
     matchesNoneOf @7 :List(ETag);  # If-None-Match
   }
 
-  additionalHeaders @3 :List(Util.KeyValue);
+  additionalHeaders @3 :List(Header);
   # Additional headers present in the request. Only whitelisted headers are
   # permitted.
 
@@ -433,7 +436,7 @@ struct Response @0x8193ac6cb5429c83 {
     #   the app?
   }
 
-  additionalHeaders @20 :List(Util.KeyValue);
+  additionalHeaders @20 :List(Header);
   # Additional headers present in the reponse. Only whitelisted headers are
   # permitted.
 
