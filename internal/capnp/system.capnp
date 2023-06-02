@@ -29,6 +29,9 @@ struct SystemObjectId {
       # Arguments passed to makeSharingToken():
       permissions @1 :Identity.PermissionSet;
       note @2 :Text;
+
+      # The grain ID this token points to.
+      grainId @3 :Text;
     }
   }
 }

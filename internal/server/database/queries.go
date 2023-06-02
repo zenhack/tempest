@@ -151,6 +151,14 @@ func (tx Tx) GetGrainPackageID(grainID types.GrainID) (string, error) {
 	return result, exc.WrapError("GetGrainPackageID", err)
 }
 
+func (tx Tx) GetGrainInfo(grainID types.GrainID) (GrainInfo, error) {
+	var result GrainInfo
+	result.ID = grainID
+	row := tx.sqlTx.QueryRow("SELECT title, ownerId FROM grains WHERE id = ?", grainID)
+	err := row.Scan(&result.Title, &result.Owner)
+	return result, exc.WrapError("GetGrainInfo", err)
+}
+
 type GrainInfo struct {
 	ID    types.GrainID
 	Title string

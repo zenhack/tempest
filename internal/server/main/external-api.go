@@ -23,6 +23,7 @@ import (
 	"zenhack.net/go/tempest/internal/server/database"
 	"zenhack.net/go/tempest/internal/server/session"
 	"zenhack.net/go/tempest/internal/server/tokenutil"
+	"zenhack.net/go/tempest/pkg/exp/util/assign"
 	"zenhack.net/go/util"
 	"zenhack.net/go/util/exn"
 )
@@ -70,6 +71,8 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 	return exn.Try0(func(throw exn.Thrower) {
 		token, err := p.Args().SturdyRef()
 		throw(err)
+		results, err := p.AllocResults()
+		throw(err)
 		tx, err := api.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()
@@ -83,11 +86,32 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 			switch oid.Which() {
 			case system.SystemObjectId_Which_sharingToken:
 				s := oid.SharingToken()
+				id, err := s.GrainId()
+				throw(err)
+				_, seg := capnp.NewMultiSegmentMessage(nil)
+				view, err := external.NewUiView(seg)
+				throw(err)
+				info, err := tx.GetGrainInfo(types.GrainID(id))
+				throw(err)
+				throw(view.SetTitle(info.Title))
+				sessionToken, err := session.GrainSession{
+					GrainID:   info.ID,
+					SessionID: api.userSession.SessionID,
+				}.Seal(api.sessionStore)
+				throw(err)
+				throw(view.SetSessionToken(sessionToken))
+				throw(view.SetSubdomain(hex.EncodeToString(tokenutil.GenToken()[:16])))
+				throw(view.SetController(external.UiView_Controller_ServerToClient(uiViewControllerImpl{
+					GrainID: info.ID,
+					Session: api.userSession,
+					DB:      api.server.db,
+				})))
+				throw(results.SetCap(capnp.Client(assign.FixedGetter(view.ToPtr()))))
 			default:
-				return fmt.Errorf("Restore not supported on system objects of type %v", oid.Which())
+				throw(fmt.Errorf("Restore not supported on system objects of type %v", oid.Which()))
 			}
 		} else {
-			return errors.New("TODO: implement ExternalApi.restore() for non-system objects")
+			throw(errors.New("TODO: implement ExternalApi.restore() for non-system objects"))
 		}
 	})
 }
