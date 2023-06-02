@@ -249,8 +249,8 @@ func (tx Tx) CredentialAccount(cred types.Credential) (accountID types.AccountID
 	return
 }
 
-// UiViews returns all the UiViews in the keyring.
-func (kr Keyring) UiViews() ([]UiViewInfo, error) {
+// AllUiViews returns all the UiViews in the keyring.
+func (kr Keyring) AllUiViews() ([]UiViewInfo, error) {
 	rows, err := kr.tx.sqlTx.Query(
 		`SELECT
 			grains.id,

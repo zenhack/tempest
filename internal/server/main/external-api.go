@@ -214,7 +214,7 @@ func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error 
 		defer tx.Rollback()
 		accountID, err := tx.CredentialAccount(vp.userSession.Credential)
 		throw(err)
-		info, err := tx.AccountKeyring(accountID).UiViews()
+		info, err := tx.AccountKeyring(accountID).AllUiViews()
 		throw(err)
 		throw(tx.Commit())
 
