@@ -384,6 +384,38 @@ func (msg Navigate) Update(m *Model) Cmd {
 		grainID := types.GrainID(strings.Split(loc, "/")[0])
 		m.FocusGrain(grainID)
 		m.CurrentFocus = FocusShareGrain
+	} else if eatPrefix(&loc, "shared/") {
+		// TODO: set focus and such.
+		api := m.API.AddRef()
+		return func(ctx context.Context, send func(Msg)) {
+			err := exn.Try0(func(throw exn.Thrower) {
+				defer api.Release()
+				restoreFut, rel := api.Restore(ctx, func(p external.ExternalApi_restore_Params) error {
+					return p.SetSturdyRef([]byte(loc))
+				})
+				defer rel()
+				getFut, rel := util.Getter(restoreFut.Cap()).Get(ctx, nil)
+				defer rel()
+				getterValue, err := getFut.Value().Struct()
+				throw(err)
+				kv := util.KeyValue(getterValue)
+				key, err := kv.Key()
+				throw(err)
+				grainID := types.GrainID(key.Text())
+				value, err := kv.Value()
+				throw(err)
+				grain, err := uiViewToGrain(external.UiView(value.Struct()))
+				throw(err)
+				send(UpsertGrain{
+					ID:    grainID,
+					Grain: grain,
+				})
+			})
+			if err != nil {
+				send(NewError{Err: err})
+				return
+			}
+		}
 	}
 	// TODO: catchall?
 	return nil

@@ -13,21 +13,12 @@ type grainPusher struct {
 
 func (gp grainPusher) Upsert(id types.GrainID, view external.UiView) (Msg, error) {
 	return exn.Try(func(throw func(error)) Msg {
-		title, err := view.Title()
-		throw(err)
-		sessionToken, err := view.SessionToken()
-		throw(err)
-		subdomain, err := view.Subdomain()
+		grain, err := uiViewToGrain(view)
 		throw(err)
 
 		return UpsertGrain{
-			ID: id,
-			Grain: Grain{
-				Title:        title,
-				SessionToken: sessionToken,
-				Subdomain:    subdomain,
-				Controller:   view.Controller().AddRef(),
-			},
+			ID:    id,
+			Grain: grain,
 		}
 	})
 }
@@ -38,4 +29,22 @@ func (gp grainPusher) Remove(id types.GrainID) Msg {
 
 func (gp grainPusher) Clear() Msg {
 	return ClearGrains{}
+}
+
+func uiViewToGrain(view external.UiView) (Grain, error) {
+	return exn.Try(func(throw func(error)) Grain {
+		title, err := view.Title()
+		throw(err)
+		sessionToken, err := view.SessionToken()
+		throw(err)
+		subdomain, err := view.Subdomain()
+		throw(err)
+
+		return Grain{
+			Title:        title,
+			SessionToken: sessionToken,
+			Subdomain:    subdomain,
+			Controller:   view.Controller().AddRef(),
+		}
+	})
 }
