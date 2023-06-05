@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/smtp"
 	"net/url"
+	"os"
 	"strconv"
 
 	"golang.org/x/exp/slog"
@@ -51,12 +52,21 @@ func (c SMTPConfig) SendMail(to []string, msg []byte) error {
 	)
 }
 
-func SMTPConfigFromSettings(src settings.Source) SMTPConfig {
+func SMTPConfigFromSettings(src settings.Source) (cfg SMTPConfig) {
+	sh := src.GetString("SMTP_HOST")
+	sprt := os.Getenv("SMTP_PORT")
+	su := src.GetString("SMTP_USERNAME")
+	sp := src.GetString("SMTP_PASSWORD")
+
+	if sh == "" || sprt == "" || su == "" || sp == "" {
+		return
+	}
+
 	return SMTPConfig{
-		Host:     src.GetString("SMTP_HOST"),
+		Host:     sh,
 		Port:     strconv.Itoa(int(src.GetUint16("SMTP_PORT"))),
-		Username: src.GetString("SMTP_USERNAME"),
-		Password: src.GetString("SMTP_PASSWORD"),
+		Username: su,
+		Password: sp,
 	}
 }
 
