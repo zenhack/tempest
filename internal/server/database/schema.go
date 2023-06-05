@@ -151,7 +151,7 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 		_, err = tx.Exec(
 			`-- Entries in users' keyrings -- these hold references to a user's
 			 -- capabilities and give them names that can be used in URLs and such.
-			 CREATE TABLE keyringEntries (
+			 CREATE TABLE IF NOT EXISTS keyringEntries (
 				-- base64 url-encoded. If this is a grain's root UiView, we arrange
 				-- for this to match. Otherwise we pick something at random.
 				id VARCHAR (22) PRIMARY KEY NOT NULL,
