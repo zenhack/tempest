@@ -58,16 +58,16 @@ func SMTPConfigFromSettings(src settings.Source) (cfg SMTPConfig) {
 	su := src.GetString("SMTP_USERNAME")
 	sp := src.GetString("SMTP_PASSWORD")
 
-	if sh == "" || sprt == "" || su == "" || sp == "" {
+	if sh == "" || sprt == "" {
 		return
 	}
 
-	return SMTPConfig{
-		Host:     sh,
-		Port:     strconv.Itoa(int(src.GetUint16("SMTP_PORT"))),
-		Username: su,
-		Password: sp,
-	}
+	cfg.Host = sh
+	cfg.Port = strconv.Itoa(int(src.GetUint16("SMTP_PORT")))
+	cfg.Username = su
+	cfg.Password = sp
+
+	return
 }
 
 func HTTPConfigFromSettings(lg *slog.Logger, src settings.Source) HTTPConfig {
