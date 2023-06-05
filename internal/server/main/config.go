@@ -4,7 +4,6 @@ import (
 	"net"
 	"net/smtp"
 	"net/url"
-	"strconv"
 
 	"golang.org/x/exp/slog"
 	"zenhack.net/go/tempest/internal/server/logging"
@@ -54,7 +53,7 @@ func (c SMTPConfig) SendMail(to []string, msg []byte) error {
 func SMTPConfigFromSettings(src settings.Source) SMTPConfig {
 	return SMTPConfig{
 		Host:     src.GetString("SMTP_HOST"),
-		Port:     strconv.Itoa(int(src.GetUint16("SMTP_PORT"))),
+		Port:     src.GetString("SMTP_PORT"),
 		Username: src.GetString("SMTP_USERNAME"),
 		Password: src.GetString("SMTP_PASSWORD"),
 	}

@@ -71,11 +71,10 @@ const adminSettings: List(Setting) = [
     name = "SMTP_HOST",
     type = (text = void),
   ),
-  ( # port on `SMTP_HOST` to connect to
-    # XXX: should this maybe just be a string, like HTTP(S)_PORT? named ports
-    # can be valid.
+  ( # port on `SMTP_HOST` to connect to. Can be a numeric port or a string
+    # like "smtp"
     name = "SMTP_PORT",
-    type = (uint16 = void),
+    type = (text = void),
   ),
   ( # email address to send mail from
     name = "SMTP_USERNAME",
