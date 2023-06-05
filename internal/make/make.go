@@ -303,7 +303,7 @@ func buildWebui(r *BuildRecord, cfg Config) error {
 			return err
 		}
 	} else {
-		// Use the tsandard go toolchain.
+		// Use the standard go toolchain.
 		cmd := exec.Command("go", "build", "-o", tmpPath, srcDir)
 		cmd.Env = append(cmd.Env, os.Environ()...)
 		cmd.Env = append(cmd.Env, "GOOS=js", "GOARCH=wasm")
