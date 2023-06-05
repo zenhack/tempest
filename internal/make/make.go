@@ -101,15 +101,11 @@ func (c Config) GoSrc() string {
 	return fmt.Sprintf(`package config
 
 const (
-	User = %q
-	Group = %q
 	Prefix = %q
 	Libexecdir = %q
 	Localstatedir = %q
 )
 `,
-		c.User,
-		c.Group,
 		c.Prefix,
 		c.Libexecdir,
 		c.Localstatedir,
