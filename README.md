@@ -111,31 +111,12 @@ the `--user` and `--group` flags to `./configure` (by default both
 sudo -u sandstorm -g sandstorm ./_build/tempest
 ```
 
-The following environment variables are influential:
+Tempest can be configured via environment variables; see
+`./capnp/settings.capnp` for full documentation and `./env.sh.example`
+for an example.
 
-- `BASE_URL`: the main URL for the tempest web interface. Defaults to
-  `http://local.sandstorm.io`. If the URL scheme is https, all plain
-  http requests will be redirected to the https URL.
-- `HTTP_PORT`, the port to listen on for regular (non-encrypted) HTTP,
-  Note this these *does not* need to agree with `BASE_URL`, which can be
-  useful if you're putting Tempest behind a reverse proxy. Defaults to
-  `80`.
-- `HTTPS_PORT`, the port to listen on for HTTPS. Defaults to `443`. The
-  same comments above regarding `BASE_URL` apply.
-- `HTTPS_CERT_FILE`, path to a file containing the HTTPS certificate.
-  If this is omitted, Tempest will not listen for HTTPS connections.
-- `HTTPS_KEY_FILE`, path to a file containing the HTTPS private key.
-  If this is omitted, Tempest will not listen for HTTPS connections.
-  This file must be readable only by its owner, or Tempest will refuse
-  to start.
-- `SMTP_HOST`: When sending email, SMTP server to connect to.
-- `SMTP_PORT`: Port on `SMTP_HOST` to connect to.
-- `SMTP_USERNAME`: Email address to send mail from.
-- `SMTP_PASSWORD`: Password to use when authenticating with
-  the SMTP server.
-
-Note that for these to be picked up by tempest when run with sudo, you
-will have to pass the `--preserve-env`/`-E` flag to sudo:
+Note that for environment variables to be picked up by tempest when run
+with sudo, you will have to pass the `--preserve-env`/`-E` flag:
 
 ```
 sudo --preserve-env -u sandstorm -g sandstorm ./_build/tempest

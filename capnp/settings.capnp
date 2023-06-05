@@ -44,35 +44,41 @@ const adminSettings: List(Setting) = [
     type = (text = void),
   ),
 
-  ( # the main URL for the Tempest web interface
+  ( # The main URL for the Tempest web interface. If the URL scheme is https,
+    # all plain http requests will be redirected to the https URL.
     name = "BASE_URL",
     type = (text = void),
     default = (text = "http://local.sandstorm.io"),
   ),
-  ( # Port to listen on for (non-encrypted) HTTP
+  ( # Port to listen on for regular (non-encrypted) HTTP.
+    # Note this these *does not* need to agree with `BASE_URL`, which can be
+    # useful if you're putting Tempest behind a reverse proxy.
     name = "HTTP_PORT",
     type = (text = void),
     default = (text = "80"),
   ),
-  ( # Port to listen on for HTTPS
+  ( # Port to listen on for HTTPS. The same comments above regarding `BASE_URL` apply.
     name = "HTTPS_PORT",
     type = (text = void),
     default = (text = "443"),
   ),
-  ( # Path to HTTPS cert file
+  ( # Path to HTTPS cert file. If this is omitted, Tempest will not listen for
+    # HTTPS connections.
     name = "HTTPS_CERT_FILE",
     type = (text = void),
   ),
-  ( # Path to HTTPS key file
+  ( # Path to a file containing the HTTPS private key. If this is omitted, Tempest
+    # will not listen for HTTPS connections. This file must be readable only by its
+    # owner, or Tempest will refuse to start.
     name = "HTTPS_KEY_FILE",
     type = (text = void),
   ),
-  ( # when sending email, SMTP server to connect to
+  ( # when sending email, SMTP server to connect to.
     name = "SMTP_HOST",
     type = (text = void),
   ),
   ( # port on `SMTP_HOST` to connect to. Can be a numeric port or a string
-    # like "smtp"
+    # like "smtp".
     name = "SMTP_PORT",
     type = (text = void),
   ),
