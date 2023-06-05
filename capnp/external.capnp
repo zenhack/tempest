@@ -146,6 +146,7 @@ struct UiView {
     # places in the UI.
     #
     # In addition to accessing the UiView from the UI, you can also pass it to
-    # ExternalApi.restore, which will return a Util.Getter(UiView).
+    # ExternalApi.restore, which will return a Util.Getter(Util.KeyValue(Text, UiView)),
+    # where the key is as in the collection returned by VisitorSession.view().
   }
 }

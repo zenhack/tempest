@@ -90,6 +90,11 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 				id, err := s.GrainId()
 				throw(err)
 				_, seg := capnp.NewMultiSegmentMessage(nil)
+				kv, err := utilcp.NewKeyValue(seg)
+				throw(err)
+				key, err := capnp.NewText(seg, id)
+				throw(err)
+				throw(kv.SetKey(key.ToPtr()))
 				view, err := external.NewUiView(seg)
 				throw(err)
 				info, err := tx.GrainInfo(types.GrainID(id))
@@ -107,7 +112,8 @@ func (api externalApiImpl) Restore(ctx context.Context, p external.ExternalApi_r
 					Session: api.userSession,
 					DB:      api.server.db,
 				})))
-				throw(results.SetCap(capnp.Client(assign.FixedGetter(view.ToPtr()))))
+				throw(kv.SetValue(view.ToPtr()))
+				throw(results.SetCap(capnp.Client(assign.FixedGetter(kv.ToPtr()))))
 			default:
 				throw(fmt.Errorf("Restore not supported on system objects of type %v", oid.Which()))
 			}
