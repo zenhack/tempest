@@ -427,7 +427,7 @@ func run(args ...string) {
 		installExe(c, "tempest-sandbox-launcher", c.Libexecdir+"/tempest",
 			"cap_sys_admin,cap_net_admin,cap_mknod+ep")
 		installExe(c, "tempest-grain-agent", c.Libexecdir+"/tempest", "")
-		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0700))
+		chkfatal(os.MkdirAll(c.Localstatedir+"/sandstorm/mnt", 0755))
 	case "dev":
 		run("install")
 		c := readConfig()
