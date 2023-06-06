@@ -83,7 +83,7 @@ type NewGrain struct {
 }
 
 type NewAccount struct {
-	ID      string
+	ID      types.AccountID
 	Role    types.Role
 	Profile Profile
 }
@@ -94,7 +94,7 @@ type Profile struct {
 }
 
 type NewCredential struct {
-	AccountID  string
+	AccountID  types.AccountID
 	Login      bool
 	Credential types.Credential
 }
@@ -256,11 +256,11 @@ func (tx Tx) CredentialAccount(cred types.Credential) (types.AccountID, error) {
 			// No account; create one and link it to the credential:
 			accountID = types.AccountID(tokenutil.Gen128Base64())
 			throw(tx.AddAccount(NewAccount{
-				ID:   string(accountID),
+				ID:   accountID,
 				Role: types.RoleVisitor,
 			}))
 			throw(tx.AddCredential(NewCredential{
-				AccountID:  string(accountID),
+				AccountID:  accountID,
 				Login:      true,
 				Credential: cred,
 			}))

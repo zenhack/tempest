@@ -202,7 +202,7 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 				return
 			}
 			throw(tx.AddAccount(database.NewAccount{
-				ID:      u.ID,
+				ID:      types.AccountID(u.ID),
 				Role:    u.Role,
 				Profile: u.Profile,
 			}))
@@ -229,7 +229,7 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			}
 			owner := credentialOwners[u.ID]
 			var entry database.NewCredential
-			entry.AccountID = owner.accountID
+			entry.AccountID = types.AccountID(owner.accountID)
 			entry.Login = owner.login
 			if u.Services.Dev.Name != "" {
 				entry.Credential = types.Credential{

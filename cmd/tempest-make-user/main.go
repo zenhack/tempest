@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"flag"
 
 	"zenhack.net/go/tempest/internal/common/types"
@@ -17,7 +16,7 @@ var (
 )
 
 func main() {
-	accountID := base64.RawStdEncoding.EncodeToString(tokenutil.GenToken()[:16])
+	accountID := types.AccountID(tokenutil.Gen128Base64())
 	flag.Parse()
 	role := types.Role(*roleStr)
 	if !role.IsValid() {
