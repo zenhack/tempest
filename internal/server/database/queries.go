@@ -17,6 +17,7 @@ import (
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/tokenutil"
+	"zenhack.net/go/util/exn"
 )
 
 // AddPackage adds a package to the database, initally marked as not ready.
@@ -240,13 +241,35 @@ func (tx Tx) NewSharingToken(
 	return token, err
 }
 
-func (tx Tx) CredentialAccount(cred types.Credential) (accountID types.AccountID, err error) {
-	row := tx.sqlTx.QueryRow(
-		`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
-		cred.Type, cred.ScopedID,
-	)
-	err = exc.WrapError("CredentialAccount", row.Scan(&accountID))
-	return
+// CredentialAccount returns the account ID associated with the credential.
+// If there is no existing account, one is created with the visitor role.
+func (tx Tx) CredentialAccount(cred types.Credential) (types.AccountID, error) {
+	accountID, err := exn.Try(func(throw exn.Thrower) types.AccountID {
+		row := tx.sqlTx.QueryRow(
+			`SELECT accountId FROM credentials WHERE type = ? AND scopedId = ?`,
+			cred.Type, cred.ScopedID,
+		)
+		var accountID types.AccountID
+		err := row.Scan(&accountID)
+		if err == sql.ErrNoRows {
+			err = nil
+			// No account; create one and link it to the credential:
+			accountID = types.AccountID(tokenutil.Gen128Base64())
+			throw(tx.AddAccount(NewAccount{
+				ID:   string(accountID),
+				Role: types.RoleVisitor,
+			}))
+			throw(tx.AddCredential(NewCredential{
+				AccountID:  string(accountID),
+				Login:      true,
+				Credential: cred,
+			}))
+		}
+		throw(err)
+		return accountID
+	})
+	err = exc.WrapError("CredentialAccount", err)
+	return accountID, err
 }
 
 // AllUiViews returns all the UiViews in the keyring.
