@@ -69,6 +69,7 @@ func Main() {
 	sessionsFut, rel := api.GetSessions(ctx, nil)
 	defer rel()
 	viewsFut, rel := sessionsFut.Visitor().Views(ctx, nil)
+	defer rel()
 
 	// FIXME: we're blocking on viewsFut for now due to what
 	// seems like a go-capnp bug. Figure out what's going on
@@ -76,18 +77,22 @@ func Main() {
 	viewsRes, err := viewsFut.Struct()
 	if err != nil {
 		app.SendMessage(NewError{Err: err})
-		return
+	} else {
+		go func() {
+			syncFut, rel := viewsRes.Views().Sync(ctx, func(p collection.Puller_sync_Params) error {
+				p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.UiView]{
+					sendMsg: app.SendMessage,
+					hooks:   grainPusher{},
+				}))
+				return nil
+			})
+			defer rel()
+			if _, err := syncFut.Struct(); err != nil {
+				app.SendMessage(NewError{Err: err})
+			}
+		}()
 	}
 
-	defer rel()
-	syncFut, rel := viewsRes.Views().Sync(ctx, func(p collection.Puller_sync_Params) error {
-		p.SetInto(collection.Pusher_ServerToClient(pusher[types.GrainID, external.UiView]{
-			sendMsg: app.SendMessage,
-			hooks:   grainPusher{},
-		}))
-		return nil
-	})
-	defer rel()
 	res, err := sessionsFut.Struct()
 	if err != nil {
 		app.SendMessage(LoginSessionResult{Result: orerr.New(Sessions{}, err)})
@@ -98,9 +103,6 @@ func Main() {
 				User:    res.User().AddRef(),
 			}, nil),
 		})
-	}
-	if _, err := syncFut.Struct(); err != nil {
-		app.SendMessage(NewError{Err: err})
 	}
 	<-ctx.Done()
 }
