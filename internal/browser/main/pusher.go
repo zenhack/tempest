@@ -20,7 +20,7 @@ type pusher[K ~string, V capnp.TypeParam[V]] struct {
 }
 
 func (p pusher[K, V]) Upsert(ctx context.Context, call collection.Pusher_upsert) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		args := call.Args()
 		keyPtr, err := args.Key()
 		throw(err)
@@ -36,7 +36,7 @@ func (p pusher[K, V]) Upsert(ctx context.Context, call collection.Pusher_upsert)
 }
 
 func (p pusher[K, V]) Remove(ctx context.Context, call collection.Pusher_remove) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		key, err := call.Args().Key()
 		throw(err)
 		p.sendMsg(p.hooks.Remove(K(key.Text())))

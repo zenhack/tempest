@@ -66,7 +66,7 @@ func (cmd Command) Start(ctx context.Context) (Container, error) {
 	cmd.Log.Info("Starting grain",
 		"grainID", cmd.GrainID,
 	)
-	return exn.Try(func(throw func(error)) Container {
+	return exn.Try(func(throw exn.Thrower) Container {
 		tx, err := cmd.DB.Begin()
 		throw(err)
 		defer tx.Rollback()

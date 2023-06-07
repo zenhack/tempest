@@ -15,7 +15,7 @@ type pkgPusher struct {
 }
 
 func (pp pkgPusher) Upsert(id types.ID[external.Package], pkg external.Package) (Msg, error) {
-	return exn.Try(func(throw func(error)) Msg {
+	return exn.Try(func(throw exn.Thrower) Msg {
 		// Copy over to a new message to avoid early release:
 		dstPkg, err := cloneStruct(pkg)
 		throw(err)
@@ -40,7 +40,7 @@ func (pp pkgPusher) Clear() Msg {
 //
 // TODO: maybe put this in go-capnp somewhere?
 func cloneStruct[T ~capnp.StructKind](src T) (T, error) {
-	return exn.Try(func(throw func(error)) T {
+	return exn.Try(func(throw exn.Thrower) T {
 		_, seg := capnp.NewSingleSegmentMessage(nil)
 		dst, err := capnp.NewRootStruct(seg, capnp.Struct(src).Size())
 		throw(err)

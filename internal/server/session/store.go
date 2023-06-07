@@ -57,7 +57,7 @@ func (p Payload) ToCookie(isHttps bool) *http.Cookie {
 }
 
 func unseal(val any, typeId uint64, store Store, payload Payload) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		buf, err := hex.DecodeString(payload.Data)
 		throw(err)
 		msg, err := store.aead.unsealCapnp(buf, typeId)
@@ -74,7 +74,7 @@ func seal[T ~capnp.StructKind, U any](
 	NewRoot func(*capnp.Segment) (T, error),
 	store Store,
 ) (string, error) {
-	return exn.Try(func(throw func(error)) string {
+	return exn.Try(func(throw exn.Thrower) string {
 		msg, seg, err := capnp.NewMessage(capnp.SingleSegment(nil))
 		throw(err)
 		root, err := NewRoot(seg)

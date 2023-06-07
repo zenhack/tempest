@@ -214,7 +214,7 @@ func (viewsPuller) Key(ctx context.Context, p collection.Puller_key) error {
 func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error {
 	into := p.Args().Into()
 	p.Go()
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		// TODO(cleanup): update our wrapper to support one-off queries without having to
 		// create a whole transaction; this is too much boilerplate.
 		tx, err := vp.server.db.Begin()
@@ -286,7 +286,7 @@ func (s userSessionImpl) ListPackages(ctx context.Context, p external.UserSessio
 	// TODO: too much boilerplate in common with ListGrains; factor some of this out.
 	p.Go()
 	into := p.Args().Into()
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		tx, err := s.visitor.server.db.Begin()
 		throw(err)
 		defer tx.Rollback()

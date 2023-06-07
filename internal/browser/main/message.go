@@ -157,7 +157,7 @@ func (msg SpawnGrain) Update(m *Model) Cmd {
 	pkg := m.Packages[msg.PkgID]
 	ctrl := pkg.Controller().AddRef()
 	return func(ctx context.Context, sendMsg func(Msg)) {
-		err := exn.Try0(func(throw func(error)) {
+		err := exn.Try0(func(throw exn.Thrower) {
 
 			defer ctrl.Release()
 			fut, rel := ctrl.Create(ctx, func(p external.Package_Controller_create_Params) error {

@@ -16,7 +16,7 @@ type Package struct {
 
 // Initializes the database schema if needed, and returns a DB object.
 func InitDB(sqlDB *sql.DB) (DB, error) {
-	return exn.Try(func(throw func(error)) DB {
+	return exn.Try(func(throw exn.Thrower) DB {
 		tx, err := sqlDB.Begin()
 		throw(err)
 		defer tx.Rollback()

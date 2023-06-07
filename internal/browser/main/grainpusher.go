@@ -12,7 +12,7 @@ type grainPusher struct {
 }
 
 func (gp grainPusher) Upsert(id types.GrainID, view external.UiView) (Msg, error) {
-	return exn.Try(func(throw func(error)) Msg {
+	return exn.Try(func(throw exn.Thrower) Msg {
 		grain, err := uiViewToGrain(view)
 		throw(err)
 
@@ -32,7 +32,7 @@ func (gp grainPusher) Clear() Msg {
 }
 
 func uiViewToGrain(view external.UiView) (Grain, error) {
-	return exn.Try(func(throw func(error)) Grain {
+	return exn.Try(func(throw exn.Thrower) Grain {
 		title, err := view.Title()
 		throw(err)
 		sessionToken, err := view.SessionToken()

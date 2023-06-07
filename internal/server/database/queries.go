@@ -264,15 +264,13 @@ func (tx Tx) NewSharingToken(
 				ObjectID: capnp.Struct(oid),
 			},
 		)
-		err = exc.WrapError("saving sturdyRef", err)
-		throw(err)
+		throw(err, "saving sturdyRef")
 		_, err = tx.sqlTx.Exec(`
 		INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
 		VALUES (?, ?)`,
 			hash[:], permString,
 		)
-		err = exc.WrapError("saving permissions", err)
-		throw(err)
+		throw(err, "saving permissions")
 		return token
 	})
 }

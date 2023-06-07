@@ -25,7 +25,7 @@ import (
 // passwdFile - File storing the mongo user password
 // snapshotDir - Directory in which to store the snapshot
 func Export(mongoPort int, passwdFile string, snapshotDir string) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		passwd, err := os.ReadFile(passwdFile)
 		throw(err)
 

@@ -36,7 +36,7 @@ func (it iter) readValue() (bson.Raw, error) {
 }
 
 func Import(sqlitePath, snapshotDir string) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		sqliteDB, err := sql.Open("sqlite3", sqlitePath)
 		throw(err)
 		db, err := database.InitDB(sqliteDB)
@@ -52,7 +52,7 @@ func Import(sqlitePath, snapshotDir string) error {
 }
 
 func eachEntry(snapshotDir, collection string, tx database.Tx, fn func(bson.Raw)) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		f, err := os.Open(filepath.Join(snapshotDir, collection))
 		throw(err)
 		defer f.Close()
@@ -93,7 +93,7 @@ type user struct {
 
 // Decodes a list of credentials in the form of loginCredentials or nonloginCredentials.
 func decodeCredentialList(e bson.RawElement) ([]string, error) {
-	return exn.Try(func(throw func(error)) []string {
+	return exn.Try(func(throw exn.Thrower) []string {
 		var ret []string
 		vals, err := e.Value().Array().Values()
 		throw(err)
@@ -111,7 +111,7 @@ func decodeCredentialList(e bson.RawElement) ([]string, error) {
 }
 
 func decodeUser(raw bson.Raw) (user, error) {
-	return exn.Try(func(throw func(error)) (ret user) {
+	return exn.Try(func(throw exn.Thrower) (ret user) {
 		elts, err := raw.Elements()
 		throw(err)
 
@@ -192,7 +192,7 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 	// Mapping from credential ids to info about their owner:
 	credentialOwners := make(map[string]credentialOwner)
 
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		// We do this in two passes, accounts first, then credentials.
 		throw(eachEntry(snapshotDir, "users", tx, func(raw bson.Raw) {
 			u, err := decodeUser(raw)
@@ -251,7 +251,7 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 }
 
 func importPackages(snapshotDir string, tx database.Tx) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		throw(eachEntry(snapshotDir, "packages", tx, func(raw bson.Raw) {
 			elts, err := raw.Elements()
 			throw(err)
@@ -282,7 +282,7 @@ func importPackages(snapshotDir string, tx database.Tx) error {
 }
 
 func importGrains(snapshotDir string, tx database.Tx) error {
-	return exn.Try0(func(throw func(error)) {
+	return exn.Try0(func(throw exn.Thrower) {
 		throw(eachEntry(snapshotDir, "grains", tx, func(raw bson.Raw) {
 			elts, err := raw.Elements()
 			throw(err)
