@@ -155,19 +155,37 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 // Right now this is a simple button, which is just a placeholder.
 func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
 	id := m.FocusedGrain
+	grain := m.OpenGrains[id]
 	onClose := func(e vdom.Event) any {
+		// TODO: clear grain.SharingToken
 		navigate("#/grain/" + string(id))
 		return nil
 	}
-	return viewModal(h("div", nil, nil,
-		h("button", nil,
+	closeBtn := h("button",
+		a{"class": "close-button"},
+		e{"click": &onClose},
+		t(m.L10N, "cancel sharing"),
+	)
+	var content vdom.VNode
+	if grain.SharingToken == "" {
+		content = h("button", nil,
 			e{"click": ms.Event(ShareGrain{ID: id})},
-			t(m.L10N, "Share Grain")),
-		h("button",
-			a{"class": "close-button"},
-			e{"click": &onClose},
-			t(m.L10N, "cancel sharing"),
-		)))
+			t(m.L10N, "Generate sharing link"))
+	} else {
+		rootUrl := m.ServerAddr.Root()
+		link := rootUrl.String() + "/#/shared/" + grain.SharingToken
+		content = h("div", nil, nil,
+			h("p", nil, nil,
+				t(m.L10N, "Copy the below link and share it to grant access to this grain.")),
+			h("a",
+				a{"href": link},
+				nil,
+				builder.T(link)),
+		)
+	}
+	return viewModal(h("div", nil, nil,
+		content,
+		closeBtn))
 }
 
 // viewModal renders a modal dialog; the argument is centered over a semi-transparent

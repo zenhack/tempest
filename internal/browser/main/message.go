@@ -371,8 +371,23 @@ func (msg ShareGrain) Update(m *Model) Cmd {
 			sendMsg(NewError{Err: err})
 			return
 		}
-		js.Global().Get("console").Call("log", "token: "+token)
+		sendMsg(HaveSharingToken{
+			GrainID: msg.ID,
+			Token:   token,
+		})
 	}
+}
+
+type HaveSharingToken struct {
+	GrainID types.GrainID
+	Token   string
+}
+
+func (msg HaveSharingToken) Update(m *Model) Cmd {
+	grain := m.OpenGrains[msg.GrainID]
+	grain.SharingToken = msg.Token
+	m.OpenGrains[msg.GrainID] = grain
+	return nil
 }
 
 func (msg Navigate) Update(m *Model) Cmd {

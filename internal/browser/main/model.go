@@ -71,7 +71,8 @@ type Grain struct {
 }
 
 type OpenGrain struct {
-	DomIndex int
+	DomIndex     int
+	SharingToken string
 }
 
 func initModel(api external.ExternalApi) Model {
