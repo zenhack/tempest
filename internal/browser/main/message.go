@@ -102,6 +102,11 @@ func (msg NewError) Update(m *Model) Cmd {
 func (msg UpsertGrain) Update(m *Model) Cmd {
 	m.Grains[msg.ID].Controller.Release()
 	m.Grains[msg.ID] = msg.Grain
+	if m.CurrentFocus == FocusLoadShared {
+		return func(context.Context, func(Msg)) {
+			navigate("#/grain/" + string(msg.ID))
+		}
+	}
 	return nil
 }
 
@@ -385,7 +390,7 @@ func (msg Navigate) Update(m *Model) Cmd {
 		m.FocusGrain(grainID)
 		m.CurrentFocus = FocusShareGrain
 	} else if eatPrefix(&loc, "shared/") {
-		// TODO: set focus and such.
+		m.CurrentFocus = FocusLoadShared
 		api := m.API.AddRef()
 		return func(ctx context.Context, send func(Msg)) {
 			err := exn.Try0(func(throw exn.Thrower) {

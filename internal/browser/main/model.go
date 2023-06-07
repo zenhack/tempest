@@ -58,6 +58,7 @@ const (
 	FocusApps
 	FocusOpenGrain
 	FocusShareGrain
+	FocusLoadShared
 
 	InitialFocus = FocusGrainList
 )

@@ -32,12 +32,14 @@ var dummyNode = h("div", a{"class": "dummy-node"}, nil)
 
 func (m Model) pageTitle() string {
 	switch m.CurrentFocus {
-	case FocusOpenGrain:
+	case FocusOpenGrain, FocusShareGrain:
 		return "Tempest - " + m.Grains[m.FocusedGrain].Title
 	case FocusGrainList:
 		return "Tempest - Grains"
 	case FocusApps:
 		return "Tempest - Apps"
+	case FocusLoadShared:
+		return "Tempest - Loading Shared Grain"
 	default:
 		return "Tempest"
 	}
@@ -82,6 +84,8 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 			}
 		case FocusShareGrain:
 			content = m.viewShareGrainDialog(ms)
+		case FocusLoadShared:
+			content = t(m.L10N, "Loading...")
 		default:
 			panic("Unknown focus value")
 		}
