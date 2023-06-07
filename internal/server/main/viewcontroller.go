@@ -40,6 +40,7 @@ func (c uiViewControllerImpl) MakeSharingToken(ctx context.Context, p external.U
 		}
 		token, err := tx.NewSharingToken(c.GrainID, perms, note)
 		throw(err)
+		throw(tx.Commit())
 		throw(results.SetToken(token))
 	})
 }
