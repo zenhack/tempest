@@ -14,6 +14,7 @@ import (
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
 	spk "zenhack.net/go/tempest/capnp/package"
+	"zenhack.net/go/tempest/internal/capnp/system"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/server/tokenutil"
 	"zenhack.net/go/util/exn"
@@ -214,30 +215,44 @@ func (tx Tx) NewSharingToken(
 	perms []bool,
 	note string,
 ) (string, error) {
-	permString := fmtPermissions(perms)
-	token := tokenutil.Gen128Base64()
-	hash, err := tx.SaveSturdyRef(
-		SturdyRefKey{
-			Token:     []byte(token),
-			OwnerType: "external-api",
-		},
-		SturdyRefValue{
-			Expires: time.Unix(math.MaxInt64, 0), // never
-			GrainID: grainID,
-		},
-	)
-	if err != nil {
-		return "", exc.WrapError("saving sturdyRef", err)
-	}
-	_, err = tx.sqlTx.Exec(`
+	return exn.Try(func(throw exn.Thrower) string {
+		permString := fmtPermissions(perms)
+		token := tokenutil.Gen128Base64()
+
+		_, seg := capnp.NewMultiSegmentMessage(nil)
+		oid, err := system.NewRootSystemObjectId(seg)
+		throw(err)
+		oid.SetSharingToken()
+		st := oid.SharingToken()
+		throw(st.SetGrainId(string(grainID)))
+		throw(st.SetNote(note))
+		dstPerms, err := st.NewPermissions(int32(len(perms)))
+		throw(err)
+		for i, p := range perms {
+			dstPerms.Set(i, p)
+		}
+
+		hash, err := tx.SaveSturdyRef(
+			SturdyRefKey{
+				Token:     []byte(token),
+				OwnerType: "external-api",
+			},
+			SturdyRefValue{
+				Expires:  time.Unix(math.MaxInt64, 0), // never
+				ObjectID: capnp.Struct(oid),
+			},
+		)
+		err = exc.WrapError("saving sturdyRef", err)
+		throw(err)
+		_, err = tx.sqlTx.Exec(`
 		INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
 		VALUES (?, ?)`,
-		hash[:], permString,
-	)
-	if err != nil {
-		return "", exc.WrapError("saving permissions", err)
-	}
-	return token, err
+			hash[:], permString,
+		)
+		err = exc.WrapError("saving permissions", err)
+		throw(err)
+		return token
+	})
 }
 
 // CredentialAccount returns the account ID associated with the credential.
