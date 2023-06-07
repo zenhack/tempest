@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"capnproto.org/go/capnp/v3"
+	cpserver "capnproto.org/go/capnp/v3/server"
 	"zenhack.net/go/tempest/capnp/collection"
 	"zenhack.net/go/tempest/capnp/external"
 	"zenhack.net/go/tempest/capnp/grain"
@@ -197,7 +198,7 @@ func (s visitorSessionImpl) Views(ctx context.Context, p external.VisitorSession
 	if err != nil {
 		return err
 	}
-	return res.SetViews(collection.Puller_ServerToClient(viewsPuller{
+	return res.SetViews(external.UiView_Keyring_ServerToClient(viewsPuller{
 		externalApiImpl: s.externalApiImpl,
 	}))
 }
@@ -255,6 +256,29 @@ func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error 
 		throw(into.WaitStreaming())
 		_, err = fut.Struct()
 		throw(err)
+	})
+}
+
+func (vp viewsPuller) Attach(ctx context.Context, p external.UiView_Keyring_attach) error {
+	arg := p.Args().Controller()
+	brand := capnp.Client(arg).State().Brand
+	srv, ok := cpserver.IsServer(brand)
+	if !ok {
+		return fmt.Errorf("not a server-side view controller (brand is type %T)", brand.Value)
+	}
+	ctrl, ok := srv.(uiViewControllerImpl)
+	if !ok {
+		return fmt.Errorf("not a view controller impl (type %T)", srv)
+	}
+	return exn.Try0(func(throw exn.Thrower) {
+		tx, err := vp.server.db.Begin()
+		throw(err)
+		defer tx.Rollback()
+		accountID, err := tx.CredentialAccount(ctrl.Session.Credential)
+		throw(err)
+		keyring := tx.AccountKeyring(accountID)
+		throw(keyring.AttachGrain(ctrl.GrainID, nil)) // FIXME: fill in permissions.
+		throw(tx.Commit())
 	})
 }
 

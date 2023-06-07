@@ -6,6 +6,7 @@ import (
 	"strings"
 	"syscall/js"
 
+	"capnproto.org/go/capnp/v3/exc"
 	"zenhack.net/go/jsapi/streams"
 	"zenhack.net/go/tea"
 	"zenhack.net/go/tempest/capnp/collection"
@@ -392,7 +393,16 @@ func (msg Navigate) Update(m *Model) Cmd {
 	} else if eatPrefix(&loc, "shared/") {
 		m.CurrentFocus = FocusLoadShared
 		api := m.API.AddRef()
+
+		var visitorSession external.VisitorSession
+		if res, ok := m.LoginSessions.Get(); ok {
+			if sessions, err := res.Get(); err == nil {
+				visitorSession = sessions.Visitor.AddRef()
+			}
+		}
+
 		return func(ctx context.Context, send func(Msg)) {
+			defer visitorSession.Release()
 			err := exn.Try0(func(throw exn.Thrower) {
 				defer api.Release()
 				restoreFut, rel := api.Restore(ctx, func(p external.ExternalApi_restore_Params) error {
@@ -411,6 +421,24 @@ func (msg Navigate) Update(m *Model) Cmd {
 				throw(err)
 				grain, err := uiViewToGrain(external.UiView(value.Struct()))
 				throw(err)
+
+				if visitorSession.IsValid() {
+					viewsFut, rel := visitorSession.Views(ctx, nil)
+					defer rel()
+					attachFut, rel := viewsFut.Views().Attach(ctx, func(p external.UiView_Keyring_attach_Params) error {
+						return p.SetController(grain.Controller.AddRef())
+					})
+					defer rel()
+					go func() {
+						if _, err = attachFut.Struct(); err == nil {
+							return
+						}
+						send(NewError{
+							Err: exc.WrapError("attaching grain to keyring", err),
+						})
+					}()
+				}
+
 				send(UpsertGrain{
 					ID:    grainID,
 					Grain: grain,

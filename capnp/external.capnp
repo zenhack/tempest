@@ -58,7 +58,7 @@ interface Authenticator {
 interface VisitorSession {
   # A VisitorSession provides operations that only require the 'visitor' role.
 
-  views @0 () -> (views :Collection.Puller(Text, UiView));
+  views @0 () -> (views :UiView.Keyring);
   # Get the ui views into grains that the caller has access to. The keys are
   # opaque base64-url encoded identifiers. These are stable for a given user,
   # but references to the same view held by different users may not have the
@@ -148,5 +148,14 @@ struct UiView {
     # In addition to accessing the UiView from the UI, you can also pass it to
     # ExternalApi.restore, which will return a Util.Getter(Util.KeyValue(Text, UiView)),
     # where the key is as in the collection returned by VisitorSession.view().
+  }
+
+  interface Keyring extends (Collection.Puller(Text, UiView)) {
+    # A Keyring represents the set of capabilities (always UiViews) which
+    # belong directly to the user (as opposed to e.g. ones that are held by
+    # grains). These are displayed in the user's grain list in the UI.
+
+    attach @0 (controller :Controller);
+    # Add a UiView to the keyring.
   }
 }

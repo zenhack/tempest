@@ -141,7 +141,7 @@ func (tx Tx) AddGrain(g NewGrain) error {
 	if err != nil {
 		return err
 	}
-	return tx.createOwnerSturdyRef(g.GrainID)
+	return tx.AccountKeyring(g.OwnerID).AttachGrain(g.GrainID, nil)
 }
 
 // GrainPackageID returns the package id for the specified grain
@@ -182,6 +182,28 @@ func (tx Tx) AccountKeyring(id types.AccountID) Keyring {
 		tx: tx,
 		id: id,
 	}
+}
+
+func (kr Keyring) AttachGrain(grainID types.GrainID, permissions []bool) error {
+	hash, err := kr.tx.SaveSturdyRef(
+		SturdyRefKey{
+			Token:     tokenutil.GenToken(),
+			OwnerType: "userkeyring",
+			Owner:     kr.id,
+		},
+		SturdyRefValue{
+			Expires: time.Unix(math.MaxInt64, 0), // never
+			GrainID: grainID,
+		},
+	)
+	if err != nil {
+		return err
+	}
+	_, err = kr.tx.sqlTx.Exec(
+		`INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
+		VALUES (?, ?)
+	`, hash[:], fmtPermissions(permissions))
+	return err
 }
 
 func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.GrainID) (permissions []bool, err error) {
@@ -340,37 +362,6 @@ func (tx Tx) getGrainOwner(grainID types.GrainID) (accountID types.AccountID, er
 	).Scan(&accountID)
 	err = exc.WrapError("getGrainOwner", err)
 	return
-}
-
-// createOwnerSturdyRef adds a uiViewSturdyRef for the grain's root
-// uiView, belonging to its owner. Should be called once when the grain
-// is created.
-func (tx Tx) createOwnerSturdyRef(grainID types.GrainID) error {
-	ownerID, err := tx.getGrainOwner(grainID)
-	if err != nil {
-		return err
-	}
-	hash, err := tx.SaveSturdyRef(
-		SturdyRefKey{
-			Token:     tokenutil.GenToken(),
-			OwnerType: "userkeyring",
-			Owner:     ownerID,
-		},
-		SturdyRefValue{
-			Expires: time.Unix(math.MaxInt64, 0), // never
-			GrainID: grainID,
-		},
-	)
-	if err != nil {
-		return err
-	}
-	_, err = tx.sqlTx.Exec(
-		`INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
-		-- Don't need to actually supply permissions, because
-		-- we own the grain:
-		VALUES (?, '')
-	`, hash[:])
-	return err
 }
 
 // parsePermissions parses a string like "ttfftf" from the database into a
