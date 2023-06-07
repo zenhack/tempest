@@ -154,7 +154,7 @@ func (a authenticatorImpl) SendEmailAuthToken(ctx context.Context, p external.Au
 		throw(err)
 		throw(oid.SetEmailLoginToken(addr))
 
-		token := base64.RawURLEncoding.EncodeToString(tokenutil.GenToken()[:16])
+		token := tokenutil.Gen128Base64()
 
 		_, err = tx.SaveSturdyRef(
 			database.SturdyRefKey{
