@@ -156,7 +156,7 @@ func (m Model) View(ms tea.MessageSender[Model]) vdom.VNode {
 func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
 	id := m.FocusedGrain
 	onClose := func(e vdom.Event) any {
-		navigate("#grain/" + string(id))
+		navigate("#/grain/" + string(id))
 		return nil
 	}
 	return viewModal(h("div", nil, nil,
