@@ -90,6 +90,7 @@
 	--default-content-color: var(--grey-1);
 
 	--modal-bgcolor: var(--grey-2-a);
+	--modal-content-bgcolor: var(--grey-9);
 }
 
 @media(prefers-color-scheme: dark) {
@@ -109,6 +110,7 @@
 		--default-content-color: var(--grey-9);
 
 		--modal-bgcolor: var(--grey-7-a);
+		--modal-content-bgcolor: var(--grey-2);
 	}
 }
 
@@ -174,7 +176,7 @@ body {
 	width: var(--sz-192);
 }
 
-.modal-dialog{
+.modal-dialog {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
@@ -182,6 +184,12 @@ body {
 	width: 100%;
 	height: 100%;
 	background-color: var(--modal-bgcolor);
+}
+
+.modal-dialog__content {
+	background-color: var(--modal-content-bgcolor);
+	border-radius: var(--sz-16);
+	padding: var(--sz-16);
 }
 
 
