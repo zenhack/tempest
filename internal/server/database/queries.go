@@ -5,7 +5,6 @@ package database
 import (
 	"crypto/sha256"
 	"database/sql"
-	"encoding/base64"
 	"fmt"
 	"math"
 	"time"
@@ -216,7 +215,7 @@ func (tx Tx) NewSharingToken(
 	note string,
 ) (string, error) {
 	permString := fmtPermissions(perms)
-	token := base64.RawURLEncoding.EncodeToString(tokenutil.GenToken())
+	token := tokenutil.Gen128Base64()
 	hash, err := tx.SaveSturdyRef(
 		SturdyRefKey{
 			Token:     []byte(token),
