@@ -189,7 +189,7 @@ body {
 .modal-dialog__popup {
 	background-color: var(--modal-content-bgcolor);
 	border-radius: var(--sz-16);
-	padding: var(--sz-16);
+	padding: var(--sz-32);
 	display: grid;
 }
 
