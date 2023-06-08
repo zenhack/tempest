@@ -186,10 +186,21 @@ body {
 	background-color: var(--modal-bgcolor);
 }
 
-.modal-dialog__content {
+.modal-dialog__popup {
 	background-color: var(--modal-content-bgcolor);
 	border-radius: var(--sz-16);
 	padding: var(--sz-16);
+	display: grid;
+}
+
+.modal-dialog__close {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.modal-dialog__content {
+	grid-column: 1;
+	grid-row: 1;
 }
 
 

@@ -183,16 +183,18 @@ func (m Model) viewShareGrainDialog(ms tea.MessageSender[Model]) vdom.VNode {
 				builder.T(link)),
 		)
 	}
-	return viewModal(h("div", nil, nil,
-		content,
-		closeBtn))
+	return viewModal(content, closeBtn)
 }
 
 // viewModal renders a modal dialog; the argument is centered over a semi-transparent
 // background covering the parent element.
-func viewModal(dialog vdom.VNode) vdom.VNode {
+func viewModal(dialog, closeBtn vdom.VNode) vdom.VNode {
 	return h("div", a{"class": "modal-dialog"}, nil,
-		h("div", a{"class": "modal-dialog__content"}, nil, dialog),
+		h("div", a{"class": "modal-dialog__popup"},
+			nil,
+			h("div", a{"class": "modal-dialog__content"}, nil, dialog),
+			h("div", a{"class": "modal-dialog__close"}, nil, closeBtn),
+		),
 	)
 }
 
