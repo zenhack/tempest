@@ -34,7 +34,7 @@ func TestUiViews(t *testing.T) {
 	testWithTx(t, func(tx Tx) {
 		addTestData(t, tx)
 
-		views, err := tx.AccountKeyring("id_alice").UiViews()
+		views, err := tx.AccountKeyring("id_alice").AllUiViews()
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, len(views))
