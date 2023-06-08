@@ -209,6 +209,16 @@ body {
 	padding-left: 0px;
 }
 
+.open-grain-menu-item {
+	margin-left: var(--sz-8);
+	padding-left: var(--sz-32);
+	background-image: url(icons/share.svg);
+	background-repeat: no-repeat;
+}
+.open-grain-menu-share-item {
+	background-image: url(icons/share.svg);
+}
+
 :root {
 	--sz-open-grain-tab-radius: var(--sz-8);
 	--sz-open-grain-tab-padding: var(--sz-4);

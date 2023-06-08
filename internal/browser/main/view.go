@@ -399,13 +399,20 @@ func viewOpenGrainMenu(l10n intl.L10N, ms tea.MessageSender[Model], id types.Gra
 		viewOpenGrainMenuItem(
 			l10n,
 			"Share access",
+			"share",
 			"#/share-grain/"+string(id),
 		),
 	)
 }
 
-func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, href string) vdom.VNode {
-	return h("a", a{"href": href}, nil, t(l10n, title))
+func viewOpenGrainMenuItem(l10n intl.L10N, title intl.L10NString, name, href string) vdom.VNode {
+	return h("a",
+		a{
+			"href":  href,
+			"class": "open-grain-menu-item open-grain-menu-" + name + "-item",
+		}, nil,
+		t(l10n, title),
+	)
 }
 
 func viewGrain(ms tea.MessageSender[Model], id types.GrainID, grain Grain) vdom.VNode {
