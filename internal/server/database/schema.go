@@ -133,11 +133,18 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 			)`)
 		throw(err)
 		_, err = tx.Exec(
-			`-- Extended fields for sturdyRefs that refer to uiViews.
-			CREATE TABLE IF NOT EXISTS uiViewSturdyRefs (
-				-- Hash of the token. The corresponding entry in sturdyRefs
-				-- must have a non-null grainId.
-				sha256 BLOB PRIMARY KEY NOT NULL REFERENCES sturdyRefs(id) ON DELETE CASCADE,
+			`-- Entries in users' keyrings -- these hold references to a user's
+			 -- capabilities and give them names that can be used in URLs and such.
+			 CREATE TABLE IF NOT EXISTS keyringEntries (
+				-- base64 url-encoded. If this is a grain's root UiView, we arrange
+				-- for this to match. Otherwise we pick something at random.
+				id VARCHAR (22) NOT NULL,
+
+				-- The account that owns this capability
+				accountId VARCHAR NOT NULL REFERENCES accounts(id),
+
+				-- An entry in sturdyRefs that contains more info about this entry.
+				sha256 BLOB UNIQUE NOT NULL REFERENCES sturdyRefs(sha256),
 
 				-- The permissions defined by the app this sturdyref grants on the grain.
 				-- This is a logically a PermissionSet from identity.capnp, encoded as a string
@@ -145,23 +152,7 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				--
 				-- NOTE: if the user is the owner of a grain, then they have all
 				-- possible permissions, regardless of the value of this field.
-				appPermissions VARCHAR NOT NULL
-			)`)
-		throw(err)
-		_, err = tx.Exec(
-			`-- Entries in users' keyrings -- these hold references to a user's
-			 -- capabilities and give them names that can be used in URLs and such.
-			 CREATE TABLE IF NOT EXISTS keyringEntries (
-				-- base64 url-encoded. If this is a grain's root UiView, we arrange
-				-- for this to match. Otherwise we pick something at random.
-				id VARCHAR (22) PRIMARY KEY NOT NULL,
-
-				-- The account that owns this capability
-				accountId VARCHAR NOT NULL REFERENCES accounts(id),
-
-				-- An entry in uiViewSturdyRefs that contains more info about this
-				-- entry.
-				sturdyRefSha256 BLOB UNIQUE NOT NULL REFERENCES uiViewSturdyRefs(sha256),
+				appPermissions VARCHAR NOT NULL,
 
 				UNIQUE (id, accountId)
 			)`)

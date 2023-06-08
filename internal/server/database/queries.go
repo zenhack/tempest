@@ -199,21 +199,27 @@ func (kr Keyring) AttachGrain(grainID types.GrainID, permissions []bool) error {
 	if err != nil {
 		return err
 	}
+	// FIXME: what happens if we share the same grain twice? id will conflict.
+	//
+	// One idea: drop the unique constraint on ID, and when querying OR together
+	// the permissions on all of the entries in the keyring. This mirros what
+	// sandstorm did, where your access to a grain was the union of all grants.
 	_, err = kr.tx.sqlTx.Exec(
-		`INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
-		VALUES (?, ?)
-	`, hash[:], fmtPermissions(permissions))
+		`INSERT INTO keyringEntries
+			(id, accountId, sha256, appPermissions)
+		VALUES (?, ?, ?, ?)
+	`, grainID, kr.id, hash[:], fmtPermissions(permissions))
 	return err
 }
 
 func (tx Tx) AccountGrainPermissions(accountID types.AccountID, grainID types.GrainID) (permissions []bool, err error) {
 	row := tx.sqlTx.QueryRow(
 		`SELECT
-			uiViewSturdyRefs.appPermissions
+			keyringEntries.appPermissions
 		FROM
-			sturdyRefs, uiViewSturdyRefs
+			sturdyRefs, keyringEntries
 		WHERE
-			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
+			keyringEntries.sha256 = keyringEntries.sha256
 			AND sturdyRefs.grainId = ?
 			AND sturdyRefs.objectId is null
 			AND sturdyRefs.ownerType = 'userkeyring'
@@ -238,7 +244,6 @@ func (tx Tx) NewSharingToken(
 	note string,
 ) (string, error) {
 	return exn.Try(func(throw exn.Thrower) string {
-		permString := fmtPermissions(perms)
 		token := tokenutil.Gen128Base64()
 
 		_, seg := capnp.NewMultiSegmentMessage(nil)
@@ -254,7 +259,7 @@ func (tx Tx) NewSharingToken(
 			dstPerms.Set(i, p)
 		}
 
-		hash, err := tx.SaveSturdyRef(
+		_, err = tx.SaveSturdyRef(
 			SturdyRefKey{
 				Token:     []byte(token),
 				OwnerType: "external-api",
@@ -265,12 +270,6 @@ func (tx Tx) NewSharingToken(
 			},
 		)
 		throw(err, "saving sturdyRef")
-		_, err = tx.sqlTx.Exec(`
-		INSERT INTO uiViewSturdyRefs (sha256, appPermissions)
-		VALUES (?, ?)`,
-			hash[:], permString,
-		)
-		throw(err, "saving permissions")
 		return token
 	})
 }
@@ -313,11 +312,11 @@ func (kr Keyring) AllUiViews() ([]UiViewInfo, error) {
 			grains.id,
 			grains.title,
 			grains.ownerId,
-			uiViewSturdyRefs.appPermissions
+			keyringEntries.appPermissions
 		FROM
-			grains, sturdyRefs, uiViewSturdyRefs
+			grains, sturdyRefs, keyringEntries
 		WHERE
-			uiViewSturdyRefs.sha256 = sturdyRefs.sha256
+			keyringEntries.sha256 = sturdyRefs.sha256
 			AND sturdyRefs.grainId = grains.id
 			AND sturdyRefs.ownerType = 'userkeyring'
 			AND sturdyRefs.owner = ?
