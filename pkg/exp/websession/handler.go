@@ -141,7 +141,6 @@ func (h Handler) doWebsocket(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	stream := websession.WebSocketStream_ServerToClient(websocket.WriterStream{W: conn})
-	defer stream.Release()
 	streamResolver.Fulfill(stream)
 	srvW := websocket.StreamWriter{
 		Context: req.Context(),

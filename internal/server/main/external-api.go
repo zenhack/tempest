@@ -261,7 +261,9 @@ func (vp viewsPuller) Sync(ctx context.Context, p collection.Puller_sync) error 
 
 func (vp viewsPuller) Attach(ctx context.Context, p external.UiView_Keyring_attach) error {
 	arg := p.Args().Controller()
-	brand := capnp.Client(arg).State().Brand
+	snapshot := capnp.Client(arg).Snapshot()
+	defer snapshot.Release()
+	brand := snapshot.Brand()
 	srv, ok := cpserver.IsServer(brand)
 	if !ok {
 		return fmt.Errorf("not a server-side view controller (brand is type %T)", brand.Value)

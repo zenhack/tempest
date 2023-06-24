@@ -66,8 +66,9 @@ func Main() {
 	go app.Run(ctx, body)
 
 	conn, api := getCapnpApi(ctx)
+	defer api.Release()
 	defer conn.Close()
-	apiResolver.Fulfill(api)
+	apiResolver.Fulfill(api.AddRef())
 
 	sessionsFut, rel := api.GetSessions(ctx, nil)
 	defer rel()
