@@ -158,6 +158,18 @@ func (tx Tx) GrainInfo(grainID types.GrainID) (GrainInfo, error) {
 	return result, exc.WrapError("GrainInfo", err)
 }
 
+func (tx Tx) AccountProfile(accountID types.AccountID) (identity.Profile, error) {
+	var (
+		buf []byte
+	)
+	row := tx.sqlTx.QueryRow("SELECT profile FROM accounts WHERE id = ?", accountID)
+	err := row.Scan(&buf)
+	if err != nil {
+		return identity.Profile{}, err
+	}
+	return decodeCapnp[identity.Profile](buf)
+}
+
 type GrainInfo struct {
 	ID    types.GrainID
 	Title string
