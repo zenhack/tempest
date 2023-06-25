@@ -49,9 +49,8 @@ func InitDB(sqlDB *sql.DB) (DB, error) {
 				-- Either "visitor", "user", or "admin"
 				role VARCHAR NOT NULL,
 
-				profileDisplayName VARCHAR NOT NULL,
-				profilePreferredHandle VARCHAR NOT NULL
-				-- TODO: picture, identicon, pronouns
+				-- capnp encoded Profile from identity.capnp
+				profile BLOB NOT NULL
 			)`)
 		throw(err)
 		_, err = tx.Exec(

@@ -13,6 +13,7 @@ import (
 	"capnproto.org/go/capnp/v3/exc"
 	"capnproto.org/go/capnp/v3/packed"
 	"zenhack.net/go/tempest/capnp/grain"
+	"zenhack.net/go/tempest/capnp/identity"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/capnp/system"
 	"zenhack.net/go/tempest/internal/common/types"
@@ -85,12 +86,7 @@ type NewGrain struct {
 type NewAccount struct {
 	ID      types.AccountID
 	Role    types.Role
-	Profile Profile
-}
-
-type Profile struct {
-	DisplayName     string
-	PreferredHandle string
+	Profile identity.Profile
 }
 
 type NewCredential struct {
@@ -100,18 +96,20 @@ type NewCredential struct {
 }
 
 func (tx Tx) AddAccount(a NewAccount) error {
-	_, err := tx.sqlTx.Exec(
+	profile, err := encodeCapnp(a.Profile)
+	if err != nil {
+		return err
+	}
+	_, err = tx.sqlTx.Exec(
 		`INSERT INTO accounts
 			( id
 			, role
-			, profileDisplayName
-			, profilePreferredHandle
+			, profile
 			)
-			VALUES (?, ?, ?, ?)`,
+			VALUES (?, ?, ?)`,
 		a.ID,
 		a.Role,
-		a.Profile.DisplayName,
-		a.Profile.PreferredHandle,
+		profile,
 	)
 	return err
 }

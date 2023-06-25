@@ -12,6 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"zenhack.net/go/tempest/capnp/identity"
 	spk "zenhack.net/go/tempest/capnp/package"
 	"zenhack.net/go/tempest/internal/common/types"
 	"zenhack.net/go/tempest/internal/config"
@@ -201,10 +202,17 @@ func importUsers(snapshotDir string, tx database.Tx) error {
 			if u.Type != "account" {
 				return
 			}
+			_, seg := capnp.NewSingleSegmentMessage(nil)
+			profile, err := identity.NewRootProfile(seg)
+			throw(err)
+			displayName, err := profile.NewDisplayName()
+			throw(err)
+			throw(displayName.SetDefaultText(u.Profile.DisplayName))
+			throw(profile.SetPreferredHandle(u.Profile.PreferredHandle))
 			throw(tx.AddAccount(database.NewAccount{
 				ID:      types.AccountID(u.ID),
 				Role:    u.Role,
-				Profile: u.Profile,
+				Profile: profile,
 			}))
 			// Store these for lookup during the second pass:
 			for _, credID := range u.LoginCredentials {
