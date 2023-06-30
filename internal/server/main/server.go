@@ -304,7 +304,7 @@ func (s *server) Handler() http.Handler {
 			}
 			rpcConn := rpc.NewConn(transport, &rpc.Options{
 				BootstrapClient: capnp.Client(external.ExternalApi_ServerToClient(bootstrap)),
-				ErrorReporter:   logErrorReporter{log: s.log},
+				Logger:          s.log.With("capnp-client-addr", req.RemoteAddr),
 			})
 			<-rpcConn.Done()
 		})
@@ -420,16 +420,4 @@ func (s *server) Release() {
 			sess.Release()
 		}
 	})
-}
-
-// Implementation of capnp.ErrorReporter on top of our logger. TODO(cleanup):
-// move this somewhere more appropriate.
-type logErrorReporter struct {
-	log *slog.Logger
-}
-
-func (l logErrorReporter) ReportError(err error) {
-	l.log.Error("capnp-rpc error",
-		"error", err,
-	)
 }
